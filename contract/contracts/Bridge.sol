@@ -25,12 +25,25 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     uint256 public relayerThreshold; // 投票可以通过的最少relayer数量
     uint256 public expiry; // 开始投票后经过 expiry 的块数量后投票过期
     mapping(bytes32 => address) public resourceIdToContractAddress; // resourceID => token contract address
-    mapping(address => bytes32) public _contractAddressToResourceID; // token contract address => resourceID
+    mapping(address => bytes32) public contractAddressToResourceID; // token contract address => resourceID
     mapping(address => bool) public contractWhitelist; // token contract address => 是否在白名单中
     mapping(uint8 => mapping(uint64 => DepositRecord)) public depositRecords; // depositNonce => Deposit Record
 
-
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
+    function deposit(
+        uint256 destinationChainId,
+        bytes32 resourceID,
+        bytes calldata data
+    ) external whenNotPaused {}
+
+    function getChainId() public view returns (uint256) {
+        return chainId;
+    }
+
+    function getToeknAddress(bytes32 resourceID) public view returns (address) {
+        return resourceIdToContractAddress[resourceID];
     }
 }

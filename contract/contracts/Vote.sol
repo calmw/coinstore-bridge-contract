@@ -18,8 +18,8 @@ contract Vote is IVote, AccessControl, Initializable {
 
     IBridge public bridge; // bridge 合约
     mapping(uint72 => mapping(bytes32 => Proposal)) public proposals; // destinationChainID + depositNonce => dataHash => Proposal
-    mapping(uint72 => mapping(bytes32 => mapping(address => bool))) public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
-
+    mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
+        public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
