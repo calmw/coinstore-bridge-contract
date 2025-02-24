@@ -17,6 +17,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant VOTE_ROLE = keccak256("VOTE_ROLE");
+    bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
 
     IVote public vote; // vote 合约
     uint256 public chainId; // 自定义链ID
@@ -39,11 +40,27 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         bytes calldata data
     ) external whenNotPaused {}
 
-    function getChainId() public view returns (uint256) {
-        return chainId;
-    }
+//    function getChainId() public view returns (uint256) {
+//        return chainId;
+//    }
 
-    function getToeknAddress(bytes32 resourceID) public view returns (address) {
+    function getToeknAddressByResourceID(bytes32 resourceID) public view returns (address) {
         return resourceIdToContractAddress[resourceID];
     }
+
+    function vote() public  {}
+
+    function voteProposal() public  onlyRole(RELAYER_ROLE){}
+    function cancelProposal() public  onlyRole(ADMIN_ROLE){}
+    function executeProposal() public  {}
+    function getProposal(uint8 originChainID, uint64 depositNonce, bytes32 dataHash) external view returns (Proposal memory) {}
+
+    function adminChangeFee(uint newFee)external onlyRole(ADMIN_ROLE) {}
+
+    function adminWithdraw(
+        address handlerAddress,
+        address tokenAddress,
+        address recipient,
+        uint256 amountOrTokenID
+    ) external onlyRole(ADMIN_ROLE) {}
 }

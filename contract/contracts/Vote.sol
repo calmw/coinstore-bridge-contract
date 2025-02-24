@@ -13,7 +13,6 @@ contract Vote is IVote, AccessControl, Initializable {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
 
-    bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
     IBridge public bridge; // bridge 合约
