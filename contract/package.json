@@ -1,15 +1,15 @@
 {
-  "name": "city-node",
+  "name": "coinstore-bridge",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "prettier": "prettier --write 'contracts/**/*.sol'",
     "build": "npx hardhat compile",
-    "deploy-vote-testnet": "npx hardhat --network match_test run scripts/vote.js",
-    "upgrade-vote-testnet": "npx hardhat --network match_test run scripts/vote_proxy.js",
-    "deploy-vote-open_bnb": "npx hardhat --network open_bnb run scripts/opbnb/open_bnb_vote.js",
-    "upgrade-vote-open_bnb": "npx hardhat --network open_bnb run scripts/opbnb/open_bnb_vote_proxy.js",
+    "deploy-bridge-open_bnb": "npx hardhat --network open_bnb run scripts/bridge.js",
+    "upgrade-bridge-open_bnb": "npx hardhat --network open_bnb run scripts/bridge_proxy.js",
+    "deploy-bridge-tantin_testnet": "npx hardhat --network tantin_testnet run scripts/opbnb/open_bnb_bridge.js",
+    "upgrade-bridge-tantin_testnet": "npx hardhat --network tantin_testnet run scripts/opbnb/open_bnb_bridge_proxy.js",
     "test": "npx hardhat test"
   },
   "keywords": [],
