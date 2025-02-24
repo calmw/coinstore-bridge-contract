@@ -34,13 +34,13 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         @notice 跨链目标链执行 demo
         @param originChainId 源链ID
         @param originDepositNonce 源链ID depositNonce
-        @param recipient 目标链资产接受者地址.
-        @param amount 跨链金额.
+        @param resourceId 跨链桥设置的resourceId.
+        @param data 跨链data.
      */
     function execute(
         uint256 originChainId,
         uint256 originDepositNonce,
-        bytes32 resourceID,
+        bytes32 resourceId,
         bytes calldata data
     ) public onlyRole(BRIDGE_ROLE) {}
 }

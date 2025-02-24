@@ -2,7 +2,6 @@
 pragma solidity ^0.8.10;
 
 interface ITantinBridge {
-
     event DepositErc20Event(
         address indexed depositer,
         address indexed recipient,

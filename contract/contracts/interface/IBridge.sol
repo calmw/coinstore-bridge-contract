@@ -24,7 +24,7 @@ interface IBridge {
         bytes calldata data
     ) external;
 
-    function getChainId() public view returns (uint256);
+    function getChainId() external view returns (uint256);
 
     function getToeknAddress(
         bytes32 resourceID
