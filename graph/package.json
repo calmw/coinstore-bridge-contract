@@ -1,0 +1,22 @@
+{
+  "name": "statistics-subgraph",
+  "license": "MIT",
+  "scripts": {
+    "build_dev": "rm -rf subgraph.yaml && cp subgraph-dev714.yaml subgraph.yaml && graph codegen && graph build",
+    "create_dev": "graph create vote --node http://54.64.70.53:8720",
+    "deploy_dev": "graph deploy vote --ipfs http://54.64.70.53:5701 --node http://54.64.70.53:8720",
+    "remove_dev": "graph remove vote --node http://54.64.70.53:8720",
+
+    "build_main": "rm -rf subgraph.yaml && cp subgraph-main698.yaml subgraph.yaml && graph codegen && graph build",
+    "create_main": "graph create vote --node http://3.112.52.122:8620",
+    "deploy_main": "graph deploy vote --ipfs http://3.112.52.122:5601 --node http://3.112.52.122:8620",
+    "remove_main": "graph remove vote --node http://3.112.52.122:8620"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.49.0",
+    "@graphprotocol/graph-ts": "^0.29.1"
+  },
+  "devDependencies": {
+    "matchstick-as": "0.5.0"
+  }
+}

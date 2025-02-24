@@ -1,0 +1,52 @@
+Arguments: 
+  /Users/web3/.nvm/versions/node/v16.0.0/bin/node /Users/web3/.nvm/versions/node/v16.0.0/bin/yarn create-local
+
+PATH: 
+  /usr/local/opt/go@1.19/bin:/Users/web3/go/bin:/usr/local/Cellar/pyenv-virtualenv/1.2.1/shims:/Users/web3/.pyenv/shims:/Users/web3/.pyenv/bin:/Users/web3/.nvm/versions/node/v16.0.0/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/web3/tools
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.0.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  SyntaxError: /Users/web3/Desktop/company/subgraph/match-subgraoh/package.json: Unexpected token / in JSON at position 571
+      at JSON.parse (<anonymous>)
+      at /Users/web3/.nvm/versions/node/v16.0.0/lib/node_modules/yarn/lib/cli.js:1629:59
+      at Generator.next (<anonymous>)
+      at step (/Users/web3/.nvm/versions/node/v16.0.0/lib/node_modules/yarn/lib/cli.js:310:30)
+      at /Users/web3/.nvm/versions/node/v16.0.0/lib/node_modules/yarn/lib/cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "match-subgraoh",
+    "license": "UNLICENSED",
+    "scripts": {
+      "codegen": "graph codegen",
+      "build": "graph codegen && graph build",
+      "deploy": "graph deploy --node https://api.thegraph.com/deploy/ xiaoxiaokanhu/match-subgraoh",
+      "create-local": "graph create --node http://101.32.194.111:8920/ xiaoxiaokanhu/match-subgraph",
+      "remove-local": "graph remove --node http://localhost:8920/ xiaoxiaokanhu/match-subgraoh",
+      "deploy-local": "graph deploy --node http://localhost:8920/ --ipfs http://localhost:5001 xiaoxiaokanhu/match-subgraph",
+      // "deploy-match": "graph deploy --node http://101.32.194.111:8920/ --ipfs http://101.32.194.111:5001 xiaoxiaokanhu/match-subgraph",
+      "deploy-match-test": "graph deploy --node http://101.32.194.111:8920/ --ipfs http://101.32.194.111:5001 xiaoxiaokanhu/match-subgraph",
+      "test": "graph test"
+    },
+    "dependencies": {
+      "@graphprotocol/graph-cli": "0.49.0",
+      "@graphprotocol/graph-ts": "^0.29.1"
+    },
+    "devDependencies": {
+      "matchstick-as": "0.5.0"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

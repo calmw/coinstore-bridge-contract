@@ -1,0 +1,104 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: IntoUserLocation
+    network: match
+    source:
+      address: "0x1B535f616B0465891Bc0bb71307A8781A8cCB8f2"
+      abi: IntoUserLocation
+      startBlock: 2307936
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - UserLocationRecord
+      abis:
+        - name: IntoUserLocation
+          file: ./abis/IntoUserLocation.json
+      eventHandlers:
+        - event: UserLocationRecord(address,bytes32,string)
+          handler: handleUserLocationRecordLog
+        - event: UserLocationRecordV2(address,bytes32,bytes32,string)
+          handler: handleUserLocationRecordV2Log
+      file: ./src/IntoUserLocation.ts
+
+  - kind: ethereum
+    name: IntoCityPioneer
+    network: match
+    source:
+      address: "0x60C541388077d524178521A7ceD95d0c7a016B72"
+      abi: IntoCityPioneer
+      startBlock: 2414639
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - SuretyRecord
+        - DailyRewardRecord
+        - DailyRewardRecordV2
+        - WithdrawalRewardRecord
+      abis:
+        - name: IntoCityPioneer
+          file: ./abis/IntoCityPioneer.json
+      eventHandlers:
+        - event: SuretyRecord(address,uint256,uint256)
+          handler: handleSuretyRecordLog
+        - event: DailyRewardRecord(address,uint256,uint256,uint256)
+          handler: handleDailyRewardRecordLog
+        - event: DailyRewardRecordV2(address,uint256,uint256,uint256)
+          handler: handleDailyRewardRecordV2Log
+        - event: WithdrawalRewardRecord(address,uint256,uint256)
+          handler: handleWithdrawalRewardRecordLog
+      file: ./src/IntoCityPioneer.ts
+
+  - kind: ethereum
+    name: IntoCity
+    network: match
+    source:
+      address: "0xebD06631510A66968f0379A4deB896d3eE7DD6ED"
+      abi: IntoCity
+      startBlock: 2307995
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - RechargeRecord
+        - IncreaseCityDelegate
+        - DecreaseCityDelegate
+      abis:
+        - name: IntoCity
+          file: ./abis/IntoCity.json
+      eventHandlers:
+        - event: RechargeRecord(address,bytes32,uint256,uint256)
+          handler: handleRechargeRecordLog
+        - event: IncreaseCityDelegate(address,bytes32,uint256)
+          handler: handleIncreaseCityDelegate
+        - event: DecreaseCityDelegate(address,bytes32,uint256)
+          handler: handleDecreaseCityDelegate
+      file: ./src/IntoCity.ts
+
+  - kind: ethereum
+    name: IntoCityPioneerData
+    network: match
+    source:
+      address: "0x2548Ec31B6EBe2D0dD6c316658193789601830B1"
+      abi: IntoCityPioneerData
+      startBlock: 2307995
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - DepositSurety
+      abis:
+        - name: IntoCityPioneerData
+          file: ./abis/IntoCityPioneerData.json
+      eventHandlers:
+        - event: DepositSurety(address,uint256,uint256)
+          handler: handleDepositSurety
+      file: ./src/IntoCityPioneerData.ts

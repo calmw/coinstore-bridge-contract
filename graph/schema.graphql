@@ -1,0 +1,23 @@
+type ProposeCreate  @entity {
+    id: ID!
+    proposeId:BigInt!
+    chainId:BigInt!
+    fee:BigInt!
+    user: Bytes!
+    txHash:Bytes!
+    timestamp:BigInt!
+    ctime:BigInt!
+    utc_time:String!
+}
+
+type VotePropose @entity {
+    id: ID!
+    proposeId:BigInt!
+    chainId:BigInt!
+    fee:BigInt!
+    user: Bytes!
+    isSupport:Boolean!
+    txHash:Bytes!
+    timestamp:BigInt!
+    utc_time:String!
+}
