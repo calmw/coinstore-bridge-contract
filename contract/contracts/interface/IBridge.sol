@@ -2,6 +2,14 @@
 pragma solidity ^0.8.22;
 
 interface IBridge {
+    enum AssetsType {
+        None,
+        Coin,
+        Erc20,
+        Erc721,
+        Erc1155
+    }
+
     event Deposit(
         uint256 indexed destinationChainId,
         bytes32 indexed resourceID,
@@ -10,6 +18,13 @@ interface IBridge {
     event RelayerThresholdChanged(uint indexed newThreshold);
     event RelayerAdded(address indexed relayer);
     event RelayerRemoved(address indexed relayer);
+
+    // 跨链币种信息
+    struct TokenInfo {
+        AssetsType assetsType; // 跨链币种
+        address tokenAddress; // 币种地址，coin为0地址
+        bool burnable; // true burn/mint;false lock/release
+    }
 
     struct DepositRecord {
         uint256 destinationChainId;
@@ -26,7 +41,7 @@ interface IBridge {
 
     function getChainId() external view returns (uint256);
 
-    function getToeknAddressByResourceID(
+    function getToeknInfoByResourceId(
         bytes32 resourceID
-    ) external view returns (address);
+    ) external view returns (uint256, address, bool);
 }

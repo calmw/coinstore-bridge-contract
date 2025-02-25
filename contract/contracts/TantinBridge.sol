@@ -11,8 +11,10 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
-    IBridge public bridge; // bridge 合约
+    IBridge public Bridge; // bridge 合约
     uint256 public depositNonce; // 跨链nonce
+    mapping(uint256 => mapping(uint256 => DepositErc20Record))
+        public depositRecord; // destinationChainId => (depositNonce=> Deposit Record)
 
     function initialize() public initializer {}
 
@@ -35,4 +37,16 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         @param data 跨链data, encode(originChainId,originDepositNonce,depositer,recipient,amount,resourceId)
      */
     function execute(bytes calldata data) public onlyRole(BRIDGE_ROLE) {}
+
+    /**
+        @notice 获取跨链记录
+        @param depositNonce_ 跨链nonce
+        @param destinationChainId_ 目标链ID
+    */
+    function getDepositRecord(
+        uint256 depositNonce_,
+        uint256 destinationChainId_
+    ) external view returns (DepositErc20Record memory) {
+        return depositRecord[destinationChainId_][depositNonce_];
+    }
 }

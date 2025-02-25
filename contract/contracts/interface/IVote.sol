@@ -38,4 +38,30 @@ interface IVote {
         ProposalStatus indexed status,
         bytes32 resourceID
     );
+
+    function voteProposal(
+        uint256 originChainID,
+        uint256 originDepositNonce,
+        bytes32 resourceID,
+        bytes32 dataHash
+    ) external;
+
+    function cancelProposal(
+        uint256 originChainID,
+        uint256 originDepositNonce,
+        bytes32 dataHash
+    ) external;
+
+    function executeProposal(
+        uint256 originChainID,
+        uint64 originDepositNonce,
+        bytes calldata data,
+        bytes32 resourceID
+    ) external;
+
+    function getProposal(
+        uint8 originChainID,
+        uint64 depositNonce,
+        bytes32 dataHash
+    ) external;
 }
