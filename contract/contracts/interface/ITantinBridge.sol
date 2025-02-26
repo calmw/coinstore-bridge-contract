@@ -74,7 +74,6 @@ interface ITantinBridge {
         uint256 originChainId
     );
 
-    // Erc20 demo
     struct DepositErc20Record {
         address tokenAddress;
         address sender;
