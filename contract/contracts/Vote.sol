@@ -64,6 +64,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 resourceID
     ) external onlyRole(BRIDGE_ROLE) {}
 
+    // 获取投票信息
     function getProposal(
         uint8 originChainID,
         uint64 depositNonce,

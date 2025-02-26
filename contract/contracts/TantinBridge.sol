@@ -17,7 +17,9 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     mapping(uint256 => mapping(uint256 => DepositErc20Record))
         public depositRecord; // destinationChainId => (depositNonce=> Deposit Record)
 
-    function initialize() public initializer {}
+    function initialize() public initializer {
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
 
     /**
         @notice 发起跨链
