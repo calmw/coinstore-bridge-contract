@@ -10,15 +10,39 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 /// ERC20跨链 demo
 
 contract TantinBridge is AccessControl, ITantinBridge, Initializable {
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
     IBridge public Bridge; // bridge 合约
     uint256 public depositNonce; // 跨链nonce
     mapping(uint256 => mapping(uint256 => DepositErc20Record))
-        public depositRecord; // destinationChainId => (depositNonce=> Deposit Record)
+    public depositRecord; // destinationChainId => (depositNonce=> Deposit Record)
+    mapping(address => bool) public blacklist; // 用户地址 => 是否在黑名单
 
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
+    /**
+        @notice 添加黑名单
+        @param user 用户地址
+     */
+    function adminAddBlacklist(
+        address user
+    ) external onlyRole(ADMIN_ROLE) {
+        blacklist[user] = true;
+        emit AddBlacklist(user);
+    }
+
+    /**
+        @notice 移除黑名单
+        @param user 用户地址
+     */
+    function adminRemoveBlacklist(
+        address user
+    ) external onlyRole(ADMIN_ROLE) {
+        blacklist[user] = false;
+        emit RemoveBlacklist(user);
     }
 
     /**
