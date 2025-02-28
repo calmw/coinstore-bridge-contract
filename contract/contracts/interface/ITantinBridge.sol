@@ -2,13 +2,9 @@
 pragma solidity ^0.8.22;
 
 interface ITantinBridge {
-    event AddBlacklist(
-        address indexed user
-    );
+    event AddBlacklist(address indexed user);
 
-    event RemoveBlacklist(
-        address indexed user
-    );
+    event RemoveBlacklist(address indexed user);
 
     event DepositCoinEvent(
         address indexed depositer,

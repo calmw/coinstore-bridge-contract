@@ -16,7 +16,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     IBridge public Bridge; // bridge 合约
     uint256 public depositNonce; // 跨链nonce
     mapping(uint256 => mapping(uint256 => DepositErc20Record))
-    public depositRecord; // destinationChainId => (depositNonce=> Deposit Record)
+        public depositRecord; // destinationChainId => (depositNonce=> Deposit Record)
     mapping(address => bool) public blacklist; // 用户地址 => 是否在黑名单
 
     function initialize() public initializer {
@@ -24,23 +24,19 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     }
 
     /**
-        @notice 添加黑名单
+        @notice 添加用户黑名单
         @param user 用户地址
      */
-    function adminAddBlacklist(
-        address user
-    ) external onlyRole(ADMIN_ROLE) {
+    function adminAddBlacklist(address user) external onlyRole(ADMIN_ROLE) {
         blacklist[user] = true;
         emit AddBlacklist(user);
     }
 
     /**
-        @notice 移除黑名单
+        @notice 移除用户黑名单
         @param user 用户地址
      */
-    function adminRemoveBlacklist(
-        address user
-    ) external onlyRole(ADMIN_ROLE) {
+    function adminRemoveBlacklist(address user) external onlyRole(ADMIN_ROLE) {
         blacklist[user] = false;
         emit RemoveBlacklist(user);
     }

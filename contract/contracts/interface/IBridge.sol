@@ -22,8 +22,11 @@ interface IBridge {
     // 跨链币种信息
     struct TokenInfo {
         AssetsType assetsType; // 跨链币种
-        address tokenAddress; // 币种地址，coin为0地址
-        bool burnable; // true burn/mint;false lock/release
+        address tokenAddress; // 币种地址。coin的话，值为0地址
+        bool burnable; // true burn;false lock
+        bool mintable; // true mint;false release
+        bool blacklist; // 该币种是否在黑名单中/是否允许跨链。币种黑名单/禁止该币种跨链
+        uint256 fee; // 跨链费用,当前设置的收手续费模式为固定数量的coin
     }
 
     struct DepositRecord {
