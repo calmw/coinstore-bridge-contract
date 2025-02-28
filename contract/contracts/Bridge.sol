@@ -32,7 +32,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     modifier onlyAdminOrRelayer() {
         require(
             hasRole(ADMIN_ROLE, msg.sender) ||
-                hasRole(RELAYER_ROLE, msg.sender),
+            hasRole(RELAYER_ROLE, msg.sender),
             "sender is not relayer or admin"
         );
         _;
@@ -104,12 +104,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     }
 
     /**
-        @notice 管理员设置跨链费用
-        @param newFee 跨链手续费,单位wei
-     */
-    function adminChangeFee(uint256 newFee) external onlyRole(ADMIN_ROLE) {}
-
-    /**
         @notice 提取跨链桥coin资产
         @param recipient 资产接受者地址
         @param amount 提取数量,单位wei
@@ -122,14 +116,24 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     /**
         @notice resource设置
         @param resourceID 跨链的resourceID
-        @param tantinAddress 对应的tantin业务合约地址
+        @param assetsType 该币的类型
         @param tokenAddress 对应的token合约地址，coin为0地址
+        @param fee 该币的跨链费用
+        @param burnable true burn;false lock
+        @param mintable  true mint;false release
+        @param blacklist 该币种是否在黑名单中/是否允许跨链。币种黑名单/禁止该币种跨链
+        @param tantinAddress 对应的tantin业务合约地址
         @param executeFunctionSig tantin业务合约执行到帐操作的方法签名
      */
     function adminSetResource(
         bytes32 resourceID,
-        address tantinAddress,
+        AssetsType assetsType,
         address tokenAddress,
+        uint256 fee,
+        bool burnable,
+        bool mintable,
+        bool blacklist,
+        address tantinAddress,
         bytes4 executeFunctionSig
     ) external onlyRole(ADMIN_ROLE) {}
 
