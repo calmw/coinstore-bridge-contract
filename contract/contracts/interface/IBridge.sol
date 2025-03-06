@@ -13,19 +13,26 @@ interface IBridge {
     event Deposit(
         uint256 indexed destinationChainId,
         bytes32 indexed resourceID,
-        uint256 indexed depositNonce
+        uint256 indexed depositNonce,
+        bytes data
     );
-    event RelayerThresholdChanged(uint indexed newThreshold);
-    event RelayerAdded(address indexed relayer);
-    event RelayerRemoved(address indexed relayer);
+
+    event SetResource(
+        bytes32 indexed resourceID,
+        address tokenAddress,
+        uint256 fee,
+        bool pause, // 该resourceID是否被暂停交易
+        address tantinAddress,
+        bytes4 executeFunctionSig
+    );
 
     // 跨链币种信息
     struct TokenInfo {
         AssetsType assetsType; // 跨链币种
         address tokenAddress; // 币种地址。coin的话，值为0地址
-        bool burnable; // true burn;false lock
-        bool mintable; // true mint;false release
-        bool blacklist; // 该币种是否在黑名单中/是否允许跨链。币种黑名单/禁止该币种跨链
+        //        bool burnable; // true burn;false lock
+        //        bool mintable; // true mint;false release
+        bool pause; // 该token是否暂停跨链
         uint256 fee; // 跨链费用,当前设置的收手续费模式为固定数量的coin
     }
 
@@ -40,11 +47,15 @@ interface IBridge {
         uint256 destinationChainId,
         bytes32 resourceID,
         bytes calldata data
-    ) external;
+    ) external payable;
 
     function getChainId() external view returns (uint256);
 
     function getToeknInfoByResourceId(
         bytes32 resourceID
     ) external view returns (uint256, address, bool);
+
+    function getFeeByResourceId(
+        bytes32 resourceId
+    ) external view returns (uint256);
 }

@@ -15,6 +15,25 @@ interface IVote {
         Cancelled
     }
 
+    event RelayerThresholdChanged(uint indexed newThreshold);
+    event RelayerAdded(address indexed relayer);
+    event RelayerRemoved(address indexed relayer);
+
+    event ProposalEvent(
+        uint256 indexed originChainID,
+        uint256 indexed depositNonce,
+        ProposalStatus indexed status,
+        bytes32 resourceID,
+        bytes32 dataHash
+    );
+
+    event ProposalVote(
+        uint256 indexed originChainID,
+        uint256 indexed depositNonce,
+        ProposalStatus indexed status,
+        bytes32 resourceID
+    );
+
     struct Proposal {
         bytes32 resourceId;
         bytes32 dataHash;
@@ -23,21 +42,6 @@ interface IVote {
         ProposalStatus status;
         uint256 proposedBlock;
     }
-
-    event ProposalEvent(
-        uint8 indexed originChainID,
-        uint64 indexed depositNonce,
-        ProposalStatus indexed status,
-        bytes32 resourceID,
-        bytes32 dataHash
-    );
-
-    event ProposalVote(
-        uint8 indexed originChainID,
-        uint64 indexed depositNonce,
-        ProposalStatus indexed status,
-        bytes32 resourceID
-    );
 
     function voteProposal(
         uint256 originChainID,
@@ -64,4 +68,6 @@ interface IVote {
         uint64 depositNonce,
         bytes32 dataHash
     ) external;
+
+    function getRelayerThreshold() external view returns (uint256);
 }

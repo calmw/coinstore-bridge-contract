@@ -5,38 +5,24 @@ import "./interface/IBridge.sol";
 import "./interface/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
-//import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-//import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {IVote} from "./interface/IVote.sol";
-//import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.5/contracts/utils/cryptography/ECDSA.sol";
 
 contract Bridge is IBridge, Pausable, AccessControl, Initializable {
-    //    using ECDSA for bytes32;
-    //    using MessageHashUtils for bytes32;
-
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant VOTE_ROLE = keccak256("VOTE_ROLE");
-    bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
+//    bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
 
     IVote public Vote; // vote 合约
     uint256 public chainId; // 自定义链ID
-    uint256 public totalRelayer; // 总的relayer账户数量
-    uint256 public relayerThreshold; // 提案可以通过的最少投票数量
-    uint256 public expiry; // 开始投票后经过 expiry 的块数量后投票过期
+//    uint256 public relayerThreshold; // 提案可以通过的最少投票数量
+//    uint256 public expiry; // 开始投票后经过 expiry 的块数量后投票过期
+    mapping(uint256 => uint64) public depositCounts; // destinationChainID => number of deposits
     mapping(bytes32 => address) public resourceIdToContractAddress; // resourceID => 业务合约地址(tantin address)
     mapping(address => bytes32) public contractAddressToResourceID; // 业务合约地址(tantin address) => resourceID
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
+    mapping(bytes32 => bytes4) public resourceIdToExecuteSig; //  resourceID => tantin execute sig
     mapping(uint8 => mapping(uint64 => DepositRecord)) public depositRecords; // depositNonce => Deposit Record
-
-    modifier onlyAdminOrRelayer() {
-        require(
-            hasRole(ADMIN_ROLE, msg.sender) ||
-            hasRole(RELAYER_ROLE, msg.sender),
-            "sender is not relayer or admin"
-        );
-        _;
-    }
 
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -57,53 +43,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     }
 
     /**
-        @notice 添加relayer账户
-        @notice Only callable by an address that currently has the admin role.
-        @param relayerAddress Address of relayer to be added.
-        @notice Emits {RelayerAdded} event.
-     */
-    function adminAddRelayer(
-        address relayerAddress
-    ) external onlyRole(ADMIN_ROLE) {
-        require(
-            !hasRole(RELAYER_ROLE, relayerAddress),
-            "addr already has relayer role!"
-        );
-        grantRole(RELAYER_ROLE, relayerAddress);
-        emit RelayerAdded(relayerAddress);
-        totalRelayer++;
-    }
-
-    /**
-        @notice 删除relayer账户
-        @notice Only callable by an address that currently has the admin role.
-        @param relayerAddress Address of relayer to be removed.
-        @notice Emits {RelayerRemoved} event.
-     */
-    function adminRemoveRelayer(
-        address relayerAddress
-    ) external onlyRole(ADMIN_ROLE) {
-        require(
-            hasRole(RELAYER_ROLE, relayerAddress),
-            "addr doesn't have relayer role!"
-        );
-        revokeRole(RELAYER_ROLE, relayerAddress);
-        emit RelayerRemoved(relayerAddress);
-        totalRelayer--;
-    }
-
-    /**
-        @notice 设置投票可通过时的最小投票数量
-        @param newThreshold 投票可通过时的最小投票数量
-     */
-    function adminChangeRelayerThreshold(
-        uint newThreshold
-    ) external onlyRole(ADMIN_ROLE) {
-        relayerThreshold = newThreshold;
-        emit RelayerThresholdChanged(newThreshold);
-    }
-
-    /**
         @notice 提取跨链桥coin资产
         @param recipient 资产接受者地址
         @param amount 提取数量,单位wei
@@ -119,9 +58,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         @param assetsType 该币的类型
         @param tokenAddress 对应的token合约地址，coin为0地址
         @param fee 该币的跨链费用
-        @param burnable true burn;false lock
-        @param mintable  true mint;false release
-        @param blacklist 该币种是否在黑名单中/是否允许跨链。币种黑名单/禁止该币种跨链
+        @param pause 该币种是否在黑名单中/是否允许跨链。币种黑名单/禁止该币种跨链
         @param tantinAddress 对应的tantin业务合约地址
         @param executeFunctionSig tantin业务合约执行到帐操作的方法签名
      */
@@ -130,50 +67,52 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         AssetsType assetsType,
         address tokenAddress,
         uint256 fee,
-        bool burnable,
-        bool mintable,
-        bool blacklist,
+        bool pause,
         address tantinAddress,
         bytes4 executeFunctionSig
-    ) external onlyRole(ADMIN_ROLE) {}
+    ) external onlyRole(ADMIN_ROLE) {
+        resourceIdToTokenInfo[resourceID] = TokenInfo(
+            assetsType,
+            tokenAddress,
+            pause,
+            fee
+        );
+        resourceIdToContractAddress[resourceID] = tantinAddress;
+        resourceIdToExecuteSig[resourceID] = executeFunctionSig;
+
+        emit SetResource(
+            resourceID,
+            tokenAddress,
+            fee,
+            pause,
+            tantinAddress,
+            executeFunctionSig
+        );
+    }
 
     /**
         @notice 资产跨链
         @param destinationChainId 目标链ID
-        @param resourceID 跨链的resourceID
+        @param resourceId 跨链的resourceID
         @param data   跨链data
      */
     function deposit(
         uint256 destinationChainId,
-        bytes32 resourceID,
+        bytes32 resourceId,
         bytes calldata data
-    ) external whenNotPaused {}
+    ) external payable whenNotPaused {
+        // 检测resource ID是否设置
+        TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
+        require(uint8(tokenInfo.assetsType) > 0, "resourceId not exist");
+        // 检测跨链费用
+        require(tokenInfo.fee == msg.value, "incorrect fee supplied");
+        // 检测resourceId/token是否暂停跨链
+        require(!tokenInfo.pause, "service suspended");
 
-    /**
-        @notice relayer执行投票通过后的到帐操作
-        @param originChainID 源链ID
-        @param originDepositNonce 源链nonce
-        @param resourceID 跨链的resourceID
-        @param dataHash dataHash
-     */
-    function voteProposal(
-        uint256 originChainID,
-        uint256 originDepositNonce,
-        bytes32 resourceID,
-        bytes32 dataHash
-    ) external onlyRole(RELAYER_ROLE) whenNotPaused {}
+        uint64 depositNonce = ++depositCounts[destinationChainId];
 
-    /**
-        @notice relayer执行投票通过后的到帐操作
-        @param originChainID 源链ID
-        @param originDepositNonce 源链nonce
-        @param dataHash dataHash
-     */
-    function cancelProposal(
-        uint256 originChainID,
-        uint256 originDepositNonce,
-        bytes32 dataHash
-    ) public onlyAdminOrRelayer {}
+        emit Deposit(destinationChainId, resourceId, depositNonce, data);
+    }
 
     /**
         @notice relayer执行投票通过后的到帐操作
@@ -182,16 +121,25 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         @param resourceID 跨链的resourceID
         @param data 跨链data
      */
-    function executeProposal(
+    function execute(
         uint256 originChainID,
         uint64 originDepositNonce,
         bytes calldata data,
         bytes32 resourceID
-    ) external onlyRole(RELAYER_ROLE) whenNotPaused {}
+    ) external onlyRole(VOTE_ROLE) whenNotPaused {}
 
     // 获取自定义链ID
     function getChainId() public view returns (uint256) {
         return chainId;
+    }
+
+    // 获取跨链费用
+    function getFeeByResourceId(
+        bytes32 resourceId
+    ) public view returns (uint256) {
+        TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
+        require(uint8(tokenInfo.assetsType) > 0, "resourceId not exist");
+        return tokenInfo.fee;
     }
 
     // 由resourceId获取token信息
@@ -201,15 +149,8 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         return (
             uint256(resourceIdToTokenInfo[resourceID].assetsType),
             resourceIdToTokenInfo[resourceID].tokenAddress,
-            resourceIdToTokenInfo[resourceID].burnable
+            resourceIdToTokenInfo[resourceID].pause
         );
     }
 
-    /**
-        @notice 检查某地址是否是relayer账户
-        @param relayer地址
-     */
-    function isRelayer(address relayer) external view returns (bool) {
-        return hasRole(RELAYER_ROLE, relayer);
-    }
 }

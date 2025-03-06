@@ -4,20 +4,22 @@ pragma solidity ^0.8.22;
 import {IBridge} from "./interface/IBridge.sol";
 import {IERC20} from "./interface/IERC20.sol";
 import {ITantinBridge} from "./interface/ITantinBridge.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
-/// ERC20跨链 demo
+/// ERC20/Coin跨链
 
 contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
     IBridge public Bridge; // bridge 合约
-    uint256 public depositNonce; // 跨链nonce
-    mapping(uint256 => mapping(uint256 => DepositErc20Record))
-        public depositRecord; // destinationChainId => (depositNonce=> Deposit Record)
+    mapping(address => uint64) public userDepositNonce; // 用户跨链nonce
+    mapping(address => mapping(uint256 => DepositRecord))
+    public depositRecord; // user => (depositNonce=> Deposit Record)
     mapping(address => bool) public blacklist; // 用户地址 => 是否在黑名单
+    mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
 
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -42,6 +44,41 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     }
 
     /**
+        @notice token/coin设置
+        @param resourceID 跨链的resourceID。resourceID和币对关联，不是和币关联的。 resourceID 1 =>(tokenA <=> token B);resourceID 2 =>(tokenA <=> token C)
+        @param assetsType 该币的类型
+        @param tokenAddress 对应的token合约地址，coin为0地址
+        @param burnable true burn;false lock
+        @param mintable  true mint;false release
+        @param pause 是否暂停该币种跨链
+     */
+    function adminSetToken(
+        bytes32 resourceID,
+        AssetsType assetsType,
+        address tokenAddress,
+        bool burnable,
+        bool mintable,
+        bool pause
+    ) external onlyRole(ADMIN_ROLE) {
+        resourceIdToTokenInfo[resourceID] = TokenInfo(
+            assetsType,
+            tokenAddress,
+            burnable,
+            mintable,
+            pause
+        );
+
+        emit SetTokenEvent(
+            resourceID,
+            assetsType,
+            tokenAddress,
+            burnable,
+            mintable,
+            pause
+        );
+    }
+
+    /**
         @notice 发起跨链
         @param destinationChainId 目标链ID
         @param resourceId 跨链桥设置的resourceId
@@ -53,78 +90,104 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes32 resourceId,
         address recipient,
         uint256 amount
-    ) external {}
+    ) external payable {
+        // 检测resource ID是否设置
+        TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
+        require(uint8(tokenInfo.assetsType) > 0, "resourceId not exist");
+        // 检测目标链ID
+        uint256 chainId = Bridge.getChainId();
+        require(destinationChainId != chainId, "destinationChainId error");
+        // 跨链费用
+        uint256 fee = Bridge.getFeeByResourceId(resourceId);
+        userDepositNonce[msg.sender]++;
+        // 跨链token
+        address tokenAddress;
+        bytes memory data = abi.encode(
+            resourceId,
+            chainId,
+            msg.sender,
+            recipient,
+            msg.value,
+            userDepositNonce[msg.sender]
+        );
+        if (tokenInfo.assetsType == AssetsType.Coin) {
+            tokenAddress = address(0);
+            require(msg.value == fee + amount, "coin value error");
+        }
+        if (tokenInfo.assetsType == AssetsType.Erc20) {
+            tokenAddress = tokenInfo.tokenAddress;
+            IERC20 erc20 = IERC20(tokenAddress);
+            if (tokenInfo.burnable) {
+                erc20.transferFrom(msg.sender, address(0), amount);
+            } else {
+                erc20.transferFrom(msg.sender, address(this), amount);
+            }
+        }
+        depositRecord[msg.sender][userDepositNonce[msg.sender]] = DepositRecord(
+            tokenAddress,
+            msg.sender,
+            recipient,
+            amount,
+            destinationChainId
+        );
+        Bridge.deposit{value: fee}(destinationChainId, resourceId, data);
+
+        emit DepositEvent(
+            msg.sender,
+            recipient,
+            amount,
+            tokenAddress,
+            userDepositNonce[msg.sender],
+            destinationChainId
+        );
+    }
 
     /**
         @notice 目标链执行到帐操作
         @param data 跨链data, encode(originChainId,originDepositNonce,depositer,recipient,amount,resourceId)
      */
-    function execute(bytes calldata data) public onlyRole(BRIDGE_ROLE) {}
+    function execute(bytes calldata data) public onlyRole(BRIDGE_ROLE) {
+        bytes32 resourceId;
+        address sender;
+        address recipient;
+        uint256 amount;
+        uint256 originChainId;
+        uint256 userNonce;
+        (resourceId, originChainId, sender, recipient, amount, userNonce) = abi.decode(data, (bytes32, uint256, address, address, uint256, uint256));
 
-    /**
-        @notice 锁定ERC20资产
-        @param tokenAddress token地址
-        @param amount 锁定金额
-     */
-    function lockERC20(address tokenAddress, uint256 amount) internal {
-        IERC20 erc20 = IERC20(tokenAddress);
-        erc20.transferFrom(msg.sender, address(this), amount);
-    }
-
-    /**
-        @notice 释放RC20资产
-        @param tokenAddress token地址
-        @param recipient 接收者地址
-        @param amount 释放金额
-     */
-    function releaseERC20(
-        address tokenAddress,
-        address recipient,
-        uint256 amount
-    ) internal {
-        IERC20 erc20 = IERC20(tokenAddress);
-        erc20.transfer(recipient, amount);
-    }
-
-    /**
-        @notice 铸造ERC20资产,需要知道该token具体使用的铸造方法以及权限问题
-        @param tokenAddress token地址
-        @param recipient 接收者地址
-        @param amount 铸造金额
-     */
-    function mintERC20(
-        address tokenAddress,
-        address recipient,
-        uint256 amount
-    ) internal {
-        IERC20 erc20 = IERC20(tokenAddress);
-        erc20.mint(recipient, amount);
-    }
-
-    /**
-        @notice 销毁ERC20资产,需要知道该token具体使用的销毁方法以及权限问题
-        @param tokenAddress token地址
-        @param owner token所有者地址
-        @param amount 销毁金额
-     */
-    function burnERC20(
-        address tokenAddress,
-        address owner,
-        uint256 amount
-    ) internal {
-        IERC20 erc20 = IERC20(tokenAddress);
-        erc20.burnFrom(owner, amount);
+        TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
+        address tokenAddress = tokenInfo.tokenAddress;
+        if (tokenInfo.assetsType == AssetsType.Coin) {
+            Address.sendValue(payable(recipient), amount);
+        }
+        if (tokenInfo.assetsType == AssetsType.Erc20) {
+            IERC20 erc20 = IERC20(tokenAddress);
+            erc20.transfer(recipient, amount);
+            if (tokenInfo.mintable) {
+                erc20.mint(recipient, amount);
+            } else {
+                erc20.transfer(recipient, amount);
+            }
+        }
+        emit ExecuteEvent(
+            sender,
+            recipient,
+            amount,
+            tokenAddress,
+            userNonce,
+            originChainId
+        );
     }
 
     /**
         @notice 获取跨链记录
-        @param depositNonce_ 跨链nonce
-        @param destinationChainId_ 目标链ID
+        @param user_ 用户地址
+        @param userDepositNonce_ nonce
     */
     function getDepositRecord(
-        uint256 depositNonce_,
-        uint256 destinationChainId_
-    ) external view returns (DepositErc20Record memory) {
-        return depositRecord[destinationChainId_][depositNonce_];
+        address user_,
+        uint256 userDepositNonce_
+    ) external view returns (DepositRecord memory) {
+        return depositRecord[user_][userDepositNonce_];
     }
 }
