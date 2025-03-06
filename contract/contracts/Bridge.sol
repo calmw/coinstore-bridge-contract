@@ -26,6 +26,19 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     }
 
     /**
+        @notice 设置
+        @param voteAddress_ 投票合约地址
+        @param chainId_ 链ID
+     */
+    function adminSetEnv(
+        address voteAddress_,
+        uint256 chainId_
+    ) external onlyRole(ADMIN_ROLE) {
+        Vote = IVote(voteAddress_);
+        chainId = chainId_;
+    }
+
+    /**
         @notice 暂停跨链、提案的的创建与投票和目标链执行操作
      */
     function adminPauseTransfers() external onlyRole(ADMIN_ROLE) {

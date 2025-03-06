@@ -4,7 +4,7 @@ const {read_contract_address} = require("./fs");
 
 async function main() {
 
-    const contract_name = "Vote"
+    const contract_name = "Bridge"
     let proxy_address = read_contract_address(contract_name)
 
     console.log("ImplementationAddress is", await upgrades.erc1967.getImplementationAddress(proxy_address));

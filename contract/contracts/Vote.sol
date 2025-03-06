@@ -24,10 +24,26 @@ contract Vote is IVote, AccessControl, Initializable {
     uint256 public expiry; // 开始投票后经过 expiry 的块数量后投票过期
     mapping(uint72 => mapping(bytes32 => Proposal)) public proposals; // destinationChainID + depositNonce => dataHash => Proposal
     mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
-        public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
+    public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
+    /**
+        @notice 设置
+        @param bridgeAddress_ bridge合约地址
+        @param expiry_ 提案过期的块高差
+        @param relayerThreshold_ 提案通过的投票数量
+     */
+    function adminSetEnv(
+        address bridgeAddress_,
+        uint256 expiry_,
+        uint256 relayerThreshold_
+    ) external onlyRole(ADMIN_ROLE) {
+        expiry = expiry_;
+        Bridge = IBridge(bridgeAddress_);
+        relayerThreshold = relayerThreshold_;
     }
 
     /**
@@ -91,7 +107,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 dataHash
     ) external onlyRole(BRIDGE_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-            uint72(originChainId);
+                            uint72(originChainId);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
         require(
             uint8(proposal.status) <= 1,
@@ -179,7 +195,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 dataHash
     ) public onlyRole(BRIDGE_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-            uint72(originChainID);
+                            uint72(originChainID);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
         require(
@@ -218,7 +234,7 @@ contract Vote is IVote, AccessControl, Initializable {
             resourceId
         ); // tantin address
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-            uint72(originChainId);
+                            uint72(originChainId);
         bytes32 dataHash = keccak256(abi.encodePacked(contractAddress, data));
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
