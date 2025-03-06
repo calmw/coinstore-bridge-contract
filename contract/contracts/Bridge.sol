@@ -4,7 +4,7 @@ pragma solidity ^0.8.22;
 import "./interface/IBridge.sol";
 import "./interface/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts/utils/Pausable.sol";
+import "./utils/Pausable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {IVote} from "./interface/IVote.sol";
 

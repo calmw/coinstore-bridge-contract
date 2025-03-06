@@ -25,6 +25,16 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     }
 
     /**
+        @notice 设置
+        @param bridgeAddress_ bridge合约地址
+     */
+    function adminSetEnv(
+        address bridgeAddress_
+    ) external onlyRole(ADMIN_ROLE) {
+        Bridge = IBridge(bridgeAddress_);
+    }
+
+    /**
         @notice 添加用户黑名单
         @param user 用户地址
      */
