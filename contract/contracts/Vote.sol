@@ -24,7 +24,7 @@ contract Vote is IVote, AccessControl, Initializable {
     uint256 public expiry; // 开始投票后经过 expiry 的块数量后投票过期
     mapping(uint72 => mapping(bytes32 => Proposal)) public proposals; // destinationChainID + depositNonce => dataHash => Proposal
     mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
-    public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
+        public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -90,14 +90,20 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 resourceId,
         bytes32 dataHash
     ) external onlyRole(BRIDGE_ROLE) {
-        uint72 nonceAndID = (uint72(originDepositNonce) << 8) | uint72(originChainId);
+        uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
+            uint72(originChainId);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
+        require(
+            uint8(proposal.status) <= 1,
+            "proposal already passed/executed/cancelled"
+        );
+        require(
+            !hasVotedOnProposal[nonceAndID][dataHash][msg.sender],
+            "relayer already voted"
+        );
 
-//        require(resourceIDToHandlerAddress[resourceID] != address(0), "no handler for resourceID");
-        require(uint(proposal.status) <= 1, "proposal already passed/executed/cancelled");
-        require(!hasVotedOnProposal[nonceAndID][dataHash][msg.sender], "relayer already voted");
-
-        if (uint(proposal.status) == 0) {
+        if (uint8(proposal.status) == 0) {
+            // 第一次对提案投票
             ++totalProposal;
             proposals[nonceAndID][dataHash] = Proposal(
                 resourceId,
@@ -109,29 +115,54 @@ contract Vote is IVote, AccessControl, Initializable {
             );
 
             proposal.yesVotes[0] = msg.sender; // 索引 0 是创建提案的relayer
-            emit ProposalEvent(originChainId, originDepositNonce, ProposalStatus.Active, resourceId, dataHash);
+            emit ProposalEvent(
+                originChainId,
+                originDepositNonce,
+                ProposalStatus.Active,
+                resourceId,
+                dataHash
+            );
         } else {
-            if (block.number-proposal.proposedBlock > expiry) {
-                // if the number of blocks that has passed since this proposal was
-                // submitted exceeds the expiry threshold set, cancel the proposal
+            // 非第一次对提案投票
+            if (block.number - proposal.proposedBlock > expiry) {
+                // 如果块高差达到设定阀值，就取消提案,可以设置1～2天，更短时间可以增加安全性
                 proposal.status = ProposalStatus.Cancelled;
-                emit ProposalEvent(originChainId, originDepositNonce, ProposalStatus.Cancelled, resourceId, dataHash);
+                emit ProposalEvent(
+                    originChainId,
+                    originDepositNonce,
+                    ProposalStatus.Cancelled,
+                    resourceId,
+                    dataHash
+                );
             } else {
                 require(dataHash == proposal.dataHash, "datahash mismatch");
                 proposal.yesVotes.push(msg.sender);
             }
-
         }
         if (proposal.status != ProposalStatus.Cancelled) {
+            // 提案非过期状态
             hasVotedOnProposal[nonceAndID][dataHash][msg.sender] = true;
-            emit ProposalVote(originChainId, originDepositNonce, proposal.status, resourceId);
+            emit ProposalVote(
+                originChainId,
+                originDepositNonce,
+                proposal.status,
+                resourceId
+            );
 
-            // If _depositThreshold is set to 1, then auto finalize
-            // or if _relayerThreshold has been exceeded
-            if (relayerThreshold <= 1 || proposal.yesVotes.length >= relayerThreshold) {
+            // 检测投票后的提案状态
+            // 如果投票数量达到设定阀值，或者阀值设置为1，就通过提案
+            if (
+                relayerThreshold <= 1 ||
+                proposal.yesVotes.length >= relayerThreshold
+            ) {
                 proposal.status = ProposalStatus.Passed;
-
-                emit ProposalEvent(originChainId, originDepositNonce, ProposalStatus.Passed, resourceId, dataHash);
+                emit ProposalEvent(
+                    originChainId,
+                    originDepositNonce,
+                    ProposalStatus.Passed,
+                    resourceId,
+                    dataHash
+                );
             }
         }
     }
@@ -146,21 +177,72 @@ contract Vote is IVote, AccessControl, Initializable {
         uint256 originChainID,
         uint256 originDepositNonce,
         bytes32 dataHash
-    ) public onlyRole(BRIDGE_ROLE) {}
+    ) public onlyRole(BRIDGE_ROLE) {
+        uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
+            uint72(originChainID);
+        Proposal storage proposal = proposals[nonceAndID][dataHash];
+
+        require(
+            proposal.status != ProposalStatus.Cancelled,
+            "Proposal already cancelled"
+        );
+        require(
+            block.number - proposal.proposedBlock > expiry,
+            "Proposal not at expiry threshold"
+        );
+
+        proposal.status = ProposalStatus.Cancelled;
+        emit ProposalEvent(
+            originChainID,
+            originDepositNonce,
+            ProposalStatus.Cancelled,
+            proposal.resourceId,
+            proposal.dataHash
+        );
+    }
 
     /**
         @notice relayer执行投票通过后的到帐操作
-        @param originChainID 源链ID
+        @param originChainId 源链ID
         @param originDepositNonce 源链nonce
-        @param resourceID 跨链的resourceID
+        @param resourceId 跨链的resourceID
         @param data 跨链data
      */
     function executeProposal(
-        uint256 originChainID,
+        uint256 originChainId,
         uint64 originDepositNonce,
         bytes calldata data,
-        bytes32 resourceID
-    ) external onlyRole(BRIDGE_ROLE) {}
+        bytes32 resourceId
+    ) external onlyRole(BRIDGE_ROLE) {
+        address contractAddress = Bridge.getContractAddressByResourceId(
+            resourceId
+        ); // tantin address
+        uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
+            uint72(originChainId);
+        bytes32 dataHash = keccak256(abi.encodePacked(contractAddress, data));
+        Proposal storage proposal = proposals[nonceAndID][dataHash];
+
+        require(
+            proposal.status != ProposalStatus.Inactive,
+            "proposal is not active"
+        );
+        require(
+            proposal.status == ProposalStatus.Passed,
+            "proposal already transferred"
+        );
+        require(dataHash == proposal.dataHash, "data doesn't match datahash");
+
+        proposal.status = ProposalStatus.Executed;
+        Bridge.execute(originChainId, resourceId, originDepositNonce, data);
+
+        emit ProposalEvent(
+            originChainId,
+            originDepositNonce,
+            proposal.status,
+            proposal.resourceId,
+            proposal.dataHash
+        );
+    }
 
     // 获取投票信息
     function getProposal(
@@ -181,5 +263,4 @@ contract Vote is IVote, AccessControl, Initializable {
     function isRelayer(address relayer) external view returns (bool) {
         return hasRole(RELAYER_ROLE, relayer);
     }
-
 }

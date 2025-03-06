@@ -16,8 +16,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
 
     IBridge public Bridge; // bridge 合约
     mapping(address => uint64) public userDepositNonce; // 用户跨链nonce
-    mapping(address => mapping(uint256 => DepositRecord))
-    public depositRecord; // user => (depositNonce=> Deposit Record)
+    mapping(address => mapping(uint256 => DepositRecord)) public depositRecord; // user => (depositNonce=> Deposit Record)
     mapping(address => bool) public blacklist; // 用户地址 => 是否在黑名单
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
 
@@ -153,7 +152,11 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         uint256 amount;
         uint256 originChainId;
         uint256 userNonce;
-        (resourceId, originChainId, sender, recipient, amount, userNonce) = abi.decode(data, (bytes32, uint256, address, address, uint256, uint256));
+        (resourceId, originChainId, sender, recipient, amount, userNonce) = abi
+            .decode(
+                data,
+                (bytes32, uint256, address, address, uint256, uint256)
+            );
 
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         address tokenAddress = tokenInfo.tokenAddress;

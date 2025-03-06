@@ -11,18 +11,15 @@ import {IVote} from "./interface/IVote.sol";
 contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant VOTE_ROLE = keccak256("VOTE_ROLE");
-//    bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
 
     IVote public Vote; // vote 合约
     uint256 public chainId; // 自定义链ID
-//    uint256 public relayerThreshold; // 提案可以通过的最少投票数量
-//    uint256 public expiry; // 开始投票后经过 expiry 的块数量后投票过期
-    mapping(uint256 => uint64) public depositCounts; // destinationChainID => number of deposits
+    mapping(uint256 => uint256) public depositCounts; // destinationChainID => number of deposits
     mapping(bytes32 => address) public resourceIdToContractAddress; // resourceID => 业务合约地址(tantin address)
     mapping(address => bytes32) public contractAddressToResourceID; // 业务合约地址(tantin address) => resourceID
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
     mapping(bytes32 => bytes4) public resourceIdToExecuteSig; //  resourceID => tantin execute sig
-    mapping(uint8 => mapping(uint64 => DepositRecord)) public depositRecords; // depositNonce => Deposit Record
+    mapping(uint8 => mapping(uint256 => DepositRecord)) public depositRecords; // depositNonce => Deposit Record
 
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -109,23 +106,23 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         // 检测resourceId/token是否暂停跨链
         require(!tokenInfo.pause, "service suspended");
 
-        uint64 depositNonce = ++depositCounts[destinationChainId];
+        uint256 depositNonce = ++depositCounts[destinationChainId];
 
         emit Deposit(destinationChainId, resourceId, depositNonce, data);
     }
 
     /**
         @notice relayer执行投票通过后的到帐操作
-        @param originChainID 源链ID
+        @param originChainId 源链ID
         @param originDepositNonce 源链nonce
-        @param resourceID 跨链的resourceID
+        @param resourceId 跨链的resourceID
         @param data 跨链data
      */
     function execute(
-        uint256 originChainID,
-        uint64 originDepositNonce,
-        bytes calldata data,
-        bytes32 resourceID
+        uint256 originChainId,
+        bytes32 resourceId,
+        uint256 originDepositNonce,
+        bytes calldata data
     ) external onlyRole(VOTE_ROLE) whenNotPaused {}
 
     // 获取自定义链ID
@@ -153,4 +150,10 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         );
     }
 
+    // 由resourceId获取tantin address信息
+    function getContractAddressByResourceId(
+        bytes32 resourceId
+    ) public view returns (address) {
+        return resourceIdToContractAddress[resourceId];
+    }
 }

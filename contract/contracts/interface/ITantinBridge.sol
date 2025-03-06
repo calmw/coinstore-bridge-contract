@@ -33,14 +33,6 @@ interface ITantinBridge {
         uint256 destinationChainId
     );
 
-    event ExecuteCoinEvent(
-        address indexed depositer,
-        address indexed recipient,
-        uint256 indexed amount,
-        uint256 originDepositNonce,
-        uint256 originChainId
-    );
-
     event ExecuteEvent(
         address indexed depositer,
         address indexed recipient,
@@ -50,25 +42,7 @@ interface ITantinBridge {
         uint256 originChainId
     );
 
-    event ExecuteErc20Event(
-        address indexed depositer,
-        address indexed recipient,
-        uint256 indexed amount,
-        address tokenAddress,
-        uint256 originDepositNonce,
-        uint256 originChainId
-    );
-
-    event ExecuteErc721Event(
-        address indexed depositer,
-        address indexed recipient,
-        uint256 indexed tokenId,
-        address tokenAddress,
-        uint256 originDepositNonce,
-        uint256 originChainId
-    );
-
-    event ExecuteErc1155Event(
+    event ExecuteNftEvent(
         address indexed depositer,
         address indexed recipient,
         uint256 indexed amount,

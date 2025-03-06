@@ -30,8 +30,6 @@ interface IBridge {
     struct TokenInfo {
         AssetsType assetsType; // 跨链币种
         address tokenAddress; // 币种地址。coin的话，值为0地址
-        //        bool burnable; // true burn;false lock
-        //        bool mintable; // true mint;false release
         bool pause; // 该token是否暂停跨链
         uint256 fee; // 跨链费用,当前设置的收手续费模式为固定数量的coin
     }
@@ -58,4 +56,15 @@ interface IBridge {
     function getFeeByResourceId(
         bytes32 resourceId
     ) external view returns (uint256);
+
+    function getContractAddressByResourceId(
+        bytes32 resourceId
+    ) external view returns (address);
+
+    function execute(
+        uint256 originChainId,
+        bytes32 resourceId,
+        uint256 originDepositNonce,
+        bytes calldata data
+    ) external;
 }
