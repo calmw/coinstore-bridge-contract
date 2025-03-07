@@ -33,14 +33,40 @@ func NewBridge() (*Bridge, error) {
 	}, nil
 }
 
-func (c Bridge) AutoBetInit() {
+func (c Bridge) Init() {
 	c.AdminSetEnv()
-}
-func (c Bridge) AdminSetEnv() {
-	c.Contract.AdminSetEnv()
+	c.GrantVoteRole(common.HexToAddress(ChainConfig.VoteContractAddress))
 }
 
-func (c AutoBet) AddAccess() {
+func (c Bridge) AdminSetEnv() {
+	var res *types.Transaction
+
+	for {
+		err, txOpts := GetAuth(c.Cli)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.VoteContractAddress), big.NewInt(ChainConfig.ChainId))
+		if err == nil {
+			break
+		}
+		fmt.Println(fmt.Sprintf("AdminSetEnv error: %v", err))
+		time.Sleep(3 * time.Second)
+	}
+	fmt.Println(fmt.Sprintf("AdminSetEnv 成功"))
+	for {
+		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
+		if err == nil && receipt.Status == 1 {
+			break
+		}
+		time.Sleep(time.Second * 2)
+	}
+
+	fmt.Println(fmt.Sprintf("AdminSetEnv 确认成功"))
+}
+
+func (c Bridge) GrantAdminRole(addr common.Address) {
 	AdminRole := "a49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775"
 	AdminRoleBytes := hexutils.HexToBytes(AdminRole)
 
@@ -52,13 +78,13 @@ func (c AutoBet) AddAccess() {
 			log.Println(err)
 			return
 		}
-		res, err = c.Contract.GrantRole(txOpts, [32]byte(AdminRoleBytes), common.HexToAddress(ChainConfig.GameContractAddress))
+		res, err = c.Contract.GrantRole(txOpts, [32]byte(AdminRoleBytes), addr)
 		if err == nil {
 			break
 		}
 		time.Sleep(3 * time.Second)
 	}
-	log.Println(fmt.Sprintf("成功"))
+	log.Println(fmt.Sprintf("GrantAdminRole 成功"))
 	for {
 		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
 		if err == nil && receipt.Status == 1 {
@@ -67,32 +93,13 @@ func (c AutoBet) AddAccess() {
 		time.Sleep(time.Second * 2)
 	}
 
-	log.Println(fmt.Sprintf("确认成功"))
-	for {
-		err, txOpts := GetAuth(c.Cli)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		res, err = c.Contract.GrantRole(txOpts, [32]byte(AdminRoleBytes), common.HexToAddress(ChainConfig.OrderContractAddress))
-		if err == nil {
-			break
-		}
-		time.Sleep(3 * time.Second)
-	}
-	log.Println(fmt.Sprintf("成功"))
-	for {
-		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
-		if err == nil && receipt.Status == 1 {
-			break
-		}
-		time.Sleep(time.Second * 2)
-	}
-
-	log.Println(fmt.Sprintf("确认成功"))
+	log.Println(fmt.Sprintf("GrantAdminRole 确认成功"))
 }
 
-func (c AutoBet) AdminSetEnv() {
+func (c Bridge) GrantVoteRole(addr common.Address) {
+	VoteRole := "c65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7"
+	VoteRoleBytes := hexutils.HexToBytes(VoteRole)
+
 	var res *types.Transaction
 
 	for {
@@ -101,14 +108,13 @@ func (c AutoBet) AdminSetEnv() {
 			log.Println(err)
 			return
 		}
-		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.GameContractAddress))
+		res, err = c.Contract.GrantRole(txOpts, [32]byte(VoteRoleBytes), addr)
 		if err == nil {
 			break
 		}
-		fmt.Println(err)
 		time.Sleep(3 * time.Second)
 	}
-	log.Println(fmt.Sprintf("成功"))
+	log.Println(fmt.Sprintf("GrantVoteRole 成功"))
 	for {
 		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
 		if err == nil && receipt.Status == 1 {
@@ -117,21 +123,5 @@ func (c AutoBet) AdminSetEnv() {
 		time.Sleep(time.Second * 2)
 	}
 
-	log.Println(fmt.Sprintf("确认成功"))
-}
-
-func (c AutoBet) GetNewAutoId() *big.Int {
-	var orderId *big.Int
-	var err error
-
-	for {
-		orderId, err = c.Contract.GetNewAutoId(nil)
-		if err == nil {
-			log.Println("autoId:", orderId.String())
-			break
-		}
-		log.Println("GetNewAutoId error:", err)
-		time.Sleep(3 * time.Second)
-	}
-	return orderId
+	log.Println(fmt.Sprintf("GrantVoteRole 确认成功"))
 }
