@@ -2,9 +2,14 @@ package blockchain
 
 import (
 	erc20 "coinstore/pkg/binding/token"
+	"context"
+	"fmt"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"log"
 	"math/big"
+	"time"
 )
 
 type TokenInfo struct {
@@ -35,6 +40,34 @@ func NewToken(addr common.Address) (*Token, error) {
 	}, nil
 }
 
-func (c Token) TokenInit() {
+func (c Token) Approve(amount *big.Int) {
+	var res *types.Transaction
+	for {
+		err, txOpts := GetAuth(c.Cli)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		res, err = c.Contract.Approve(
+			txOpts,
+			common.HexToAddress(ChainConfig.TantinContractAddress),
+			amount,
+		)
+		if err == nil {
+			break
+		} else {
+			log.Println(fmt.Sprintf("Approve error: %v", err))
+		}
+		time.Sleep(3 * time.Second)
+	}
+	log.Println(fmt.Sprintf("Approve 成功"))
+	for {
+		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
+		if err == nil && receipt.Status == 1 {
+			break
+		}
+		time.Sleep(time.Second * 2)
+	}
 
+	log.Println(fmt.Sprintf("Approve 确认成功"))
 }

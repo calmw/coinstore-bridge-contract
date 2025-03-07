@@ -21,6 +21,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
 
     function initialize() public initializer {
+        _grantRole(ADMIN_ROLE, msg.sender);
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 

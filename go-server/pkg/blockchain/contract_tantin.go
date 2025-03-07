@@ -13,32 +13,32 @@ import (
 	"time"
 )
 
-type Bridge struct {
+type TanTin struct {
 	Cli      *ethclient.Client
-	Contract *bridge.Bridge
+	Contract *bridge.Tantin
 }
 
-func NewBridge() (*Bridge, error) {
+func NewTanTin() (*TanTin, error) {
 	err, cli := Client(ChainConfig)
 	if err != nil {
 		return nil, err
 	}
-	contractObj, err := bridge.NewBridge(common.HexToAddress(ChainConfig.BridgeContractAddress), cli)
+	contractObj, err := bridge.NewTantin(common.HexToAddress(ChainConfig.TantinContractAddress), cli)
 	if err != nil {
 		return nil, err
 	}
-	return &Bridge{
+	return &TanTin{
 		Cli:      cli,
 		Contract: contractObj,
 	}, nil
 }
 
-func (c Bridge) Init() {
+func (c TanTin) Init() {
 	c.AdminSetEnv()
-	c.GrantVoteRole(common.HexToAddress(ChainConfig.VoteContractAddress))
+	c.GrantBridgeRole(common.HexToAddress(ChainConfig.BridgeContractAddress))
 }
 
-func (c Bridge) AdminSetEnv() {
+func (c TanTin) AdminSetEnv() {
 	var res *types.Transaction
 
 	for {
@@ -47,7 +47,7 @@ func (c Bridge) AdminSetEnv() {
 			log.Println(err)
 			return
 		}
-		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.VoteContractAddress), big.NewInt(ChainConfig.ChainId))
+		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.BridgeContractAddress))
 		if err == nil {
 			break
 		}
@@ -66,9 +66,9 @@ func (c Bridge) AdminSetEnv() {
 	fmt.Println(fmt.Sprintf("AdminSetEnv 确认成功"))
 }
 
-func (c Bridge) GrantAdminRole(addr common.Address) {
-	AdminRole := "a49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775"
-	AdminRoleBytes := hexutils.HexToBytes(AdminRole)
+func (c TanTin) GrantBridgeRole(addr common.Address) {
+	BridgeRole := "52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f"
+	BridgeRoleBytes := hexutils.HexToBytes(BridgeRole)
 
 	var res *types.Transaction
 
@@ -78,13 +78,13 @@ func (c Bridge) GrantAdminRole(addr common.Address) {
 			log.Println(err)
 			return
 		}
-		res, err = c.Contract.GrantRole(txOpts, [32]byte(AdminRoleBytes), addr)
+		res, err = c.Contract.GrantRole(txOpts, [32]byte(BridgeRoleBytes), addr)
 		if err == nil {
 			break
 		}
 		time.Sleep(3 * time.Second)
 	}
-	log.Println(fmt.Sprintf("GrantAdminRole 成功"))
+	log.Println(fmt.Sprintf("GrantBridgeRole 成功"))
 	for {
 		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
 		if err == nil && receipt.Status == 1 {
@@ -93,67 +93,36 @@ func (c Bridge) GrantAdminRole(addr common.Address) {
 		time.Sleep(time.Second * 2)
 	}
 
-	log.Println(fmt.Sprintf("GrantAdminRole 确认成功"))
+	log.Println(fmt.Sprintf("GrantBridgeRole 确认成功"))
 }
 
-func (c Bridge) GrantVoteRole(addr common.Address) {
-	VoteRole := "c65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7"
-	VoteRoleBytes := hexutils.HexToBytes(VoteRole)
-
-	var res *types.Transaction
-
-	for {
-		err, txOpts := GetAuth(c.Cli)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		res, err = c.Contract.GrantRole(txOpts, [32]byte(VoteRoleBytes), addr)
-		if err == nil {
-			break
-		}
-		time.Sleep(3 * time.Second)
-	}
-	log.Println(fmt.Sprintf("GrantVoteRole 成功"))
-	for {
-		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
-		if err == nil && receipt.Status == 1 {
-			break
-		}
-		time.Sleep(time.Second * 2)
-	}
-
-	log.Println(fmt.Sprintf("GrantVoteRole 确认成功"))
-}
-
-func (c Bridge) AdminSetResource(fee *big.Int, funcSig [4]byte) {
-	var res *types.Transaction
+func (c TanTin) AdminSetToken() {
 	resourceId := "ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
 	resourceIdBytes := hexutils.HexToBytes(resourceId)
+
+	var res *types.Transaction
+
 	for {
 		err, txOpts := GetAuth(c.Cli)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		res, err = c.Contract.AdminSetResource(
+		res, err = c.Contract.AdminSetToken(
 			txOpts,
 			[32]byte(resourceIdBytes),
 			uint8(2),
 			common.HexToAddress(ChainConfig.UsdtAddress),
-			fee,
 			false,
-			common.HexToAddress(ChainConfig.TantinContractAddress),
-			funcSig,
+			false,
+			false,
 		)
 		if err == nil {
 			break
-		} else {
-			fmt.Println(fmt.Sprintf("AdminSetResource error: %v", err))
 		}
 		time.Sleep(3 * time.Second)
 	}
-	fmt.Println(fmt.Sprintf("AdminSetResource 成功"))
+	log.Println(fmt.Sprintf("AdminSetToken 成功"))
 	for {
 		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
 		if err == nil && receipt.Status == 1 {
@@ -162,5 +131,51 @@ func (c Bridge) AdminSetResource(fee *big.Int, funcSig [4]byte) {
 		time.Sleep(time.Second * 2)
 	}
 
-	fmt.Println(fmt.Sprintf("AdminSetResource 确认成功"))
+	log.Println(fmt.Sprintf("AdminSetToken 确认成功"))
+}
+
+func (c TanTin) Deposit(receiver common.Address, destinationChainId, amount *big.Int) {
+
+	token, err := NewToken(common.HexToAddress(ChainConfig.UsdtAddress))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	token.Approve(amount)
+
+	resourceId := "ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
+	resourceIdBytes := hexutils.HexToBytes(resourceId)
+
+	var res *types.Transaction
+
+	for {
+		err, txOpts := GetAuth(c.Cli)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		res, err = c.Contract.Deposit(
+			txOpts,
+			destinationChainId,
+			[32]byte(resourceIdBytes),
+			receiver,
+			amount,
+		)
+		if err == nil {
+			break
+		} else {
+			log.Println(fmt.Sprintf("deposit error: %v", err))
+		}
+		time.Sleep(3 * time.Second)
+	}
+	log.Println(fmt.Sprintf("Deposit 成功"))
+	for {
+		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
+		if err == nil && receipt.Status == 1 {
+			break
+		}
+		time.Sleep(time.Second * 2)
+	}
+
+	log.Println(fmt.Sprintf("Deposit 确认成功 %s", res.Hash()))
 }

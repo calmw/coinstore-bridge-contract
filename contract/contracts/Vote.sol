@@ -27,6 +27,7 @@ contract Vote is IVote, AccessControl, Initializable {
     public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
     function initialize() public initializer {
+        _grantRole(ADMIN_ROLE, msg.sender);
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 

@@ -22,6 +22,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     mapping(uint8 => mapping(uint256 => DepositRecord)) public depositRecords; // depositNonce => Deposit Record
 
     function initialize() public initializer {
+        _grantRole(ADMIN_ROLE, msg.sender);
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
