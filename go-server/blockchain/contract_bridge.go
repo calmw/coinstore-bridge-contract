@@ -1,7 +1,7 @@
 package blockchain
 
 import (
-	"coinstore/pkg/binding/bridge"
+	"coinstore/binding/bridge"
 	"context"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"

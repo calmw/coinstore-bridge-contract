@@ -1,7 +1,7 @@
 package main
 
 import (
-	"coinstore/pkg/blockchain"
+	"coinstore/blockchain"
 	"coinstore/services"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
@@ -11,14 +11,14 @@ import (
 
 func main() {
 	services.InitOpenBnbEnv()
-	//bridge, err := blockchain.NewBridge()
+	//core, err := blockchain.NewBridge()
 	//if err != nil {
 	//	fmt.Println(err)
 	//	return
 	//}
-	//////bridge.Init()
+	//////core.Init()
 	//someBytes := hexutils.HexToBytes("ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d")
-	//bridge.AdminSetResource(big.NewInt(1), [4]byte(someBytes))
+	//core.AdminSetResource(big.NewInt(1), [4]byte(someBytes))
 
 	//vote, err := blockchain.NewVote()
 	//if err != nil {

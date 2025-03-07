@@ -1,7 +1,7 @@
 package blockchain
 
 import (
-	erc20 "coinstore/pkg/binding/token"
+	"coinstore/binding/token"
 	"context"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
