@@ -15,10 +15,10 @@ func main() {
 	//	fmt.Println(err)
 	//	return
 	//}
-	////bridge.Init()
+	//////bridge.Init()
 	//resourceId := "ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
 	//resourceIdBytes := hexutils.HexToBytes(resourceId)
-	//bridge.AdminSetResource(big.NewInt(0), [4]byte(resourceIdBytes))
+	//bridge.AdminSetResource(big.NewInt(1), [4]byte(resourceIdBytes))
 	//
 	//vote, err := blockchain.NewVote()
 	//if err != nil {
@@ -34,5 +34,5 @@ func main() {
 	}
 	//tantin.Init()
 	//tantin.AdminSetToken()
-	tantin.Deposit(common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"), big.NewInt(2), big.NewInt(2))
+	tantin.Deposit(common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"), big.NewInt(2), big.NewInt(2), big.NewInt(1))
 }

@@ -4,6 +4,7 @@ import (
 	"coinstore/pkg/binding/bridge"
 	"context"
 	"fmt"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -134,7 +135,7 @@ func (c TanTin) AdminSetToken() {
 	log.Println(fmt.Sprintf("AdminSetToken 确认成功"))
 }
 
-func (c TanTin) Deposit(receiver common.Address, destinationChainId, amount *big.Int) {
+func (c TanTin) Deposit(receiver common.Address, destinationChainId, amount, fee *big.Int) {
 
 	token, err := NewToken(common.HexToAddress(ChainConfig.UsdtAddress))
 	if err != nil {
@@ -147,13 +148,23 @@ func (c TanTin) Deposit(receiver common.Address, destinationChainId, amount *big
 	resourceIdBytes := hexutils.HexToBytes(resourceId)
 
 	var res *types.Transaction
+	var txOpts *bind.TransactOpts
 
 	for {
-		err, txOpts := GetAuth(c.Cli)
-		if err != nil {
-			log.Println(err)
-			return
+		if fee.Int64() > 0 {
+			err, txOpts = GetAuthWithValue(c.Cli, fee)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+		} else {
+			err, txOpts = GetAuth(c.Cli)
+			if err != nil {
+				log.Println(err)
+				return
+			}
 		}
+
 		res, err = c.Contract.Deposit(
 			txOpts,
 			destinationChainId,

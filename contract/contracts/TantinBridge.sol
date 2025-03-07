@@ -29,9 +29,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         @notice 设置
         @param bridgeAddress_ bridge合约地址
      */
-    function adminSetEnv(
-        address bridgeAddress_
-    ) external onlyRole(ADMIN_ROLE) {
+    function adminSetEnv(address bridgeAddress_) external onlyRole(ADMIN_ROLE) {
         Bridge = IBridge(bridgeAddress_);
     }
 
@@ -122,9 +120,10 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         );
         if (tokenInfo.assetsType == AssetsType.Coin) {
             tokenAddress = address(0);
-            require(msg.value == fee + amount, "coin value error");
+            require(msg.value == fee + amount, "incorrect fee supplied.");
         }
         if (tokenInfo.assetsType == AssetsType.Erc20) {
+            require(msg.value == fee, "incorrect fee supplied.");
             tokenAddress = tokenInfo.tokenAddress;
             IERC20 erc20 = IERC20(tokenAddress);
             if (tokenInfo.burnable) {
@@ -203,5 +202,13 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         uint256 userDepositNonce_
     ) external view returns (DepositRecord memory) {
         return depositRecord[user_][userDepositNonce_];
+    }
+
+    /**
+        @notice 查询跨链费用
+        @param resourceId 跨链桥设置的resourceId
+    */
+    function getFee(bytes32 resourceId) external view returns (uint256) {
+        return Bridge.getFeeByResourceId(resourceId);
     }
 }

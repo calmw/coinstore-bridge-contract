@@ -24,7 +24,7 @@ contract Vote is IVote, AccessControl, Initializable {
     uint256 public expiry; // 开始投票后经过 expiry 的块数量后投票过期
     mapping(uint72 => mapping(bytes32 => Proposal)) public proposals; // destinationChainID + depositNonce => dataHash => Proposal
     mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
-    public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
+        public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
     function initialize() public initializer {
         _grantRole(ADMIN_ROLE, msg.sender);
@@ -108,7 +108,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 dataHash
     ) external onlyRole(BRIDGE_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-                            uint72(originChainId);
+            uint72(originChainId);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
         require(
             uint8(proposal.status) <= 1,
@@ -196,7 +196,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 dataHash
     ) public onlyRole(BRIDGE_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-                            uint72(originChainID);
+            uint72(originChainID);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
         require(
@@ -235,7 +235,7 @@ contract Vote is IVote, AccessControl, Initializable {
             resourceId
         ); // tantin address
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-                            uint72(originChainId);
+            uint72(originChainId);
         bytes32 dataHash = keccak256(abi.encodePacked(contractAddress, data));
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
