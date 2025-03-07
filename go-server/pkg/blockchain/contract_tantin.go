@@ -14,6 +14,11 @@ import (
 	"time"
 )
 
+const (
+	ResourceIdUsdt = "ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
+	ResourceIdCoin = "ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1c"
+)
+
 type TanTin struct {
 	Cli      *ethclient.Client
 	Contract *bridge.Tantin
@@ -98,11 +103,8 @@ func (c TanTin) GrantBridgeRole(addr common.Address) {
 }
 
 func (c TanTin) AdminSetToken() {
-	resourceId := "ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
-	resourceIdBytes := hexutils.HexToBytes(resourceId)
-
+	resourceIdBytes := hexutils.HexToBytes(ResourceIdUsdt)
 	var res *types.Transaction
-
 	for {
 		err, txOpts := GetAuth(c.Cli)
 		if err != nil {
@@ -133,9 +135,41 @@ func (c TanTin) AdminSetToken() {
 	}
 
 	log.Println(fmt.Sprintf("AdminSetToken 确认成功"))
+
+	resourceIdBytes = hexutils.HexToBytes(ResourceIdCoin)
+	for {
+		err, txOpts := GetAuth(c.Cli)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		res, err = c.Contract.AdminSetToken(
+			txOpts,
+			[32]byte(resourceIdBytes),
+			uint8(1),
+			common.HexToAddress("0x0000000000000000000000000000000000000000"),
+			false,
+			false,
+			false,
+		)
+		if err == nil {
+			break
+		}
+		time.Sleep(3 * time.Second)
+	}
+	log.Println(fmt.Sprintf("AdminSetToken 成功"))
+	for {
+		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
+		if err == nil && receipt.Status == 1 {
+			break
+		}
+		time.Sleep(time.Second * 2)
+	}
+
+	log.Println(fmt.Sprintf("AdminSetToken 确认成功"))
 }
 
-func (c TanTin) Deposit(receiver common.Address, destinationChainId, amount, fee *big.Int) {
+func (c TanTin) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount, fee *big.Int) {
 
 	token, err := NewToken(common.HexToAddress(ChainConfig.UsdtAddress))
 	if err != nil {
@@ -144,15 +178,12 @@ func (c TanTin) Deposit(receiver common.Address, destinationChainId, amount, fee
 	}
 	token.Approve(amount)
 
-	resourceId := "ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
-	resourceIdBytes := hexutils.HexToBytes(resourceId)
-
 	var res *types.Transaction
 	var txOpts *bind.TransactOpts
 
 	for {
 		if fee.Int64() > 0 {
-			err, txOpts = GetAuthWithValue(c.Cli, fee)
+			err, txOpts = GetAuthWithValue(c.Cli, fee.Add(fee, amount))
 			if err != nil {
 				log.Println(err)
 				return
@@ -168,7 +199,7 @@ func (c TanTin) Deposit(receiver common.Address, destinationChainId, amount, fee
 		res, err = c.Contract.Deposit(
 			txOpts,
 			destinationChainId,
-			[32]byte(resourceIdBytes),
+			resourceId,
 			receiver,
 			amount,
 		)

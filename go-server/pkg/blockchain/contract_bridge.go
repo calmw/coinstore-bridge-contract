@@ -128,8 +128,7 @@ func (c Bridge) GrantVoteRole(addr common.Address) {
 
 func (c Bridge) AdminSetResource(fee *big.Int, funcSig [4]byte) {
 	var res *types.Transaction
-	resourceId := "ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
-	resourceIdBytes := hexutils.HexToBytes(resourceId)
+	resourceIdBytes := hexutils.HexToBytes(ResourceIdUsdt)
 	for {
 		err, txOpts := GetAuth(c.Cli)
 		if err != nil {
@@ -141,6 +140,41 @@ func (c Bridge) AdminSetResource(fee *big.Int, funcSig [4]byte) {
 			[32]byte(resourceIdBytes),
 			uint8(2),
 			common.HexToAddress(ChainConfig.UsdtAddress),
+			fee,
+			false,
+			common.HexToAddress(ChainConfig.TantinContractAddress),
+			funcSig,
+		)
+		if err == nil {
+			break
+		} else {
+			fmt.Println(fmt.Sprintf("AdminSetResource error: %v", err))
+		}
+		time.Sleep(3 * time.Second)
+	}
+	fmt.Println(fmt.Sprintf("AdminSetResource 成功"))
+	for {
+		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
+		if err == nil && receipt.Status == 1 {
+			break
+		}
+		time.Sleep(time.Second * 2)
+	}
+
+	fmt.Println(fmt.Sprintf("AdminSetResource 确认成功"))
+
+	resourceIdBytes = hexutils.HexToBytes(ResourceIdCoin)
+	for {
+		err, txOpts := GetAuth(c.Cli)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		res, err = c.Contract.AdminSetResource(
+			txOpts,
+			[32]byte(resourceIdBytes),
+			uint8(2),
+			common.HexToAddress("0x0000000000000000000000000000000000000000"),
 			fee,
 			false,
 			common.HexToAddress(ChainConfig.TantinContractAddress),
