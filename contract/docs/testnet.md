@@ -7,13 +7,6 @@
 - tantin 0xd78CCb0C79489d8C50AfFE4E881B2C2E93706f8b
 - USDT-CS 0xfBe1e02C25a04f6CD6b044F847697b48B3E99a16
 
-#### resourceId
-
-- USDT
-    - resourceId 0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d
-- Coin
-    - resourceId 0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1c
-
 ## tron
 
 #### 合约地址
@@ -23,7 +16,9 @@
 - tantin 0xd78CCb0C79489d8C50AfFE4E881B2C2E93706f8b
 - USDT-CS TXBWNcC7npLBQDDJe4KFdo9wAkSGumHD11
 
-#### resourceId
+## resourceId
 
 - USDT
-- resourceId 0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d
+    - resourceId 0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d
+- Coin
+    - resourceId 0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1c
