@@ -10,8 +10,16 @@ import (
 
 type Sig string
 
+// Deposit(
+//
+//	    uint256 indexed destinationChainId,
+//	    bytes32 indexed resourceID,
+//	    uint256 indexed depositNonce,
+//	    bytes data
+//	);
+
 const (
-	Bet Sig = "BetEvent(uint256,uint256,uint256,bytes32,address,uint256[],uint256,uint256)"
+	Deposit Sig = "Deposit(uint256,bytes32,uint256,bytes)"
 )
 
 type Event struct {
@@ -19,9 +27,9 @@ type Event struct {
 	EventName      string
 }
 
-var BetEvent = Event{
-	Bet,
-	"BetEvent",
+var DepositEvent = Event{
+	Deposit,
+	"DepositEvent",
 }
 
 func BuildQuery(contract common.Address, sig Sig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
