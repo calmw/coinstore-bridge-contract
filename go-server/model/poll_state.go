@@ -29,3 +29,13 @@ func SetBlockHeight(tx *gorm.DB, chainId int, blockHeight big.Int) error {
 		}).Error
 	}
 }
+
+func GetBlockHeight(tx *gorm.DB, chainId int) (*big.Int, error) {
+	var ps PollState
+	var err error
+	err = tx.Model(&PollState{}).Where("chain_id=?", chainId).First(&ps).Error
+	if err != nil {
+		return nil, err
+	}
+	return &ps.BlockHeight, nil
+}

@@ -1,7 +1,7 @@
 package blockchain
 
 import (
-	"coinstore/binding/bridge"
+	"coinstore/binding"
 	"context"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
@@ -15,7 +15,7 @@ import (
 
 type Bridge struct {
 	Cli      *ethclient.Client
-	Contract *bridge.Bridge
+	Contract *binding.Bridge
 }
 
 func NewBridge() (*Bridge, error) {
@@ -23,7 +23,7 @@ func NewBridge() (*Bridge, error) {
 	if err != nil {
 		return nil, err
 	}
-	contractObj, err := bridge.NewBridge(common.HexToAddress(ChainConfig.BridgeContractAddress), cli)
+	contractObj, err := binding.NewBridge(common.HexToAddress(ChainConfig.BridgeContractAddress), cli)
 	if err != nil {
 		return nil, err
 	}

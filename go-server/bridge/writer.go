@@ -1,10 +1,10 @@
 // Copyright 2020 ChainSafe Systems
 // SPDX-License-Identifier: LGPL-3.0-only
 
-package core
+package bridge
 
 import (
-	"coinstore/binding/bridge"
+	"coinstore/binding"
 	"github.com/ChainSafe/ChainBridge/bindings/Bridge"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ChainSafe/log15"
@@ -20,7 +20,7 @@ type Writer struct {
 	muVote         *sync.RWMutex
 	muExec         *sync.RWMutex
 	Cfg            Config
-	bridgeContract *bridge.Bridge
+	bridgeContract *binding.Bridge
 	log            log15.Logger
 }
 

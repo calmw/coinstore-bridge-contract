@@ -11,14 +11,14 @@ import (
 
 func main() {
 	services.InitOpenBnbEnv()
-	//core, err := blockchain.NewBridge()
+	//bridge, err := blockchain.NewBridge()
 	//if err != nil {
 	//	fmt.Println(err)
 	//	return
 	//}
-	//////core.Init()
+	//////bridge.Init()
 	//someBytes := hexutils.HexToBytes("ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d")
-	//core.AdminSetResource(big.NewInt(1), [4]byte(someBytes))
+	//bridge.AdminSetResource(big.NewInt(1), [4]byte(someBytes))
 
 	//vote, err := blockchain.NewVote()
 	//if err != nil {

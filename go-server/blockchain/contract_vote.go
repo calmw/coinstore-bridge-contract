@@ -1,7 +1,7 @@
 package blockchain
 
 import (
-	"coinstore/binding/bridge"
+	"coinstore/binding"
 	"context"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
@@ -15,7 +15,7 @@ import (
 
 type Vote struct {
 	Cli      *ethclient.Client
-	Contract *bridge.Vote
+	Contract *binding.Vote
 }
 
 func NewVote() (*Vote, error) {
@@ -23,7 +23,7 @@ func NewVote() (*Vote, error) {
 	if err != nil {
 		return nil, err
 	}
-	contractObj, err := bridge.NewVote(common.HexToAddress(ChainConfig.VoteContractAddress), cli)
+	contractObj, err := binding.NewVote(common.HexToAddress(ChainConfig.VoteContractAddress), cli)
 	if err != nil {
 		return nil, err
 	}

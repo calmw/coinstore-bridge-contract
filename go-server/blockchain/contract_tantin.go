@@ -1,7 +1,7 @@
 package blockchain
 
 import (
-	"coinstore/binding/bridge"
+	"coinstore/binding"
 	"context"
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -21,7 +21,7 @@ const (
 
 type TanTin struct {
 	Cli      *ethclient.Client
-	Contract *bridge.Tantin
+	Contract *binding.Tantin
 }
 
 func NewTanTin() (*TanTin, error) {
@@ -29,7 +29,7 @@ func NewTanTin() (*TanTin, error) {
 	if err != nil {
 		return nil, err
 	}
-	contractObj, err := bridge.NewTantin(common.HexToAddress(ChainConfig.TantinContractAddress), cli)
+	contractObj, err := binding.NewTantin(common.HexToAddress(ChainConfig.TantinContractAddress), cli)
 	if err != nil {
 		return nil, err
 	}

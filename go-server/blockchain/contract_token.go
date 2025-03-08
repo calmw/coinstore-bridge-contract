@@ -1,7 +1,7 @@
 package blockchain
 
 import (
-	"coinstore/binding/token"
+	"coinstore/binding"
 	"context"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
@@ -22,7 +22,7 @@ type TokenInfo struct {
 
 type Token struct {
 	Cli      *ethclient.Client
-	Contract *erc20.Erc20
+	Contract *binding.erc20
 }
 
 func NewToken(addr common.Address) (*Token, error) {
@@ -30,7 +30,7 @@ func NewToken(addr common.Address) (*Token, error) {
 	if err != nil {
 		return nil, err
 	}
-	contractObj, err := erc20.NewErc20(addr, cli)
+	contractObj, err := binding.erc20.NewErc20(addr, cli)
 	if err != nil {
 		return nil, err
 	}

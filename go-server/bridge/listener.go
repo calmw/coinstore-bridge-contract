@@ -1,25 +1,19 @@
-package core
+package bridge
 
 import (
-	"coinstore/binding/bridge"
+	"coinstore/binding"
+	"coinstore/db"
 	"coinstore/model"
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ChainSafe/ChainBridge/bindings/Bridge"
-	"github.com/ChainSafe/ChainBridge/bindings/ERC20Handler"
-	"github.com/ChainSafe/ChainBridge/bindings/ERC721Handler"
-	"github.com/ChainSafe/ChainBridge/bindings/GenericHandler"
-	"github.com/ChainSafe/ChainBridge/chains"
 	utils "github.com/ChainSafe/ChainBridge/shared/ethereum"
 	"github.com/ChainSafe/chainbridge-utils/msg"
 	"github.com/ChainSafe/log15"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"log"
 	"math/big"
 	"time"
 )
@@ -31,55 +25,39 @@ var Listeners = map[int]*Listener{}
 
 type Listener struct {
 	cfg            Config
-	bridgeContract *bridge.Bridge
-	voterContract  *bridge.Vote
+	cli            *ethclient.Client
+	bridgeContract *binding.Bridge
+	voterContract  *binding.Vote
 	log            log15.Logger
 	latestBlock    *big.Int
+	stop           <-chan int
+	sysErr         chan<- error
 }
 
 // NewListener creates and returns a Listener
 func NewListener(mCfg model.Config, log log15.Logger) *Listener {
-	var cfg Config
-	privateKey, err := crypto.HexToECDSA(mCfg.PrivateKey)
-
-	if err != nil {
-		log.Println(err)
-		return err, nil
-	}
-	cfg = Config{
-		chainName:          mCfg.ChainName,
-		chainId:            mCfg.ChainId,
-		endpoint:           mCfg.Endpoint,
-		from:               mCfg.From,
-		privateKey:         privateKey,
-		freshStart:         false,
-		bridgeContract:     ethcommon.Address{},
-		voteContract:       ethcommon.Address{},
-		gasLimit:           nil,
-		maxGasPrice:        nil,
-		minGasPrice:        nil,
-		http:               false,
-		startBlock:         nil,
-		blockConfirmations: nil,
-	}
+	cfg := NewConfig(mCfg)
 	client, err := ethclient.Dial(cfg.endpoint)
 	if err != nil {
 		panic("rpc dail failed")
 	}
-	bridgeContract, err := bridge.NewBridge(cfg.bridgeContract, client)
+	bridgeContract, err := binding.NewBridge(cfg.bridgeContract, client)
 	if err != nil {
 		panic("new bridge contract failed")
 	}
-	voteContract, err := bridge.NewVote(cfg.bridgeContract, client)
+	voteContract, err := binding.NewVote(cfg.bridgeContract, client)
 	if err != nil {
 		panic("new vote contract failed")
 	}
 	listener := Listener{
 		cfg:            cfg,
+		cli:            client,
 		bridgeContract: bridgeContract,
 		voterContract:  voteContract,
 		log:            log,
 		latestBlock:    cfg.startBlock,
+		stop:           make(<-chan int),
+		sysErr:         make(chan<- error),
 	}
 
 	Listeners[cfg.chainId] = &listener
@@ -87,27 +65,6 @@ func NewListener(mCfg model.Config, log log15.Logger) *Listener {
 	return &listener
 }
 
-func aa(rpc string) {
-	client, err := ethclient.Dial(rpc)
-	if err != nil {
-		log.Fatal("rpc dail failed")
-	}
-}
-
-// setContracts sets the Listener with the appropriate contracts
-func (l *Listener) setContracts(bridge *Bridge.Bridge, erc20Handler *ERC20Handler.ERC20Handler, erc721Handler *ERC721Handler.ERC721Handler, genericHandler *GenericHandler.GenericHandler) {
-	l.bridgeContract = bridge
-	l.erc20HandlerContract = erc20Handler
-	l.erc721HandlerContract = erc721Handler
-	l.genericHandlerContract = genericHandler
-}
-
-// sets the Router
-func (l *Listener) setRouter(r chains.Router) {
-	l.Router = r
-}
-
-// start registers all subscriptions provided by the config
 func (l *Listener) start() error {
 	l.log.Debug("Starting Listener...")
 
@@ -121,9 +78,6 @@ func (l *Listener) start() error {
 	return nil
 }
 
-// pollBlocks will poll for the latest block and proceed to parse the associated events as it sees new blocks.
-// Polling begins at the block defined in `l.Cfg.startBlock`. Failed attempts to fetch the latest block or parse
-// a block will be retried up to BlockRetryLimit times before continuing to the next block.
 func (l *Listener) pollBlocks() error {
 	var currentBlock = l.cfg.startBlock
 	l.log.Info("Polling Blocks...", "block", currentBlock)
@@ -141,7 +95,7 @@ func (l *Listener) pollBlocks() error {
 				return nil
 			}
 
-			latestBlock, err := l.conn.LatestBlock()
+			latestBlock, err := l.LatestBlock()
 			if err != nil {
 				l.log.Error("Unable to get latest block", "block", currentBlock, "err", err)
 				retry--
@@ -149,12 +103,8 @@ func (l *Listener) pollBlocks() error {
 				continue
 			}
 
-			if l.metrics != nil {
-				l.metrics.LatestKnownBlock.Set(float64(latestBlock.Int64()))
-			}
-
 			// Sleep if the difference is less than BlockDelay; (latest - current) < BlockDelay
-			if big.NewInt(0).Sub(latestBlock, currentBlock).Cmp(l.blockConfirmations) == -1 {
+			if big.NewInt(0).Sub(latestBlock, currentBlock).Cmp(l.cfg.blockConfirmations) == -1 {
 				l.log.Debug("Block not ready, will retry", "target", currentBlock, "latest", latestBlock)
 				time.Sleep(BlockRetryInterval)
 				continue
@@ -168,21 +118,11 @@ func (l *Listener) pollBlocks() error {
 				continue
 			}
 
-			// Write to block store. Not a critical operation, no need to retry
-			err = l.blockstore.StoreBlock(currentBlock)
+			err = l.StoreBlock(*currentBlock)
 			if err != nil {
 				l.log.Error("Failed to write latest block to blockstore", "block", currentBlock, "err", err)
 			}
 
-			if l.metrics != nil {
-				l.metrics.BlocksProcessed.Inc()
-				l.metrics.LatestProcessedBlock.Set(float64(latestBlock.Int64()))
-			}
-
-			l.latestBlock.Height = big.NewInt(0).Set(latestBlock)
-			l.latestBlock.LastUpdated = time.Now()
-
-			// Goto next block and reset retry counter
 			currentBlock.Add(currentBlock, big.NewInt(1))
 			retry = BlockRetryLimit
 		}
@@ -194,13 +134,12 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	l.log.Debug("Querying block for deposit events", "block", latestBlock)
 	query := buildQuery(l.cfg.bridgeContract, utils.Deposit, latestBlock, latestBlock)
 
-	// querying for logs
-	logs, err := l.conn.Client().FilterLogs(context.Background(), query)
+	// 获取日志
+	logs, err := l.cli.FilterLogs(context.Background(), query)
 	if err != nil {
 		return fmt.Errorf("unable to Filter Logs: %w", err)
 	}
 
-	// read through the log events and handle their deposit event if handler is recognized
 	for _, log := range logs {
 		var m msg.Message
 		destId := msg.ChainId(log.Topics[1].Big().Uint64())
@@ -235,6 +174,40 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	}
 
 	return nil
+}
+
+func (l *Listener) LatestBlock() (*big.Int, error) {
+	header, err := l.cli.HeaderByNumber(context.Background(), nil)
+	if err != nil {
+		return nil, err
+	}
+	return header.Number, nil
+}
+
+func (l *Listener) StoreBlock(blockHeight big.Int) error {
+	return model.SetBlockHeight(db.DB, l.cfg.chainId, blockHeight)
+}
+func (l *Listener) GetCallOpts(blockHeight big.Int) error {
+	return model.SetBlockHeight(db.DB, l.cfg.chainId, blockHeight)
+}
+
+func (l *Listener) GetDepositEvent(destId msg.ChainId, nonce msg.Nonce) (msg.Message, error) {
+	l.log.Info("Handling generic deposit event")
+
+	record, err := l.bridgeContract.DepositRecords(nil, destId, nonce)
+	(&bind.CallOpts{From: l.conn.Keypair().CommonAddress()}, uint64(nonce), uint8(destId))
+	if err != nil {
+		l.log.Error("Error Unpacking Generic Deposit Record", "err", err)
+		return msg.Message{}, nil
+	}
+
+	return msg.NewGenericTransfer(
+		l.cfg.id,
+		destId,
+		nonce,
+		record.ResourceID,
+		record.MetaData[:],
+	), nil
 }
 
 // buildQuery constructs a query for the bridgeContract by hashing sig to get the event topic

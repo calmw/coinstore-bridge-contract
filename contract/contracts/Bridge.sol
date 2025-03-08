@@ -19,7 +19,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     mapping(address => bytes32) public contractAddressToResourceID; // 业务合约地址(tantin address) => resourceID
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
     mapping(bytes32 => bytes4) public resourceIdToExecuteSig; //  resourceID => tantin execute sig
-    mapping(uint8 => mapping(uint256 => DepositRecord)) public depositRecords; // depositNonce => Deposit Record
+    mapping(uint256 => mapping(uint256 => DepositRecord)) public depositRecords; // depositNonce => (destinationChainId => Deposit Record)
 
     function initialize() public initializer {
         _grantRole(ADMIN_ROLE, msg.sender);
@@ -121,6 +121,13 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         require(!tokenInfo.pause, "service suspended");
 
         uint256 depositNonce = ++depositCounts[destinationChainId];
+
+        depositRecords[destinationChainId][depositNonce] = DepositRecord(
+            destinationChainId,
+            msg.sender,
+            resourceId,
+            data
+        );
 
         emit Deposit(destinationChainId, resourceId, depositNonce, data);
     }
