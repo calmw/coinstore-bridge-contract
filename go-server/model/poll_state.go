@@ -2,17 +2,18 @@ package model
 
 import (
 	"errors"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 	"math/big"
 )
 
 type PollState struct {
 	gorm.Model
-	ChainId     int     `gorm:"chain_id;comment:'自定义链ID'" json:"chain_id"`
-	BlockHeight big.Int `gorm:"block_height;type:bigint(20);comment:'扫块高度'" json:"block_height"`
+	ChainId     int             `gorm:"chain_id;comment:'自定义链ID'" json:"chain_id"`
+	BlockHeight decimal.Decimal `gorm:"block_height;type:bigint(30);comment:'扫块高度'" json:"block_height"`
 }
 
-func SetBlockHeight(tx *gorm.DB, chainId int, blockHeight big.Int) error {
+func SetBlockHeight(tx *gorm.DB, chainId int, blockHeight decimal.Decimal) error {
 	var ps PollState
 	var err error
 	err = tx.Model(&PollState{}).Where("chain_id=?", chainId).First(&ps).Error
@@ -37,5 +38,5 @@ func GetBlockHeight(tx *gorm.DB, chainId int) (*big.Int, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ps.BlockHeight, nil
+	return ps.BlockHeight.BigInt(), nil
 }

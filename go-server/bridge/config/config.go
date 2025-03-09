@@ -6,6 +6,7 @@ import (
 	"crypto/ecdsa"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/shopspring/decimal"
 	"math/big"
 	"os"
 )
@@ -35,7 +36,7 @@ type Config struct {
 
 func NewConfig(cfg model.Config) Config {
 	key := os.Getenv("COINSTORE_BRIDGE")
-	//key:=utils2.ThreeDesDecrypt("",mCfg.PrivateKey)
+	//key:=utils2.ThreeDesDecrypt("",cfg.PrivateKey) // TODO 线上要改
 	privateKey, err := crypto.HexToECDSA(key)
 	if err != nil {
 		panic("private key conversion failed")
@@ -60,7 +61,7 @@ func NewConfig(cfg model.Config) Config {
 	if cfg.FreshStart {
 		height, err := model.GetBlockHeight(db.DB, cfg.ChainId)
 		if err == nil {
-			startBlock = *height
+			startBlock = decimal.NewFromBigInt(height, 0)
 		}
 	}
 	http := false
@@ -80,7 +81,7 @@ func NewConfig(cfg model.Config) Config {
 		MaxGasPrice:           maxGasPrice,
 		MinGasPrice:           minGasPrice,
 		Http:                  http,
-		StartBlock:            &startBlock,
+		StartBlock:            startBlock.BigInt(),
 		BlockConfirmations:    blockConfirmations,
 		FreshStart:            cfg.FreshStart,
 		LatestBlock:           cfg.LatestBlock,

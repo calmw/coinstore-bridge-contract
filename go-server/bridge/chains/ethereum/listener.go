@@ -4,6 +4,7 @@ import (
 	"coinstore/binding"
 	"coinstore/bridge/chains"
 	"coinstore/bridge/config"
+	"coinstore/bridge/core"
 	"coinstore/bridge/event"
 	"coinstore/bridge/msg"
 	"coinstore/db"
@@ -15,6 +16,7 @@ import (
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	ethcommon "github.com/ethereum/go-ethereum/common"
+	"github.com/shopspring/decimal"
 	"math/big"
 	"time"
 )
@@ -32,7 +34,7 @@ type Listener struct {
 	voterContract  *binding.Vote
 	bridgeAbi      *abi.ABI
 	log            log15.Logger
-	latestBlock    LatestBlock
+	latestBlock    core.LatestBlock
 	stop           <-chan int
 	sysErr         chan<- error
 }
@@ -124,7 +126,7 @@ func (l *Listener) pollBlocks() error {
 				continue
 			}
 
-			err = l.StoreBlock(*currentBlock)
+			err = l.StoreBlock(currentBlock)
 			if err != nil {
 				l.log.Error("Failed to write latest block to blockstore", "block", currentBlock, "err", err)
 			}
@@ -183,31 +185,9 @@ func (l *Listener) LatestBlock() (*big.Int, error) {
 	return header.Number, nil
 }
 
-func (l *Listener) StoreBlock(blockHeight big.Int) error {
-	return model.SetBlockHeight(db.DB, l.cfg.ChainId, blockHeight)
+func (l *Listener) StoreBlock(blockHeight *big.Int) error {
+	return model.SetBlockHeight(db.DB, l.cfg.ChainId, decimal.NewFromBigInt(blockHeight, 0))
 }
-func (l *Listener) GetCallOpts(blockHeight big.Int) error {
-	return model.SetBlockHeight(db.DB, l.cfg.ChainId, blockHeight)
-}
-
-//func (l *Listener) GetDepositEvent(destId msg.ChainId, nonce msg.Nonce) (msg.Message, error) {
-//	l.log.Info("Handling generic deposit event")
-//
-//	record, err := l.bridgeContract.DepositRecords(nil, destId, nonce)
-//	(&bind.CallOpts{From: l.conn.Keypair().CommonAddress()}, uint64(nonce), uint8(destId))
-//	if err != nil {
-//		l.log.Error("Error Unpacking Generic Deposit Record", "err", err)
-//		return msg.Message{}, nil
-//	}
-//
-//	return msg.NewGenericTransfer(
-//		l.cfg.id,
-//		destId,
-//		nonce,
-//		record.ResourceID,
-//		record.MetaData[:],
-//	), nil
-//}
 
 func buildQuery(contract ethcommon.Address, sig event.Sig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
 	query := eth.FilterQuery{
