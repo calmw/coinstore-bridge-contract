@@ -1,12 +1,14 @@
 package main
 
 import (
-	"coinstore/db"
+	"coinstore/bridge"
+	"log"
+	"os"
 )
 
 func main() {
-	db.InitMysql()
-	//poll.Init()
-	//l := poll.NewListener()
-	//l.Run()
+	if err := bridge.Run(); err != nil {
+		log.Println(err.Error())
+		os.Exit(1)
+	}
 }

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"coinstore/db"
 	"gorm.io/gorm"
 	"math/big"
 )
@@ -12,7 +13,8 @@ type Config struct {
 	Endpoint           string  `gorm:"endpoint;comment:'RPC'" json:"endpoint"`
 	From               string  `gorm:"from;comment:'签名账户地址'" json:"from"`
 	PrivateKey         string  `gorm:"private_key;comment:'签名账户私钥'" json:"private_key"`
-	FreshStart         int     `gorm:"fresh_start;comment:'启动时，是否从设置的起始块高开始.1 从设置的块高开始，0 从block store开始'" json:"fresh_start"`
+	FreshStart         bool    `gorm:"fresh_start;comment:'启动时，是否从设置的起始块高开始.true 从设置的块高开始，false 从block store开始'" json:"fresh_start"`
+	LatestBlock        bool    `gorm:"latest_block;comment:'启动时，是否从设置的起始块高开始.true 从区块链当前的块高开始'" json:"latest_block"`
 	BridgeContract     string  `gorm:"bridge_contract;comment:'bridge合约地址'" json:"bridge_contract"`
 	VoteContract       string  `gorm:"vote_contract;comment:'vote合约地址'" json:"vote_contract"`
 	GasLimit           int64   `gorm:"gas_limit;comment:''" json:"gas_limit"`
@@ -31,4 +33,10 @@ func GetConfigByChainId(tx *gorm.DB, chainId int) (Config, error) {
 		return Config{}, err
 	}
 	return cfg, nil
+}
+
+func GetAllConfig() ([]Config, error) {
+	var cfgs []Config
+	err := db.DB.Model(&Config{}).Find(&cfgs).Error
+	return cfgs, err
 }

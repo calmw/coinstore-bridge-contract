@@ -1,20 +1,20 @@
-package bridge
+package ethereum
 
 import (
 	"coinstore/binding"
+	"coinstore/bridge/chains"
+	"coinstore/bridge/config"
+	"coinstore/bridge/event"
 	"coinstore/bridge/msg"
 	"coinstore/db"
-	"coinstore/event"
 	"coinstore/model"
 	"context"
 	"errors"
 	"fmt"
-	utils "github.com/ChainSafe/ChainBridge/shared/ethereum"
 	"github.com/ChainSafe/log15"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
 	"time"
 )
@@ -25,49 +25,45 @@ var ErrFatalPolling = errors.New("bridge block polling failed")
 var Listeners = map[int]*Listener{}
 
 type Listener struct {
-	cfg            Config
-	cli            *ethclient.Client
+	cfg            config.Config
+	conn           Connection
+	Router         chains.Router
 	bridgeContract *binding.Bridge
 	voterContract  *binding.Vote
 	bridgeAbi      *abi.ABI
 	log            log15.Logger
-	latestBlock    *big.Int
+	latestBlock    LatestBlock
 	stop           <-chan int
 	sysErr         chan<- error
 }
 
 // NewListener creates and returns a Listener
-func NewListener(mCfg model.Config, log log15.Logger) *Listener {
-	cfg := NewConfig(mCfg)
-	client, err := ethclient.Dial(cfg.endpoint)
-	if err != nil {
-		panic("rpc dail failed")
-	}
-	bridgeContract, err := binding.NewBridge(cfg.bridgeContract, client)
+func NewListener(conn Connection, cfg *config.Config, log log15.Logger, stop <-chan int, sysErr chan<- error) *Listener {
+	bridgeContract, err := binding.NewBridge(cfg.BridgeContractAddress, conn.Client())
 	if err != nil {
 		panic("new bridge contract failed")
 	}
-	voteContract, err := binding.NewVote(cfg.bridgeContract, client)
+	voteContract, err := binding.NewVote(cfg.VoteContractAddress, conn.Client())
 	if err != nil {
 		panic("new vote contract failed")
 	}
-	abi, err := binding.BridgeMetaData.GetAbi()
+	bridgeAbi, err := binding.BridgeMetaData.GetAbi()
 	if err != nil {
 		panic("get bridge contract abi failed")
 	}
 	listener := Listener{
-		cfg:            cfg,
-		cli:            client,
+		cfg:            *cfg,
+		conn:           conn,
 		bridgeContract: bridgeContract,
 		voterContract:  voteContract,
 		log:            log,
-		bridgeAbi:      abi,
-		stop:           make(<-chan int),
-		sysErr:         make(chan<- error),
+		bridgeAbi:      bridgeAbi,
+		stop:           stop,
+		sysErr:         sysErr,
 	}
 
-	Listeners[cfg.chainId] = &listener
-	log.Debug("new bridge id", "id", cfg.chainId)
+	Listeners[cfg.ChainId] = &listener
+	log.Debug("new listener id", "id", cfg.ChainId)
 	return &listener
 }
 
@@ -84,8 +80,12 @@ func (l *Listener) start() error {
 	return nil
 }
 
+func (l *Listener) setRouter(r chains.Router) {
+	l.Router = r
+}
+
 func (l *Listener) pollBlocks() error {
-	var currentBlock = l.cfg.startBlock
+	var currentBlock = l.cfg.StartBlock
 	l.log.Info("Polling Blocks...", "block", currentBlock)
 
 	var retry = BlockRetryLimit
@@ -110,7 +110,7 @@ func (l *Listener) pollBlocks() error {
 			}
 
 			// Sleep if the difference is less than BlockDelay; (latest - current) < BlockDelay
-			if big.NewInt(0).Sub(latestBlock, currentBlock).Cmp(l.cfg.blockConfirmations) == -1 {
+			if big.NewInt(0).Sub(latestBlock, currentBlock).Cmp(l.cfg.BlockConfirmations) == -1 {
 				l.log.Debug("Block not ready, will retry", "target", currentBlock, "latest", latestBlock)
 				time.Sleep(BlockRetryInterval)
 				continue
@@ -137,10 +137,10 @@ func (l *Listener) pollBlocks() error {
 
 func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	l.log.Debug("Querying block for deposit events", "block", latestBlock)
-	query := event.BuildQuery(l.cfg.bridgeContract, event.Deposit, latestBlock, latestBlock)
+	query := buildQuery(l.cfg.BridgeContractAddress, event.Deposit, latestBlock, latestBlock)
 
 	// 获取日志
-	logs, err := l.cli.FilterLogs(context.Background(), query)
+	logs, err := l.conn.Client().FilterLogs(context.Background(), query)
 	if err != nil {
 		return fmt.Errorf("unable to Filter Logs: %w", err)
 	}
@@ -152,11 +152,11 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		nonce := msg.Nonce(log.Topics[3].Big().Uint64())
 
 		var eventData []interface{}
-		eventData, err = l.bridgeAbi.Unpack(event.Deposit.EventName, log.Data)
+		eventData, err = l.bridgeAbi.Unpack(string(event.Deposit), log.Data)
 		data := eventData[0].([]byte)
 
 		m = msg.NewGenericTransfer(
-			msg.ChainId(l.cfg.chainId),
+			msg.ChainId(l.cfg.ChainId),
 			destId,
 			nonce,
 			rId,
@@ -175,23 +175,8 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	return nil
 }
 
-//func (l *Listener) Router(msg msg.Message)  error{
-//
-//	l.lock.Lock()
-//	defer r.lock.Unlock()
-//
-//	l.log.Trace("Routing message", "src", msg.Source, "dest", msg.Destination, "nonce", msg.DepositNonce, "rId", msg.ResourceId.Hex())
-//	w := Writers[int(msg.Destination)]
-//	if w == nil {
-//		return fmt.Errorf("unknown destination chainId: %d", msg.Destination)
-//	}
-//
-//	go w.ResolveMessage(msg)
-//	return nil
-//}
-
 func (l *Listener) LatestBlock() (*big.Int, error) {
-	header, err := l.cli.HeaderByNumber(context.Background(), nil)
+	header, err := l.conn.Client().HeaderByNumber(context.Background(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -199,10 +184,10 @@ func (l *Listener) LatestBlock() (*big.Int, error) {
 }
 
 func (l *Listener) StoreBlock(blockHeight big.Int) error {
-	return model.SetBlockHeight(db.DB, l.cfg.chainId, blockHeight)
+	return model.SetBlockHeight(db.DB, l.cfg.ChainId, blockHeight)
 }
 func (l *Listener) GetCallOpts(blockHeight big.Int) error {
-	return model.SetBlockHeight(db.DB, l.cfg.chainId, blockHeight)
+	return model.SetBlockHeight(db.DB, l.cfg.ChainId, blockHeight)
 }
 
 //func (l *Listener) GetDepositEvent(destId msg.ChainId, nonce msg.Nonce) (msg.Message, error) {
@@ -224,8 +209,7 @@ func (l *Listener) GetCallOpts(blockHeight big.Int) error {
 //	), nil
 //}
 
-// buildQuery constructs a query for the bridgeContract by hashing sig to get the event topic
-func buildQuery(contract ethcommon.Address, sig utils.EventSig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
+func buildQuery(contract ethcommon.Address, sig event.Sig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
 	query := eth.FilterQuery{
 		FromBlock: startBlock,
 		ToBlock:   endBlock,

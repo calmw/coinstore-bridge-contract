@@ -1,8 +1,9 @@
 package core
 
 import (
-	metrics "github.com/ChainSafe/chainbridge-utils/metrics/types"
-	"github.com/ChainSafe/chainbridge-utils/msg"
+	"coinstore/bridge/msg"
+	"math/big"
+	"time"
 )
 
 type Chain interface {
@@ -10,8 +11,13 @@ type Chain interface {
 	SetRouter(*Router)
 	Id() msg.ChainId
 	Name() string
-	LatestBlock() metrics.LatestBlock
+	LatestBlock() LatestBlock
 	Stop()
+}
+
+type LatestBlock struct {
+	Height      *big.Int
+	LastUpdated time.Time
 }
 
 type ChainConfig struct {

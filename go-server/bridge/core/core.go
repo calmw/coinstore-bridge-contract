@@ -19,7 +19,7 @@ type Core struct {
 func NewCore(sysErr <-chan error) *Core {
 	return &Core{
 		Registry: make([]Chain, 0),
-		route:    NewRouter(log15.New("system", "router")),
+		route:    NewRouter(log15.New("system", "interface")),
 		log:      log15.New("system", "core"),
 		sysErr:   sysErr,
 	}

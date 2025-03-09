@@ -1,11 +1,10 @@
 package core
 
 import (
+	"coinstore/bridge/msg"
 	"fmt"
-	"sync"
-
-	"github.com/ChainSafe/chainbridge-utils/msg"
 	log "github.com/ChainSafe/log15"
+	"sync"
 )
 
 // Writer consumes a message and makes the requried on-chain interactions.
@@ -47,6 +46,6 @@ func (r *Router) Send(msg msg.Message) error {
 func (r *Router) Listen(id msg.ChainId, w Writer) {
 	r.lock.Lock()
 	defer r.lock.Unlock()
-	r.log.Debug("Registering new chain in router", "id", id)
+	r.log.Debug("Registering new chain in interface", "id", id)
 	r.registry[id] = w
 }
