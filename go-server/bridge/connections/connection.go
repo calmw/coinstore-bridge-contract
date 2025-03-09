@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ChainSafe/ChainBridge/connections/ethereum/egs"
-	"github.com/ChainSafe/log15"
+	"github.com/calmw/blog"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"

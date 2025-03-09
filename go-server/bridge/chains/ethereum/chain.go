@@ -8,7 +8,7 @@ import (
 	"coinstore/bridge/msg"
 	"crypto/ecdsa"
 	"fmt"
-	log "github.com/ChainSafe/log15"
+	log "github.com/calmw/blog"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"

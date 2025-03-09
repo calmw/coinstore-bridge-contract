@@ -7,7 +7,7 @@ import (
 	"coinstore/db"
 	"coinstore/model"
 	"fmt"
-	log "github.com/ChainSafe/log15"
+	log "github.com/calmw/blog"
 )
 
 func Run() error {

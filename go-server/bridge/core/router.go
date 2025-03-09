@@ -3,7 +3,7 @@ package core
 import (
 	"coinstore/bridge/msg"
 	"fmt"
-	log "github.com/ChainSafe/log15"
+	log "github.com/calmw/blog"
 	"sync"
 )
 

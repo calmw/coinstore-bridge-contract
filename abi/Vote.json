@@ -383,9 +383,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint64",
+        "internalType": "uint256",
         "name": "originDepositNonce",
-        "type": "uint64"
+        "type": "uint256"
       },
       {
         "internalType": "bytes",
@@ -419,14 +419,14 @@
   {
     "inputs": [
       {
-        "internalType": "uint8",
+        "internalType": "uint256",
         "name": "originChainID",
-        "type": "uint8"
+        "type": "uint256"
       },
       {
-        "internalType": "uint64",
+        "internalType": "uint256",
         "name": "depositNonce",
-        "type": "uint64"
+        "type": "uint256"
       },
       {
         "internalType": "bytes32",
@@ -435,8 +435,46 @@
       }
     ],
     "name": "getProposal",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "resourceId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "dataHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "address[]",
+            "name": "yesVotes",
+            "type": "address[]"
+          },
+          {
+            "internalType": "address[]",
+            "name": "noVotes",
+            "type": "address[]"
+          },
+          {
+            "internalType": "enum IVote.ProposalStatus",
+            "name": "status",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "proposedBlock",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IVote.Proposal",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

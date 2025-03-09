@@ -7,7 +7,7 @@ import (
 	"encoding/gob"
 	"errors"
 	"fmt"
-	log "github.com/ChainSafe/log15"
+	log "github.com/calmw/blog"
 	"github.com/status-im/keycard-go/hexutils"
 	"gorm.io/gorm"
 )

@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	log "github.com/ChainSafe/log15"
+	log "github.com/calmw/blog"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"

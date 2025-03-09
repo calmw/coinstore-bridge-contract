@@ -4,7 +4,7 @@ import (
 	"coinstore/binding"
 	"coinstore/bridge/config"
 	"coinstore/bridge/msg"
-	"github.com/ChainSafe/log15"
+	"github.com/calmw/blog"
 	"sync"
 )
 

@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/ChainSafe/log15"
+	"github.com/calmw/blog"
 )
 
 type Core struct {

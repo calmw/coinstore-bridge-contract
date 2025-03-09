@@ -58,16 +58,16 @@ interface IVote {
 
     function executeProposal(
         uint256 originChainID,
-        uint64 originDepositNonce,
+        uint256 originDepositNonce,
         bytes calldata data,
         bytes32 resourceID
     ) external;
 
     function getProposal(
-        uint8 originChainID,
-        uint64 depositNonce,
+        uint256 originChainID,
+        uint256 depositNonce,
         bytes32 dataHash
-    ) external;
+    ) external returns( Proposal memory);
 
     function getRelayerThreshold() external view returns (uint256);
 }

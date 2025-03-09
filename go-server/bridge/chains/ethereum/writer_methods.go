@@ -7,7 +7,7 @@ import (
 	"context"
 	"errors"
 	utils "github.com/ChainSafe/ChainBridge/shared/ethereum"
-	log "github.com/ChainSafe/log15"
+	log "github.com/calmw/blog"
 	"math/big"
 	"time"
 )

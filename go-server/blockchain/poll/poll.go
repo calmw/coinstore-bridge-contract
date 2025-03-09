@@ -2,7 +2,7 @@ package poll
 
 import (
 	"context"
-	log "github.com/ChainSafe/log15"
+	log "github.com/calmw/blog"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"time"
 )
