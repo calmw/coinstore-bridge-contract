@@ -32,8 +32,8 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	//tantin.Init()
-	//tantin.AdminSetToken()
+	tantin.Init()
+	tantin.AdminSetToken()
 
 	resourceIdBytes := hexutils.HexToBytes(blockchain.ResourceIdUsdt)
 	//resourceIdBytes := hexutils.HexToBytes(blockchain.ResourceIdCoin)

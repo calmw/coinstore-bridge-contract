@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"github.com/ChainSafe/log15"
 	eth "github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/shopspring/decimal"
 	"math/big"
@@ -32,7 +31,6 @@ type Listener struct {
 	Router         chains.Router
 	bridgeContract *binding.Bridge
 	voterContract  *binding.Vote
-	bridgeAbi      *abi.ABI
 	log            log15.Logger
 	latestBlock    core.LatestBlock
 	stop           <-chan int
@@ -49,17 +47,12 @@ func NewListener(conn Connection, cfg *config.Config, log log15.Logger, stop <-c
 	if err != nil {
 		panic("new vote contract failed")
 	}
-	bridgeAbi, err := binding.BridgeMetaData.GetAbi()
-	if err != nil {
-		panic("get bridge contract abi failed")
-	}
 	listener := Listener{
 		cfg:            *cfg,
 		conn:           conn,
 		bridgeContract: bridgeContract,
 		voterContract:  voteContract,
 		log:            log,
-		bridgeAbi:      bridgeAbi,
 		stop:           stop,
 		sysErr:         sysErr,
 	}
@@ -159,20 +152,19 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			return err
 		}
 
-		var eventData []interface{}
-		eventData, err = l.bridgeAbi.Unpack(string(event.Deposit), log.Data)
-		fmt.Println(eventData, err, nonce, "1 ~~~")
-		data := eventData[0].([]byte)
+		l.log.Debug("get events:")
+		l.log.Debug("ResourceID", records.ResourceID)
+		l.log.Debug("DestinationChainId", records.DestinationChainId)
+		l.log.Debug("Sender", records.Sender)
+		l.log.Debug("Data", records.Data)
 
 		m = msg.NewGenericTransfer(
 			msg.ChainId(l.cfg.ChainId),
 			destId,
 			nonce,
 			rId,
-			data[:],
+			records.Data[:],
 		)
-
-		l.log.Debug("~~~~~~~~~", m)
 
 		//err = l.Router(m)
 		//if err != nil {
