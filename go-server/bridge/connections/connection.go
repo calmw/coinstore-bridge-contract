@@ -31,13 +31,12 @@ type Connection struct {
 	egsApiKey     string
 	egsSpeed      string
 	conn          *ethclient.Client
-	// signer    ethtypes.Signer
-	opts     *bind.TransactOpts
-	callOpts *bind.CallOpts
-	nonce    uint64
-	optsLock sync.Mutex
-	log      log15.Logger
-	stop     chan int // All routines should exit when this channel is closed
+	opts          *bind.TransactOpts
+	callOpts      *bind.CallOpts
+	nonce         uint64
+	optsLock      sync.Mutex
+	log           log15.Logger
+	stop          chan int // All routines should exit when this channel is closed
 }
 
 func NewConnection(endpoint string, http bool, prvKey *ecdsa.PrivateKey, log log15.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
