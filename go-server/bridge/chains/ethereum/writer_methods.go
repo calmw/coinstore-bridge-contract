@@ -4,9 +4,9 @@ import (
 	"coinstore/bridge/event"
 	"coinstore/bridge/msg"
 	"coinstore/model"
+	"coinstore/utils"
 	"context"
 	"errors"
-	utils "github.com/ChainSafe/ChainBridge/shared/ethereum"
 	log "github.com/calmw/blog"
 	"math/big"
 	"time"
@@ -26,8 +26,6 @@ var ErrTxUnderpriced = errors.New("replacement transaction underpriced")
 var ErrFatalTx = errors.New("submission of transaction failed")
 var ErrFatalQuery = errors.New("query of chain state failed")
 
-// enum ProposalStatus {Inactive, Active, Passed, Executed, Cancelled}
-// proposalIsComplete returns true if the proposal state is either Passed, Transferred or Cancelled
 func (w *Writer) proposalIsComplete(m msg.Message, dataHash [32]byte) bool {
 	prop, err := w.voteContract.GetProposal(nil, m.Source.Big(), m.DepositNonce.Big(), dataHash)
 	if err != nil {
@@ -43,7 +41,6 @@ func (w *Writer) proposalIsComplete(m msg.Message, dataHash [32]byte) bool {
 	return prop.Status == PassedStatus || prop.Status == TransferredStatus || prop.Status == CancelledStatus
 }
 
-// proposalIsComplete returns true if the proposal state is Transferred or Cancelled
 func (w *Writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
 	prop, err := w.voteContract.GetProposal(w.conn.CallOpts(), srcId.Big(), nonce.Big(), dataHash)
 	if err != nil {
@@ -159,7 +156,7 @@ func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 
 				if m.Source == msg.ChainId(sourceId) &&
 					m.DepositNonce.Big().Uint64() == depositNonce &&
-					utils.IsFinalized(uint8(status)) {
+					event.IsFinalized(uint8(status)) {
 					w.ExecuteProposal(m, data, dataHash)
 					return
 				} else {
