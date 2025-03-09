@@ -153,8 +153,15 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
 		nonce := msg.Nonce(log.Topics[3].Big().Uint64())
 
+		records, err := l.bridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
+		fmt.Println(destId, rId, "~~~", records, "~", records, "~~", err)
+		if err != nil {
+			return err
+		}
+
 		var eventData []interface{}
 		eventData, err = l.bridgeAbi.Unpack(string(event.Deposit), log.Data)
+		fmt.Println(eventData, err, nonce, "1 ~~~")
 		data := eventData[0].([]byte)
 
 		m = msg.NewGenericTransfer(

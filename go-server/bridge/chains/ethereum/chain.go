@@ -50,6 +50,7 @@ func InitializeChain(cfg *config.Config, logger log.Logger, sysErr chan<- error)
 	}
 
 	bridgeContract, err := binding.NewBridge(cfg.BridgeContractAddress, conn.Client())
+	fmt.Println(cfg.BridgeContractAddress, err, cfg.ChainId, "~~~~~~~")
 	if err != nil {
 		return nil, err
 	}

@@ -22,7 +22,7 @@ type TokenInfo struct {
 
 type Token struct {
 	Cli      *ethclient.Client
-	Contract *binding.erc20
+	Contract *binding.Erc20
 }
 
 func NewToken(addr common.Address) (*Token, error) {
@@ -30,7 +30,7 @@ func NewToken(addr common.Address) (*Token, error) {
 	if err != nil {
 		return nil, err
 	}
-	contractObj, err := binding.erc20.NewErc20(addr, cli)
+	contractObj, err := binding.NewErc20(addr, cli)
 	if err != nil {
 		return nil, err
 	}
