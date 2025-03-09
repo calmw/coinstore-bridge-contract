@@ -67,7 +67,7 @@ interface IVote {
         uint256 originChainID,
         uint256 depositNonce,
         bytes32 dataHash
-    ) external returns( Proposal memory);
+    ) external returns (Proposal memory);
 
     function getRelayerThreshold() external view returns (uint256);
 }

@@ -19,6 +19,7 @@ const DefaultBlockConfirmations = 5
 type Config struct {
 	ChainName             string
 	ChainId               int
+	ChainType             int
 	Endpoint              string
 	From                  string
 	PrivateKey            *ecdsa.PrivateKey
@@ -72,6 +73,7 @@ func NewConfig(cfg model.Config) Config {
 	return Config{
 		ChainName:             cfg.ChainName,
 		ChainId:               cfg.ChainId,
+		ChainType:             cfg.ChainType,
 		Endpoint:              cfg.Endpoint,
 		From:                  cfg.From,
 		PrivateKey:            privateKey,

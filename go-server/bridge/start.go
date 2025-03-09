@@ -2,12 +2,19 @@ package bridge
 
 import (
 	"coinstore/bridge/chains/ethereum"
+	"coinstore/bridge/chains/tron"
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
 	"coinstore/db"
 	"coinstore/model"
+	"errors"
 	"fmt"
 	log "github.com/calmw/blog"
+)
+
+const (
+	ChainTypeEvm  = 1
+	ChainTypeTron = 2
 )
 
 func Run() error {
@@ -16,7 +23,7 @@ func Run() error {
 	db.InitMysql(logger)
 
 	//自动迁移为给定模型运行自动迁移，只会添加缺失的字段，不会删除/更改当前数据
-	err := db.DB.AutoMigrate(&model.Config{}, &model.PollState{}, &model.BridgeOrder{})
+	err := db.DB.AutoMigrate(&model.Config{}, &model.PollState{}, &model.BridgeTx{})
 	if err != nil {
 		logger.Debug("db AutoMigrate err: ", err)
 	}
@@ -35,13 +42,23 @@ func Run() error {
 		var newChain core.Chain
 		chainLogger := log.Root().New("chain", chainConfig.ChainName)
 
-		// TODO: 根据不同链类型，使用不同的初始化方法，下面先做一种
-		//if chainConfig
-		newChain, err = ethereum.InitializeChain(&chainConfig, chainLogger, sysErr)
-		if err != nil {
-			logger.Error("chain config: ", chainConfig)
-			return err
+		if chainConfig.ChainType == ChainTypeEvm {
+			newChain, err = ethereum.InitializeChain(&chainConfig, chainLogger, sysErr)
+			if err != nil {
+				logger.Error("chain config", "error", err)
+				return err
+			}
+		} else if chainConfig.ChainType == ChainTypeTron {
+			newChain, err = tron.InitializeChain(&chainConfig, chainLogger, sysErr)
+			if err != nil {
+				logger.Error("chain config", "error", err)
+				return err
+			}
+		} else {
+			logger.Error("chain type", "error", err)
+			return errors.New("chain type not supported")
 		}
+
 		c.AddChain(newChain)
 	}
 

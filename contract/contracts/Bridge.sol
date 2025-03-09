@@ -14,6 +14,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
 
     IVote public Vote; // vote 合约
     uint256 public chainId; // 自定义链ID
+    uint256 public chainType; // 自定义链类型， 1 EVM 2 Tron
     mapping(uint256 => uint256) public depositCounts; // destinationChainID => number of deposits
     mapping(bytes32 => address) public resourceIdToContractAddress; // resourceID => 业务合约地址(tantin address)
     mapping(address => bytes32) public contractAddressToResourceID; // 业务合约地址(tantin address) => resourceID
@@ -33,10 +34,12 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
      */
     function adminSetEnv(
         address voteAddress_,
-        uint256 chainId_
+        uint256 chainId_,
+        uint256 chainType_
     ) external onlyRole(ADMIN_ROLE) {
         Vote = IVote(voteAddress_);
         chainId = chainId_;
+        chainType = chainType_;
     }
 
     /**
@@ -149,6 +152,11 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     // 获取自定义链ID
     function getChainId() public view returns (uint256) {
         return chainId;
+    }
+
+    // 获取自定义链类型ID
+    function getChainTypeId() public view returns (uint256) {
+        return chainType;
     }
 
     // 获取跨链费用

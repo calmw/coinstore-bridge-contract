@@ -298,6 +298,11 @@
         "internalType": "uint256",
         "name": "chainId_",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "chainType_",
+        "type": "uint256"
       }
     ],
     "name": "adminSetEnv",
@@ -376,6 +381,19 @@
   {
     "inputs": [],
     "name": "chainId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "chainType",
     "outputs": [
       {
         "internalType": "uint256",
@@ -517,6 +535,19 @@
   {
     "inputs": [],
     "name": "getChainId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getChainTypeId",
     "outputs": [
       {
         "internalType": "uint256",

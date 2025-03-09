@@ -1,4 +1,4 @@
-package ethereum
+package tron
 
 import (
 	"coinstore/binding"

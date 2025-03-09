@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type BridgeOrder struct {
+type BridgeTx struct {
 	gorm.Model
 	Data       []byte `gorm:"data"` // msg binary data
 	Hash       string `gorm:"hash"`
@@ -44,24 +44,24 @@ func BytesToMsg(b []byte) (msg.Message, error) {
 
 func SaveBridgeOrder(m msg.Message, log log.Logger) {
 	log.Debug("🐧 检查订单是否存在, %d %d", m.Destination, m.DepositNonce)
-	var bridgeOrder BridgeOrder
+	var bridgeOrder BridgeTx
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
 	key := []byte(fmt.Sprintf("%s%d%d%d", resourceIdHex, m.Source, m.Destination, m.DepositNonce))
 
 	// 记录不存在就插入
-	err := db.DB.Model(BridgeOrder{}).Where("hash=?", string(key)).First(&bridgeOrder).Error
+	err := db.DB.Model(BridgeTx{}).Where("hash=?", string(key)).First(&bridgeOrder).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		orderData, err := MsgDataToBytes(m)
 		if err != nil {
 			log.Error(err.Error())
 			return
 		}
-		bridgeOrder = BridgeOrder{
+		bridgeOrder = BridgeTx{
 			Data: orderData,
 			Hash: string(key),
 		}
 		log.Debug("🐧 插入订单数据, %d %d", m.Destination, m.DepositNonce)
-		err = db.DB.Model(BridgeOrder{}).Create(&bridgeOrder).Error
+		err = db.DB.Model(BridgeTx{}).Create(&bridgeOrder).Error
 		if err != nil {
 			log.Error(err.Error())
 		}
@@ -78,7 +78,7 @@ func UpdateExecuteStatus(m msg.Message, status bool) {
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
 	key := []byte(fmt.Sprintf("%s%d%d%d", resourceIdHex, m.Source, m.Destination, m.DepositNonce))
 	// 更新记录
-	err := db.DB.Model(&BridgeOrder{}).Where("hash=?", string(key)).Updates(map[string]interface{}{
+	err := db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).Updates(map[string]interface{}{
 		"status": status,
 	}).Error
 	if err != nil {
@@ -92,7 +92,7 @@ func UpdateVoteStatus(m msg.Message, voteStatus bool) {
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
 	key := []byte(fmt.Sprintf("%s%d%d%d", resourceIdHex, m.Source, m.Destination, m.DepositNonce))
 	// 更新记录
-	err := db.DB.Model(&BridgeOrder{}).Where("hash=?", string(key)).Updates(map[string]interface{}{
+	err := db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).Updates(map[string]interface{}{
 		"vote_status": voteStatus,
 	}).Error
 	if err != nil {
