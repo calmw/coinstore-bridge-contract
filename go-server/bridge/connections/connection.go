@@ -1,11 +1,11 @@
 package connections
 
 import (
+	"coinstore/bridge/connections/egs"
 	"context"
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
-	"github.com/ChainSafe/ChainBridge/connections/ethereum/egs"
 	"github.com/calmw/blog"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
