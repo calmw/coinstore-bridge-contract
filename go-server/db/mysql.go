@@ -2,10 +2,10 @@ package db
 
 import (
 	"fmt"
+	log "github.com/ChainSafe/log15"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-	"log"
 )
 
 var DB *gorm.DB
@@ -18,8 +18,8 @@ const (
 	Db       = "bridge"
 )
 
-func InitMysql() {
-	log.Println("Init Mysql")
+func InitMysql(log log.Logger) {
+	log.Debug("Init Mysql")
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		UserName,
 		Password,
@@ -41,7 +41,8 @@ func InitMysql() {
 		SkipDefaultTransaction: true,
 	})
 	if err != nil {
-		log.Fatal(fmt.Sprintf("mysql connention error ==>  %+v", err))
+		log.Debug(fmt.Sprintf("mysql connention error ==>  %+v", err))
+		panic(fmt.Sprintf("mysql connention error ==>  %+v", err))
 	}
 
 	_ = db.Callback().Create().After("gorm:after_create").Register("after_create", After)
@@ -56,6 +57,6 @@ func InitMysql() {
 
 func After(db *gorm.DB) {
 	db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
-	sql := db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
-	log.Println(sql)
+	//sql := db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
+	//log.Debug(sql)
 }

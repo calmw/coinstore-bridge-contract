@@ -13,10 +13,10 @@ import (
 func Run() error {
 	logger := log.Root()
 	logger.Debug("Starting CoinStore Bridge...")
-	db.InitMysql()
+	db.InitMysql(logger)
 
 	//自动迁移为给定模型运行自动迁移，只会添加缺失的字段，不会删除/更改当前数据
-	err := db.DB.AutoMigrate(&model.Config{}, &model.PollState{})
+	err := db.DB.AutoMigrate(&model.Config{}, &model.PollState{}, &model.BridgeOrder{})
 	if err != nil {
 		logger.Debug("db AutoMigrate err: ", err)
 	}

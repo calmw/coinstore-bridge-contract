@@ -147,7 +147,6 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		nonce := msg.Nonce(log.Topics[3].Big().Uint64())
 
 		records, err := l.bridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
-		fmt.Println(destId, rId, "~~~", records, "~", records, "~~", err)
 		if err != nil {
 			return err
 		}
@@ -166,11 +165,13 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			records.Data[:],
 		)
 
-		//err = l.Router(m)
-		//if err != nil {
-		//	l.log.Error("subscription error: failed to route message", "err", err)
-		//}
-		//storage.Stg.Create(m)
+		err = l.Router.Send(m)
+		if err != nil {
+			l.log.Error("subscription error: failed to route message", "err", err)
+		}
+
+		// 保存到数据库
+		model.SaveBridgeOrder(m, l.log)
 	}
 
 	return nil
