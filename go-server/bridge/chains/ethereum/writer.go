@@ -40,7 +40,7 @@ func NewWriter(conn Connection, cfg *config.Config, log log15.Logger, stop <-cha
 		sysErr:       sysErr,
 	}
 	Writers[cfg.ChainId] = &writer
-	log.Debug("new writer id", "id", cfg.ChainId)
+	log.Debug("new writer", "id", cfg.ChainId)
 	return &writer
 }
 

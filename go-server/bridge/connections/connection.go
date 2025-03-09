@@ -55,7 +55,7 @@ func NewConnection(endpoint string, http bool, prvKey *ecdsa.PrivateKey, log log
 
 // Connect starts the ethereum WS connection
 func (c *Connection) Connect() error {
-	c.log.Info("Connecting to ethereum chain...", "url", c.endpoint)
+	c.log.Info("Connecting to ethereum chain...", "rpc", c.endpoint)
 	var rpcClient *rpc.Client
 	var err error
 	// Start http or ws client

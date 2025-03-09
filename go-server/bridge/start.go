@@ -30,7 +30,7 @@ func Run() error {
 	}
 	for _, cfg := range cfgs {
 		chainConfig := config.NewConfig(cfg)
-		logger.Debug("chain config: ", chainConfig)
+		logger.Debug("chain config: ", "config=", chainConfig)
 
 		var newChain core.Chain
 		chainLogger := log.Root().New("chain", chainConfig.ChainName)
@@ -45,7 +45,7 @@ func Run() error {
 		c.AddChain(newChain)
 	}
 
-	logger.Debug("Config on initialization... config: %v \n", cfgs)
+	logger.Debug("Config on initialization... ")
 
 	c.Start()
 	return nil

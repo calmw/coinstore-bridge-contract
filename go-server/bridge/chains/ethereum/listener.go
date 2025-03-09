@@ -52,7 +52,7 @@ func NewListener(conn Connection, cfg *config.Config, log log15.Logger, stop <-c
 	}
 
 	Listeners[cfg.ChainId] = &listener
-	log.Debug("new listener id", "id", cfg.ChainId)
+	log.Debug("new listener", "id", cfg.ChainId)
 	return &listener
 }
 

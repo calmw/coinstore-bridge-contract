@@ -28,7 +28,6 @@ func NewCore(sysErr <-chan error) *Core {
 // AddChain registers the chain in the Registry and calls Chain.SetRouter()
 func (c *Core) AddChain(chain Chain) {
 	c.Registry = append(c.Registry, chain)
-	fmt.Println("######")
 	chain.SetRouter(c.route)
 }
 
