@@ -5,7 +5,12 @@ import (
 	"math/big"
 )
 
-type ChainId int
+type ChainId int64
+
+func (n ChainId) Big() *big.Int {
+	return big.NewInt(int64(n))
+}
+
 type TransferType string
 type ResourceId [32]byte
 

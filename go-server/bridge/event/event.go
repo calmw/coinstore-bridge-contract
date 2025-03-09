@@ -13,8 +13,8 @@ func (es Sig) GetTopic() common.Hash {
 
 const (
 	Deposit       Sig = "Deposit(uint256,bytes32,uint256,bytes)"
-	ProposalEvent Sig = "ProposalEvent(uint8,uint64,uint8,bytes32,bytes32)"
-	ProposalVote  Sig = "ProposalVote(uint8,uint64,uint8,bytes32)"
+	ProposalEvent Sig = "ProposalEvent(uint256,uint256,uint8,bytes32,bytes32)"
+	ProposalVote  Sig = "ProposalVote(uint256,uint256,uint8,bytes32)"
 )
 
 type ProposalStatus int

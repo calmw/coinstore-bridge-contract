@@ -30,7 +30,6 @@ type Listener struct {
 	conn           Connection
 	Router         chains.Router
 	bridgeContract *binding.Bridge
-	voterContract  *binding.Vote
 	log            log15.Logger
 	latestBlock    core.LatestBlock
 	stop           <-chan int
@@ -43,15 +42,10 @@ func NewListener(conn Connection, cfg *config.Config, log log15.Logger, stop <-c
 	if err != nil {
 		panic("new bridge contract failed")
 	}
-	voteContract, err := binding.NewVote(cfg.VoteContractAddress, conn.Client())
-	if err != nil {
-		panic("new vote contract failed")
-	}
 	listener := Listener{
 		cfg:            *cfg,
 		conn:           conn,
 		bridgeContract: bridgeContract,
-		voterContract:  voteContract,
 		log:            log,
 		stop:           stop,
 		sysErr:         sysErr,
