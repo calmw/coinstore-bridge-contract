@@ -8,11 +8,11 @@ import (
 
 func InitOpenBnbEnv() {
 	key := os.Getenv("COINSTORE_BRIDGE")
-	fmt.Println(key)
 
 	blockchain.ChainConfig = blockchain.ChainConfigs{
 		BridgeId:              1,
 		ChainId:               5611,
+		ChainTypeId:           1,
 		RPC:                   "https://opbnb-testnet-rpc.bnbchain.org",
 		BridgeContractAddress: "0xEA2c0B226670cd66f44560deA091DfA860C892eF",
 		VoteContractAddress:   "0x77bcb682e01D8763F6757c0D0Beaf577Afcfdf43",
@@ -29,6 +29,7 @@ func InitTronEnv() {
 	blockchain.ChainConfig = blockchain.ChainConfigs{
 		BridgeId:              10,
 		ChainId:               5611,
+		ChainTypeId:           2,
 		RPC:                   "https://nile.trongrid.io/jsonrpc/",
 		BridgeContractAddress: "0x73AB93aC16D86333a137D4bd9ba34dD310b9175a",
 		VoteContractAddress:   "0x77bcb682e01D8763F6757c0D0Beaf577Afcfdf43",

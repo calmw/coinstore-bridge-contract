@@ -64,6 +64,7 @@ func InitializeChain(cfg *config.Config, logger log.Logger, sysErr chan<- error)
 	}
 
 	chainTypeId, err := bridgeContract.GetChainTypeId(conn.CallOpts())
+	log.Debug("~11", "!", err)
 	if err != nil {
 		return nil, err
 	}

@@ -18,6 +18,7 @@ import (
 type ChainConfigs struct {
 	BridgeId              int64
 	ChainId               int64
+	ChainTypeId           int64
 	RPC                   string
 	BridgeContractAddress string
 	VoteContractAddress   string

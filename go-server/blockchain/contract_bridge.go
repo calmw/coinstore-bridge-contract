@@ -47,7 +47,7 @@ func (c Bridge) AdminSetEnv() {
 			log.Println(err)
 			return
 		}
-		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.VoteContractAddress), big.NewInt(ChainConfig.BridgeId))
+		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.VoteContractAddress), big.NewInt(ChainConfig.BridgeId), big.NewInt(ChainConfig.ChainTypeId))
 		if err == nil {
 			break
 		}
