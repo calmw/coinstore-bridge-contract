@@ -1,14 +1,14 @@
 package services
 
 import (
-	"coinstore/blockchain"
+	"coinstore/contract"
 	"os"
 )
 
 func InitOpenBnbEnv() {
 	key := os.Getenv("COINSTORE_BRIDGE")
 
-	blockchain.ChainConfig = blockchain.ChainConfigs{
+	contract.ChainConfig = contract.ChainConfigs{
 		BridgeId:              1,
 		ChainId:               5611,
 		ChainTypeId:           1,
@@ -24,7 +24,7 @@ func InitOpenBnbEnv() {
 func InitTronEnv() {
 	key := os.Getenv("COINSTORE_BRIDGE")
 
-	blockchain.ChainConfig = blockchain.ChainConfigs{
+	contract.ChainConfig = contract.ChainConfigs{
 		BridgeId:              2,
 		ChainId:               3448148188,
 		ChainTypeId:           2,

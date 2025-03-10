@@ -1,4 +1,4 @@
-package blockchain
+package contract
 
 import (
 	"bytes"

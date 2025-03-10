@@ -1,7 +1,7 @@
 package main
 
 import (
-	"coinstore/blockchain"
+	"coinstore/contract"
 	"coinstore/services"
 	"context"
 	"fmt"
@@ -10,7 +10,7 @@ import (
 func main() {
 	services.InitTronEnv()
 
-	err, cli := blockchain.Client(blockchain.ChainConfig)
+	err, cli := contract.Client(contract.ChainConfig)
 
 	fmt.Println(err, cli)
 	fmt.Println(cli.ChainID(context.Background()))
