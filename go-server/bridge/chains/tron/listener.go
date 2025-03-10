@@ -6,12 +6,10 @@ import (
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
 	"coinstore/bridge/event"
-	"coinstore/bridge/msg"
 	"coinstore/db"
 	"coinstore/model"
 	"context"
 	"errors"
-	"fmt"
 	"github.com/calmw/blog"
 	eth "github.com/ethereum/go-ethereum"
 	ethcommon "github.com/ethereum/go-ethereum/common"
@@ -29,7 +27,7 @@ type Listener struct {
 	cfg            config.Config
 	conn           Connection
 	Router         chains.Router
-	bridgeContract *binding.Bridge
+	bridgeContract *binding.BridgeTron
 	log            log15.Logger
 	latestBlock    core.LatestBlock
 	stop           <-chan int
@@ -38,7 +36,7 @@ type Listener struct {
 
 // NewListener creates and returns a Listener
 func NewListener(conn Connection, cfg *config.Config, log log15.Logger, stop <-chan int, sysErr chan<- error) *Listener {
-	bridgeContract, err := binding.NewBridge(cfg.BridgeContractAddress, conn.Client())
+	bridgeContract, err := binding.NewBridgeTron(cfg.BridgeContractAddress)
 	if err != nil {
 		panic("new bridge contract failed")
 	}
@@ -126,47 +124,46 @@ func (l *Listener) pollBlocks() error {
 
 func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	l.log.Debug("Querying block for deposit events", "block", latestBlock)
-	query := buildQuery(l.cfg.BridgeContractAddress, event.Deposit, latestBlock, latestBlock)
 
 	// 获取日志
-	logs, err := l.conn.Client().FilterLogs(context.Background(), query)
-	if err != nil {
-		return fmt.Errorf("unable to Filter Logs: %w", err)
-	}
-
-	for _, log := range logs {
-		var m msg.Message
-		destId := msg.ChainId(log.Topics[1].Big().Uint64())
-		rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
-		nonce := msg.Nonce(log.Topics[3].Big().Uint64())
-
-		records, err := l.bridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
-		if err != nil {
-			return err
-		}
-
-		l.log.Debug("get events:")
-		l.log.Debug("ResourceID", records.ResourceID)
-		l.log.Debug("DestinationChainId", records.DestinationChainId)
-		l.log.Debug("Sender", records.Sender)
-		l.log.Debug("Data", records.Data)
-
-		m = msg.NewGenericTransfer(
-			msg.ChainId(l.cfg.ChainId),
-			destId,
-			nonce,
-			rId,
-			records.Data[:],
-		)
-
-		err = l.Router.Send(m)
-		if err != nil {
-			l.log.Error("subscription error: failed to route message", "err", err)
-		}
-
-		// 保存到数据库
-		model.SaveBridgeOrder(m, l.log)
-	}
+	//logs, err := l.conn.Client().FilterLogs(context.Background(), query)
+	//if err != nil {
+	//	return fmt.Errorf("unable to Filter Logs: %w", err)
+	//}
+	//
+	//for _, log := range logs {
+	//	var m msg.Message
+	//	destId := msg.ChainId(log.Topics[1].Big().Uint64())
+	//	rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
+	//	nonce := msg.Nonce(log.Topics[3].Big().Uint64())
+	//
+	//	records, err := l.bridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
+	//	if err != nil {
+	//		return err
+	//	}
+	//
+	//	l.log.Debug("get events:")
+	//	l.log.Debug("ResourceID", records.ResourceID)
+	//	l.log.Debug("DestinationChainId", records.DestinationChainId)
+	//	l.log.Debug("Sender", records.Sender)
+	//	l.log.Debug("Data", records.Data)
+	//
+	//	m = msg.NewGenericTransfer(
+	//		msg.ChainId(l.cfg.ChainId),
+	//		destId,
+	//		nonce,
+	//		rId,
+	//		records.Data[:],
+	//	)
+	//
+	//	err = l.Router.Send(m)
+	//	if err != nil {
+	//		l.log.Error("subscription error: failed to route message", "err", err)
+	//	}
+	//
+	//	// 保存到数据库
+	//	model.SaveBridgeOrder(m, l.log)
+	//}
 
 	return nil
 }

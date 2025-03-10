@@ -5,6 +5,7 @@ import (
 	"coinstore/bridge/config"
 	"coinstore/bridge/msg"
 	"github.com/calmw/blog"
+	"github.com/ethereum/go-ethereum/common"
 	"sync"
 )
 
@@ -25,7 +26,7 @@ type Writer struct {
 }
 
 func NewWriter(conn Connection, cfg *config.Config, log log15.Logger, stop <-chan int, sysErr chan<- error) *Writer {
-	voteContract, err := binding.NewVote(cfg.VoteContractAddress, conn.Client())
+	voteContract, err := binding.NewVote(common.HexToAddress(cfg.VoteContractAddress), conn.Client())
 	if err != nil {
 		panic("new vote contract failed")
 	}

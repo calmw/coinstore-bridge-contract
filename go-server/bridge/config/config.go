@@ -4,7 +4,6 @@ import (
 	"coinstore/db"
 	"coinstore/model"
 	"crypto/ecdsa"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/shopspring/decimal"
 	"math/big"
@@ -23,8 +22,8 @@ type Config struct {
 	Endpoint              string
 	From                  string
 	PrivateKey            *ecdsa.PrivateKey
-	BridgeContractAddress common.Address
-	VoteContractAddress   common.Address
+	BridgeContractAddress string
+	VoteContractAddress   string
 	GasLimit              *big.Int
 	MaxGasPrice           *big.Int
 	MinGasPrice           *big.Int
@@ -77,8 +76,8 @@ func NewConfig(cfg model.Config) Config {
 		Endpoint:              cfg.Endpoint,
 		From:                  cfg.From,
 		PrivateKey:            privateKey,
-		BridgeContractAddress: common.HexToAddress(cfg.BridgeContract),
-		VoteContractAddress:   common.HexToAddress(cfg.VoteContract),
+		BridgeContractAddress: cfg.BridgeContract,
+		VoteContractAddress:   cfg.VoteContract,
 		GasLimit:              gasLimit,
 		MaxGasPrice:           maxGasPrice,
 		MinGasPrice:           minGasPrice,

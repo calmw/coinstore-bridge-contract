@@ -49,7 +49,7 @@ func InitializeChain(cfg *config.Config, logger log.Logger, sysErr chan<- error)
 		return nil, err
 	}
 
-	bridgeContract, err := binding.NewBridge(cfg.BridgeContractAddress, conn.Client())
+	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.Client())
 	if err != nil {
 		return nil, err
 	}

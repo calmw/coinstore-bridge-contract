@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	log "github.com/calmw/blog"
+	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 	"time"
 )
@@ -95,7 +96,7 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 
 	metadata := m.Payload[0].([]byte)
 	data := ConstructGenericProposalData(metadata)
-	toHash := append(w.Cfg.BridgeContractAddress.Bytes(), data...)
+	toHash := append(common.HexToAddress(w.Cfg.BridgeContractAddress).Bytes(), data...)
 	dataHash := utils.Hash(toHash)
 
 	if !w.shouldVote(m, dataHash) {
@@ -142,7 +143,7 @@ func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 				}
 			}
 
-			query := buildQuery(w.Cfg.VoteContractAddress, event.ProposalEvent, latestBlock, latestBlock)
+			query := buildQuery(common.HexToAddress(w.Cfg.VoteContractAddress), event.ProposalEvent, latestBlock, latestBlock)
 			evts, err := w.conn.Client().FilterLogs(context.Background(), query)
 			if err != nil {
 				w.log.Error("Failed to fetch logs", "err", err)

@@ -14,7 +14,7 @@ import (
 	"fmt"
 	"github.com/calmw/blog"
 	eth "github.com/ethereum/go-ethereum"
-	ethcommon "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/shopspring/decimal"
 	"math/big"
 	"time"
@@ -38,7 +38,7 @@ type Listener struct {
 
 // NewListener creates and returns a Listener
 func NewListener(conn Connection, cfg *config.Config, log log15.Logger, stop <-chan int, sysErr chan<- error) *Listener {
-	bridgeContract, err := binding.NewBridge(cfg.BridgeContractAddress, conn.Client())
+	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.Client())
 	if err != nil {
 		panic("new bridge contract failed")
 	}
@@ -126,7 +126,7 @@ func (l *Listener) pollBlocks() error {
 
 func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	l.log.Debug("Querying block for deposit events", "block", latestBlock)
-	query := buildQuery(l.cfg.BridgeContractAddress, event.Deposit, latestBlock, latestBlock)
+	query := buildQuery(common.HexToAddress(l.cfg.BridgeContractAddress), event.Deposit, latestBlock, latestBlock)
 
 	// 获取日志
 	logs, err := l.conn.Client().FilterLogs(context.Background(), query)
@@ -183,12 +183,12 @@ func (l *Listener) StoreBlock(blockHeight *big.Int) error {
 	return model.SetBlockHeight(db.DB, l.cfg.ChainId, decimal.NewFromBigInt(blockHeight, 0))
 }
 
-func buildQuery(contract ethcommon.Address, sig event.Sig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
+func buildQuery(contract common.Address, sig event.Sig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
 	query := eth.FilterQuery{
 		FromBlock: startBlock,
 		ToBlock:   endBlock,
-		Addresses: []ethcommon.Address{contract},
-		Topics: [][]ethcommon.Hash{
+		Addresses: []common.Address{contract},
+		Topics: [][]common.Hash{
 			{sig.GetTopic()},
 		},
 	}
