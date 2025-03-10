@@ -6,13 +6,15 @@ import (
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
 	"coinstore/bridge/event"
+	"coinstore/bridge/msg"
 	"coinstore/db"
 	"coinstore/model"
 	"context"
 	"errors"
+	"fmt"
 	"github.com/calmw/blog"
 	eth "github.com/ethereum/go-ethereum"
-	ethcommon "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/shopspring/decimal"
 	"math/big"
 	"time"
@@ -125,45 +127,47 @@ func (l *Listener) pollBlocks() error {
 func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	l.log.Debug("Querying block for deposit events", "block", latestBlock)
 
+	query := buildQuery(common.HexToAddress(l.cfg.BridgeContractAddress), event.Deposit, latestBlock, latestBlock)
+
 	// 获取日志
-	//logs, err := l.conn.Client().FilterLogs(context.Background(), query)
-	//if err != nil {
-	//	return fmt.Errorf("unable to Filter Logs: %w", err)
-	//}
-	//
-	//for _, log := range logs {
-	//	var m msg.Message
-	//	destId := msg.ChainId(log.Topics[1].Big().Uint64())
-	//	rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
-	//	nonce := msg.Nonce(log.Topics[3].Big().Uint64())
-	//
-	//	records, err := l.bridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
-	//	if err != nil {
-	//		return err
-	//	}
-	//
-	//	l.log.Debug("get events:")
-	//	l.log.Debug("ResourceID", records.ResourceID)
-	//	l.log.Debug("DestinationChainId", records.DestinationChainId)
-	//	l.log.Debug("Sender", records.Sender)
-	//	l.log.Debug("Data", records.Data)
-	//
-	//	m = msg.NewGenericTransfer(
-	//		msg.ChainId(l.cfg.ChainId),
-	//		destId,
-	//		nonce,
-	//		rId,
-	//		records.Data[:],
-	//	)
-	//
-	//	err = l.Router.Send(m)
-	//	if err != nil {
-	//		l.log.Error("subscription error: failed to route message", "err", err)
-	//	}
-	//
-	//	// 保存到数据库
-	//	model.SaveBridgeOrder(m, l.log)
-	//}
+	logs, err := l.conn.Client().FilterLogs(context.Background(), query)
+	if err != nil {
+		return fmt.Errorf("unable to Filter Logs: %w", err)
+	}
+
+	for _, log := range logs {
+		var m msg.Message
+		destId := msg.ChainId(log.Topics[1].Big().Uint64())
+		rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
+		nonce := msg.Nonce(log.Topics[3].Big().Uint64())
+
+		records, err := l.bridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
+		if err != nil {
+			return err
+		}
+
+		l.log.Debug("get events:")
+		l.log.Debug("ResourceID", records.ResourceID)
+		l.log.Debug("DestinationChainId", records.DestinationChainId)
+		l.log.Debug("Sender", records.Sender)
+		l.log.Debug("Data", records.Data)
+
+		m = msg.NewGenericTransfer(
+			msg.ChainId(l.cfg.ChainId),
+			destId,
+			nonce,
+			rId,
+			records.Data[:],
+		)
+
+		err = l.Router.Send(m)
+		if err != nil {
+			l.log.Error("subscription error: failed to route message", "err", err)
+		}
+
+		// 保存到数据库
+		model.SaveBridgeOrder(m, l.log)
+	}
 
 	return nil
 }
@@ -180,12 +184,12 @@ func (l *Listener) StoreBlock(blockHeight *big.Int) error {
 	return model.SetBlockHeight(db.DB, l.cfg.ChainId, decimal.NewFromBigInt(blockHeight, 0))
 }
 
-func buildQuery(contract ethcommon.Address, sig event.Sig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
+func buildQuery(contract common.Address, sig event.Sig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
 	query := eth.FilterQuery{
 		FromBlock: startBlock,
 		ToBlock:   endBlock,
-		Addresses: []ethcommon.Address{contract},
-		Topics: [][]ethcommon.Hash{
+		Addresses: []common.Address{contract},
+		Topics: [][]common.Hash{
 			{sig.GetTopic()},
 		},
 	}
