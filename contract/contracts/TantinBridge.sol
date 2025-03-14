@@ -99,6 +99,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         @param resourceId 跨链桥设置的resourceId
         @param recipient 目标链资产接受者地址
         @param amount 跨链金额
+        @param signature 签名，对资产接受地址的签名
      */
     function deposit(
         uint256 destinationChainId,
@@ -118,18 +119,17 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         // 检测目标链ID
         uint256 chainId = Bridge.getChainId();
         require(destinationChainId != chainId, "destinationChainId error");
-        // 跨链费用
+        // 跨链费用比例，万分比
         uint256 fee = Bridge.getFeeByResourceId(resourceId);
         // 实际到账额度
         uint256 receiveAmount = amount - ((amount * fee) / 10000);
-        // 跨链token
+        // token地址
         address tokenAddress;
         if (tokenInfo.assetsType == AssetsType.Coin) {
             tokenAddress = address(0);
-            require(msg.value == amount, "incorrect fee supplied.");
+            require(msg.value == amount, "incorrect value supplied.");
         }
         if (tokenInfo.assetsType == AssetsType.Erc20) {
-            require(msg.value == fee, "incorrect fee supplied.");
             tokenAddress = tokenInfo.tokenAddress;
             IERC20 erc20 = IERC20(tokenAddress);
             if (tokenInfo.burnable) {
@@ -138,13 +138,14 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
                 erc20.transferFrom(msg.sender, address(this), amount);
             }
         }
+        uint256 destId = destinationChainId;
         depositRecord[msg.sender][localNonce] = DepositRecord(
             tokenAddress,
             msg.sender,
             recipient,
             amount,
             fee,
-            destinationChainId
+            destId
         );
         // data
         bytes memory data = abi.encode(
@@ -155,8 +156,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             receiveAmount,
             localNonce
         );
-        Bridge.deposit(destinationChainId, resourceId, data);
-        uint256 destId = destinationChainId;
+        Bridge.deposit(destId, resourceId, data);
         emit DepositEvent(
             msg.sender,
             recipient,
@@ -170,12 +170,12 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         localNonce++;
     }
 
-    // 验证签名,接受地址
+    // 验证签名
     function checkDepositSignature(
         bytes memory signature,
         address recipient,
         address sender
-    ) private view returns (bool) {
+    ) private pure returns (bool) {
         bytes32 messageHash = keccak256(abi.encodePacked(recipient));
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
