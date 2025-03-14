@@ -4,15 +4,9 @@ pragma solidity ^0.8.22;
 import "./interface/IBridge.sol";
 import "./interface/IVote.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
-//import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.5/contracts/utils/cryptography/ECDSA.sol";
 
 contract Vote is IVote, AccessControl, Initializable {
-    using ECDSA for bytes32;
-    using MessageHashUtils for bytes32;
-
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
     bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");

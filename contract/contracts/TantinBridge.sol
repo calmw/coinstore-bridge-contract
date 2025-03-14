@@ -5,12 +5,18 @@ import {IBridge} from "./interface/IBridge.sol";
 import {IERC20} from "./interface/IERC20.sol";
 import {ITantinBridge} from "./interface/ITantinBridge.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+//import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.5/contracts/utils/cryptography/ECDSA.sol";
 
 /// ERC20/Coin跨链
 
 contract TantinBridge is AccessControl, ITantinBridge, Initializable {
+    using ECDSA for bytes32;
+    using MessageHashUtils for bytes32;
+
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
