@@ -74,6 +74,7 @@ interface ITantinBridge {
         address sender;
         address recipient;
         uint256 amount;
+        uint256 fee;
         uint256 destinationChainId;
     }
 }

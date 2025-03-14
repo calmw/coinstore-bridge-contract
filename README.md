@@ -1,6 +1,10 @@
 ## 跨链合约
 
-- bridge-contracts
+- 当前跨链桥支持的链和币种：
+    - Tantin: TETH、TUSDT、TUSDC
+    - BNB: WETH、USDT、USDC
+    - Ethereum: ETH、USDT、USDC
+    - TRON: ETH、USDT、USDC
 
 ### 文档
 

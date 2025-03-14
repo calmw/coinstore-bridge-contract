@@ -107,6 +107,9 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         require(destinationChainId != chainId, "destinationChainId error");
         // 跨链费用
         uint256 fee = Bridge.getFeeByResourceId(resourceId);
+        // 实际到账额度
+        uint256 receiveAmount = amount - ((amount * fee) / 10000);
+        //
         userDepositNonce[msg.sender]++;
         // 跨链token
         address tokenAddress;
@@ -115,12 +118,12 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             chainId,
             msg.sender,
             recipient,
-            msg.value,
+            receiveAmount,
             userDepositNonce[msg.sender]
         );
         if (tokenInfo.assetsType == AssetsType.Coin) {
             tokenAddress = address(0);
-            require(msg.value == fee + amount, "incorrect fee supplied.");
+            require(msg.value == amount, "incorrect fee supplied.");
         }
         if (tokenInfo.assetsType == AssetsType.Erc20) {
             require(msg.value == fee, "incorrect fee supplied.");
@@ -137,9 +140,10 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             msg.sender,
             recipient,
             amount,
+            fee,
             destinationChainId
         );
-        Bridge.deposit{value: fee}(destinationChainId, resourceId, data);
+        Bridge.deposit(destinationChainId, resourceId, data);
 
         emit DepositEvent(
             msg.sender,

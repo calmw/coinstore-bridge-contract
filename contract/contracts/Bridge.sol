@@ -118,9 +118,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         // 检测resource ID是否设置
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         require(uint8(tokenInfo.assetsType) > 0, "resourceId not exist");
-        // 检测跨链费用
-        require(tokenInfo.fee == msg.value, "incorrect fee supplied");
-        // 检测resourceId/token是否暂停跨链
+        // 检测resourceId/token是否被暂停跨链
         require(!tokenInfo.pause, "service suspended");
 
         uint256 depositNonce = ++depositCounts[destinationChainId];

@@ -31,7 +31,7 @@ interface IBridge {
         AssetsType assetsType; // 跨链币种
         address tokenAddress; // 币种地址。coin的话，值为0地址
         bool pause; // 该token是否暂停跨链
-        uint256 fee; // 跨链费用,当前设置的收手续费模式为固定数量的coin
+        uint256 fee; // 跨链费用,对跨链币种按比例收取，此处为万分比
     }
 
     struct DepositRecord {
