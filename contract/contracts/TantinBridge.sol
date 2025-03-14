@@ -156,14 +156,14 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             localNonce
         );
         Bridge.deposit(destinationChainId, resourceId, data);
-
+        uint256 destId = destinationChainId;
         emit DepositEvent(
             msg.sender,
             recipient,
             amount,
             tokenAddress,
             localNonce,
-            destinationChainId
+            destId
         );
 
         // 自增nonce
@@ -196,10 +196,10 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         uint256 originChainId;
         uint256 userNonce;
         (resourceId, originChainId, sender, recipient, amount, userNonce) = abi
-        .decode(
-            data,
-            (bytes32, uint256, address, address, uint256, uint256)
-        );
+            .decode(
+                data,
+                (bytes32, uint256, address, address, uint256, uint256)
+            );
 
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         address tokenAddress = tokenInfo.tokenAddress;
