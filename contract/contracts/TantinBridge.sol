@@ -21,12 +21,13 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
     IBridge public Bridge; // bridge 合约
-    mapping(address => uint64) public userDepositNonce; // 用户跨链nonce
+    uint256 public localNonce; // 跨链nonce
     mapping(address => mapping(uint256 => DepositRecord)) public depositRecord; // user => (depositNonce=> Deposit Record)
     mapping(address => bool) public blacklist; // 用户地址 => 是否在黑名单
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
 
     function initialize() public initializer {
+        localNonce = 1;
         _grantRole(ADMIN_ROLE, msg.sender);
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
@@ -103,8 +104,14 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         uint256 destinationChainId,
         bytes32 resourceId,
         address recipient,
-        uint256 amount
+        uint256 amount,
+        bytes memory signature
     ) external payable {
+        // 验证签名
+        require(
+            checkDepositSignature(signature, recipient, msg.sender),
+            "signature error"
+        );
         // 检测resource ID是否设置
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         require(uint8(tokenInfo.assetsType) > 0, "resourceId not exist");
@@ -115,18 +122,8 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         uint256 fee = Bridge.getFeeByResourceId(resourceId);
         // 实际到账额度
         uint256 receiveAmount = amount - ((amount * fee) / 10000);
-        //
-        userDepositNonce[msg.sender]++;
         // 跨链token
         address tokenAddress;
-        bytes memory data = abi.encode(
-            resourceId,
-            chainId,
-            msg.sender,
-            recipient,
-            receiveAmount,
-            userDepositNonce[msg.sender]
-        );
         if (tokenInfo.assetsType == AssetsType.Coin) {
             tokenAddress = address(0);
             require(msg.value == amount, "incorrect fee supplied.");
@@ -141,13 +138,22 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
                 erc20.transferFrom(msg.sender, address(this), amount);
             }
         }
-        depositRecord[msg.sender][userDepositNonce[msg.sender]] = DepositRecord(
+        depositRecord[msg.sender][localNonce] = DepositRecord(
             tokenAddress,
             msg.sender,
             recipient,
             amount,
             fee,
             destinationChainId
+        );
+        // data
+        bytes memory data = abi.encode(
+            resourceId,
+            chainId,
+            msg.sender,
+            recipient,
+            receiveAmount,
+            localNonce
         );
         Bridge.deposit(destinationChainId, resourceId, data);
 
@@ -156,9 +162,26 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             recipient,
             amount,
             tokenAddress,
-            userDepositNonce[msg.sender],
+            localNonce,
             destinationChainId
         );
+
+        // 自增nonce
+        localNonce++;
+    }
+
+    // 验证签名,接受地址
+    function checkDepositSignature(
+        bytes memory signature,
+        address recipient,
+        address sender
+    ) private view returns (bool) {
+        bytes32 messageHash = keccak256(abi.encodePacked(recipient));
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature
+        );
+
+        return recoverAddress == sender;
     }
 
     /**
@@ -173,10 +196,10 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         uint256 originChainId;
         uint256 userNonce;
         (resourceId, originChainId, sender, recipient, amount, userNonce) = abi
-            .decode(
-                data,
-                (bytes32, uint256, address, address, uint256, uint256)
-            );
+        .decode(
+            data,
+            (bytes32, uint256, address, address, uint256, uint256)
+        );
 
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         address tokenAddress = tokenInfo.tokenAddress;
