@@ -12,14 +12,6 @@ import (
 	"time"
 )
 
-type TokenInfo struct {
-	GameId       int64    `json:"game_id"`
-	TokenId      int64    `json:"token_id"`
-	TokenAddress string   `json:"token_address"`
-	MinBetAmount *big.Int `json:"min_bet_amount"`
-	MaxBetAmount *big.Int `json:"max_bet_amount"`
-}
-
 type Erc20 struct {
 	Cli      *ethclient.Client
 	Contract *binding.Erc20
