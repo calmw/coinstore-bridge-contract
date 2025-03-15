@@ -7,7 +7,6 @@ import (
 
 func InitOpenBnbEnv() {
 	key := os.Getenv("COINSTORE_BRIDGE")
-
 	contract.ChainConfig = contract.ChainConfigs{
 		BridgeId:              1,
 		ChainId:               5611,
@@ -22,17 +21,16 @@ func InitOpenBnbEnv() {
 }
 
 func InitTronEnv() {
-	key := os.Getenv("COINSTORE_BRIDGE")
-
+	key := os.Getenv("COINSTORE_BRIDGE_TRON")
 	contract.ChainConfig = contract.ChainConfigs{
 		BridgeId:              2,
 		ChainId:               3448148188,
 		ChainTypeId:           2,
-		RPC:                   "https://api.shasta.trongrid.io",
+		RPC:                   "grpc.nile.trongrid.io:50051",
 		BridgeContractAddress: "TBbjCKYeR2gDXvTtUNbRgTppWLv2W2XRTH",
 		VoteContractAddress:   "TEgAohYmMTz8sRRZSf5ht69Q3jPBA4vKSz",
 		TantinContractAddress: "TBVtUdewEJJ1zYif9tmYUC2sgERDYfWUUS",
-		UsdtAddress:           "TXBWNcC7npLBQDDJe4KFdo9wAkSGumHD11",
+		UsdtAddress:           "TU6UjUJadm8TungBHvL4n9apv8Jns4wJiz",
 		PrivateKey:            key,
 	}
 }
