@@ -171,7 +171,7 @@ func (c TanTin) AdminSetToken() {
 
 func (c TanTin) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount, fee *big.Int) {
 
-	token, err := NewToken(common.HexToAddress(ChainConfig.UsdtAddress))
+	token, err := NewErc20(common.HexToAddress(ChainConfig.UsdtAddress))
 	if err != nil {
 		fmt.Println(err)
 		return

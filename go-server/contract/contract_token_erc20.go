@@ -20,12 +20,12 @@ type TokenInfo struct {
 	MaxBetAmount *big.Int `json:"max_bet_amount"`
 }
 
-type Token struct {
+type Erc20 struct {
 	Cli      *ethclient.Client
 	Contract *binding.Erc20
 }
 
-func NewToken(addr common.Address) (*Token, error) {
+func NewErc20(addr common.Address) (*Erc20, error) {
 	err, cli := Client(ChainConfig)
 	if err != nil {
 		return nil, err
@@ -34,13 +34,13 @@ func NewToken(addr common.Address) (*Token, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Token{
+	return &Erc20{
 		Cli:      cli,
 		Contract: contractObj,
 	}, nil
 }
 
-func (c Token) Approve(amount *big.Int) {
+func (c Erc20) Approve(amount *big.Int) {
 	var res *types.Transaction
 	for {
 		err, txOpts := GetAuth(c.Cli)
