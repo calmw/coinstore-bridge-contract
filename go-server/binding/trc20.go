@@ -6,31 +6,113 @@ import (
 	"errors"
 	"fmt"
 	"github.com/btcsuite/btcd/btcec/v2"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/fbsobreira/gotron-sdk/pkg/client"
+	"github.com/fbsobreira/gotron-sdk/pkg/client/transaction"
 	"github.com/fbsobreira/gotron-sdk/pkg/common"
+	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
+	"github.com/fbsobreira/gotron-sdk/pkg/store"
 	"github.com/status-im/keycard-go/hexutils"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 	"io"
+	"log"
 	"math/big"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 )
 
+const (
+	AccountName  = "my_account"
+	Passphrase   = "account_pwd"
+	ShastaGrpc   = "grpc.shasta.trongrid.io:50051"
+	NileGrpc     = "grpc.nile.trongrid.io:50051"
+	OwnerAccount = "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
+	UsdtAddress  = "TU6UjUJadm8TungBHvL4n9apv8Jns4wJiz"
+)
+
 type Trc20 struct {
-	Address string
+	TokenAddress string
+	Client       *client.GrpcClient
 }
 
 func NewTrc20(address string) (*Trc20, error) {
-	return &Trc20{Address: address}, nil
+	cli := client.NewGrpcClient(NileGrpc)
+	err := cli.Start(grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+	return &Trc20{
+		TokenAddress: address,
+		Client:       cli,
+	}, nil
 }
 
-func (t *Trc20) Approve(to string, value *big.Int) (*types.Transaction, error) {
-	return nil, nil
+func (t *Trc20) Approve(spender string, value *big.Int) (string, error) {
+	// 携带的数据
+	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%s\"}]", spender, value.String())
+	cli := client.NewGrpcClient(NileGrpc)
+	err := cli.Start(grpc.WithInsecure())
+	if err != nil {
+		return "", err
+	}
+	tx, err := cli.TriggerContract(OwnerAccount, t.TokenAddress, "approve(address,uint256)", triggerData, 300000000, 0, "", 0)
+	if err != nil {
+		return "", err
+	}
+	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
+	_, _, err = GetKeyFromPrivateKey(privateKey, AccountName, Passphrase)
+	if err != nil && !strings.Contains(err.Error(), "already exists") {
+		return "", err
+	}
+	ks, acct, err := store.UnlockedKeystore(OwnerAccount, Passphrase)
+	if err != nil {
+		return "", err
+	}
+	// 封装Tx
+	ctrlr := transaction.NewController(cli, ks, acct, tx.Transaction)
+	// 真正执行Tx，并判断执行结果
+	if err = ctrlr.ExecuteTransaction(); err != nil {
+		return "", err
+	}
+	// 此时Tx才上链
+	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
+	return common.BytesToHexString(tx.GetTxid()), nil
+}
+
+func (t *Trc20) Transfer(to string, value *big.Int) (string, error) {
+	// 携带的数据
+	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%s\"}]", to, value.String())
+	cli := client.NewGrpcClient(NileGrpc)
+	err := cli.Start(grpc.WithInsecure())
+	if err != nil {
+		return "", err
+	}
+	tx, err := cli.TriggerContract(OwnerAccount, t.TokenAddress, "transfer(address,uint256)", triggerData, 300000000, 0, "", 0)
+	if err != nil {
+		return "", err
+	}
+	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
+	_, _, err = GetKeyFromPrivateKey(privateKey, AccountName, Passphrase)
+	if err != nil && !strings.Contains(err.Error(), "already exists") {
+		return "", err
+	}
+	ks, acct, err := store.UnlockedKeystore(OwnerAccount, Passphrase)
+	if err != nil {
+		return "", err
+	}
+	// 封装Tx
+	ctrlr := transaction.NewController(cli, ks, acct, tx.Transaction)
+	// 真正执行Tx，并判断执行结果
+	if err = ctrlr.ExecuteTransaction(); err != nil {
+		return "", err
+	}
+	// 此时Tx才上链
+	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
+	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
 func TestSend(t *testing.T) {
@@ -170,21 +252,65 @@ func TransferCoin(privateKey, fromAddress, toAddress string, amount int64) (stri
 	return txHash, nil
 }
 
-func ContractCall(privateKey, signerAddress, contractAddress, method, jsonString string,
-	feeLimit, tAmount int64, tTokenID string, tTokenAmount int64) (string, error) {
-	//privateKeyBytes, _ := hex.DecodeString(privateKey)
+func GetKeyFromPrivateKey(privateKey, name, passphrase string) (*keystore.KeyStore, *keystore.Account, error) {
+	privateKey = strings.TrimPrefix(privateKey, "0x")
 
-	conn := client.NewGrpcClient("grpc.shasta.trongrid.io:50051")
-	tx, err := conn.TriggerContract(
-		signerAddress,
-		contractAddress,
-		args[1],
-		param,
-		feeLimit,
-		valueInt,
-		tTokenID,
-		tokenInt,
-	)
+	if store.DoesNamedAccountExist(name) {
+		return nil, nil, fmt.Errorf("account %s already exists", name)
+	}
 
-	return "", nil
+	privateKeyBytes, err := hex.DecodeString(privateKey)
+	if err != nil {
+		return nil, nil, err
+	}
+	if len(privateKeyBytes) != common.Secp256k1PrivateKeyBytesLength {
+		return nil, nil, common.ErrBadKeyLength
+	}
+
+	sk, _ := btcec.PrivKeyFromBytes(privateKeyBytes)
+	ks := store.FromAccountName(name)
+	account, err := ks.ImportECDSA(sk.ToECDSA(), passphrase)
+	if err != nil {
+		return nil, nil, err
+	}
+	return store.FromAccountName(name), &account, err
+}
+
+func TransferToken() (string, error) {
+	// 携带的数据
+	triggerData := "[{\"address\":\"TEy2BtGxixqhbcM7w65rJiotAerSBFR48W\"},{\"uint256\":\"1\"}]"
+	cli := client.NewGrpcClient(NileGrpc)
+	err := cli.Start(grpc.WithInsecure())
+	if err != nil {
+		return "", err
+	}
+	from := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
+	tokenAddress := "TU6UjUJadm8TungBHvL4n9apv8Jns4wJiz"
+	// 构建Tx，注意，此处只是构造，tx并没有被发送
+	// 参数分别为 发送者地址 合约地址 调用方法(正常字符串) gas Tx发送的TRX数量 Tx发送的TRC20代币 代币数量
+	tx, err := cli.TriggerContract(from, tokenAddress, "transfer(address,uint256)", triggerData, 300000000, 0, "", 0)
+	if err != nil {
+		return "", err
+	}
+	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
+	_, _, err = GetKeyFromPrivateKey(privateKey, AccountName, Passphrase)
+	//if strings.Contains(err.Error(),"already exists")
+	if err != nil && !strings.Contains(err.Error(), "already exists") {
+		return "", err
+	}
+	// 获得keystore与account
+	ks, acct, err := store.UnlockedKeystore(from, Passphrase)
+	if err != nil {
+		return "", err
+	}
+	// 封装Tx
+	ctrlr := transaction.NewController(cli, ks, acct, tx.Transaction)
+	// 真正执行Tx，并判断执行结果
+	if err = ctrlr.ExecuteTransaction(); err != nil {
+		return "", err
+	}
+	// 此时Tx才上链
+	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
+	//log.Println(6, common.BytesToHexString(tx.GetResult().GetMessage()))
+	return common.BytesToHexString(tx.GetTxid()), nil
 }
