@@ -22,7 +22,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"testing"
 )
 
 const (
@@ -52,7 +51,6 @@ func NewTrc20(address string) (*Trc20, error) {
 }
 
 func (t *Trc20) Approve(spender string, value *big.Int) (string, error) {
-	// 携带的数据
 	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%s\"}]", spender, value.String())
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
@@ -72,19 +70,15 @@ func (t *Trc20) Approve(spender string, value *big.Int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// 封装Tx
 	ctrlr := transaction.NewController(cli, ks, acct, tx.Transaction)
-	// 真正执行Tx，并判断执行结果
 	if err = ctrlr.ExecuteTransaction(); err != nil {
 		return "", err
 	}
-	// 此时Tx才上链
 	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
 func (t *Trc20) Transfer(to string, value *big.Int) (string, error) {
-	// 携带的数据
 	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%s\"}]", to, value.String())
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
@@ -104,50 +98,12 @@ func (t *Trc20) Transfer(to string, value *big.Int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// 封装Tx
 	ctrlr := transaction.NewController(cli, ks, acct, tx.Transaction)
-	// 真正执行Tx，并判断执行结果
 	if err = ctrlr.ExecuteTransaction(); err != nil {
 		return "", err
 	}
-	// 此时Tx才上链
 	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
 	return common.BytesToHexString(tx.GetTxid()), nil
-}
-
-func TestSend(t *testing.T) {
-
-}
-
-func Aa() {
-	// {
-	//    "visible": false,
-	//    "txID": "48d0ac3ff12adafc4267833ebec61a2c108891519b9244bf515c94ca43aac62b",
-	//    "raw_data": {
-	//        "contract": [
-	//            {
-	//                "parameter": {
-	//                    "value": {
-	//                        "data": "40c10f190000000000000000000000003942fda93c573e2ce9e85b0bb00ba98a144f27f6000000000000000000000000000000000000000000000000002386f26fc10000",
-	//                        "owner_address": "413942fda93c573e2ce9e85b0bb00ba98a144f27f6",
-	//                        "contract_address": "412ffd22a9021bd03f05ce0af413eb0516abe8ef00"
-	//                    },
-	//                    "type_url": "type.googleapis.com/protocol.TriggerSmartContract"
-	//                },
-	//                "type": "TriggerSmartContract"
-	//            }
-	//        ],
-	//        "ref_block_bytes": "b4f1",
-	//        "ref_block_hash": "36794c80995b9f68",
-	//        "expiration": 1741599294000,
-	//        "fee_limit": 10000000000,
-	//        "timestamp": 1741599235387
-	//    },
-	//    "raw_data_hex": "0a02b4f1220836794c80995b9f6840b084a1fbd7325aae01081f12a9010a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412740a15413942fda93c573e2ce9e85b0bb00ba98a144f27f61215412ffd22a9021bd03f05ce0af413eb0516abe8ef00224440c10f190000000000000000000000003942fda93c573e2ce9e85b0bb00ba98a144f27f6000000000000000000000000000000000000000000000000002386f26fc1000070bbba9dfbd732900180c8afa025",
-	//    "signature": [
-	//        "98b705ee927bdcc5662a4b72ee90458265c673076846fbe899ba8c5a8f2f7bfd27487fe6a187cdb497f3c129af305146f86634a700411e753bbe2bfd2e6ef1611B"
-	//    ]
-	//}
 }
 
 func CreateTransaction() {
