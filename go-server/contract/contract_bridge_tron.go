@@ -77,7 +77,6 @@ func (b *BridgeTron) AdminSetEnv(voteAddress string, chainId *big.Int, chainType
 }
 
 func (b *BridgeTron) GrantAdminRole(role, addr string) (string, error) {
-	//AdminRole := "a49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775"
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
@@ -97,7 +96,6 @@ func (b *BridgeTron) GrantAdminRole(role, addr string) (string, error) {
 }
 
 func (b *BridgeTron) GrantVoteRole(role, addr string) (string, error) {
-	//VoteRole := "c65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7"
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
@@ -117,7 +115,6 @@ func (b *BridgeTron) GrantVoteRole(role, addr string) (string, error) {
 }
 
 func (b *BridgeTron) AdminSetResource(resourceID string, assetsType *big.Int, tokenAddress string, fee *big.Int, pause, tantinAddress, executeFunctionSig string) (string, error) {
-	//VoteRole := "c65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7"
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"}]",
 		resourceID,
 		assetsType.String(),
