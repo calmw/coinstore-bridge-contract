@@ -22,13 +22,13 @@ const (
 )
 
 type BridgeTron struct {
-	Cli             *client.GrpcClient
-	Ks              *keystore.KeyStore
-	Ka              *keystore.Account
 	ContractAddress string
+	Ka              *keystore.Account
+	Ks              *keystore.KeyStore
+	Cli             *client.GrpcClient
 }
 
-func NewBridgeTron(contractAddress string) (*BridgeTron, error) {
+func NewBridgeTron() (*BridgeTron, error) {
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
@@ -43,10 +43,10 @@ func NewBridgeTron(contractAddress string) (*BridgeTron, error) {
 		return nil, err
 	}
 	return &BridgeTron{
-		Cli:             cli,
-		ContractAddress: contractAddress,
 		Ks:              ks,
 		Ka:              ka,
+		Cli:             cli,
+		ContractAddress: ChainConfig.VoteContractAddress,
 	}, nil
 }
 
