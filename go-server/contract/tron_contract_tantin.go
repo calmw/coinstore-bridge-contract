@@ -1,223 +1,130 @@
 package contract
 
 import (
-	"coinstore/binding"
-	"context"
 	"fmt"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/status-im/keycard-go/hexutils"
+	"github.com/fbsobreira/gotron-sdk/pkg/client"
+	"github.com/fbsobreira/gotron-sdk/pkg/client/transaction"
+	"github.com/fbsobreira/gotron-sdk/pkg/common"
+	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
+	"github.com/fbsobreira/gotron-sdk/pkg/store"
+	"google.golang.org/grpc"
 	"log"
 	"math/big"
-	"time"
+	"strings"
 )
 
-const (
-	ResourceIdUsdt = "ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
-	ResourceIdCoin = "ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1c"
-)
-
-type TanTin struct {
-	Cli      *ethclient.Client
-	Contract *binding.Tantin
+type TanTinTron struct {
+	ContractAddress string
+	Ka              *keystore.Account
+	Ks              *keystore.KeyStore
+	Cli             *client.GrpcClient
 }
 
-func NewTanTin() (*TanTin, error) {
-	err, cli := Client(ChainConfig)
+func NewTanTinTron() (*TanTinTron, error) {
+	cli := client.NewGrpcClient(NileGrpc)
+	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
-	contractObj, err := binding.NewTantin(common.HexToAddress(ChainConfig.TantinContractAddress), cli)
+	_, _, err = GetKeyFromPrivateKey(ChainConfig.PrivateKey, AccountName, Passphrase)
+	if err != nil && !strings.Contains(err.Error(), "already exists") {
+		return nil, err
+	}
+	ks, ka, err := store.UnlockedKeystore(OwnerAccount, Passphrase)
 	if err != nil {
 		return nil, err
 	}
-	return &TanTin{
-		Cli:      cli,
-		Contract: contractObj,
+	return &TanTinTron{
+		Ks:              ks,
+		Ka:              ka,
+		Cli:             cli,
+		ContractAddress: ChainConfig.VoteContractAddress,
 	}, nil
 }
 
-func (c TanTin) Init() {
-	c.AdminSetEnv()
-	c.GrantBridgeRole(common.HexToAddress(ChainConfig.BridgeContractAddress))
+func (t *TanTinTron) Init() {
+	txHash, err := t.AdminSetEnv()
+	fmt.Println(txHash, err)
+	txHash, err = t.GrantBridgeRole(ChainConfig.BridgeContractAddress, "0x52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f")
+	fmt.Println(txHash, err)
 }
 
-func (c TanTin) AdminSetEnv() {
-	var res *types.Transaction
-
-	for {
-		err, txOpts := GetAuth(c.Cli)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.BridgeContractAddress))
-		if err == nil {
-			break
-		}
-		fmt.Println(fmt.Sprintf("AdminSetEnv error: %v", err))
-		time.Sleep(3 * time.Second)
-	}
-	fmt.Println(fmt.Sprintf("AdminSetEnv 成功"))
-	for {
-		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
-		if err == nil && receipt.Status == 1 {
-			break
-		}
-		time.Sleep(time.Second * 2)
-	}
-
-	fmt.Println(fmt.Sprintf("AdminSetEnv 确认成功"))
-}
-
-func (c TanTin) GrantBridgeRole(addr common.Address) {
-	BridgeRole := "52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f"
-	BridgeRoleBytes := hexutils.HexToBytes(BridgeRole)
-
-	var res *types.Transaction
-
-	for {
-		err, txOpts := GetAuth(c.Cli)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		res, err = c.Contract.GrantRole(txOpts, [32]byte(BridgeRoleBytes), addr)
-		if err == nil {
-			break
-		}
-		time.Sleep(3 * time.Second)
-	}
-	log.Println(fmt.Sprintf("GrantBridgeRole 成功"))
-	for {
-		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
-		if err == nil && receipt.Status == 1 {
-			break
-		}
-		time.Sleep(time.Second * 2)
-	}
-
-	log.Println(fmt.Sprintf("GrantBridgeRole 确认成功"))
-}
-
-func (c TanTin) AdminSetToken() {
-	resourceIdBytes := hexutils.HexToBytes(ResourceIdUsdt)
-	var res *types.Transaction
-	for {
-		err, txOpts := GetAuth(c.Cli)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		res, err = c.Contract.AdminSetToken(
-			txOpts,
-			[32]byte(resourceIdBytes),
-			uint8(2),
-			common.HexToAddress(ChainConfig.UsdtAddress),
-			false,
-			false,
-			false,
-		)
-		if err == nil {
-			break
-		}
-		time.Sleep(3 * time.Second)
-	}
-	log.Println(fmt.Sprintf("AdminSetToken 成功"))
-	for {
-		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
-		if err == nil && receipt.Status == 1 {
-			break
-		}
-		time.Sleep(time.Second * 2)
-	}
-
-	log.Println(fmt.Sprintf("AdminSetToken 确认成功"))
-
-	resourceIdBytes = hexutils.HexToBytes(ResourceIdCoin)
-	for {
-		err, txOpts := GetAuth(c.Cli)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		res, err = c.Contract.AdminSetToken(
-			txOpts,
-			[32]byte(resourceIdBytes),
-			uint8(1),
-			common.HexToAddress("0x0000000000000000000000000000000000000000"),
-			false,
-			false,
-			false,
-		)
-		if err == nil {
-			break
-		}
-		time.Sleep(3 * time.Second)
-	}
-	log.Println(fmt.Sprintf("AdminSetToken 成功"))
-	for {
-		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
-		if err == nil && receipt.Status == 1 {
-			break
-		}
-		time.Sleep(time.Second * 2)
-	}
-
-	log.Println(fmt.Sprintf("AdminSetToken 确认成功"))
-}
-
-func (c TanTin) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount, fee *big.Int) {
-
-	token, err := NewErc20(common.HexToAddress(ChainConfig.UsdtAddress))
+func (t *TanTinTron) AdminSetEnv() (string, error) {
+	triggerData := fmt.Sprintf("[{\"address\":\"%s\"}]", ChainConfig.BridgeContractAddress)
+	cli := client.NewGrpcClient(NileGrpc)
+	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
-		fmt.Println(err)
-		return
+		return "", err
 	}
-	token.Approve(amount)
-
-	var res *types.Transaction
-	var txOpts *bind.TransactOpts
-
-	for {
-		if fee.Int64() > 0 {
-			err, txOpts = GetAuthWithValue(c.Cli, fee.Add(fee, amount))
-			if err != nil {
-				log.Println(err)
-				return
-			}
-		} else {
-			err, txOpts = GetAuth(c.Cli)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-		}
-
-		res, err = c.Contract.Deposit(
-			txOpts,
-			destinationChainId,
-			resourceId,
-			receiver,
-			amount,
-		)
-		if err == nil {
-			break
-		} else {
-			log.Println(fmt.Sprintf("deposit error: %v", err))
-		}
-		time.Sleep(3 * time.Second)
+	tx, err := cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetEnv(address)", triggerData, 300000000, 0, "", 0)
+	if err != nil {
+		return "", err
 	}
-	log.Println(fmt.Sprintf("Deposit 成功"))
-	for {
-		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
-		if err == nil && receipt.Status == 1 {
-			break
-		}
-		time.Sleep(time.Second * 2)
+	ctrlr := transaction.NewController(cli, t.Ks, t.Ka, tx.Transaction)
+	if err = ctrlr.ExecuteTransaction(); err != nil {
+		return "", err
 	}
+	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
+	return common.BytesToHexString(tx.GetTxid()), nil
+}
 
-	log.Println(fmt.Sprintf("Deposit 确认成功 %s", res.Hash()))
+func (t *TanTinTron) GrantBridgeRole(role, addr string) (string, error) {
+	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
+	cli := client.NewGrpcClient(NileGrpc)
+	err := cli.Start(grpc.WithInsecure())
+	if err != nil {
+		return "", err
+	}
+	tx, err := cli.TriggerContract(OwnerAccount, t.ContractAddress, "grantRole(bytes32,address)", triggerData, 300000000, 0, "", 0)
+	if err != nil {
+		return "", err
+	}
+	ctrlr := transaction.NewController(cli, t.Ks, t.Ka, tx.Transaction)
+	if err = ctrlr.ExecuteTransaction(); err != nil {
+		return "", err
+	}
+	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
+	return common.BytesToHexString(tx.GetTxid()), nil
+}
+
+func (t *TanTinTron) AdminSetToken(resourceID, assetsType, tokenAddress, burnable, mintable, pause string) (string, error) {
+	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%s\"},{\"address\":\"%s\"},{\"bool\":\"%s\"},{\"bool\":\"%s\"},{\"bool\":\"%s\"}]",
+		resourceID, assetsType, tokenAddress, burnable, mintable, pause,
+	)
+	cli := client.NewGrpcClient(NileGrpc)
+	err := cli.Start(grpc.WithInsecure())
+	if err != nil {
+		return "", err
+	}
+	tx, err := cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetToken(bytes32,uint8,address,bool,bool,bool)", triggerData, 300000000, 0, "", 0)
+	if err != nil {
+		return "", err
+	}
+	ctrlr := transaction.NewController(cli, t.Ks, t.Ka, tx.Transaction)
+	if err = ctrlr.ExecuteTransaction(); err != nil {
+		return "", err
+	}
+	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
+	return common.BytesToHexString(tx.GetTxid()), nil
+}
+
+func (t *TanTinTron) Deposit(destinationChainId, resourceId, recipient, signature string, amount *big.Int) (string, error) {
+	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"bytes32\":\"%s\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"signature\":\"%s\"}]",
+		destinationChainId, resourceId, recipient, amount.String(), signature,
+	)
+	cli := client.NewGrpcClient(NileGrpc)
+	err := cli.Start(grpc.WithInsecure())
+	if err != nil {
+		return "", err
+	}
+	tx, err := cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetToken(bytes32,uint8,address,bool,bool,bool)", triggerData, 300000000, 0, "", 0)
+	if err != nil {
+		return "", err
+	}
+	ctrlr := transaction.NewController(cli, t.Ks, t.Ka, tx.Transaction)
+	if err = ctrlr.ExecuteTransaction(); err != nil {
+		return "", err
+	}
+	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
+	return common.BytesToHexString(tx.GetTxid()), nil
 }

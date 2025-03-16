@@ -51,14 +51,14 @@ func NewBridgeTron() (*BridgeTron, error) {
 }
 
 func (b *BridgeTron) Init() {
-	txHash, err := b.AdminSetEnv(ChainConfig.VoteContractAddress, big.NewInt(ChainConfig.ChainId), big.NewInt(ChainConfig.ChainTypeId))
+	txHash, err := b.AdminSetEnv()
 	fmt.Println(txHash, err)
 	txHash, err = b.GrantVoteRole("0xc65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7", ChainConfig.VoteContractAddress)
 	fmt.Println(txHash, err)
 }
 
-func (b *BridgeTron) AdminSetEnv(voteAddress string, chainId *big.Int, chainType *big.Int) (string, error) {
-	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"uint256\":\"%s\"}]", voteAddress, chainId.String(), chainType.String())
+func (b *BridgeTron) AdminSetEnv() (string, error) {
+	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%d\"},{\"uint256\":\"%d\"}]", ChainConfig.VoteContractAddress, ChainConfig.BridgeId, ChainConfig.ChainTypeId)
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
