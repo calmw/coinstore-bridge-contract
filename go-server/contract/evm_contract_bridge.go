@@ -13,12 +13,12 @@ import (
 	"time"
 )
 
-type Bridge struct {
+type BridgeEvm struct {
 	Cli      *ethclient.Client
 	Contract *binding.Bridge
 }
 
-func NewBridge() (*Bridge, error) {
+func NewBridge() (*BridgeEvm, error) {
 	err, cli := Client(ChainConfig)
 	if err != nil {
 		return nil, err
@@ -27,18 +27,18 @@ func NewBridge() (*Bridge, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Bridge{
+	return &BridgeEvm{
 		Cli:      cli,
 		Contract: contractObj,
 	}, nil
 }
 
-func (b *Bridge) Init() {
+func (b *BridgeEvm) Init() {
 	b.AdminSetEnv()
 	b.GrantVoteRole(common.HexToAddress(ChainConfig.VoteContractAddress))
 }
 
-func (b *Bridge) AdminSetEnv() {
+func (b *BridgeEvm) AdminSetEnv() {
 	var res *types.Transaction
 
 	for {
@@ -66,7 +66,7 @@ func (b *Bridge) AdminSetEnv() {
 	fmt.Println(fmt.Sprintf("AdminSetEnv 确认成功"))
 }
 
-func (b *Bridge) GrantAdminRole(addr common.Address) {
+func (b *BridgeEvm) GrantAdminRole(addr common.Address) {
 	AdminRole := "a49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775"
 	AdminRoleBytes := hexutils.HexToBytes(AdminRole)
 
@@ -96,7 +96,7 @@ func (b *Bridge) GrantAdminRole(addr common.Address) {
 	log.Println(fmt.Sprintf("GrantAdminRole 确认成功"))
 }
 
-func (b *Bridge) GrantVoteRole(addr common.Address) {
+func (b *BridgeEvm) GrantVoteRole(addr common.Address) {
 	VoteRole := "c65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7"
 	VoteRoleBytes := hexutils.HexToBytes(VoteRole)
 
@@ -126,7 +126,7 @@ func (b *Bridge) GrantVoteRole(addr common.Address) {
 	log.Println(fmt.Sprintf("GrantVoteRole 确认成功"))
 }
 
-func (b *Bridge) AdminSetResource(fee *big.Int, funcSig [4]byte) {
+func (b *BridgeEvm) AdminSetResource(fee *big.Int, funcSig [4]byte) {
 	var res *types.Transaction
 	resourceIdBytes := hexutils.HexToBytes(ResourceIdUsdt)
 	for {

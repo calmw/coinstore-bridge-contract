@@ -13,12 +13,12 @@ import (
 	"time"
 )
 
-type Vote struct {
+type VoteEvm struct {
 	Cli      *ethclient.Client
 	Contract *binding.Vote
 }
 
-func NewVote() (*Vote, error) {
+func NewVote() (*VoteEvm, error) {
 	err, cli := Client(ChainConfig)
 	if err != nil {
 		return nil, err
@@ -27,18 +27,18 @@ func NewVote() (*Vote, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Vote{
+	return &VoteEvm{
 		Cli:      cli,
 		Contract: contractObj,
 	}, nil
 }
 
-func (c Vote) Init() {
+func (c VoteEvm) Init() {
 	c.AdminSetEnv(big.NewInt(1), big.NewInt(100000))
 	c.GrantBridgeRole(common.HexToAddress(ChainConfig.BridgeContractAddress))
 }
 
-func (c Vote) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) {
+func (c VoteEvm) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) {
 	var res *types.Transaction
 
 	for {
@@ -66,7 +66,7 @@ func (c Vote) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) {
 	fmt.Println(fmt.Sprintf("AdminSetEnv 确认成功"))
 }
 
-func (c Vote) GrantBridgeRole(addr common.Address) {
+func (c VoteEvm) GrantBridgeRole(addr common.Address) {
 	BridgeRole := "52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f"
 	BridgeRoleBytes := hexutils.HexToBytes(BridgeRole)
 

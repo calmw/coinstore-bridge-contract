@@ -19,12 +19,12 @@ const (
 	ResourceIdCoin = "ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1c"
 )
 
-type TanTin struct {
+type TanTinEvm struct {
 	Cli      *ethclient.Client
 	Contract *binding.Tantin
 }
 
-func NewTanTin() (*TanTin, error) {
+func NewTanTin() (*TanTinEvm, error) {
 	err, cli := Client(ChainConfig)
 	if err != nil {
 		return nil, err
@@ -33,18 +33,18 @@ func NewTanTin() (*TanTin, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &TanTin{
+	return &TanTinEvm{
 		Cli:      cli,
 		Contract: contractObj,
 	}, nil
 }
 
-func (c TanTin) Init() {
+func (c TanTinEvm) Init() {
 	c.AdminSetEnv()
 	c.GrantBridgeRole(common.HexToAddress(ChainConfig.BridgeContractAddress))
 }
 
-func (c TanTin) AdminSetEnv() {
+func (c TanTinEvm) AdminSetEnv() {
 	var res *types.Transaction
 
 	for {
@@ -72,7 +72,7 @@ func (c TanTin) AdminSetEnv() {
 	fmt.Println(fmt.Sprintf("AdminSetEnv 确认成功"))
 }
 
-func (c TanTin) GrantBridgeRole(addr common.Address) {
+func (c TanTinEvm) GrantBridgeRole(addr common.Address) {
 	BridgeRole := "52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f"
 	BridgeRoleBytes := hexutils.HexToBytes(BridgeRole)
 
@@ -102,7 +102,7 @@ func (c TanTin) GrantBridgeRole(addr common.Address) {
 	log.Println(fmt.Sprintf("GrantBridgeRole 确认成功"))
 }
 
-func (c TanTin) AdminSetToken() {
+func (c TanTinEvm) AdminSetToken() {
 	resourceIdBytes := hexutils.HexToBytes(ResourceIdUsdt)
 	var res *types.Transaction
 	for {
@@ -169,7 +169,7 @@ func (c TanTin) AdminSetToken() {
 	log.Println(fmt.Sprintf("AdminSetToken 确认成功"))
 }
 
-func (c TanTin) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount, fee *big.Int) {
+func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount, fee *big.Int) {
 
 	token, err := NewErc20(common.HexToAddress(ChainConfig.UsdtAddress))
 	if err != nil {

@@ -13,14 +13,14 @@ import (
 	"strings"
 )
 
-type VoteTrc20 struct {
+type VoteTron struct {
 	ContractAddress string
 	Ka              *keystore.Account
 	Ks              *keystore.KeyStore
 	Cli             *client.GrpcClient
 }
 
-func NewVoteTrc20() (*VoteTrc20, error) {
+func NewVoteTrc20() (*VoteTron, error) {
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
@@ -34,7 +34,7 @@ func NewVoteTrc20() (*VoteTrc20, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &VoteTrc20{
+	return &VoteTron{
 		Ks:              ks,
 		Ka:              ka,
 		Cli:             cli,
@@ -42,14 +42,14 @@ func NewVoteTrc20() (*VoteTrc20, error) {
 	}, nil
 }
 
-func (v *VoteTrc20) Init() {
+func (v *VoteTron) Init() {
 	txHash, err := v.AdminSetEnv(big.NewInt(1), big.NewInt(100000))
 	fmt.Println(txHash, err)
 	txHash, err = v.GrantBridgeRole(ChainConfig.BridgeContractAddress, "0x52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f")
 	fmt.Println(txHash, err)
 }
 
-func (v *VoteTrc20) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) (string, error) {
+func (v *VoteTron) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) (string, error) {
 	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"uint256\":\"%s\"}]", ChainConfig.BridgeContractAddress, expiry.String(), relayerThreshold.String())
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
@@ -68,7 +68,7 @@ func (v *VoteTrc20) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) (str
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
-func (v *VoteTrc20) GrantBridgeRole(role, addr string) (string, error) {
+func (v *VoteTron) GrantBridgeRole(role, addr string) (string, error) {
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
