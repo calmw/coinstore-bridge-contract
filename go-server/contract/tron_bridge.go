@@ -53,6 +53,8 @@ func NewBridgeTron() (*BridgeTron, error) {
 func (b *BridgeTron) Init() {
 	txHash, err := b.AdminSetEnv()
 	fmt.Println(txHash, err)
+	txHash, err = b.GrantVoteRole("0x0000000000000000000000000000000000000000000000000000000000000000", OwnerAccount)
+	fmt.Println(txHash, err)
 	txHash, err = b.GrantVoteRole("0xc65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7", ChainConfig.VoteContractAddress)
 	fmt.Println(txHash, err)
 }
