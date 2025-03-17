@@ -10,6 +10,7 @@ import (
 	"github.com/status-im/keycard-go/hexutils"
 	"log"
 	"math/big"
+	"strings"
 	"time"
 )
 
@@ -128,7 +129,7 @@ func (b *BridgeEvm) GrantVoteRole(addr common.Address) {
 
 func (b *BridgeEvm) AdminSetResource(fee *big.Int, funcSig [4]byte) {
 	var res *types.Transaction
-	resourceIdBytes := hexutils.HexToBytes(ResourceIdUsdt)
+	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(ResourceIdUsdt, "0x"))
 	for {
 		err, txOpts := GetAuth(b.Cli)
 		if err != nil {
@@ -163,7 +164,7 @@ func (b *BridgeEvm) AdminSetResource(fee *big.Int, funcSig [4]byte) {
 
 	fmt.Println(fmt.Sprintf("AdminSetResource 确认成功"))
 
-	resourceIdBytes = hexutils.HexToBytes(ResourceIdCoin)
+	resourceIdBytes = hexutils.HexToBytes(strings.TrimPrefix(ResourceIdCoin, "0x"))
 	for {
 		err, txOpts := GetAuth(b.Cli)
 		if err != nil {

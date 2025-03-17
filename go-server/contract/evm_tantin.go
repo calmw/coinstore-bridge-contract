@@ -11,12 +11,13 @@ import (
 	"github.com/status-im/keycard-go/hexutils"
 	"log"
 	"math/big"
+	"strings"
 	"time"
 )
 
 const (
-	ResourceIdUsdt = "ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
-	ResourceIdCoin = "ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1c"
+	ResourceIdUsdt = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
+	ResourceIdCoin = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1c"
 )
 
 type TanTinEvm struct {
@@ -103,7 +104,7 @@ func (c TanTinEvm) GrantBridgeRole(addr common.Address) {
 }
 
 func (c TanTinEvm) AdminSetToken() {
-	resourceIdBytes := hexutils.HexToBytes(ResourceIdUsdt)
+	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(ResourceIdUsdt, "0x"))
 	var res *types.Transaction
 	for {
 		err, txOpts := GetAuth(c.Cli)
@@ -136,7 +137,7 @@ func (c TanTinEvm) AdminSetToken() {
 
 	log.Println(fmt.Sprintf("AdminSetToken 确认成功"))
 
-	resourceIdBytes = hexutils.HexToBytes(ResourceIdCoin)
+	resourceIdBytes = hexutils.HexToBytes(strings.TrimPrefix(ResourceIdCoin, "0x"))
 	for {
 		err, txOpts := GetAuth(c.Cli)
 		if err != nil {

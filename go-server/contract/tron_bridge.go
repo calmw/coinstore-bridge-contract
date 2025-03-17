@@ -114,14 +114,14 @@ func (b *BridgeTron) GrantVoteRole(role, addr string) (string, error) {
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
-func (b *BridgeTron) AdminSetResource(resourceID string, assetsType *big.Int, tokenAddress string, fee *big.Int, pause, tantinAddress, executeFunctionSig string) (string, error) {
+func (b *BridgeTron) AdminSetResource(fee *big.Int, executeFunctionSig string) (string, error) {
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"}]",
-		resourceID,
-		assetsType.String(),
-		tokenAddress,
+		ResourceIdUsdt,
+		"2",
+		ChainConfig.UsdtAddress,
 		fee.String(),
-		pause,
-		tantinAddress,
+		"false",
+		ChainConfig.TantinContractAddress,
 		executeFunctionSig,
 	)
 	cli := client.NewGrpcClient(NileGrpc)
