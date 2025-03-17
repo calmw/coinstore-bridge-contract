@@ -2,9 +2,10 @@ const {ethers, upgrades} = require("hardhat")
 const {BigNumber} = require("ethers");
 const {write_contract_address} = require("./fs");
 
+const perfix = "Tantin_"
+const contract_name = "Vote"
 
 async function main() {
-    const contract_name = "TantinBridge"
 
     const contract = await ethers.getContractFactory(contract_name)
     console.log("Deploying .........")
@@ -12,7 +13,7 @@ async function main() {
     const contractObj = await upgrades.deployProxy(contract, [], {initializer: "initialize"});
 
     console.log("Proxy address is ", contractObj.address)
-    write_contract_address(contract_name, contractObj.address)
+    write_contract_address(perfix + contract_name, contractObj.address)
 }
 
 main()
