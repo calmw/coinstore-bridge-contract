@@ -104,7 +104,12 @@ func (b *BridgeTron) GrantVoteRole(role, addr string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	tx, err := cli.TriggerContract(OwnerAccount, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 300000000, 0, "", 0)
+	//tx, err := cli.TriggerContract(OwnerAccount, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 300000000, 0, "", 0)
+	tx, err := cli.TriggerContract(OwnerAccount, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
+
+	fmt.Println(triggerData)
+	fmt.Println(tx, err)
+
 	if err != nil {
 		return "", err
 	}

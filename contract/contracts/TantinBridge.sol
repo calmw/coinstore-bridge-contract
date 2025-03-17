@@ -244,4 +244,21 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     function getFee(bytes32 resourceId) external view returns (uint256) {
         return Bridge.getFeeByResourceId(resourceId);
     }
+
+    /**
+        @notice 提取跨链桥资产
+        @param tokenAddress 币种地址，coin为0地址
+        @param amount 提取数量
+     */
+    function adminWithdraw(
+        address tokenAddress,
+        uint256 amount
+    ) public onlyRole(ADMIN_ROLE) {
+        if (tokenAddress == address(0)) {
+            Address.sendValue(payable(msg.sender), amount);
+        } else {
+            IERC20 erc20 = IERC20(tokenAddress);
+            erc20.transfer(msg.sender, amount);
+        }
+    }
 }
