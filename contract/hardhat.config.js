@@ -12,12 +12,12 @@ module.exports = {
     networks: {
         open_bnb: {
             url: "https://opbnb-testnet-rpc.bnbchain.org",
-            accounts: [`${PRIVATE_KEY}`],
+            accounts: [`${PRIVATE_KEY}`]
             // gasPrice: 10000000000
         },
         tantin_testnet: {
             url: "https://rpc.tantin.com",
-            accounts: [`${PRIVATE_KEY}`],
+            accounts: [`${PRIVATE_KEY}`]
             // gasPrice: 10000000000
         }
     }
