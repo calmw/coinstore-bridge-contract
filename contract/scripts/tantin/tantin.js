@@ -1,7 +1,6 @@
 const {ethers, upgrades} = require("hardhat")
 const {BigNumber} = require("ethers");
-const {write_contract_address} = require("./fs");
-
+const {write_contract_address} = require("../fs");
 
 const perfix = "Tantin_"
 const contract_name = "TantinBridge"

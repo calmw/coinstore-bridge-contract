@@ -1,6 +1,6 @@
 const {ethers, upgrades} = require("hardhat")
 require('@openzeppelin/hardhat-upgrades')
-const {read_contract_address} = require("./fs");
+const {write_contract_address} = require("../fs");
 
 const perfix = "Tantin_"
 const contract_name = "TantinBridge"
