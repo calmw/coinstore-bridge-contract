@@ -13,12 +13,12 @@
     "deploy-tantin-open_bnb": "npx hardhat --network open_bnb run scripts/tantin.js",
     "upgrade-tantin-open_bnb": "npx hardhat --network open_bnb run scripts/tantin_proxy.js",
 
-    "deploy-bridge-tantin_testnet": "npx hardhat --network open_bnb run scripts/bridge.js",
-    "upgrade-bridge-tantin_testnet": "npx hardhat --network open_bnb run scripts/bridge_proxy.js",
-    "deploy-vote-tantin_testnet": "npx hardhat --network open_bnb run scripts/vote.js",
-    "upgrade-vote-tantin_testnet": "npx hardhat --network open_bnb run scripts/vote_proxy.js",
-    "deploy-tantin-tantin_testnet": "npx hardhat --network open_bnb run scripts/tantin.js",
-    "upgrade-tantin-tantin_testnet": "npx hardhat --network open_bnb run scripts/tantin_proxy.js",
+    "deploy-bridge-tantin_testnet": "npx hardhat --network tantin_testnet run scripts/bridge.js",
+    "upgrade-bridge-tantin_testnet": "npx hardhat --network tantin_testnet run scripts/bridge_proxy.js",
+    "deploy-vote-tantin_testnet": "npx hardhat --network tantin_testnet run scripts/vote.js",
+    "upgrade-vote-tantin_testnet": "npx hardhat --network tantin_testnet run scripts/vote_proxy.js",
+    "deploy-tantin-tantin_testnet": "npx hardhat --network tantin_testnet run scripts/tantin.js",
+    "upgrade-tantin-tantin_testnet": "npx hardhat --network tantin_testnet run scripts/tantin_proxy.js",
     "test": "npx hardhat test"
   },
   "keywords": [],
