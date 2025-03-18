@@ -27,7 +27,7 @@ func InitOpenBnbEnv() {
 		ChainId:               5611,
 		ChainTypeId:           1,
 		RPC:                   "https://opbnb-testnet-rpc.bnbchain.org",
-		BridgeContractAddress: "0x8667641b1436830245Ee3CDFf2c9C0451C2f3b19",
+		BridgeContractAddress: "0x993FEF5848B8FFee9859cE6d7a2A7f07d9122cce",
 		VoteContractAddress:   "0x7EC7dca61c29773466D33aEB9e4f7adbBA960Ca1",
 		TantinContractAddress: "0x09125BB80eb099073b392637De2b6f3A42f7D1aC",
 		UsdtAddress:           "0xfBe1e02C25a04f6CD6b044F847697b48B3E99a16",
