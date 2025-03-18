@@ -147,11 +147,6 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			return err
 		}
 
-		l.log.Debug("get events", "ResourceID", fmt.Sprintf("%x", records.ResourceID))
-		l.log.Debug("get events", "DestinationChainId", records.DestinationChainId)
-		l.log.Debug("get events", "Sender", records.Sender.String())
-		l.log.Debug("get events", "Data", fmt.Sprintf("%x", records.Data))
-
 		m = msg.NewGenericTransfer(
 			msg.ChainId(l.cfg.ChainId),
 			destId,

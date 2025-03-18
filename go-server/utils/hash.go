@@ -133,12 +133,12 @@ func ParseBridgeData(depositData []byte) (decimal.Decimal, string, string, error
 	}
 
 	// 打印参数
-	fmt.Println("Method name:", method.Name)
-	fmt.Printf("Parameters:%x \n", params[0])
-	fmt.Println("Parameters:", params[1])
-	fmt.Println("Parameters:", params[2])
-	fmt.Println("Parameters:", params[3])
-	fmt.Println("Parameters:", params[4])
+	//fmt.Println("Method name:", method.Name)
+	//fmt.Printf("Parameters:%x \n", params[0])
+	//fmt.Println("Parameters:", params[1])
+	//fmt.Println("Parameters:", params[2])
+	//fmt.Println("Parameters:", params[3])
+	//fmt.Println("Parameters:", params[4])
 
 	amount := decimal.NewFromBigInt(params[4].(*big.Int), 0)
 	caller := strings.ToLower(params[2].(common.Address).String())
