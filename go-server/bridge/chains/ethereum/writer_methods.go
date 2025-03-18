@@ -100,6 +100,7 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 	toHash := append(common.HexToAddress(w.Cfg.BridgeContractAddress).Bytes(), data...)
 	dataHash := utils.Hash(toHash)
 	w.log.Debug("dataHash～～～～～～～～～～", "dataHash", fmt.Sprintf("%x", dataHash))
+	w.log.Debug("dataHash～～～～～～～～～～", "BridgeContractAddress", w.Cfg.BridgeContractAddress)
 	if !w.shouldVote(m, dataHash) {
 		if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
 			w.ExecuteProposal(m, data, dataHash)

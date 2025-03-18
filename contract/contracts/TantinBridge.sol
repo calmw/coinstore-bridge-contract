@@ -209,20 +209,20 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         uint256 originNonce;
         (dataLength, resourceId, originChainId, caller, recipient, receiveAmount, originNonce) = abi.decode(data, (uint256, bytes32, uint256, address, address, uint256, uint256));
 
-    TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
+        TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         address tokenAddress = tokenInfo.tokenAddress;
         if (tokenInfo.assetsType == AssetsType.Coin) {
             Address.sendValue(payable(recipient), receiveAmount);
         }
         if (tokenInfo.assetsType == AssetsType.Erc20) {
             IERC20 erc20 = IERC20(tokenAddress);
-            erc20.transfer(recipient, receiveAmount);
             if (tokenInfo.mintable) {
                 erc20.mint(recipient, receiveAmount);
             } else {
                 erc20.transfer(recipient, receiveAmount);
             }
         }
+
         emit ExecuteEvent(
             caller,
             recipient,
