@@ -60,8 +60,5 @@ interface IBridge {
         bytes32 resourceId
     ) external view returns (address);
 
-    function execute(
-        bytes32 resourceId,
-        bytes calldata data
-    ) external;
+    function execute(bytes32 resourceId, bytes calldata data) external;
 }
