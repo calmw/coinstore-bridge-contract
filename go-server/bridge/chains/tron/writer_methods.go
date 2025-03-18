@@ -236,7 +236,7 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 
 	defer func() {
 		if status {
-			model.UpdateExecuteStatus(m, status)
+			model.UpdateExecuteStatus(m, 1)
 		}
 	}()
 

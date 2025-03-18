@@ -7,6 +7,7 @@ import (
 	"coinstore/utils"
 	"context"
 	"errors"
+	"fmt"
 	log "github.com/calmw/blog"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
@@ -98,7 +99,7 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 	data := ConstructGenericProposalData(metadata)
 	toHash := append(common.HexToAddress(w.Cfg.BridgeContractAddress).Bytes(), data...)
 	dataHash := utils.Hash(toHash)
-
+	w.log.Debug("Creating proposal", "dataHash", fmt.Sprintf("%x", dataHash))
 	if !w.shouldVote(m, dataHash) {
 		if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
 			w.ExecuteProposal(m, data, dataHash)
@@ -234,7 +235,7 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 
 	defer func() {
 		if status {
-			model.UpdateExecuteStatus(m, status)
+			model.UpdateExecuteStatus(m, 1)
 		}
 	}()
 

@@ -95,17 +95,26 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 	}
 }
 
-func UpdateExecuteStatus(m msg.Message, status bool) {
+func UpdateExecuteStatus(m msg.Message, status int) {
 
 	log.Debug("🐧 更新execute数据", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
 	key := []byte(fmt.Sprintf("%s%d%d%d", resourceIdHex, m.Source, m.Destination, m.DepositNonce))
 	// 更新记录
-	err := db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).Updates(map[string]interface{}{
+	var record BridgeTx
+	err := db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).First(&record).Error
+	if err != nil {
+		log.Debug("🐧 更新execute数据", "error", err)
+		return
+	}
+	if record.ExecuteStatus == 1 {
+		return
+	}
+	err = db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).Updates(map[string]interface{}{
 		"status": status,
 	}).Error
 	if err != nil {
-		log.Error(err.Error())
+		log.Debug("🐧 更新execute数据", "error", err)
 		return
 	}
 }
@@ -115,11 +124,20 @@ func UpdateVoteStatus(m msg.Message, voteStatus int) {
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
 	key := []byte(fmt.Sprintf("%s%d%d%d", resourceIdHex, m.Source, m.Destination, m.DepositNonce))
 	// 更新记录
-	err := db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).Updates(map[string]interface{}{
+	var record BridgeTx
+	err := db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).First(&record).Error
+	if err != nil {
+		log.Debug("🐧 更新vote数据", "error", err)
+		return
+	}
+	if record.VoteStatus == 1 {
+		return
+	}
+	err = db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).Updates(map[string]interface{}{
 		"vote_status": voteStatus,
 	}).Error
 	if err != nil {
-		log.Error(err.Error())
+		log.Debug("🐧 更新vote数据", "error", err)
 		return
 	}
 }

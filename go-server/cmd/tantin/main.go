@@ -15,29 +15,29 @@ import (
 func main() {
 	services.InitTantinEnv()
 
-	bridge, err := contract.NewBridge()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	bridge.Init()
-	someBytes := hexutils.HexToBytes("09c5eabe")
-	bridge.AdminSetResource(big.NewInt(0), [4]byte(someBytes))
-
-	vote, err := contract.NewVote()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	vote.Init()
+	//bridge, err := contract.NewBridge()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//bridge.Init()
+	//someBytes := hexutils.HexToBytes("09c5eabe")
+	//bridge.AdminSetResource(big.NewInt(0), [4]byte(someBytes))
+	//
+	//vote, err := contract.NewVote()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//vote.Init()
 
 	tantin, err := contract.NewTanTin()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	tantin.Init()
-	tantin.AdminSetToken()
+	//tantin.Init()
+	//tantin.AdminSetToken()
 
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
 	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdCoin, "0x"))
@@ -48,8 +48,7 @@ func main() {
 		return
 	}
 	for {
-
 		tantin.Deposit(common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"), [32]byte(resourceIdBytes), big.NewInt(2), big.NewInt(10), signature)
-		time.Sleep(time.Second * 300)
+		time.Sleep(time.Second * 120)
 	}
 }
