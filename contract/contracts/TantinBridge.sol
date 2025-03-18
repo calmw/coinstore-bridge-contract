@@ -207,7 +207,18 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         address recipient;
         uint256 receiveAmount;
         uint256 originNonce;
-        (dataLength, resourceId, originChainId, caller, recipient, receiveAmount, originNonce) = abi.decode(data, (uint256, bytes32, uint256, address, address, uint256, uint256));
+        (
+            dataLength,
+            resourceId,
+            originChainId,
+            caller,
+            recipient,
+            receiveAmount,
+            originNonce
+        ) = abi.decode(
+            data,
+            (uint256, bytes32, uint256, address, address, uint256, uint256)
+        );
 
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         address tokenAddress = tokenInfo.tokenAddress;

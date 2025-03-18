@@ -91,13 +91,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         );
         resourceIdToContractAddress[resourceID] = tantinAddress;
 
-        emit SetResource(
-            resourceID,
-            tokenAddress,
-            fee,
-            pause,
-            tantinAddress
-        );
+        emit SetResource(resourceID, tokenAddress, fee, pause, tantinAddress);
     }
 
     /**
