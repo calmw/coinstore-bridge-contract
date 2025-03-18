@@ -18,6 +18,7 @@ interface IBridge {
     );
 
     event Dtest(
+        uint256 dataLength,
         bytes32 resourceId,
         uint256 originChainId,
         address caller,

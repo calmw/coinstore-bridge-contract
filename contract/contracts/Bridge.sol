@@ -146,6 +146,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         uint256 originDepositNonce,
         bytes calldata data
     ) external onlyRole(VOTE_ROLE) whenNotPaused {
+        uint256 dataLength;
         bytes32 resourceId;
         uint256 originChainId;
         address caller;
@@ -155,6 +156,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         (resourceId, originChainId, caller, recipient, receiveAmount, originNonce) = abi.decode(data, (bytes32, uint256, address, address, uint256, uint256));
 
         emit Dtest(
+            dataLength,
             resourceId,
             originChainId,
             caller,
