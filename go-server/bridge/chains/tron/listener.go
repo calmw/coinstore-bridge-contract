@@ -166,7 +166,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		}
 
 		// 保存到数据库
-		model.SaveBridgeOrder(m, l.log)
+		//model.SaveBridgeOrder(m, l.log)
 	}
 
 	return nil

@@ -12,6 +12,7 @@ func (es Sig) GetTopic() common.Hash {
 }
 
 const (
+	TantinDeposit Sig = "DepositEvent(address,address,uint256,address,uint256,uint256)"
 	Deposit       Sig = "Deposit(uint256,bytes32,uint256,bytes)"
 	ProposalEvent Sig = "ProposalEvent(uint256,uint256,uint8,bytes32,bytes32)"
 	ProposalVote  Sig = "ProposalVote(uint256,uint256,uint8,bytes32)"

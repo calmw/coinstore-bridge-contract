@@ -14,18 +14,24 @@ import (
 )
 
 type BridgeTx struct {
-	gorm.Model
-	Data                    []byte          `gorm:"data"` // msg binary data
-	Hash                    string          `gorm:"hash"`
-	VoteStatus              bool            `gorm:"vote_status"`               //  vote 失败，成功
-	Status                  bool            `gorm:"status"`                    //  execute 失败，成功
-	Trash                   bool            `gorm:"trash"`                     //  放到回收站中
-	Amount                  decimal.Decimal `gorm:"type:bigint(30);amount"`    //  跨链数额
-	SourceChainId           int             `gorm:"source_chain_id"`           //  源链ID
-	SourceTokenAddress      string          `gorm:"source_token_address"`      //  源链token地址
-	DestinationChainId      int             `gorm:"destination_chain_id"`      //  目标链ID
-	DestinationTokenAddress string          `gorm:"destination_token_address"` //  目标链ID
-	BridgeStatus            int             `gorm:"default:1;bridge_status"`   //  跨链状态 1 源链deposit成功 2 目标链执行成功
+	BridgeData              string          `gorm:"column:bridge_data;type:varchar(1000);comment:'跨链数据'" json:"bridge_data"`
+	ResourceId              string          `gorm:"column:resource_id;type:varchar(100);comment:'resource ID'" json:"resource_id"`
+	Hash                    string          `gorm:"column:hash;comment:'唯一索引'" json:"hash"`
+	VoteStatus              int             `gorm:"column:vote_status;default:0;comment:'vote 0失败，1成功'" json:"vote_status"`
+	ExecuteStatus           int             `gorm:"column:execute_status;default:0;comment:'execute 0失败，1成功'" json:"execute_status"`
+	Amount                  decimal.Decimal `gorm:"column:amount;type:decimal(20,0);comment:'跨链数额'" json:"amount"`
+	Caller                  string          `gorm:"column:caller;comment:'链链发起者地址'" json:"caller"`
+	Receiver                string          `gorm:"column:receiver;comment:'目标链接受者地址'" json:"receiver"`
+	SourceChainId           int             `gorm:"column:source_chain_id;comment:'源链ID'" json:"source_chain_id"`
+	SourceTokenAddress      string          `gorm:"column:source_token_address;comment:'源链token地址'" json:"source_token_address"`
+	SourceTxHash            string          `gorm:"column:source_token_address;comment:'源链交易hash'" json:"source_tx_hash"`
+	DestinationChainId      int             `gorm:"column:destination_chain_id;comment:'目标链ID'" json:"destination_chain_id"`
+	DestinationTokenAddress string          `gorm:"column:destination_token_address;comment:'目标链token地址'" json:"destination_token_address"`
+	DestinationTxHash       string          `gorm:"column:destination_token_address;comment:'目标链交易hash'" json:"destination_tx_hash"`
+	BridgeStatus            int             `gorm:"column:bridge_status;type:tinyint;comment:'跨链状态 1 源链deposit成功 2 目标链执行成功';default:1" json:"bridge_status"`
+	DepositAt               string          `gorm:"column:deposit_at;comment:'跨链发起时间'" json:"deposit_at"`
+	ReceiveAt               string          `gorm:"column:receive_at;comment:'跨链到账时间'" json:"receive_at"`
+	DeletedAt               gorm.DeletedAt  `gorm:"index"`
 }
 
 func MsgDataToBytes(el msg.Message) ([]byte, error) {
@@ -49,7 +55,7 @@ func BytesToMsg(b []byte) (msg.Message, error) {
 	return *m, nil
 }
 
-func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, sourceTokenAddress, destinationTokenAddress string) {
+func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, resourceId, caller, receiver, sourceTokenAddress, destinationTokenAddress string) {
 	log.Debug("🐧 检查订单是否存在", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 	var bridgeOrder BridgeTx
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
@@ -65,9 +71,12 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, sour
 			return
 		}
 		bridgeOrder = BridgeTx{
-			Data:                    orderData,
+			BridgeData:              fmt.Sprintf("%x", orderData),
 			Hash:                    string(key),
 			Amount:                  amount,
+			ResourceId:              resourceId,
+			Caller:                  caller,
+			Receiver:                receiver,
 			SourceChainId:           int(m.Source),
 			SourceTokenAddress:      sourceTokenAddress,
 			DestinationChainId:      int(m.Destination),

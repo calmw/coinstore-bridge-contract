@@ -109,10 +109,10 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes memory signature
     ) external payable {
         // 验证签名
-//        require(
-//            checkDepositSignature(signature, recipient, msg.sender),
-//            "signature error"
-//        );
+        //        require(
+        //            checkDepositSignature(signature, recipient, msg.sender),
+        //            "signature error"
+        //        );
         // 检测resource ID是否设置
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         require(uint8(tokenInfo.assetsType) > 0, "resourceId not exist");
@@ -207,10 +207,10 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         uint256 originChainId;
         uint256 userNonce;
         (resourceId, originChainId, sender, recipient, amount, userNonce) = abi
-        .decode(
-            data,
-            (bytes32, uint256, address, address, uint256, uint256)
-        );
+            .decode(
+                data,
+                (bytes32, uint256, address, address, uint256, uint256)
+            );
 
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         address tokenAddress = tokenInfo.tokenAddress;
