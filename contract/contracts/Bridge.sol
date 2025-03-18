@@ -153,7 +153,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         address recipient;
         uint256 receiveAmount;
         uint256 originNonce;
-        (resourceId, originChainId, caller, recipient, receiveAmount, originNonce) = abi.decode(data, (bytes32, uint256, address, address, uint256, uint256));
+        (dataLength, resourceId, originChainId, caller, recipient, receiveAmount, originNonce) = abi.decode(data, (bytes32, uint256, address, address, uint256, uint256));
 
         emit Dtest(
             dataLength,
