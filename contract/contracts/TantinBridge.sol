@@ -19,6 +19,8 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
+    error ErrAssetsType(AssetsType assetsType);
+
     IBridge public Bridge; // bridge 合约
     uint256 public localNonce; // 跨链nonce
     mapping(address => mapping(uint256 => DepositRecord)) public depositRecord; // user => (depositNonce=> Deposit Record)
@@ -135,6 +137,8 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             } else {
                 erc20.transferFrom(msg.sender, address(this), amount);
             }
+        } else {
+            revert ErrAssetsType(tokenInfo.assetsType);
         }
         uint256 destId = destinationChainId;
         depositRecord[msg.sender][localNonce] = DepositRecord(
