@@ -5,21 +5,6 @@ import (
 	"os"
 )
 
-func InitOpenBnbEnv() {
-	key := os.Getenv("COINSTORE_BRIDGE")
-	contract.ChainConfig = contract.ChainConfigs{
-		BridgeId:              2,
-		ChainId:               5611,
-		ChainTypeId:           1,
-		RPC:                   "https://opbnb-testnet-rpc.bnbchain.org",
-		BridgeContractAddress: "0xEA2c0B226670cd66f44560deA091DfA860C892eF",
-		VoteContractAddress:   "0x77bcb682e01D8763F6757c0D0Beaf577Afcfdf43",
-		TantinContractAddress: "0xd78CCb0C79489d8C50AfFE4E881B2C2E93706f8b",
-		UsdtAddress:           "0xfBe1e02C25a04f6CD6b044F847697b48B3E99a16",
-		PrivateKey:            key,
-	}
-}
-
 func InitTantinEnv() {
 	key := os.Getenv("COINSTORE_BRIDGE")
 	contract.ChainConfig = contract.ChainConfigs{
@@ -27,10 +12,25 @@ func InitTantinEnv() {
 		ChainId:               202502,
 		ChainTypeId:           1,
 		RPC:                   "https://rpc.tantin.com",
-		BridgeContractAddress: "0xC0E8a9C9872A6A7E7F5F2999731dec5d798D82B7",
-		VoteContractAddress:   "0xaBE40322382623882374828f0ebbC3928CAEE9A9",
-		TantinContractAddress: "0x424cF9Dc24c7c8F006421937d3E288Be84D2daa4",
-		UsdtAddress:           "0xd78CCb0C79489d8C50AfFE4E881B2C2E93706f8b",
+		BridgeContractAddress: "0x4C927c5EAF5bdD978930f93B70FaD033461cBf25",
+		VoteContractAddress:   "0xc7D34B0dC1742De46A346bee415Ad753e0e95370",
+		TantinContractAddress: "0x2bcf35e0a8B731b1EeD1C94bEA298bD20c7f89E0",
+		UsdtAddress:           "0x66bbc4d0916111aec07892B02d5330bdA7A800DD",
+		PrivateKey:            key,
+	}
+}
+
+func InitOpenBnbEnv() {
+	key := os.Getenv("COINSTORE_BRIDGE")
+	contract.ChainConfig = contract.ChainConfigs{
+		BridgeId:              2,
+		ChainId:               5611,
+		ChainTypeId:           1,
+		RPC:                   "https://opbnb-testnet-rpc.bnbchain.org",
+		BridgeContractAddress: "0x8667641b1436830245Ee3CDFf2c9C0451C2f3b19",
+		VoteContractAddress:   "0x7EC7dca61c29773466D33aEB9e4f7adbBA960Ca1",
+		TantinContractAddress: "0x09125BB80eb099073b392637De2b6f3A42f7D1aC",
+		UsdtAddress:           "0xfBe1e02C25a04f6CD6b044F847697b48B3E99a16",
 		PrivateKey:            key,
 	}
 }
@@ -38,7 +38,7 @@ func InitTantinEnv() {
 func InitTronEnv() {
 	key := os.Getenv("COINSTORE_BRIDGE_TRON")
 	contract.ChainConfig = contract.ChainConfigs{
-		BridgeId:              2,
+		BridgeId:              3,
 		ChainId:               3448148188,
 		ChainTypeId:           2,
 		RPC:                   "grpc.nile.trongrid.io:50051",
