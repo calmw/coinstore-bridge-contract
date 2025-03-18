@@ -235,10 +235,11 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 	var status bool
 	var txHash string
 	var txHashRes string
+	receiveAt := time.Now().Format("2006-01-02 15:04:05")
 
 	defer func() {
 		if status {
-			model.UpdateExecuteStatus(m, 1, txHashRes, time.Now().Format("2006-01-02 15:04:05"))
+			model.UpdateExecuteStatus(m, 1, txHashRes, receiveAt)
 		}
 	}()
 
@@ -273,6 +274,7 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 					if w.proposalIsFinalized(m.Source, m.DepositNonce, dataHash) {
 						status = true
 						txHashRes = txHash
+						receiveAt = tx.Time().Format("2006-01-02 15:04:05")
 						w.log.Info("Proposal finalized on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
 						break
 					}

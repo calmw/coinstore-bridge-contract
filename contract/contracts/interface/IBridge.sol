@@ -37,6 +37,7 @@ interface IBridge {
         uint256 destinationChainId;
         address sender; // 某个业务合约的地址，可以有多个业务合约
         bytes32 resourceID;
+        uint256 ctime;
         bytes data;
     }
 
