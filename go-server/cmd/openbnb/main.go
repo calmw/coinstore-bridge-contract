@@ -48,6 +48,6 @@ func main() {
 	}
 	for {
 		tantin.Deposit(common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"), [32]byte(resourceIdBytes), big.NewInt(1), big.NewInt(10), signature)
-		time.Sleep(time.Second * 120)
+		time.Sleep(time.Second * 30)
 	}
 }

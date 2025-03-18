@@ -189,9 +189,9 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 			gasLimit := w.conn.Opts().GasLimit
 			gasPrice := w.conn.Opts().GasPrice
 
-			w.log.Error("voteProposal", "dataHash", fmt.Sprintf("%x", dataHash))
-			w.log.Error("voteProposal", "DepositNonce", fmt.Sprintf("%d", m.DepositNonce.Big().Int64()))
-			w.log.Error("voteProposal", "ResourceId", fmt.Sprintf("%x", m.ResourceId))
+			w.log.Debug("voteProposal", "dataHash", fmt.Sprintf("%x", dataHash))
+			w.log.Debug("voteProposal", "DepositNonce", fmt.Sprintf("%d", m.DepositNonce.Big().Int64()))
+			w.log.Debug("voteProposal", "ResourceId", fmt.Sprintf("%x", m.ResourceId))
 			tx, err := w.voteContract.VoteProposal(
 				w.conn.Opts(),
 				m.Source.Big(),
