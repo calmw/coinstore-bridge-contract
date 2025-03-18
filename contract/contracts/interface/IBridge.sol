@@ -17,6 +17,15 @@ interface IBridge {
         bytes data
     );
 
+    event Dtest(
+        bytes32 resourceId,
+        uint256 originChainId,
+        address caller,
+        address recipient,
+        uint256 receiveAmount,
+        uint256 originNonce
+    );
+
     event SetResource(
         bytes32 indexed resourceID,
         address tokenAddress,
