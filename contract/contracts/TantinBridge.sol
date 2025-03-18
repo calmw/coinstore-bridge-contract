@@ -200,38 +200,35 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         @param data 跨链data, encode(originChainId,originDepositNonce,depositer,recipient,amount,resourceId)
      */
     function execute(bytes calldata data) public onlyRole(BRIDGE_ROLE) {
+        uint256 dataLength;
         bytes32 resourceId;
-        address sender;
-        address recipient;
-        uint256 amount;
         uint256 originChainId;
-        uint256 userNonce;
-        (resourceId, originChainId, sender, recipient, amount, userNonce) = abi
-            .decode(
-                data,
-                (bytes32, uint256, address, address, uint256, uint256)
-            );
+        address caller;
+        address recipient;
+        uint256 receiveAmount;
+        uint256 originNonce;
+        (dataLength, resourceId, originChainId, caller, recipient, receiveAmount, originNonce) = abi.decode(data, (uint256, bytes32, uint256, address, address, uint256, uint256));
 
-        TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
+    TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         address tokenAddress = tokenInfo.tokenAddress;
         if (tokenInfo.assetsType == AssetsType.Coin) {
-            Address.sendValue(payable(recipient), amount);
+            Address.sendValue(payable(recipient), receiveAmount);
         }
         if (tokenInfo.assetsType == AssetsType.Erc20) {
             IERC20 erc20 = IERC20(tokenAddress);
-            erc20.transfer(recipient, amount);
+            erc20.transfer(recipient, receiveAmount);
             if (tokenInfo.mintable) {
-                erc20.mint(recipient, amount);
+                erc20.mint(recipient, receiveAmount);
             } else {
-                erc20.transfer(recipient, amount);
+                erc20.transfer(recipient, receiveAmount);
             }
         }
         emit ExecuteEvent(
-            sender,
+            caller,
             recipient,
-            amount,
+            receiveAmount,
             tokenAddress,
-            userNonce,
+            originNonce,
             originChainId
         );
     }

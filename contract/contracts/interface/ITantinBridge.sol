@@ -77,4 +77,6 @@ interface ITantinBridge {
         uint256 fee;
         uint256 destinationChainId;
     }
+
+    function execute(bytes calldata data) external;
 }

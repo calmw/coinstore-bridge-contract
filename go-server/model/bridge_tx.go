@@ -111,7 +111,7 @@ func UpdateExecuteStatus(m msg.Message, status int) {
 		return
 	}
 	err = db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).Updates(map[string]interface{}{
-		"status": status,
+		"execute_status": status,
 	}).Error
 	if err != nil {
 		log.Debug("🐧 更新execute数据", "error", err)

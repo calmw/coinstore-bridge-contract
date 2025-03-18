@@ -3,6 +3,7 @@ pragma solidity ^0.8.22;
 
 import "./interface/IBridge.sol";
 import "./interface/IERC20.sol";
+import "./interface/ITantinBridge.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./utils/Pausable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
@@ -19,7 +20,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     mapping(bytes32 => address) public resourceIdToContractAddress; // resourceID => 业务合约地址(tantin address)
     mapping(address => bytes32) public contractAddressToResourceID; // 业务合约地址(tantin address) => resourceID
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
-    mapping(bytes32 => bytes4) public resourceIdToExecuteSig; //  resourceID => tantin execute sig
     mapping(uint256 => mapping(uint256 => DepositRecord)) public depositRecords; // depositNonce => (destinationChainId => Deposit Record)
 
     function initialize() public initializer {
@@ -74,7 +74,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         @param fee 该币的跨链费用
         @param pause 该币种是否在黑名单中/是否允许跨链。币种黑名单/禁止该币种跨链
         @param tantinAddress 对应的tantin业务合约地址
-        @param executeFunctionSig tantin业务合约执行到帐操作的方法签名
      */
     function adminSetResource(
         bytes32 resourceID,
@@ -82,8 +81,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         address tokenAddress,
         uint256 fee,
         bool pause,
-        address tantinAddress,
-        bytes4 executeFunctionSig
+        address tantinAddress
     ) external onlyRole(ADMIN_ROLE) {
         resourceIdToTokenInfo[resourceID] = TokenInfo(
             assetsType,
@@ -92,15 +90,13 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
             fee
         );
         resourceIdToContractAddress[resourceID] = tantinAddress;
-        resourceIdToExecuteSig[resourceID] = executeFunctionSig;
 
         emit SetResource(
             resourceID,
             tokenAddress,
             fee,
             pause,
-            tantinAddress,
-            executeFunctionSig
+            tantinAddress
         );
     }
 
@@ -146,26 +142,8 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         uint256 originDepositNonce,
         bytes calldata data
     ) external onlyRole(VOTE_ROLE) whenNotPaused {
-        uint256 dataLength;
-        bytes32 resourceId;
-        uint256 originChainId;
-        address caller;
-        address recipient;
-        uint256 receiveAmount;
-        uint256 originNonce;
-        (dataLength, resourceId, originChainId, caller, recipient, receiveAmount, originNonce) = abi.decode(data, (bytes32, uint256, address, address, uint256, uint256));
-
-        emit Dtest(
-            dataLength,
-            resourceId,
-            originChainId,
-            caller,
-            recipient,
-            receiveAmount,
-            originNonce
-        );
-        //
-//    resourceIdToContractAddress
+        address tantinAddress = resourceIdToContractAddress[resourceId];
+        ITantinBridge(tantinAddress).execute(data);
     }
 
     // 获取自定义链ID

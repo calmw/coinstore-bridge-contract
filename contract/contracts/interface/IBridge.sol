@@ -17,23 +17,12 @@ interface IBridge {
         bytes data
     );
 
-    event Dtest(
-        uint256 dataLength,
-        bytes32 resourceId,
-        uint256 originChainId,
-        address caller,
-        address recipient,
-        uint256 receiveAmount,
-        uint256 originNonce
-    );
-
     event SetResource(
         bytes32 indexed resourceID,
         address tokenAddress,
         uint256 fee,
         bool pause, // 该resourceID是否被暂停交易
-        address tantinAddress,
-        bytes4 executeFunctionSig
+        address tantinAddress
     );
 
     // 跨链币种信息
