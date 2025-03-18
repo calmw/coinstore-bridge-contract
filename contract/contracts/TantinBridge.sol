@@ -128,8 +128,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         if (tokenInfo.assetsType == AssetsType.Coin) {
             tokenAddress = address(0);
             require(msg.value == amount, "incorrect value supplied.");
-        }
-        if (tokenInfo.assetsType == AssetsType.Erc20) {
+        } else if (tokenInfo.assetsType == AssetsType.Erc20) {
             tokenAddress = tokenInfo.tokenAddress;
             IERC20 erc20 = IERC20(tokenAddress);
             if (tokenInfo.burnable) {

@@ -145,11 +145,10 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			return err
 		}
 
-		l.log.Debug("get events:")
-		l.log.Debug("ResourceID", records.ResourceID)
-		l.log.Debug("DestinationChainId", records.DestinationChainId)
-		l.log.Debug("Sender", records.Sender)
-		l.log.Debug("Data", records.Data)
+		l.log.Debug("get events", "ResourceID", fmt.Sprintf("%x", records.ResourceID))
+		l.log.Debug("get events", "DestinationChainId", records.DestinationChainId)
+		l.log.Debug("get events", "Sender", records.Sender.String())
+		l.log.Debug("get events", "Data", fmt.Sprintf("%x", records.Data))
 
 		m = msg.NewGenericTransfer(
 			msg.ChainId(l.cfg.ChainId),
@@ -164,8 +163,19 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			l.log.Error("subscription error: failed to route message", "err", err)
 		}
 
+		// 获取目标链的信息
+		dl, ok := Listeners[int(records.DestinationChainId.Int64())]
+		if !ok {
+			l.log.Error("destination listener not found", "chainId", records.DestinationChainId)
+			continue
+		}
+		_, t, _, err := dl.bridgeContract.GetToeknInfoByResourceId(nil, records.ResourceID)
+		if err != nil {
+			l.log.Error("destination token info not found", "chainId", records.DestinationChainId)
+			continue
+		}
 		// 保存到数据库
-		model.SaveBridgeOrder(m, l.log)
+		model.SaveBridgeOrder( l.log,m,records.)
 	}
 
 	return nil
