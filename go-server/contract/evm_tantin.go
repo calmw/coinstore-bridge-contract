@@ -170,7 +170,7 @@ func (c TanTinEvm) AdminSetToken() {
 	log.Println(fmt.Sprintf("AdminSetToken 确认成功"))
 }
 
-func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount, fee *big.Int) {
+func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount *big.Int, signature []byte) {
 
 	token, err := NewErc20(common.HexToAddress(ChainConfig.UsdtAddress))
 	if err != nil {
@@ -183,18 +183,10 @@ func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destina
 	var txOpts *bind.TransactOpts
 
 	for {
-		if fee.Int64() > 0 {
-			err, txOpts = GetAuthWithValue(c.Cli, fee.Add(fee, amount))
-			if err != nil {
-				log.Println(err)
-				return
-			}
-		} else {
-			err, txOpts = GetAuth(c.Cli)
-			if err != nil {
-				log.Println(err)
-				return
-			}
+		err, txOpts = GetAuth(c.Cli)
+		if err != nil {
+			log.Println(err)
+			return
 		}
 
 		res, err = c.Contract.Deposit(
@@ -203,6 +195,7 @@ func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destina
 			resourceId,
 			receiver,
 			amount,
+			signature,
 		)
 		if err == nil {
 			break

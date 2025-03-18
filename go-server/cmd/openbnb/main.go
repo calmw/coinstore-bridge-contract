@@ -4,10 +4,8 @@ import (
 	"coinstore/contract"
 	"coinstore/services"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/status-im/keycard-go/hexutils"
 	"math/big"
-	"strings"
 )
 
 func main() {
@@ -36,8 +34,8 @@ func main() {
 	tantin.Init()
 	tantin.AdminSetToken()
 
-	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
+	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
 	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdCoin, "0x"))
-	tantin.Deposit(common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"), [32]byte(resourceIdBytes), big.NewInt(2), big.NewInt(0), big.NewInt(1))
+	//tantin.Deposit(common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"), [32]byte(resourceIdBytes), big.NewInt(2), big.NewInt(0), big.NewInt(1))
 
 }

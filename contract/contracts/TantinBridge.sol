@@ -109,10 +109,10 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes memory signature
     ) external payable {
         // 验证签名
-        require(
-            checkDepositSignature(signature, recipient, msg.sender),
-            "signature error"
-        );
+//        require(
+//            checkDepositSignature(signature, recipient, msg.sender),
+//            "signature error"
+//        );
         // 检测resource ID是否设置
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         require(uint8(tokenInfo.assetsType) > 0, "resourceId not exist");
@@ -184,6 +184,18 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         return recoverAddress == sender;
     }
 
+    function checkDepositSignature2(
+        bytes memory signature,
+        address recipient
+    ) public pure returns (address) {
+        bytes32 messageHash = keccak256(abi.encodePacked(recipient));
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature
+        );
+
+        return recoverAddress;
+    }
+
     /**
         @notice 目标链执行到帐操作
         @param data 跨链data, encode(originChainId,originDepositNonce,depositer,recipient,amount,resourceId)
@@ -196,10 +208,10 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         uint256 originChainId;
         uint256 userNonce;
         (resourceId, originChainId, sender, recipient, amount, userNonce) = abi
-            .decode(
-                data,
-                (bytes32, uint256, address, address, uint256, uint256)
-            );
+        .decode(
+            data,
+            (bytes32, uint256, address, address, uint256, uint256)
+        );
 
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         address tokenAddress = tokenInfo.tokenAddress;
