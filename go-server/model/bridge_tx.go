@@ -14,6 +14,7 @@ import (
 )
 
 type BridgeTx struct {
+	Id                      uint64          `gorm:"primaryKey" json:"id"`
 	BridgeData              string          `gorm:"column:bridge_data;type:varchar(1000);comment:'跨链数据'" json:"bridge_data"`
 	ResourceId              string          `gorm:"column:resource_id;type:varchar(100);comment:'resource ID'" json:"resource_id"`
 	Hash                    string          `gorm:"column:hash;comment:'唯一索引'" json:"hash"`

@@ -34,7 +34,7 @@ func NewVote() (*VoteEvm, error) {
 }
 
 func (c VoteEvm) Init() {
-	c.AdminSetEnv(big.NewInt(1), big.NewInt(100000))
+	c.AdminSetEnv(big.NewInt(100), big.NewInt(1))
 	c.GrantBridgeRole(common.HexToAddress(ChainConfig.BridgeContractAddress))
 }
 

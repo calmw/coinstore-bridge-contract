@@ -16,7 +16,7 @@ func main() {
 		return
 	}
 	bridge.Init()
-	someBytes := hexutils.HexToBytes("ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d")
+	someBytes := hexutils.HexToBytes("09c5eabe")
 	bridge.AdminSetResource(big.NewInt(1), [4]byte(someBytes))
 
 	vote, err := contract.NewVote()
