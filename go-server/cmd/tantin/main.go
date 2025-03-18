@@ -15,21 +15,21 @@ import (
 func main() {
 	services.InitTantinEnv()
 
-	bridge, err := contract.NewBridge()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	bridge.Init()
-	someBytes := hexutils.HexToBytes("09c5eabe")
-	bridge.AdminSetResource(big.NewInt(0), [4]byte(someBytes))
-
-	vote, err := contract.NewVote()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	vote.Init()
+	//bridge, err := contract.NewBridge()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//bridge.Init()
+	//someBytes := hexutils.HexToBytes("09c5eabe")
+	//bridge.AdminSetResource(big.NewInt(0), [4]byte(someBytes))
+	//
+	//vote, err := contract.NewVote()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//vote.Init()
 
 	tantin, err := contract.NewTanTin()
 	if err != nil {

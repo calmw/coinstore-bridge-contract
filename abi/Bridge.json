@@ -496,19 +496,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "originChainId",
-        "type": "uint256"
-      },
-      {
         "internalType": "bytes32",
         "name": "resourceId",
         "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "originDepositNonce",
-        "type": "uint256"
       },
       {
         "internalType": "bytes",

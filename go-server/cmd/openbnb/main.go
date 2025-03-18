@@ -23,12 +23,12 @@ func main() {
 	//someBytes := hexutils.HexToBytes("09c5eabe")
 	//bridge.AdminSetResource(big.NewInt(1), [4]byte(someBytes))
 
-	vote, err := contract.NewVote()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	vote.Init()
+	//vote, err := contract.NewVote()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//vote.Init()
 
 	tantin, err := contract.NewTanTin()
 	if err != nil {
