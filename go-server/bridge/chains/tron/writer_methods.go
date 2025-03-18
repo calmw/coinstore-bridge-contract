@@ -36,7 +36,7 @@ func (w *Writer) proposalIsComplete(m msg.Message, dataHash [32]byte) bool {
 	///
 	w.log.Debug("🫥  proposalIsComplete,status:%v,nonce:%d", prop.Status, m.DepositNonce)
 	if prop.Status >= 2 {
-		model.UpdateVoteStatus(m, true)
+		model.UpdateVoteStatus(m, 1)
 	}
 	///
 	return prop.Status == PassedStatus || prop.Status == TransferredStatus || prop.Status == CancelledStatus

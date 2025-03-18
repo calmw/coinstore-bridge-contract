@@ -109,7 +109,7 @@ func UpdateExecuteStatus(m msg.Message, status bool) {
 	}
 }
 
-func UpdateVoteStatus(m msg.Message, voteStatus bool) {
+func UpdateVoteStatus(m msg.Message, voteStatus int) {
 	log.Debug("🐧 更新vote数据", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
 	key := []byte(fmt.Sprintf("%s%d%d%d", resourceIdHex, m.Source, m.Destination, m.DepositNonce))
