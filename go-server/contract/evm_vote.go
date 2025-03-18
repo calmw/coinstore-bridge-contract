@@ -102,7 +102,6 @@ func (c VoteEvm) GrantRelayerRole(addr common.Address) {
 	BridgeRoleBytes := hexutils.HexToBytes(RelayerRole)
 
 	var res *types.Transaction
-
 	for {
 		err, txOpts := GetAuth(c.Cli)
 		if err != nil {
