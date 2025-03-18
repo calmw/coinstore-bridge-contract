@@ -30,6 +30,8 @@ type BridgeTx struct {
 	DestinationTokenAddress string          `gorm:"column:destination_token_address;comment:'目标链token地址'" json:"destination_token_address"`
 	DestinationTxHash       string          `gorm:"column:destination_token_address;comment:'目标链交易hash'" json:"destination_tx_hash"`
 	BridgeStatus            int             `gorm:"column:bridge_status;type:tinyint;comment:'跨链状态 1 源链deposit成功 2 目标链执行成功';default:1" json:"bridge_status"`
+	DepositHash             string          `gorm:"column:deposit_hash;comment:'deposit tx hash'" json:"deposit_hash"`
+	ExecuteHash             string          `gorm:"column:execute_hash;comment:'execute tx hash'" json:"execute_hash"`
 	DepositAt               string          `gorm:"column:deposit_at;comment:'跨链发起时间'" json:"deposit_at"`
 	ReceiveAt               string          `gorm:"column:receive_at;comment:'跨链到账时间'" json:"receive_at"`
 	DeletedAt               gorm.DeletedAt  `gorm:"index"`
@@ -56,7 +58,7 @@ func BytesToMsg(b []byte) (msg.Message, error) {
 	return *m, nil
 }
 
-func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, resourceId, caller, receiver, sourceTokenAddress, destinationTokenAddress, dateTime string) {
+func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, resourceId, caller, receiver, sourceTokenAddress, destinationTokenAddress, depositTxHash, dateTime string) {
 	log.Debug("🐧 检查订单是否存在", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 	var bridgeOrder BridgeTx
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
@@ -83,6 +85,7 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 			DestinationChainId:      int(m.Destination),
 			DestinationTokenAddress: destinationTokenAddress,
 			DepositAt:               dateTime,
+			DepositHash:             "0x" + depositTxHash,
 		}
 		log.Debug("🐧 插入订单数据", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 		err = db.DB.Model(BridgeTx{}).Create(&bridgeOrder).Error
@@ -96,7 +99,7 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 	}
 }
 
-func UpdateExecuteStatus(m msg.Message, status int, dateTime string) {
+func UpdateExecuteStatus(m msg.Message, status int, executeTxHash, dateTime string) {
 
 	log.Debug("🐧 更新execute数据", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
@@ -112,6 +115,7 @@ func UpdateExecuteStatus(m msg.Message, status int, dateTime string) {
 		return
 	}
 	err = db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).Updates(map[string]interface{}{
+		"execute_hash":   executeTxHash,
 		"execute_status": status,
 		"receive_at":     dateTime,
 	}).Error

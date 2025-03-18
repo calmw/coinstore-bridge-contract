@@ -117,6 +117,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
             destinationChainId,
             msg.sender,
             resourceId,
+            block.timestamp,
             data
         );
 

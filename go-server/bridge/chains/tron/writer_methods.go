@@ -233,10 +233,12 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 	defer w.muExec.Unlock()
 
 	var status bool
+	var txHash string
+	var txHashRes string
 
 	defer func() {
 		if status {
-			model.UpdateExecuteStatus(m, 1, time.Now().Format("2006-01-02 15:04:05"))
+			model.UpdateExecuteStatus(m, 1, txHashRes, time.Now().Format("2006-01-02 15:04:05"))
 		}
 	}()
 
@@ -264,11 +266,13 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 			w.conn.UnlockOpts()
 
 			if err == nil {
+				txHash = "0x" + tx.Hash().String()
 				w.log.Info("Submitted proposal execution", "tx", tx.Hash(), "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce, "gasPrice", tx.GasPrice().String())
 				///
 				for j := 0; j < 5; j++ {
 					if w.proposalIsFinalized(m.Source, m.DepositNonce, dataHash) {
 						status = true
+						txHashRes = txHash
 						w.log.Info("Proposal finalized on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
 						break
 					}
