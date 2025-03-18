@@ -145,7 +145,18 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         bytes32 resourceId,
         uint256 originDepositNonce,
         bytes calldata data
-    ) external onlyRole(VOTE_ROLE) whenNotPaused {}
+    ) external onlyRole(VOTE_ROLE) whenNotPaused {
+        bytes32 resourceId;
+        uint256 originChainId;
+        address caller;
+        address recipient;
+        uint256 receiveAmount;
+        uint256 originNonce;
+        (resourceId, originChainId, caller, recipient, receiveAmount, originNonce) = abi.decode(data, (bytes32, uint256, address, address, uint256, uint256));
+
+        //
+//    resourceIdToContractAddress
+    }
 
     // 获取自定义链ID
     function getChainId() public view returns (uint256) {

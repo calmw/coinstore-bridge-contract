@@ -99,7 +99,7 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 	data := ConstructGenericProposalData(metadata)
 	toHash := append(common.HexToAddress(w.Cfg.BridgeContractAddress).Bytes(), data...)
 	dataHash := utils.Hash(toHash)
-	w.log.Debug("Creating proposal", "dataHash", fmt.Sprintf("%x", dataHash))
+	w.log.Debug("dataHash～～～～～～～～～～", "dataHash", fmt.Sprintf("%x", dataHash))
 	if !w.shouldVote(m, dataHash) {
 		if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
 			w.ExecuteProposal(m, data, dataHash)
@@ -253,6 +253,10 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 			gasLimit := w.conn.Opts().GasLimit
 			gasPrice := w.conn.Opts().GasPrice
 
+			w.log.Debug("ExecuteProposal～～～～～～～～～～", "data", fmt.Sprintf("%x", data))
+			w.log.Debug("ExecuteProposal～～～～～～～～～～", "dataHash", fmt.Sprintf("%x", dataHash))
+			w.log.Debug("ExecuteProposal  ～～～～～～～～～～", "ResourceId", fmt.Sprintf("%x", m.ResourceId))
+			w.log.Debug("ExecuteProposal  ～～～～～～～～～～", "DepositNonce", m.DepositNonce.Big().String())
 			tx, err := w.voteContract.ExecuteProposal(
 				w.conn.Opts(),
 				m.Source.Big(),
