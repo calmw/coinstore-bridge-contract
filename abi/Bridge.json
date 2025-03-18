@@ -204,12 +204,6 @@
         "internalType": "address",
         "name": "tantinAddress",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes4",
-        "name": "executeFunctionSig",
-        "type": "bytes4"
       }
     ],
     "name": "SetResource",
@@ -341,11 +335,6 @@
         "internalType": "address",
         "name": "tantinAddress",
         "type": "address"
-      },
-      {
-        "internalType": "bytes4",
-        "name": "executeFunctionSig",
-        "type": "bytes4"
       }
     ],
     "name": "adminSetResource",
@@ -738,25 +727,6 @@
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "resourceIdToExecuteSig",
-    "outputs": [
-      {
-        "internalType": "bytes4",
-        "name": "",
-        "type": "bytes4"
       }
     ],
     "stateMutability": "view",

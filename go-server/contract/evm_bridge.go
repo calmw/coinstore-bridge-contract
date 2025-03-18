@@ -144,7 +144,6 @@ func (b *BridgeEvm) AdminSetResource(fee *big.Int, funcSig [4]byte) {
 			fee,
 			false,
 			common.HexToAddress(ChainConfig.TantinContractAddress),
-			funcSig,
 		)
 		if err == nil {
 			break
@@ -179,7 +178,6 @@ func (b *BridgeEvm) AdminSetResource(fee *big.Int, funcSig [4]byte) {
 			fee,
 			false,
 			common.HexToAddress(ChainConfig.TantinContractAddress),
-			funcSig,
 		)
 		if err == nil {
 			break
