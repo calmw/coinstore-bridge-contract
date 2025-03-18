@@ -2,7 +2,7 @@
 pragma solidity ^0.8.22;
 
 import "./interface/IBridge.sol";
-import "./interface/IERC20.sol";
+import "./interface/IERC20MintAble.sol";
 import "./interface/ITantinBridge.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./utils/Pausable.sol";
@@ -125,15 +125,11 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
 
     /**
         @notice relayer执行投票通过后的到帐操作
-        @param originChainId 源链ID
-        @param originDepositNonce 源链nonce
         @param resourceId 跨链的resourceID
         @param data 跨链data
      */
     function execute(
-        uint256 originChainId,
         bytes32 resourceId,
-        uint256 originDepositNonce,
         bytes calldata data
     ) external onlyRole(VOTE_ROLE) whenNotPaused {
         address tantinAddress = resourceIdToContractAddress[resourceId];

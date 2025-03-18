@@ -61,9 +61,7 @@ interface IBridge {
     ) external view returns (address);
 
     function execute(
-        uint256 originChainId,
         bytes32 resourceId,
-        uint256 originDepositNonce,
         bytes calldata data
     ) external;
 }

@@ -241,7 +241,7 @@ contract Vote is IVote, AccessControl, Initializable {
         require(dataHash == proposal.dataHash, "data doesn't match datahash");
 
         proposal.status = ProposalStatus.Executed;
-        Bridge.execute(originChainId, resourceId, originDepositNonce, data);
+        Bridge.execute(resourceId, data);
 
         emit ProposalEvent(
             originChainId,
