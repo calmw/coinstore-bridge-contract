@@ -171,7 +171,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		}
 		amount, caller, receiver, err := utils.ParseBridgeData(records.Data)
 		// 保存到数据库
-		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", records.ResourceID), caller, receiver, strings.ToLower(s.String()), strings.ToLower(t.String()))
+		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", records.ResourceID), caller, receiver, strings.ToLower(s.String()), strings.ToLower(t.String()), l.latestBlock.LastUpdated.Format("2006-01-02 15:04:05"))
 
 		err = l.Router.Send(m)
 		if err != nil {
@@ -187,6 +187,10 @@ func (l *Listener) LatestBlock() (*big.Int, error) {
 	header, err := l.conn.Client().HeaderByNumber(context.Background(), nil)
 	if err != nil {
 		return nil, err
+	}
+	l.latestBlock = core.LatestBlock{
+		Height:      header.Number,
+		LastUpdated: time.Unix(int64(header.Time), 0),
 	}
 	return header.Number, nil
 }

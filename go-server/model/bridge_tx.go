@@ -56,7 +56,7 @@ func BytesToMsg(b []byte) (msg.Message, error) {
 	return *m, nil
 }
 
-func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, resourceId, caller, receiver, sourceTokenAddress, destinationTokenAddress string) {
+func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, resourceId, caller, receiver, sourceTokenAddress, destinationTokenAddress, dateTime string) {
 	log.Debug("🐧 检查订单是否存在", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 	var bridgeOrder BridgeTx
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
@@ -82,6 +82,7 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 			SourceTokenAddress:      sourceTokenAddress,
 			DestinationChainId:      int(m.Destination),
 			DestinationTokenAddress: destinationTokenAddress,
+			DepositAt:               dateTime,
 		}
 		log.Debug("🐧 插入订单数据", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 		err = db.DB.Model(BridgeTx{}).Create(&bridgeOrder).Error
@@ -95,7 +96,7 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 	}
 }
 
-func UpdateExecuteStatus(m msg.Message, status int) {
+func UpdateExecuteStatus(m msg.Message, status int, dateTime string) {
 
 	log.Debug("🐧 更新execute数据", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
@@ -112,6 +113,7 @@ func UpdateExecuteStatus(m msg.Message, status int) {
 	}
 	err = db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).Updates(map[string]interface{}{
 		"execute_status": status,
+		"receive_at":     dateTime,
 	}).Error
 	if err != nil {
 		log.Debug("🐧 更新execute数据", "error", err)

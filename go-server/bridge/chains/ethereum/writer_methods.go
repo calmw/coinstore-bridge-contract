@@ -7,6 +7,7 @@ import (
 	"coinstore/utils"
 	"context"
 	"errors"
+	"fmt"
 	log "github.com/calmw/blog"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
@@ -188,6 +189,9 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 			gasLimit := w.conn.Opts().GasLimit
 			gasPrice := w.conn.Opts().GasPrice
 
+			w.log.Error("voteProposal", "dataHash", fmt.Sprintf("%x", dataHash))
+			w.log.Error("voteProposal", "DepositNonce", fmt.Sprintf("%d", m.DepositNonce.Big().Int64()))
+			w.log.Error("voteProposal", "ResourceId", fmt.Sprintf("%x", m.ResourceId))
 			tx, err := w.voteContract.VoteProposal(
 				w.conn.Opts(),
 				m.Source.Big(),
@@ -233,7 +237,7 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 
 	defer func() {
 		if status {
-			model.UpdateExecuteStatus(m, 1)
+			model.UpdateExecuteStatus(m, 1, time.Now().Format("2006-01-02 15:04:05"))
 		}
 	}()
 
