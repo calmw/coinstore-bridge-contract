@@ -11,10 +11,13 @@ replace github.com/codahale/hdrhistogram => github.com/HdrHistogram/hdrhistogram
 require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2
 	github.com/calmw/blog v0.0.1
+	github.com/didip/tollbooth/v7 v7.0.2
+	github.com/didip/tollbooth_gin v0.0.0-20250112173845-11eddec067c4
 	github.com/ethereum/go-ethereum v1.14.3
 	github.com/ethersphere/bee/v2 v2.5.0
 	github.com/fbsobreira/gotron-sdk v0.0.0-20230907131216-1e824406fe8c
 	github.com/forgoer/openssl v1.6.0
+	github.com/gin-gonic/gin v1.10.0
 	github.com/pkg/errors v0.9.1
 	github.com/shopspring/decimal v1.4.0
 	github.com/status-im/keycard-go v0.2.0
@@ -34,7 +37,6 @@ require (
 	github.com/bytedance/sonic/loader v0.2.4 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cloudwego/base64x v0.1.5 // indirect
-	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/consensys/bavard v0.1.13 // indirect
 	github.com/consensys/gnark-crypto v0.12.1 // indirect
 	github.com/crate-crypto/go-kzg-4844 v1.0.0 // indirect
@@ -46,8 +48,8 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/gin-contrib/sse v1.0.0 // indirect
-	github.com/gin-gonic/gin v1.10.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
+	github.com/go-pkgz/expirable-cache/v3 v3.0.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.25.0 // indirect
