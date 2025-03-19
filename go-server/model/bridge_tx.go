@@ -25,10 +25,8 @@ type BridgeTx struct {
 	Receiver                string          `gorm:"column:receiver;comment:'目标链接受者地址'" json:"receiver"`
 	SourceChainId           int             `gorm:"column:source_chain_id;comment:'源链ID'" json:"source_chain_id"`
 	SourceTokenAddress      string          `gorm:"column:source_token_address;comment:'源链token地址'" json:"source_token_address"`
-	SourceTxHash            string          `gorm:"column:source_token_address;comment:'源链交易hash'" json:"source_tx_hash"`
 	DestinationChainId      int             `gorm:"column:destination_chain_id;comment:'目标链ID'" json:"destination_chain_id"`
 	DestinationTokenAddress string          `gorm:"column:destination_token_address;comment:'目标链token地址'" json:"destination_token_address"`
-	DestinationTxHash       string          `gorm:"column:destination_token_address;comment:'目标链交易hash'" json:"destination_tx_hash"`
 	BridgeStatus            int             `gorm:"column:bridge_status;type:tinyint;comment:'跨链状态 1 源链deposit成功 2 目标链执行成功';default:1" json:"bridge_status"`
 	DepositHash             string          `gorm:"column:deposit_hash;comment:'deposit tx hash'" json:"deposit_hash"`
 	ExecuteHash             string          `gorm:"column:execute_hash;comment:'execute tx hash'" json:"execute_hash"`
@@ -117,6 +115,7 @@ func UpdateExecuteStatus(m msg.Message, status int, executeTxHash, dateTime stri
 	err = db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).Updates(map[string]interface{}{
 		"execute_hash":   executeTxHash,
 		"execute_status": status,
+		"bridge_status":  2,
 		"receive_at":     dateTime,
 	}).Error
 	if err != nil {

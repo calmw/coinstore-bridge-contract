@@ -57,6 +57,6 @@ func InitMysql(log log.Logger) {
 
 func After(db *gorm.DB) {
 	db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
-	//sql := db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
-	//log.Debug(sql)
+	sql := db.Dialector.Explain(db.Statement.SQL.String(), db.Statement.Vars...)
+	log.Debug(sql)
 }
