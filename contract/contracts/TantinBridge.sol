@@ -9,13 +9,11 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {IBridge} from "./interface/IBridge.sol";
-
 import {ITantinBridge} from "./interface/ITantinBridge.sol";
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /// ERC20/Coin跨链
 
-contract TantinBridge is AccessControl, ITantinBridge, Initializable {
+contract TantinBridge is AccessControl, ITantinBridge {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
 
@@ -32,7 +30,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     mapping(address => bool) public blacklist; // 用户地址 => 是否在黑名单
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
 
-    function initialize() public initializer {
+    constructor() {
         localNonce = 1;
         _grantRole(ADMIN_ROLE, msg.sender);
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);

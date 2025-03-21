@@ -54,7 +54,7 @@ func NewConfig(cfg model.Config) Config {
 		minGasPrice = big.NewInt(cfg.MinGasPrice)
 	}
 	blockConfirmations := big.NewInt(DefaultBlockConfirmations)
-	if cfg.MaxGasPrice > 0 {
+	if cfg.BlockConfirmations > 0 {
 		blockConfirmations = big.NewInt(cfg.BlockConfirmations)
 	}
 	startBlock := cfg.StartBlock

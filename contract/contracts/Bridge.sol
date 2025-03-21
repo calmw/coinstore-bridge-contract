@@ -4,12 +4,11 @@ pragma solidity ^0.8.22;
 import "./interface/IBridge.sol";
 import "./interface/IERC20MintAble.sol";
 import "./interface/ITantinBridge.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./utils/Pausable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {IVote} from "./interface/IVote.sol";
 
-contract Bridge is IBridge, Pausable, AccessControl, Initializable {
+contract Bridge is IBridge, Pausable, AccessControl {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant VOTE_ROLE = keccak256("VOTE_ROLE");
 
@@ -22,7 +21,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
     mapping(uint256 => mapping(uint256 => DepositRecord)) public depositRecords; // depositNonce => (destinationChainId => Deposit Record)
 
-    function initialize() public initializer {
+    constructor() {
         _grantRole(ADMIN_ROLE, msg.sender);
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }

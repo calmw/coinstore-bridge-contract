@@ -3,10 +3,9 @@ pragma solidity ^0.8.22;
 
 import "./interface/IBridge.sol";
 import "./interface/IVote.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract Vote is IVote, AccessControl, Initializable {
+contract Vote is IVote, AccessControl {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
     bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
@@ -20,7 +19,7 @@ contract Vote is IVote, AccessControl, Initializable {
     mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
         public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
-    function initialize() public initializer {
+    constructor()  {
         _grantRole(ADMIN_ROLE, msg.sender);
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
