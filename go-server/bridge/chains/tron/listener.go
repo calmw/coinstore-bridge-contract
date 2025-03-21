@@ -88,7 +88,6 @@ func (l *Listener) pollBlocks() error {
 				continue
 			}
 
-			// Sleep if the difference is less than BlockDelay; (latest - current) < BlockDelay
 			if big.NewInt(0).Sub(latestBlock, currentBlock).Cmp(l.cfg.BlockConfirmations) == -1 {
 				l.log.Debug("Block not ready, will retry", "target", currentBlock, "latest", latestBlock)
 				time.Sleep(BlockRetryInterval)

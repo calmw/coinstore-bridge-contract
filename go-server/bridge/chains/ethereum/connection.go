@@ -181,10 +181,7 @@ func (c *Connection) KeyPrv() *ecdsa.PrivateKey {
 }
 
 func (c *Connection) SafeEstimateGas(ctx context.Context) (*big.Int, error) {
-
 	var suggestedGasPrice *big.Int
-
-	// First attempt to use EGS for the gas price if the api key is supplied
 	if c.egsApiKey != "" {
 		price, err := egs.FetchGasPrice(c.egsApiKey, c.egsSpeed)
 		if err != nil {
@@ -193,8 +190,6 @@ func (c *Connection) SafeEstimateGas(ctx context.Context) (*big.Int, error) {
 			suggestedGasPrice = price
 		}
 	}
-
-	// Fallback to the node rpc method for the gas price if GSN did not provide a price
 	if suggestedGasPrice == nil {
 		c.log.Debug("Fetching gasPrice from node")
 		nodePriceEstimate, err := c.connEvm.SuggestGasPrice(context.TODO())
@@ -204,10 +199,7 @@ func (c *Connection) SafeEstimateGas(ctx context.Context) (*big.Int, error) {
 			suggestedGasPrice = nodePriceEstimate
 		}
 	}
-
 	gasPrice := multiplyGasPrice(suggestedGasPrice, c.gasMultiplier)
-
-	// Check we aren't exceeding our limit
 	if gasPrice.Cmp(c.minGasPrice) == -1 {
 		return c.minGasPrice, nil
 	} else if gasPrice.Cmp(c.maxGasPrice) == 1 {
@@ -262,8 +254,6 @@ func multiplyGasPrice(gasEstimate *big.Int, gasMultiplier *big.Float) *big.Int {
 	return gasPrice
 }
 
-// LockAndUpdateOpts acquires a lock on the opts before updating the nonce
-// and gas price.
 func (c *Connection) LockAndUpdateOpts() error {
 	c.optsLock.Lock()
 
@@ -305,7 +295,6 @@ func (c *Connection) UnlockOpts() {
 	c.optsLock.Unlock()
 }
 
-// LatestBlock returns the latest block from the current chain
 func (c *Connection) LatestBlock() (*big.Int, error) {
 
 	if c.chainType == config.ChainTypeEvm {
@@ -326,7 +315,6 @@ func (c *Connection) LatestBlock() (*big.Int, error) {
 
 }
 
-// EnsureHasBytecode asserts if contract code exists at the specified address
 func (c *Connection) EnsureHasBytecode(addr ethcommon.Address) error {
 	code, err := c.connEvm.CodeAt(context.Background(), addr, nil)
 	if err != nil {
@@ -339,8 +327,6 @@ func (c *Connection) EnsureHasBytecode(addr ethcommon.Address) error {
 	return nil
 }
 
-// WaitForBlock will poll for the block number until the current block is equal or greater.
-// If delay is provided it will wait until currBlock - delay = targetBlock
 func (c *Connection) WaitForBlock(targetBlock *big.Int, delay *big.Int) error {
 	for {
 		select {
@@ -367,9 +353,7 @@ func (c *Connection) WaitForBlock(targetBlock *big.Int, delay *big.Int) error {
 	}
 }
 
-// Close terminates the client connection and stops any running routines
 func (c *Connection) Close() {
-
 	if c.chainType == config.ChainTypeEvm {
 		if c.connEvm != nil {
 			c.connEvm.Close()
@@ -379,6 +363,5 @@ func (c *Connection) Close() {
 			c.connTron.Stop()
 		}
 	}
-
 	close(c.stop)
 }
