@@ -44,7 +44,7 @@ func InitTronEnv() {
 		RPC:                   "grpc.nile.trongrid.io:50051",
 		BridgeContractAddress: "TPrEMmYc2nz5bHbjs3M2f1gZ9PtWsLzr8A",
 		VoteContractAddress:   "TYGgXTawuPXLUKoQvgLTz4CHxT8gSzTcec",
-		TantinContractAddress: "TEtkjf8bfqM5UVYFx4MADAjieUju5Yx7t2",
+		TantinContractAddress: "TPtoFabph1F7VKzfKmqErJ4Txxn2LTycko",
 		UsdtAddress:           "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf",
 		PrivateKey:            key,
 	}
