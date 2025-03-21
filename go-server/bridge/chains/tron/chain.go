@@ -43,33 +43,13 @@ type Chain struct {
 
 func InitializeChain(cfg *config.Config, logger log.Logger, sysErr chan<- error) (*Chain, error) {
 	stop := make(chan int)
-	conn := connections.NewConnection(cfg.Endpoint, cfg.Http, cfg.PrivateKey, logger, cfg.GasLimit, cfg.MaxGasPrice, cfg.MinGasPrice)
-	err := conn.Connect()
+	conn, err := connections.NewConnectionTron(cfg.Endpoint, cfg.PrivateKey, logger, cfg.GasLimit)
 	if err != nil {
 		return nil, err
 	}
-
-	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.Client())
+	err = conn.Connect()
 	if err != nil {
 		return nil, err
-	}
-
-	chainId, err := bridgeContract.GetChainId(conn.CallOpts())
-	if err != nil {
-		return nil, err
-	}
-
-	if chainId.Int64() != int64(cfg.ChainId) {
-		return nil, fmt.Errorf("chainId (%d) and configuration chainId (%d) do not match", chainId.Int64(), cfg.ChainId)
-	}
-
-	chainTypeId, err := bridgeContract.GetChainTypeId(conn.CallOpts())
-	if err != nil {
-		return nil, err
-	}
-
-	if chainTypeId.Int64() != int64(cfg.ChainType) {
-		return nil, fmt.Errorf("chainTypeId (%d) and configuration chainTypeId (%d) do not match", chainTypeId.Int64(), cfg.ChainType)
 	}
 
 	if cfg.LatestBlock {

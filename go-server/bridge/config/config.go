@@ -3,8 +3,6 @@ package config
 import (
 	"coinstore/db"
 	"coinstore/model"
-	"crypto/ecdsa"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/shopspring/decimal"
 	"math/big"
 	"os"
@@ -16,12 +14,13 @@ const DefaultMinGasPrice = 0
 const DefaultBlockConfirmations = 5
 
 type Config struct {
-	ChainName             string
-	ChainId               int
-	ChainType             int
-	Endpoint              string
-	From                  string
-	PrivateKey            *ecdsa.PrivateKey
+	ChainName string
+	ChainId   int
+	ChainType int
+	Endpoint  string
+	From      string
+	//PrivateKey            *ecdsa.PrivateKey
+	PrivateKey            string
 	BridgeContractAddress string
 	VoteContractAddress   string
 	GasLimit              *big.Int
@@ -37,10 +36,10 @@ type Config struct {
 func NewConfig(cfg model.Config) Config {
 	key := os.Getenv("COINSTORE_BRIDGE")
 	//key:=utils2.ThreeDesDecrypt("",cfg.PrivateKey) // TODO 线上要改
-	privateKey, err := crypto.HexToECDSA(key)
-	if err != nil {
-		panic("private key conversion failed")
-	}
+	//privateKey, err := crypto.HexToECDSA(key)
+	//if err != nil {
+	//	panic("private key conversion failed")
+	//}
 	gasLimit := big.NewInt(DefaultGasLimit)
 	if cfg.GasLimit > 0 {
 		gasLimit = big.NewInt(cfg.GasLimit)
@@ -75,7 +74,7 @@ func NewConfig(cfg model.Config) Config {
 		ChainType:             cfg.ChainType,
 		Endpoint:              cfg.Endpoint,
 		From:                  cfg.From,
-		PrivateKey:            privateKey,
+		PrivateKey:            key,
 		BridgeContractAddress: cfg.BridgeContract,
 		VoteContractAddress:   cfg.VoteContract,
 		GasLimit:              gasLimit,

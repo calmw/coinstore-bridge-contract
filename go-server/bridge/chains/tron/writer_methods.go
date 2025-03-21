@@ -27,7 +27,7 @@ var ErrTxUnderpriced = errors.New("replacement transaction underpriced")
 var ErrFatalTx = errors.New("submission of transaction failed")
 var ErrFatalQuery = errors.New("query of chain state failed")
 
-func (w *Writer) proposalIsComplete(m msg.Message, dataHash [32]byte) bool {
+func (w *WriterTron) proposalIsComplete(m msg.Message, dataHash [32]byte) bool {
 	prop, err := w.voteContract.GetProposal(nil, m.Source.Big(), m.DepositNonce.Big(), dataHash)
 	if err != nil {
 		w.log.Error("Failed to check proposal existence", "err", err)
@@ -42,7 +42,7 @@ func (w *Writer) proposalIsComplete(m msg.Message, dataHash [32]byte) bool {
 	return prop.Status == PassedStatus || prop.Status == TransferredStatus || prop.Status == CancelledStatus
 }
 
-func (w *Writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
+func (w *WriterTron) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
 	prop, err := w.voteContract.GetProposal(w.conn.CallOpts(), srcId.Big(), nonce.Big(), dataHash)
 	if err != nil {
 		w.log.Error("Failed to check proposal existence", "err", err)
@@ -51,7 +51,7 @@ func (w *Writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHas
 	return prop.Status == TransferredStatus || prop.Status == CancelledStatus // Transferred (3)
 }
 
-func (w *Writer) proposalIsPassed(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
+func (w *WriterTron) proposalIsPassed(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
 	prop, err := w.voteContract.GetProposal(w.conn.CallOpts(), srcId.Big(), nonce.Big(), dataHash)
 	if err != nil {
 		w.log.Error("Failed to check proposal existence", "err", err)
@@ -67,7 +67,7 @@ func IDAndNonce(srcId msg.ChainId, nonce msg.Nonce) *big.Int {
 	return big.NewInt(0).SetBytes(data)
 }
 
-func (w *Writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
+func (w *WriterTron) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
 	hasVoted, err := w.voteContract.HasVotedOnProposal(w.conn.CallOpts(), IDAndNonce(srcId, nonce), dataHash, w.conn.Opts().From)
 	if err != nil {
 		w.log.Error("Failed to check proposal existence", "err", err)
@@ -77,7 +77,7 @@ func (w *Writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte)
 	return hasVoted
 }
 
-func (w *Writer) shouldVote(m msg.Message, dataHash [32]byte) bool {
+func (w *WriterTron) shouldVote(m msg.Message, dataHash [32]byte) bool {
 	if w.proposalIsComplete(m, dataHash) {
 		w.log.Info("Proposal complete, not voting", "src", m.Source, "nonce", m.DepositNonce)
 		return false
@@ -91,7 +91,7 @@ func (w *Writer) shouldVote(m msg.Message, dataHash [32]byte) bool {
 	return true
 }
 
-func (w *Writer) CreateProposal(m msg.Message) bool {
+func (w *WriterTron) CreateProposal(m msg.Message) bool {
 	w.log.Info("Creating generic proposal", "src", m.Source, "nonce", m.DepositNonce)
 
 	metadata := m.Payload[0].([]byte)
@@ -121,7 +121,7 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 	return true
 }
 
-func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte, latestBlock *big.Int) {
+func (w *WriterTron) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte, latestBlock *big.Int) {
 	w.log.Info("Watching for finalization event", "src", m.Source, "nonce", m.DepositNonce)
 
 	for i := 0; i < ExecuteBlockWatchLimit; i++ {
@@ -173,7 +173,7 @@ func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 	log.Warn("Block watch limit exceeded, skipping execution", "source", m.Source, "dest", m.Destination, "nonce", m.DepositNonce)
 }
 
-func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
+func (w *WriterTron) voteProposal(m msg.Message, dataHash [32]byte) {
 	w.muVote.Lock()
 	defer w.muVote.Unlock()
 
@@ -228,7 +228,7 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 	w.sysErr <- ErrFatalTx
 }
 
-func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) {
+func (w *WriterTron) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) {
 	w.muExec.Lock()
 	defer w.muExec.Unlock()
 
