@@ -3,13 +3,13 @@ package tron
 import (
 	"coinstore/bridge/chains"
 	"coinstore/bridge/config"
+	"coinstore/bridge/connections"
 	"coinstore/bridge/core"
 	"coinstore/bridge/event"
 	"coinstore/db"
 	"coinstore/model"
-	"context"
 	"errors"
-	"github.com/calmw/blog"
+	log "github.com/calmw/clog"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/shopspring/decimal"
@@ -20,21 +20,21 @@ import (
 var BlockRetryInterval = time.Second * 5
 var BlockRetryLimit = 5
 var ErrFatalPolling = errors.New("bridge block polling failed")
-var ListenersTron *ListenerTron
+var ListenersTron *Listener
 
-type ListenerTron struct {
+type Listener struct {
 	cfg         config.Config
-	conn        Connection
+	conn        connections.Connection
 	Router      chains.Router
-	log         log15.Logger
+	log         log.Logger
 	latestBlock core.LatestBlock
 	stop        <-chan int
 	sysErr      chan<- error
 }
 
 // NewListener creates and returns a Listener
-func NewListenerTron(conn Connection, cfg *config.Config, log log15.Logger, stop <-chan int, sysErr chan<- error) *ListenerTron {
-	listener := ListenerTron{
+func NewListener(conn connections.Connection, cfg *config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Listener {
+	listener := Listener{
 		cfg:    *cfg,
 		conn:   conn,
 		log:    log,
@@ -47,7 +47,7 @@ func NewListenerTron(conn Connection, cfg *config.Config, log log15.Logger, stop
 	return &listener
 }
 
-func (l *ListenerTron) start() error {
+func (l *Listener) start() error {
 	l.log.Debug("Starting Listener...")
 
 	go func() {
@@ -60,11 +60,11 @@ func (l *ListenerTron) start() error {
 	return nil
 }
 
-func (l *ListenerTron) setRouter(r chains.Router) {
+func (l *Listener) setRouter(r chains.Router) {
 	l.Router = r
 }
 
-func (l *ListenerTron) pollBlocks() error {
+func (l *Listener) pollBlocks() error {
 	var currentBlock = l.cfg.StartBlock
 	l.log.Info("Polling Blocks...", "block", currentBlock)
 
@@ -115,7 +115,7 @@ func (l *ListenerTron) pollBlocks() error {
 	}
 }
 
-func (l *ListenerTron) getDepositEventsForBlock(latestBlock *big.Int) error {
+func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	l.log.Debug("Querying block for deposit events", "block", latestBlock)
 
 	//query := buildQuery(common.HexToAddress(l.cfg.BridgeContractAddress), event.Deposit, latestBlock, latestBlock)
@@ -163,15 +163,16 @@ func (l *ListenerTron) getDepositEventsForBlock(latestBlock *big.Int) error {
 	return nil
 }
 
-func (l *ListenerTron) LatestBlock() (*big.Int, error) {
-	header, err := l.conn.Client().HeaderByNumber(context.Background(), nil)
-	if err != nil {
-		return nil, err
-	}
-	return header.Number, nil
+func (l *Listener) LatestBlock() (*big.Int, error) {
+	//header, err := l.conn.Client().HeaderByNumber(context.Background(), nil)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//return header.Number, nil
+	return big.NewInt(1), nil
 }
 
-func (l *ListenerTron) StoreBlock(blockHeight *big.Int) error {
+func (l *Listener) StoreBlock(blockHeight *big.Int) error {
 	return model.SetBlockHeight(db.DB, l.cfg.ChainId, decimal.NewFromBigInt(blockHeight, 0))
 }
 

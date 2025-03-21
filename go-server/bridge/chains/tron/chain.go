@@ -8,10 +8,11 @@ import (
 	"coinstore/bridge/msg"
 	"crypto/ecdsa"
 	"fmt"
-	log "github.com/calmw/blog"
+	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/fbsobreira/gotron-sdk/pkg/client"
 	"math/big"
 )
 
@@ -26,7 +27,8 @@ type Connection interface {
 	CallOpts() *bind.CallOpts
 	LockAndUpdateOpts() error
 	UnlockOpts()
-	Client() *ethclient.Client
+	ClientEvm() *ethclient.Client
+	ClientTron() *client.GrpcClient
 	EnsureHasBytecode(address common.Address) error
 	LatestBlock() (*big.Int, error)
 	WaitForBlock(block *big.Int, delay *big.Int) error
@@ -43,11 +45,8 @@ type Chain struct {
 
 func InitializeChain(cfg *config.Config, logger log.Logger, sysErr chan<- error) (*Chain, error) {
 	stop := make(chan int)
-	conn, err := connections.NewConnectionTron(cfg.Endpoint, cfg.PrivateKey, logger, cfg.GasLimit)
-	if err != nil {
-		return nil, err
-	}
-	err = conn.Connect()
+	conn := connections.NewConnection(cfg.ChainType, cfg.Endpoint, cfg.Http, cfg.PrivateKey, logger, cfg.GasLimit, cfg.MaxGasPrice, cfg.MinGasPrice)
+	err := conn.Connect()
 	if err != nil {
 		return nil, err
 	}

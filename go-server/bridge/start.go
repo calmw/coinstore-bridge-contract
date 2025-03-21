@@ -9,12 +9,7 @@ import (
 	"coinstore/model"
 	"errors"
 	"fmt"
-	log "github.com/calmw/blog"
-)
-
-const (
-	ChainTypeEvm  = 1
-	ChainTypeTron = 2
+	log "github.com/calmw/clog"
 )
 
 func Run() error {
@@ -42,13 +37,13 @@ func Run() error {
 		var newChain core.Chain
 		chainLogger := log.Root().New("chain", chainConfig.ChainName)
 
-		if chainConfig.ChainType == ChainTypeEvm {
+		if chainConfig.ChainType == config.ChainTypeEvm {
 			newChain, err = ethereum.InitializeChain(&chainConfig, chainLogger, sysErr)
 			if err != nil {
 				logger.Error("chain config", "error", err)
 				return err
 			}
-		} else if chainConfig.ChainType == ChainTypeTron {
+		} else if chainConfig.ChainType == config.ChainTypeTron {
 			newChain, err = tron.InitializeChain(&chainConfig, chainLogger, sysErr)
 			if err != nil {
 				logger.Error("chain config", "error", err)

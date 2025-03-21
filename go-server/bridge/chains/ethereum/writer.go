@@ -4,7 +4,7 @@ import (
 	"coinstore/binding"
 	"coinstore/bridge/config"
 	"coinstore/bridge/msg"
-	"github.com/calmw/blog"
+	"github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/common"
 	"sync"
 )

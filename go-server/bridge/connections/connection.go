@@ -1,19 +1,26 @@
 package connections
 
 import (
+	"coinstore/bridge/config"
 	"coinstore/bridge/connections/egs"
+	"coinstore/contract"
 	"context"
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
-	"github.com/calmw/blog"
+	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/fbsobreira/gotron-sdk/pkg/client"
+	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
+	"github.com/fbsobreira/gotron-sdk/pkg/store"
+	"google.golang.org/grpc"
 	"math/big"
+	"strings"
 	"sync"
 	"time"
 )
@@ -21,6 +28,7 @@ import (
 var BlockRetryInterval = time.Second * 5
 
 type Connection struct {
+	chainType     int
 	endpoint      string
 	http          bool
 	prvKey        *ecdsa.PrivateKey
@@ -30,51 +38,94 @@ type Connection struct {
 	gasMultiplier *big.Float
 	egsApiKey     string
 	egsSpeed      string
-	conn          *ethclient.Client
+	connEvm       *ethclient.Client
 	opts          *bind.TransactOpts
 	callOpts      *bind.CallOpts
 	nonce         uint64
-	optsLock      sync.Mutex
-	log           log15.Logger
+	optsLock      *sync.Mutex
+	log           log.Logger
 	stop          chan int // All routines should exit when this channel is closed
+	// tron
+	keyStore   *keystore.KeyStore
+	keyAccount *keystore.Account
+	connTron   *client.GrpcClient
 }
 
-func NewConnection(endpoint string, http bool, prvKey *ecdsa.PrivateKey, log log15.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
-	return &Connection{
-		endpoint:    endpoint,
-		http:        http,
-		prvKey:      prvKey,
-		gasLimit:    gasLimit,
-		maxGasPrice: maxGasPrice,
-		minGasPrice: minGasPrice,
-		log:         log,
-		stop:        make(chan int),
+func NewConnection(chainType int, endpoint string, http bool, prvKey string, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
+	if chainType == config.ChainTypeEvm {
+		//key:=utils2.ThreeDesDecrypt("",cfg.PrivateKey) // TODO 线上要改
+		privateKey, err := crypto.HexToECDSA(prvKey)
+		if err != nil {
+			panic("private key conversion failed")
+		}
+		return &Connection{
+			chainType:   chainType,
+			endpoint:    endpoint,
+			http:        http,
+			prvKey:      privateKey,
+			gasLimit:    gasLimit,
+			maxGasPrice: maxGasPrice,
+			minGasPrice: minGasPrice,
+			log:         log,
+			stop:        make(chan int),
+		}
+	} else if chainType == config.ChainTypeTron {
+		_, _, err := contract.GetKeyFromPrivateKey(prvKey, contract.AccountName, contract.Passphrase)
+		if err != nil && !strings.Contains(err.Error(), "already exists") {
+			panic("private key conversion failed")
+		}
+		ks, ka, err := store.UnlockedKeystore(contract.AccountName, contract.Passphrase)
+		return &Connection{
+			chainType:   chainType,
+			endpoint:    endpoint,
+			http:        http,
+			prvKey:      nil,
+			gasLimit:    gasLimit,
+			maxGasPrice: maxGasPrice,
+			minGasPrice: minGasPrice,
+			log:         log,
+			stop:        make(chan int),
+			keyStore:    ks,
+			keyAccount:  ka,
+		}
+	} else {
+		panic("Unsupported chain type")
 	}
 }
 
 // Connect starts the ethereum WS connection
 func (c *Connection) Connect() error {
 	c.log.Info("Connecting to ethereum chain...", "rpc", c.endpoint)
-	var rpcClient *rpc.Client
-	var err error
-	// Start http or ws client
-	if c.http {
-		rpcClient, err = rpc.DialHTTP(c.endpoint)
-	} else {
-		rpcClient, err = rpc.DialContext(context.Background(), c.endpoint)
-	}
-	if err != nil {
-		return err
-	}
-	c.conn = ethclient.NewClient(rpcClient)
+	if c.chainType == config.ChainTypeEvm {
+		var rpcClient *rpc.Client
+		var err error
+		// Start http or ws client
+		if c.http {
+			rpcClient, err = rpc.DialHTTP(c.endpoint)
+		} else {
+			rpcClient, err = rpc.DialContext(context.Background(), c.endpoint)
+		}
+		if err != nil {
+			return err
+		}
+		c.connEvm = ethclient.NewClient(rpcClient)
 
-	opts, _, err := c.newTransactOpts(big.NewInt(0), c.gasLimit, c.maxGasPrice)
-	if err != nil {
-		return err
+		opts, _, err := c.newTransactOpts(big.NewInt(0), c.gasLimit, c.maxGasPrice)
+		if err != nil {
+			return err
+		}
+		c.opts = opts
+		c.nonce = 0
+		c.callOpts = &bind.CallOpts{From: crypto.PubkeyToAddress(c.prvKey.PublicKey)}
+	} else if c.chainType == config.ChainTypeTron {
+		var err error
+		cli := client.NewGrpcClient(c.endpoint)
+		err = cli.Start(grpc.WithInsecure())
+		if err != nil {
+			return err
+		}
+		c.connTron = cli
 	}
-	c.opts = opts
-	c.nonce = 0
-	c.callOpts = &bind.CallOpts{From: crypto.PubkeyToAddress(c.prvKey.PublicKey)}
 	return nil
 }
 
@@ -83,12 +134,12 @@ func (c *Connection) newTransactOpts(value, gasLimit, gasPrice *big.Int) (*bind.
 	privateKey := c.prvKey
 	address := ethcrypto.PubkeyToAddress(privateKey.PublicKey)
 
-	nonce, err := c.conn.PendingNonceAt(context.Background(), address)
+	nonce, err := c.connEvm.PendingNonceAt(context.Background(), address)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	id, err := c.conn.ChainID(context.Background())
+	id, err := c.connEvm.ChainID(context.Background())
 	if err != nil {
 		return nil, 0, err
 	}
@@ -112,8 +163,12 @@ func (c *Connection) newTransactOpts(value, gasLimit, gasPrice *big.Int) (*bind.
 	return auth, nonce, nil
 }
 
-func (c *Connection) Client() *ethclient.Client {
-	return c.conn
+func (c *Connection) ClientEvm() *ethclient.Client {
+	return c.connEvm
+}
+
+func (c *Connection) ClientTron() *client.GrpcClient {
+	return c.connTron
 }
 
 func (c *Connection) Opts() *bind.TransactOpts {
@@ -145,7 +200,7 @@ func (c *Connection) SafeEstimateGas(ctx context.Context) (*big.Int, error) {
 	// Fallback to the node rpc method for the gas price if GSN did not provide a price
 	if suggestedGasPrice == nil {
 		c.log.Debug("Fetching gasPrice from node")
-		nodePriceEstimate, err := c.conn.SuggestGasPrice(context.TODO())
+		nodePriceEstimate, err := c.connEvm.SuggestGasPrice(context.TODO())
 		if err != nil {
 			return nil, err
 		} else {
@@ -175,7 +230,7 @@ func (c *Connection) EstimateGasLondon(ctx context.Context, baseFee *big.Int) (*
 		return maxPriorityFeePerGas, maxFeePerGas, nil
 	}
 
-	maxPriorityFeePerGas, err := c.conn.SuggestGasTipCap(context.TODO())
+	maxPriorityFeePerGas, err := c.connEvm.SuggestGasTipCap(context.TODO())
 	if err != nil {
 		return nil, nil, err
 	}
@@ -215,7 +270,7 @@ func multiplyGasPrice(gasEstimate *big.Int, gasMultiplier *big.Float) *big.Int {
 func (c *Connection) LockAndUpdateOpts() error {
 	c.optsLock.Lock()
 
-	head, err := c.conn.HeaderByNumber(context.TODO(), nil)
+	head, err := c.connEvm.HeaderByNumber(context.TODO(), nil)
 	if err != nil {
 		c.UnlockOpts()
 		return err
@@ -240,7 +295,7 @@ func (c *Connection) LockAndUpdateOpts() error {
 		c.opts.GasPrice = gasPrice
 	}
 
-	nonce, err := c.conn.PendingNonceAt(context.Background(), c.opts.From)
+	nonce, err := c.connEvm.PendingNonceAt(context.Background(), c.opts.From)
 	if err != nil {
 		c.optsLock.Unlock()
 		return err
@@ -255,16 +310,28 @@ func (c *Connection) UnlockOpts() {
 
 // LatestBlock returns the latest block from the current chain
 func (c *Connection) LatestBlock() (*big.Int, error) {
-	header, err := c.conn.HeaderByNumber(context.Background(), nil)
-	if err != nil {
-		return nil, err
+
+	if c.chainType == config.ChainTypeEvm {
+		header, err := c.connEvm.HeaderByNumber(context.Background(), nil)
+		if err != nil {
+			return nil, err
+		}
+		return header.Number, nil
+	} else if c.chainType == config.ChainTypeTron {
+		block, err := c.connTron.GetNowBlock()
+		if err != nil {
+			return nil, fmt.Errorf("get block now: %v", err)
+		}
+		fmt.Println(block.String())
+		return big.NewInt(5), nil
 	}
-	return header.Number, nil
+	return nil, errors.New("unexpected")
+
 }
 
 // EnsureHasBytecode asserts if contract code exists at the specified address
 func (c *Connection) EnsureHasBytecode(addr ethcommon.Address) error {
-	code, err := c.conn.CodeAt(context.Background(), addr, nil)
+	code, err := c.connEvm.CodeAt(context.Background(), addr, nil)
 	if err != nil {
 		return err
 	}
@@ -305,8 +372,16 @@ func (c *Connection) WaitForBlock(targetBlock *big.Int, delay *big.Int) error {
 
 // Close terminates the client connection and stops any running routines
 func (c *Connection) Close() {
-	if c.conn != nil {
-		c.conn.Close()
+
+	if c.chainType == config.ChainTypeEvm {
+		if c.connEvm != nil {
+			c.connEvm.Close()
+		}
+	} else if c.chainType == config.ChainTypeTron {
+		if c.connTron != nil {
+			c.connTron.Stop()
+		}
 	}
+
 	close(c.stop)
 }

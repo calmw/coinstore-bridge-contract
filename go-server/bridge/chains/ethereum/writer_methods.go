@@ -8,7 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	log "github.com/calmw/blog"
+	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 	"time"

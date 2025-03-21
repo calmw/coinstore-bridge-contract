@@ -8,10 +8,14 @@ import (
 	"os"
 )
 
-const DefaultGasLimit = 6721975
-const DefaultGasPrice = 20000000000
-const DefaultMinGasPrice = 0
-const DefaultBlockConfirmations = 5
+const (
+	ChainTypeEvm              = 1
+	ChainTypeTron             = 2
+	DefaultGasLimit           = 6721975
+	DefaultGasPrice           = 20000000000
+	DefaultMinGasPrice        = 0
+	DefaultBlockConfirmations = 5
+)
 
 type Config struct {
 	ChainName string

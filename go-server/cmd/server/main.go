@@ -3,7 +3,7 @@ package main
 import (
 	"coinstore/cmd/server/service"
 	"coinstore/db"
-	log "github.com/calmw/blog"
+	log "github.com/calmw/clog"
 	"github.com/didip/tollbooth/v7"
 	"github.com/didip/tollbooth_gin"
 	"github.com/gin-gonic/gin"

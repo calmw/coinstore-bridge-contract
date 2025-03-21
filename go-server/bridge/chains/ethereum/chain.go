@@ -8,11 +8,13 @@ import (
 	"coinstore/bridge/msg"
 	"crypto/ecdsa"
 	"fmt"
-	log "github.com/calmw/blog"
+	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"math/big"
+	"os"
 )
 
 var _ core.Chain = &Chain{}
@@ -43,7 +45,13 @@ type Chain struct {
 
 func InitializeChain(cfg *config.Config, logger log.Logger, sysErr chan<- error) (*Chain, error) {
 	stop := make(chan int)
-	conn := connections.NewConnection(cfg.Endpoint, cfg.Http, cfg.PrivateKey, logger, cfg.GasLimit, cfg.MaxGasPrice, cfg.MinGasPrice)
+	key := os.Getenv("COINSTORE_BRIDGE")
+	//key:=utils2.ThreeDesDecrypt("",cfg.PrivateKey) // TODO 线上要改
+	privateKey, err := crypto.HexToECDSA(key)
+	if err != nil {
+		return nil, err
+	}
+	conn := connections.NewConnection(cfg.Endpoint, cfg.Http, privateKey, logger, cfg.GasLimit, cfg.MaxGasPrice, cfg.MinGasPrice)
 	err := conn.Connect()
 	if err != nil {
 		return nil, err
