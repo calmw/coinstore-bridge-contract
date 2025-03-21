@@ -1,8 +1,8 @@
 package tron
 
 import (
+	"coinstore/bridge/chains/ethereum/egs"
 	"coinstore/bridge/config"
-	"coinstore/bridge/connections/egs"
 	"coinstore/contract"
 	"context"
 	"crypto/ecdsa"
