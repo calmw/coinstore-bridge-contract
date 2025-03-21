@@ -6,21 +6,21 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/calmw/clog"
+	log "github.com/calmw/clog"
 )
 
 type Core struct {
 	Registry []Chain
 	route    *Router
-	log      log15.Logger
+	log      log.Logger
 	sysErr   <-chan error
 }
 
 func NewCore(sysErr <-chan error) *Core {
 	return &Core{
 		Registry: make([]Chain, 0),
-		route:    NewRouter(log15.New("system", "interface")),
-		log:      log15.New("system", "core"),
+		route:    NewRouter(log.New("system", "interface")),
+		log:      log.New("system", "core"),
 		sysErr:   sysErr,
 	}
 }

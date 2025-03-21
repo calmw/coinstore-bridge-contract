@@ -4,7 +4,7 @@ import (
 	"coinstore/binding"
 	"coinstore/bridge/config"
 	"coinstore/bridge/msg"
-	"github.com/calmw/clog"
+	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/common"
 	"sync"
 )
@@ -17,23 +17,23 @@ var Writers = map[int]*Writer{}
 type Writer struct {
 	muVote       *sync.RWMutex
 	muExec       *sync.RWMutex
-	Cfg          config.Config
-	conn         Connection
+	Cfg          *config.Config
+	conn         *Connection
 	voteContract *binding.Vote
-	log          log15.Logger
+	log          log.Logger
 	stop         <-chan int
 	sysErr       chan<- error // Reports fatal error to core
 }
 
-func NewWriter(conn Connection, cfg *config.Config, log log15.Logger, stop <-chan int, sysErr chan<- error) *Writer {
-	voteContract, err := binding.NewVote(common.HexToAddress(cfg.VoteContractAddress), conn.Client())
+func NewWriter(conn *Connection, cfg *config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Writer {
+	voteContract, err := binding.NewVote(common.HexToAddress(cfg.VoteContractAddress), conn.ClientEvm())
 	if err != nil {
 		panic("new vote contract failed")
 	}
 	writer := Writer{
 		muVote:       new(sync.RWMutex),
 		muExec:       new(sync.RWMutex),
-		Cfg:          *cfg,
+		Cfg:          cfg,
 		conn:         conn,
 		voteContract: voteContract,
 		log:          log,

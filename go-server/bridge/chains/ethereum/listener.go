@@ -13,7 +13,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/calmw/clog"
+	log "github.com/calmw/clog"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/shopspring/decimal"
@@ -29,18 +29,18 @@ var Listeners = map[int]*Listener{}
 
 type Listener struct {
 	cfg            config.Config
-	conn           Connection
+	conn           *Connection
 	Router         chains.Router
 	bridgeContract *binding.Bridge
-	log            log15.Logger
+	log            log.Logger
 	latestBlock    core.LatestBlock
 	stop           <-chan int
 	sysErr         chan<- error
 }
 
 // NewListener creates and returns a Listener
-func NewListener(conn Connection, cfg *config.Config, log log15.Logger, stop <-chan int, sysErr chan<- error) *Listener {
-	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.Client())
+func NewListener(conn *Connection, cfg *config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Listener {
+	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.ClientEvm())
 	if err != nil {
 		panic("new bridge contract failed")
 	}
@@ -131,7 +131,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	query := buildQuery(common.HexToAddress(l.cfg.BridgeContractAddress), event.Deposit, latestBlock, latestBlock)
 
 	// 获取日志
-	logs, err := l.conn.Client().FilterLogs(context.Background(), query)
+	logs, err := l.conn.ClientEvm().FilterLogs(context.Background(), query)
 	if err != nil {
 		return fmt.Errorf("unable to Filter Logs: %w", err)
 	}
@@ -184,7 +184,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 }
 
 func (l *Listener) LatestBlock() (*big.Int, error) {
-	header, err := l.conn.Client().HeaderByNumber(context.Background(), nil)
+	header, err := l.conn.ClientEvm().HeaderByNumber(context.Background(), nil)
 	if err != nil {
 		return nil, err
 	}

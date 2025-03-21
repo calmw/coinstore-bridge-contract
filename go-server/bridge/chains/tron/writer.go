@@ -17,14 +17,14 @@ type Writer struct {
 	muVote       *sync.RWMutex
 	muExec       *sync.RWMutex
 	Cfg          config.Config
-	conn         Connection
+	conn         *Connection
 	voteContract *binding.VoteTron
 	log          log.Logger
 	stop         <-chan int
 	sysErr       chan<- error // Reports fatal error to core
 }
 
-func NewWriter(conn Connection, cfg *config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Writer {
+func NewWriter(conn *Connection, cfg *config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Writer {
 	voteContract, err := binding.NewVoteTron(cfg.VoteContractAddress)
 	if err != nil {
 		panic("new vote contract failed")

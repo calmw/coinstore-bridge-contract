@@ -2,44 +2,23 @@ package ethereum
 
 import (
 	"coinstore/binding"
+	"coinstore/bridge/chains"
 	"coinstore/bridge/config"
-	"coinstore/bridge/connections"
 	"coinstore/bridge/core"
 	"coinstore/bridge/msg"
-	"crypto/ecdsa"
 	"fmt"
 	log "github.com/calmw/clog"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"math/big"
 	"os"
 )
 
 var _ core.Chain = &Chain{}
 
-var _ Connection = &connections.Connection{}
-
-type Connection interface {
-	Connect() error
-	KeyPrv() *ecdsa.PrivateKey
-	Opts() *bind.TransactOpts
-	CallOpts() *bind.CallOpts
-	LockAndUpdateOpts() error
-	UnlockOpts()
-	Client() *ethclient.Client
-	EnsureHasBytecode(address common.Address) error
-	LatestBlock() (*big.Int, error)
-	WaitForBlock(block *big.Int, delay *big.Int) error
-	Close()
-}
-
 type Chain struct {
-	cfg      *config.Config // The config of the chain
-	conn     Connection     // THe chains connection
-	listener *Listener      // The listener of this chain
-	writer   *Writer        // The writer of the chain
+	cfg      *config.Config    // The config of the chain
+	conn     chains.Connection // THe chains connection
+	listener *Listener         // The listener of this chain
+	writer   *Writer           // The writer of the chain
 	stop     chan<- int
 }
 
@@ -47,17 +26,13 @@ func InitializeChain(cfg *config.Config, logger log.Logger, sysErr chan<- error)
 	stop := make(chan int)
 	key := os.Getenv("COINSTORE_BRIDGE")
 	//key:=utils2.ThreeDesDecrypt("",cfg.PrivateKey) // TODO 线上要改
-	privateKey, err := crypto.HexToECDSA(key)
-	if err != nil {
-		return nil, err
-	}
-	conn := connections.NewConnection(cfg.Endpoint, cfg.Http, privateKey, logger, cfg.GasLimit, cfg.MaxGasPrice, cfg.MinGasPrice)
+	conn := NewConnection(cfg.ChainType, cfg.Endpoint, cfg.Http, key, logger, cfg.GasLimit, cfg.MaxGasPrice, cfg.MinGasPrice)
 	err := conn.Connect()
 	if err != nil {
 		return nil, err
 	}
 
-	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.Client())
+	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.ClientEvm())
 	if err != nil {
 		return nil, err
 	}

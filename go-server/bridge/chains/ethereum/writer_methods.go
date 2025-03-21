@@ -144,7 +144,7 @@ func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 			}
 
 			query := buildQuery(common.HexToAddress(w.Cfg.VoteContractAddress), event.ProposalEvent, latestBlock, latestBlock)
-			evts, err := w.conn.Client().FilterLogs(context.Background(), query)
+			evts, err := w.conn.ClientEvm().FilterLogs(context.Background(), query)
 			if err != nil {
 				w.log.Error("Failed to fetch logs", "err", err)
 				return

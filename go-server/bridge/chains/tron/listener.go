@@ -3,7 +3,6 @@ package tron
 import (
 	"coinstore/bridge/chains"
 	"coinstore/bridge/config"
-	"coinstore/bridge/connections"
 	"coinstore/bridge/core"
 	"coinstore/bridge/event"
 	"coinstore/db"
@@ -24,7 +23,7 @@ var ListenersTron *Listener
 
 type Listener struct {
 	cfg         config.Config
-	conn        connections.Connection
+	conn        *Connection
 	Router      chains.Router
 	log         log.Logger
 	latestBlock core.LatestBlock
@@ -33,7 +32,7 @@ type Listener struct {
 }
 
 // NewListener creates and returns a Listener
-func NewListener(conn connections.Connection, cfg *config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Listener {
+func NewListener(conn *Connection, cfg *config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Listener {
 	listener := Listener{
 		cfg:    *cfg,
 		conn:   conn,

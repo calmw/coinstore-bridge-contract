@@ -1,11 +1,9 @@
 package tron
 
 import (
-	"coinstore/bridge/event"
 	"coinstore/bridge/msg"
 	"coinstore/model"
 	"coinstore/utils"
-	"context"
 	"errors"
 	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/common"
@@ -145,27 +143,27 @@ func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 
 			//query := buildQuery(w.Cfg.VoteContractAddress, event.ProposalEvent, latestBlock, latestBlock)
 			//evts, err := w.conn.Client().FilterLogs(context.Background(), query)
-			query := buildQuery(common.HexToAddress(w.Cfg.VoteContractAddress), event.ProposalEvent, latestBlock, latestBlock)
-			evts, err := w.conn.Client().FilterLogs(context.Background(), query)
-			if err != nil {
-				w.log.Error("Failed to fetch logs", "err", err)
-				return
-			}
-
-			for _, evt := range evts {
-				sourceId := evt.Topics[1].Big().Uint64()
-				depositNonce := evt.Topics[2].Big().Uint64()
-				status := evt.Topics[3].Big().Uint64()
-
-				if m.Source == msg.ChainId(sourceId) &&
-					m.DepositNonce.Big().Uint64() == depositNonce &&
-					event.IsFinalized(uint8(status)) {
-					w.ExecuteProposal(m, data, dataHash)
-					return
-				} else {
-					w.log.Trace("Ignoring event", "src", sourceId, "nonce", depositNonce)
-				}
-			}
+			//query := buildQuery(common.HexToAddress(w.Cfg.VoteContractAddress), event.ProposalEvent, latestBlock, latestBlock)
+			//evts, err := w.conn.ClientTron().FilterLogs(context.Background(), query)
+			//if err != nil {
+			//	w.log.Error("Failed to fetch logs", "err", err)
+			//	return
+			//}
+			//
+			//for _, evt := range evts {
+			//	sourceId := evt.Topics[1].Big().Uint64()
+			//	depositNonce := evt.Topics[2].Big().Uint64()
+			//	status := evt.Topics[3].Big().Uint64()
+			//
+			//	if m.Source == msg.ChainId(sourceId) &&
+			//		m.DepositNonce.Big().Uint64() == depositNonce &&
+			//		event.IsFinalized(uint8(status)) {
+			//		w.ExecuteProposal(m, data, dataHash)
+			//		return
+			//	} else {
+			//		w.log.Trace("Ignoring event", "src", sourceId, "nonce", depositNonce)
+			//	}
+			//}
 			w.log.Trace("No finalization event found in current block", "block", latestBlock, "src", m.Source, "nonce", m.DepositNonce)
 			latestBlock = latestBlock.Add(latestBlock, big.NewInt(1))
 		}
