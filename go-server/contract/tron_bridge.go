@@ -51,12 +51,10 @@ func NewBridgeTron() (*BridgeTron, error) {
 }
 
 func (b *BridgeTron) Init() {
-	txHash, err := b.AdminSetEnv()
-	fmt.Println(txHash, err)
-	txHash, err = b.GrantVoteRole("0x0000000000000000000000000000000000000000000000000000000000000000", OwnerAccount)
-	fmt.Println(txHash, err)
-	txHash, err = b.GrantVoteRole("0xc65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7", ChainConfig.VoteContractAddress)
-	fmt.Println(txHash, err)
+	//txHash, err := b.AdminSetEnv()
+	//fmt.Println(txHash, err)
+	txHash2, err2 := b.GrantVoteRole("c65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7", ChainConfig.VoteContractAddress)
+	fmt.Println(txHash2, err2)
 }
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {
@@ -74,7 +72,6 @@ func (b *BridgeTron) AdminSetEnv() (string, error) {
 	if err = ctrlr.ExecuteTransaction(); err != nil {
 		return "", err
 	}
-	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
@@ -122,21 +119,20 @@ func (b *BridgeTron) GrantVoteRole(role, addr string) (string, error) {
 }
 
 func (b *BridgeTron) AdminSetResource(fee *big.Int, executeFunctionSig string) (string, error) {
-	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"}]",
-		ResourceIdUsdt,
-		"2",
+	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bool\":%v},{\"address\":\"%s\"}]",
+		strings.TrimPrefix(ResourceIdUsdt, "0x"),
+		uint8(2),
 		ChainConfig.UsdtAddress,
 		fee.String(),
-		"false",
+		false,
 		ChainConfig.TantinContractAddress,
-		executeFunctionSig,
 	)
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
 		return "", err
 	}
-	tx, err := cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetResource(bytes32,uint8,address,uint256,bool,address,bytes4)", triggerData, 300000000, 0, "", 0)
+	tx, err := cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetResource(bytes32,uint8,address,uint256,bool,address)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}

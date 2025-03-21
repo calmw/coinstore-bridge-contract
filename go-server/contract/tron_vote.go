@@ -20,7 +20,7 @@ type VoteTron struct {
 	Cli             *client.GrpcClient
 }
 
-func NewVoteTrc20() (*VoteTron, error) {
+func NewVoteTron() (*VoteTron, error) {
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
@@ -43,9 +43,9 @@ func NewVoteTrc20() (*VoteTron, error) {
 }
 
 func (v *VoteTron) Init() {
-	txHash, err := v.AdminSetEnv(big.NewInt(1), big.NewInt(100000))
-	fmt.Println(txHash, err)
-	txHash, err = v.GrantBridgeRole(ChainConfig.BridgeContractAddress, "0x52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f")
+	//txHash, err := v.AdminSetEnv(big.NewInt(1), big.NewInt(100000))
+	//fmt.Println(txHash, err)
+	txHash, err := v.GrantBridgeRole(ChainConfig.BridgeContractAddress, "52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f")
 	fmt.Println(txHash, err)
 }
 
