@@ -18,16 +18,18 @@ type PollState struct {
 func SetBlockHeight(tx *gorm.DB, chainId int, relyer string, blockHeight decimal.Decimal) error {
 	var ps PollState
 	var err error
-	err = tx.Model(&PollState{}).Where("chain_id=? and relyer=?", chainId, utils.MD5(relyer)).First(&ps).Error
+	relyer = utils.MD5(relyer)
+	err = tx.Model(&PollState{}).Where("chain_id=? and relyer=?", chainId, relyer).First(&ps).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return tx.Model(&PollState{}).Create(&PollState{
 			ChainId:     chainId,
 			BlockHeight: blockHeight,
+			Relyer:      relyer,
 		}).Error
 	} else if err != nil {
 		return err
 	} else {
-		return tx.Model(&PollState{}).Where("chain_id=?", chainId).Updates(map[string]interface{}{
+		return tx.Model(&PollState{}).Where("chain_id=? and relyer=?", chainId, relyer).Updates(map[string]interface{}{
 			"block_height": blockHeight,
 		}).Error
 	}
@@ -36,7 +38,8 @@ func SetBlockHeight(tx *gorm.DB, chainId int, relyer string, blockHeight decimal
 func GetBlockHeight(tx *gorm.DB, chainId int, relyer string) (*big.Int, error) {
 	var ps PollState
 	var err error
-	err = tx.Model(&PollState{}).Where("chain_id=? and relyer=?", chainId, utils.MD5(relyer)).First(&ps).Error
+	relyer = utils.MD5(relyer)
+	err = tx.Model(&PollState{}).Where("chain_id=? and relyer=?", chainId, relyer).First(&ps).Error
 	if err != nil {
 		return nil, err
 	}

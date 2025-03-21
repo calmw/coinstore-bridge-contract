@@ -162,12 +162,11 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 }
 
 func (l *Listener) LatestBlock() (*big.Int, error) {
-	//header, err := l.conn.Client().HeaderByNumber(context.Background(), nil)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//return header.Number, nil
-	return big.NewInt(1), nil
+	header, err := l.conn.ClientTron().GetNowBlock()
+	if err != nil {
+		return nil, err
+	}
+	return big.NewInt(header.BlockHeader.RawData.Number), nil
 }
 
 func (l *Listener) StoreBlock(blockHeight *big.Int) error {
