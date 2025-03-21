@@ -1,18 +1,24 @@
 package tron
 
 import (
+	"bytes"
 	"coinstore/bridge/chains"
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
 	"coinstore/bridge/event"
 	"coinstore/db"
 	"coinstore/model"
+	"coinstore/utils"
+	"encoding/json"
 	"errors"
+	"fmt"
 	log "github.com/calmw/clog"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/shopspring/decimal"
+	"io"
 	"math/big"
+	"net/http"
 	"time"
 )
 
@@ -115,7 +121,9 @@ func (l *Listener) pollBlocks() error {
 
 func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	l.log.Debug("Querying block for deposit events", "block", latestBlock)
-
+	latestBlock = big.NewInt(55444496)
+	TestA(latestBlock.Int64())
+	//GetTronLog(l.cfg.BridgeContractAddress, latestBlock.Text(16), latestBlock.Text(16), "f8922d8955cfa0d76336adc31b6c0ba9255e8baf479e4ef06db6cabb8711806a")
 	//query := buildQuery(common.HexToAddress(l.cfg.BridgeContractAddress), event.Deposit, latestBlock, latestBlock)
 	//
 	//// 获取日志
@@ -183,4 +191,104 @@ func buildQuery(contract common.Address, sig event.Sig, startBlock *big.Int, end
 		},
 	}
 	return query
+}
+
+type JSONRPCRequest struct {
+	JSONRPC string      `json:"jsonrpc"`
+	Method  string      `json:"method"`
+	Params  []Param     `json:"params,omitempty"`
+	ID      interface{} `json:"id"`
+}
+
+type Param struct {
+	Address   []string `json:"address"`
+	FromBlock string   `json:"fromBlock"`
+	ToBlock   string   `json:"toBlock"`
+	Topics    []string `json:"topics"`
+}
+
+func GetTronLog(bridgeAddress, fromBlock, toBlock, topic string) {
+	param := Param{}
+	param.FromBlock = "0x" + fromBlock
+	param.ToBlock = "0x" + toBlock
+	param.Topics = []string{"0x" + topic}
+	param.Address = []string{bridgeAddress}
+	fmt.Println(param, "!!!!!")
+	//uri := "https://api.shasta.trongrid.io/jsonrpc"
+	//uri := "https://event.nileex.io/jsonrpc"
+	//uri := "http://47.252.19.181:8090/jsonrpc"
+	//uri := "https://nile.trongrid.io/"
+	//uri := "https://nile.trongrid.io/jsonrpc/"
+	//uri := "https://api.nileex.io/jsonrpc"
+	uri := "https://api.shasta.trongrid.io/jsonrpc"
+	// 构造请求体
+	request := []JSONRPCRequest{{
+		JSONRPC: "2.0",
+		Method:  "eth_getLogs",
+		Params:  []Param{param},
+		ID:      utils.RandInt(10, 1000),
+	},
+	}
+
+	// 将请求结构体编码为JSON字节数组
+	requestBytes, err := json.Marshal(request)
+	if err != nil {
+		fmt.Println("Error marshaling JSON:", err)
+		return
+	}
+	fmt.Println("~~~~", string(requestBytes))
+
+	// 创建HTTP请求
+	req, err := http.NewRequest("POST", uri, bytes.NewBuffer(requestBytes))
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// 发送请求并获取响应
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	// 读取响应体（根据需要处理响应）
+	responseBody, _ := io.ReadAll(resp.Body)
+	fmt.Println("Response:", string(responseBody))
+
+}
+
+func TestA(number int64) {
+	url := fmt.Sprintf("https://nile.trongrid.io/v1/blocks/%d/events", number)
+	//url := fmt.Sprintf("https://api.shasta.trongrid.io/v1/blocks/%d/events", number)
+
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("accept", "application/json")
+
+	res, _ := http.DefaultClient.Do(req)
+
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
+
+	var eventLog EventLog
+	err := json.Unmarshal(body, &eventLog)
+	fmt.Println(err, 66666)
+	if err != nil {
+		return
+	}
+	for _, d := range eventLog.Data {
+		if d.EventName == "Deposit" {
+			fmt.Println(d.BlockNumber, d.EventIndex)
+			fmt.Println(d.Result.ResourceID)
+			fmt.Println(d.Result.DepositNonce)
+			fmt.Println(d.Result.DestinationChainId)
+			fmt.Println(d.TransactionID)
+		}
+	}
+
+	fmt.Println(string(body))
 }

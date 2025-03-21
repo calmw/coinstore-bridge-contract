@@ -34,7 +34,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	//tantin.Init()
+	tantin.Init()
 	//tantin.AdminSetToken()
 
 	//signature, err := utils.RecipientSignature()
