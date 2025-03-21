@@ -109,15 +109,16 @@ func (t *TanTinTron) AdminSetToken(resourceID, assetsType, tokenAddress, burnabl
 }
 
 func (t *TanTinTron) Deposit(destinationChainId, resourceId, recipient, signature string, amount *big.Int) (string, error) {
-	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"bytes32\":\"%s\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"signature\":\"%s\"}]",
+	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"bytes32\":\"%s\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"}]",
 		destinationChainId, resourceId, recipient, amount.String(), signature,
 	)
+	fmt.Println(triggerData)
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
 		return "", err
 	}
-	tx, err := cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetToken(bytes32,uint8,address,bool,bool,bool)", triggerData, 300000000, 0, "", 0)
+	tx, err := cli.TriggerContract(OwnerAccount, t.ContractAddress, "deposit(uint256,bytes32,address,uint256,bytes)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
