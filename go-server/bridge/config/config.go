@@ -62,7 +62,7 @@ func NewConfig(cfg model.Config) Config {
 	}
 	startBlock := cfg.StartBlock
 	if !cfg.FreshStart {
-		height, err := model.GetBlockHeight(db.DB, cfg.ChainId)
+		height, err := model.GetBlockHeight(db.DB, cfg.ChainId, cfg.From)
 		if err == nil {
 			startBlock = decimal.NewFromBigInt(height, 0)
 		}

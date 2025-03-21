@@ -40,13 +40,13 @@ func Run() error {
 		if chainConfig.ChainType == config.ChainTypeEvm {
 			newChain, err = ethereum.InitializeChain(&chainConfig, chainLogger, sysErr)
 			if err != nil {
-				logger.Error("chain config", "error", err)
+				logger.Error("initialize chain", "error", err)
 				return err
 			}
 		} else if chainConfig.ChainType == config.ChainTypeTron {
 			newChain, err = tron.InitializeChain(&chainConfig, chainLogger, sysErr)
 			if err != nil {
-				logger.Error("chain config", "error", err)
+				logger.Error("initialize chain", "error", err)
 				return err
 			}
 		} else {

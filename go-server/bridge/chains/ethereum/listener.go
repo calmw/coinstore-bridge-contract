@@ -196,7 +196,7 @@ func (l *Listener) LatestBlock() (*big.Int, error) {
 }
 
 func (l *Listener) StoreBlock(blockHeight *big.Int) error {
-	return model.SetBlockHeight(db.DB, l.cfg.ChainId, decimal.NewFromBigInt(blockHeight, 0))
+	return model.SetBlockHeight(db.DB, l.cfg.ChainId, l.cfg.From, decimal.NewFromBigInt(blockHeight, 0))
 }
 
 func buildQuery(contract common.Address, sig event.Sig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {

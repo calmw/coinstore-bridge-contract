@@ -29,10 +29,13 @@ func InitializeChain(cfg *config.Config, logger log.Logger, sysErr chan<- error)
 	conn := NewConnection(cfg.ChainType, cfg.Endpoint, cfg.Http, key, logger, cfg.GasLimit, cfg.MaxGasPrice, cfg.MinGasPrice)
 	err := conn.Connect()
 	if err != nil {
+		logger.Error("new connection", "error", err)
 		return nil, err
 	}
 
 	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.ClientEvm())
+	logger.Error("new connection 2", "error", cfg.BridgeContractAddress, "ChainId", cfg.ChainId)
+	logger.Error("new connection 2", "error", cfg.Endpoint, "ChainId", cfg.ChainId)
 	if err != nil {
 		return nil, err
 	}

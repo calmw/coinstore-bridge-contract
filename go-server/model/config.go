@@ -25,6 +25,7 @@ type Config struct {
 	StartBlock         decimal.Decimal `gorm:"type:bigint(30);start_block;comment:'起始块高'" json:"start_block"`
 	BlockStore         decimal.Decimal `gorm:"type:bigint(30);block_store;comment:'扫过的块高'" json:"block_store"`
 	BlockConfirmations int64           `gorm:"block_confirmations;comment:'待确认块高差'" json:"block_confirmations"`
+	Open               int64           `gorm:"open;comment:'是否开启 1 开启 0关闭'；default:1" json:"open"`
 }
 
 func GetConfigByChainId(tx *gorm.DB, chainId int) (Config, error) {
@@ -38,6 +39,6 @@ func GetConfigByChainId(tx *gorm.DB, chainId int) (Config, error) {
 
 func GetAllConfig() ([]Config, error) {
 	var cfgs []Config
-	err := db.DB.Model(&Config{}).Find(&cfgs).Error
+	err := db.DB.Model(&Config{}).Where("open>0").Find(&cfgs).Error
 	return cfgs, err
 }
