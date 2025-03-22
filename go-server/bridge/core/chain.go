@@ -1,6 +1,7 @@
 package core
 
 import (
+	"coinstore/bridge/config"
 	"coinstore/bridge/msg"
 	"math/big"
 	"time"
@@ -10,6 +11,7 @@ type Chain interface {
 	Start() error // Start chain
 	SetRouter(*Router)
 	Id() msg.ChainId
+	ChainType() config.ChainType
 	Name() string
 	LatestBlock() LatestBlock
 	Stop()

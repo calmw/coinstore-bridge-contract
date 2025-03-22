@@ -108,6 +108,10 @@ func (c *Chain) Name() string {
 	return c.cfg.ChainName
 }
 
+func (c *Chain) ChainType() config.ChainType {
+	return c.cfg.ChainType
+}
+
 func (c *Chain) LatestBlock() core.LatestBlock {
 	return c.listener.latestBlock
 }

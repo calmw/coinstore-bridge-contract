@@ -1,6 +1,7 @@
 package core
 
 import (
+	"coinstore/bridge/config"
 	"coinstore/bridge/msg"
 	"fmt"
 	log "github.com/calmw/clog"
@@ -12,16 +13,18 @@ type Writer interface {
 }
 
 type Router struct {
-	registry map[msg.ChainId]Writer
-	lock     *sync.RWMutex
-	log      log.Logger
+	registry  map[msg.ChainId]Writer
+	chainType map[msg.ChainId]config.ChainType
+	lock      *sync.RWMutex
+	log       log.Logger
 }
 
 func NewRouter(log log.Logger) *Router {
 	return &Router{
-		registry: make(map[msg.ChainId]Writer),
-		lock:     &sync.RWMutex{},
-		log:      log,
+		registry:  make(map[msg.ChainId]Writer),
+		chainType: make(map[msg.ChainId]config.ChainType),
+		lock:      &sync.RWMutex{},
+		log:       log,
 	}
 }
 

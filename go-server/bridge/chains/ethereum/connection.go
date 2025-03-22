@@ -26,7 +26,7 @@ import (
 )
 
 type Connection struct {
-	chainType     int
+	chainType     config.ChainType
 	endpoint      string
 	http          bool
 	prvKey        *ecdsa.PrivateKey
@@ -49,7 +49,7 @@ type Connection struct {
 	connTron   *client.GrpcClient
 }
 
-func NewConnection(chainType int, endpoint string, http bool, prvKey string, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
+func NewConnection(chainType config.ChainType, endpoint string, http bool, prvKey string, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
 	if chainType == config.ChainTypeEvm {
 		//key:=utils2.ThreeDesDecrypt("",cfg.PrivateKey) // TODO 线上要改
 		privateKey, err := crypto.HexToECDSA(prvKey)

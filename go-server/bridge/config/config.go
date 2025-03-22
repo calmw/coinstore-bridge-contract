@@ -8,20 +8,22 @@ import (
 	"os"
 )
 
+type ChainType int
+
 const (
-	ChainTypeEvm              = 1
-	ChainTypeTron             = 2
-	DefaultGasLimit           = 6721975
-	DefaultGasPrice           = 20000000000
-	DefaultMinGasPrice        = 0
-	DefaultBlockConfirmations = 5
-	TronApiHost               = "https://nile.trongrid.io"
+	ChainTypeEvm              ChainType = 1
+	ChainTypeTron             ChainType = 2
+	DefaultGasLimit                     = 6721975
+	DefaultGasPrice                     = 20000000000
+	DefaultMinGasPrice                  = 0
+	DefaultBlockConfirmations           = 5
+	TronApiHost                         = "https://nile.trongrid.io"
 )
 
 type Config struct {
 	ChainName string
 	ChainId   int
-	ChainType int
+	ChainType ChainType
 	Endpoint  string
 	From      string
 	//PrivateKey            *ecdsa.PrivateKey
@@ -76,7 +78,7 @@ func NewConfig(cfg model.Config) Config {
 	return Config{
 		ChainName:             cfg.ChainName,
 		ChainId:               cfg.ChainId,
-		ChainType:             cfg.ChainType,
+		ChainType:             ChainType(cfg.ChainType),
 		Endpoint:              cfg.Endpoint,
 		From:                  cfg.From,
 		PrivateKey:            key,
