@@ -1,327 +1,200 @@
 package tron
 
 import (
+	"coinstore/binding"
+	"coinstore/bridge/config"
+	"coinstore/utils"
+	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/fbsobreira/gotron-sdk/pkg/address"
+	"github.com/status-im/keycard-go/hexutils"
+	"io"
 	"math/big"
+	"net/http"
 	"strings"
 )
 
-type DepositRecord struct {
-	DestinationChainId *big.Int
-	Sender             common.Address
-	ResourceID         [32]byte
-	Ctime              *big.Int
-	Data               []byte
+func GetDepositRecord(from, to string, destinationChainId, depositNonce *big.Int) (DepositRecord, error) {
+	requestData, err := GenerateBridgeDepositRecordsData(destinationChainId, depositNonce)
+	if err != nil {
+		return DepositRecord{}, fmt.Errorf("generateBridgeDepositRecordsData error %v", err)
+	}
+	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
+	if !strings.HasPrefix(from, "0x") {
+		fromAddress, err := address.Base58ToAddress(from)
+		if err != nil {
+			return DepositRecord{}, err
+		}
+		from = fromAddress.Hex()
+	}
+	if !strings.HasPrefix(to, "0x") {
+		toAddress, err := address.Base58ToAddress(to)
+		if err != nil {
+			return DepositRecord{}, err
+		}
+		to = toAddress.Hex()
+	}
+	ethCallBody := fmt.Sprintf(`{
+	"jsonrpc": "2.0",
+	"method": "eth_call",
+	"params": [{
+		"from": "%s",
+		"to": "%s",
+		"gas": "0x0",
+		"gasPrice": "0x0",
+		"value": "0x0",
+		"data": "%s"
+	}, "latest"],
+	"id": %d
+}`, from, to, requestData, utils.RandInt(100, 10000))
+	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
+	req.Header.Add("accept", "application/json")
+	res, _ := http.DefaultClient.Do(req)
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
+	var jsonRpcResponse JsonRpcResponse
+	err = json.Unmarshal(body, &jsonRpcResponse)
+	if err != nil {
+		return DepositRecord{}, errors.New("eth call failed")
+	}
+	return ParseBridgeDepositRecordData(hexutils.HexToBytes("197649b0" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }
 
-type TokenInfo struct {
-	AssetsType   uint8
-	TokenAddress common.Address
-	Pause        bool
-	Fee          *big.Int
-}
-
-func GenerateBridgeDepositRecordsData(destinationChainId, depositNonce *big.Int) (string, error) {
-	contractABI := `[
-    {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "depositRecords",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "destinationChainId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "resourceID",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "ctime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-  ]`
-
-	// 解析合约的ABI
-	parsedABI, err := abi.JSON(strings.NewReader(contractABI))
+func ResourceIdToTokenInfo(from, to string, requestId [32]byte) (TokenInfo, error) {
+	requestData, err := GenerateBridgeGetTokenInfoByResourceId(requestId)
 	if err != nil {
-		return "", err
-	}
-	// 创建一个方法对象，指向我们想要调用的合约函数
-	AbiPacked, err := parsedABI.Pack("depositRecords", destinationChainId, depositNonce)
-	if err != nil {
-		return "", err
-	}
-	// 打印出Inputs.Pack的结果
-	//fmt.Printf("Inputs.Pack: 0x%x\n", AbiPacked[:4])
-	//fmt.Println(AbiPacked[:4])
-	return fmt.Sprintf("%x", AbiPacked), nil
-}
-
-func ParseBridgeDepositRecordData(inputData []byte) (DepositRecord, error) {
-	contractABI := `[
-    {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "depositRecords",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "destinationChainId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "resourceID",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "ctime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-  ]`
-
-	// 解析合约的ABI
-	parsedABI, err := abi.JSON(strings.NewReader(contractABI))
-	if err != nil {
-		panic(err)
-	}
-	// 解析输入数据
-	method, err := parsedABI.MethodById(inputData)
-	if err != nil {
-		fmt.Println("Error parsing input data:", err)
-		return DepositRecord{}, err
-	}
-
-	// 获取函数参数
-	outputs := make([]interface{}, len(method.Outputs))
-	if outputs, err = method.Outputs.Unpack(inputData[4:]); err != nil {
-		fmt.Println("Error unpacking parameters:", err)
-		return DepositRecord{}, err
-	}
-
-	// 打印参数
-	//fmt.Println("Method name:", method.Name)
-	//fmt.Println("outputs:", outputs)
-	destinationChainId, ok := outputs[0].(*big.Int)
-	if !ok {
-		return DepositRecord{}, fmt.Errorf("invalid destinationChainId type")
-	}
-	resourceID, ok := outputs[2].([32]byte)
-	if !ok {
-		return DepositRecord{}, fmt.Errorf("invalid resourceID type")
-	}
-	sender, ok := outputs[1].(common.Address)
-	if !ok {
-		return DepositRecord{}, fmt.Errorf("invalid sender type")
-	}
-	ctime, ok := outputs[3].(*big.Int)
-	if !ok {
-		return DepositRecord{}, fmt.Errorf("invalid ctime type")
-	}
-	data, ok := outputs[4].([]byte)
-	if !ok {
-		return DepositRecord{}, fmt.Errorf("invalid data type")
-	}
-	res := DepositRecord{
-		DestinationChainId: destinationChainId,
-		Sender:             sender,
-		ResourceID:         resourceID,
-		Ctime:              ctime,
-		Data:               data,
-	}
-	return res, err
-}
-
-func GenerateBridgeGetTokenInfoByResourceId(resourceID [32]byte) (string, error) {
-	contractABI := `[
-    {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "resourceIdToTokenInfo",
-    "outputs": [
-      {
-        "internalType": "enum IBridge.AssetsType",
-        "name": "assetsType",
-        "type": "uint8"
-      },
-      {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "pause",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256",
-        "name": "fee",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-  ]`
-
-	// 解析合约的ABI
-	parsedABI, err := abi.JSON(strings.NewReader(contractABI))
-	if err != nil {
-		return "", err
-	}
-
-	// 创建一个方法对象，指向我们想要调用的合约函数
-	AbiPacked, err := parsedABI.Pack("resourceIdToTokenInfo", resourceID)
-	if err != nil {
-		return "", err
-	}
-
-	// 打印出Inputs.Pack的结果
-	//fmt.Printf("Inputs.Pack~~~~~~~~~~~~~~~~~~~~~~~~~~~~22222: 0x%x\n", AbiPacked[:4])
-	//fmt.Println(AbiPacked[:4])
-	return fmt.Sprintf("0x%x", AbiPacked), nil
-}
-
-func ParseBridgeResourceIdToTokenInfo(inputData []byte) (TokenInfo, error) {
-	contractABI := `[
-    {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "resourceIdToTokenInfo",
-    "outputs": [
-      {
-        "internalType": "enum IBridge.AssetsType",
-        "name": "assetsType",
-        "type": "uint8"
-      },
-      {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "pause",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256",
-        "name": "fee",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-  ]`
-
-	// 解析合约的ABI
-	parsedABI, err := abi.JSON(strings.NewReader(contractABI))
-	if err != nil {
-		panic(err)
-	}
-	// 解析输入数据
-	method, err := parsedABI.MethodById(inputData)
-	if err != nil {
-		fmt.Println("Error parsing input data:", err)
 		return TokenInfo{}, err
 	}
+	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
+	if !strings.HasPrefix(from, "0x") {
+		fromAddress, err := address.Base58ToAddress(from)
+		if err != nil {
+			return TokenInfo{}, err
+		}
+		from = fromAddress.Hex()
+	}
+	if !strings.HasPrefix(to, "0x") {
+		toAddress, err := address.Base58ToAddress(to)
+		if err != nil {
+			return TokenInfo{}, err
+		}
+		to = toAddress.Hex()
+	}
+	ethCallBody := fmt.Sprintf(`{
+	"jsonrpc": "2.0",
+	"method": "eth_call",
+	"params": [{
+		"from": "%s",
+		"to": "%s",
+		"gas": "0x0",
+		"gasPrice": "0x0",
+		"value": "0x0",
+		"data": "%s"
+	}, "latest"],
+	"id": %d
+}`, from, to, requestData, utils.RandInt(100, 10000))
+	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
+	req.Header.Add("accept", "application/json")
+	res, _ := http.DefaultClient.Do(req)
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
+	var jsonRpcResponse JsonRpcResponse
+	err = json.Unmarshal(body, &jsonRpcResponse)
+	if err != nil {
+		return TokenInfo{}, errors.New("eth call failed")
+	}
+	return ParseBridgeResourceIdToTokenInfo(hexutils.HexToBytes("6cbfe81f" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
+}
 
-	// 获取函数参数
-	outputs := make([]interface{}, len(method.Outputs))
-	if outputs, err = method.Outputs.Unpack(inputData[4:]); err != nil {
-		fmt.Println("Error unpacking parameters:", err)
-		return TokenInfo{}, err
+func GetProposal(from, to string, originChainID *big.Int, depositNonce *big.Int, dataHash [32]byte) (binding.IVoteProposal, error) {
+	requestData, err := GenerateVoteGetProposal(originChainID, depositNonce, dataHash)
+	if err != nil {
+		return binding.IVoteProposal{}, err
 	}
+	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
+	if !strings.HasPrefix(from, "0x") {
+		fromAddress, err := address.Base58ToAddress(from)
+		if err != nil {
+			return binding.IVoteProposal{}, err
+		}
+		from = fromAddress.Hex()
+	}
+	if !strings.HasPrefix(to, "0x") {
+		toAddress, err := address.Base58ToAddress(to)
+		if err != nil {
+			return binding.IVoteProposal{}, err
+		}
+		to = toAddress.Hex()
+	}
+	ethCallBody := fmt.Sprintf(`{
+	"jsonrpc": "2.0",
+	"method": "eth_call",
+	"params": [{
+		"from": "%s",
+		"to": "%s",
+		"gas": "0x0",
+		"gasPrice": "0x0",
+		"value": "0x0",
+		"data": "%s"
+	}, "latest"],
+	"id": %d
+}`, from, to, requestData, utils.RandInt(100, 10000))
+	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
+	req.Header.Add("accept", "application/json")
+	res, _ := http.DefaultClient.Do(req)
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
+	var jsonRpcResponse JsonRpcResponse
+	err = json.Unmarshal(body, &jsonRpcResponse)
+	if err != nil {
+		return binding.IVoteProposal{}, errors.New("eth call failed")
+	}
+	return ParseVoteGetProposal(hexutils.HexToBytes("6cbfe81f" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
+}
 
-	// 打印参数
-	assetsType, ok := outputs[0].(uint8)
-	if !ok {
-		return TokenInfo{}, fmt.Errorf("invalid assetsType type")
+func HasVotedOnProposal(from, to string, originChainID *big.Int, depositNonce *big.Int, dataHash [32]byte) (bool, error) {
+	requestData, err := GenerateVoteGetProposal(originChainID, depositNonce, dataHash)
+	if err != nil {
+		return binding.IVoteProposal{}, err
 	}
-	tokenAddress, ok := outputs[1].(common.Address)
-	if !ok {
-		return TokenInfo{}, fmt.Errorf("invalid tokenAddress type")
+	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
+	if !strings.HasPrefix(from, "0x") {
+		fromAddress, err := address.Base58ToAddress(from)
+		if err != nil {
+			return binding.IVoteProposal{}, err
+		}
+		from = fromAddress.Hex()
 	}
-	pause, ok := outputs[2].(bool)
-	if !ok {
-		return TokenInfo{}, fmt.Errorf("invalid pause type")
+	if !strings.HasPrefix(to, "0x") {
+		toAddress, err := address.Base58ToAddress(to)
+		if err != nil {
+			return binding.IVoteProposal{}, err
+		}
+		to = toAddress.Hex()
 	}
-	fee, ok := outputs[3].(*big.Int)
-	if !ok {
-		return TokenInfo{}, fmt.Errorf("invalid fee type")
+	ethCallBody := fmt.Sprintf(`{
+	"jsonrpc": "2.0",
+	"method": "eth_call",
+	"params": [{
+		"from": "%s",
+		"to": "%s",
+		"gas": "0x0",
+		"gasPrice": "0x0",
+		"value": "0x0",
+		"data": "%s"
+	}, "latest"],
+	"id": %d
+}`, from, to, requestData, utils.RandInt(100, 10000))
+	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
+	req.Header.Add("accept", "application/json")
+	res, _ := http.DefaultClient.Do(req)
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
+	var jsonRpcResponse JsonRpcResponse
+	err = json.Unmarshal(body, &jsonRpcResponse)
+	if err != nil {
+		return binding.IVoteProposal{}, errors.New("eth call failed")
 	}
-	res := TokenInfo{
-		AssetsType:   assetsType,
-		TokenAddress: tokenAddress,
-		Pause:        pause,
-		Fee:          fee,
-	}
-	return res, err
+	return ParseVoteGetProposal(hexutils.HexToBytes("6cbfe81f" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }

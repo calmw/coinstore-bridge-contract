@@ -7,6 +7,7 @@ import (
 	"coinstore/bridge/core"
 	"coinstore/bridge/event"
 	"coinstore/bridge/msg"
+	"coinstore/bridge/tron"
 	"coinstore/db"
 	"coinstore/model"
 	"coinstore/utils"
@@ -177,7 +178,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			//if err != nil {
 			//	return err
 			//}
-			tokenInfo, err := event.ResourceIdToTokenInfo(binding.OwnerAccount, tCfg.BridgeContractAddress, record.ResourceID)
+			tokenInfo, err := tron.ResourceIdToTokenInfo(binding.OwnerAccount, tCfg.BridgeContractAddress, record.ResourceID)
 			if err != nil {
 				return err
 			}

@@ -2,17 +2,11 @@ package event
 
 import (
 	"coinstore/bridge/config"
-	"coinstore/bridge/tron"
-	"coinstore/utils"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/fbsobreira/gotron-sdk/pkg/address"
-	"github.com/status-im/keycard-go/hexutils"
 	"io"
-	"math/big"
 	"net/http"
-	"strings"
 )
 
 type EvtLog struct {
@@ -88,12 +82,6 @@ type EthCallJsonRpcRequest struct {
 	ID      int    `json:"id"`
 }
 
-type JsonRpcResponse struct {
-	Jsonrpc string `json:"jsonrpc"`
-	ID      int    `json:"id"`
-	Result  string `json:"result"`
-}
-
 func GetEventData(number int64) ([]EvtData, error) {
 	var result []EvtData
 	url := fmt.Sprintf("%s/v1/blocks/%d/events", config.TronApiHost, number)
@@ -120,96 +108,4 @@ func GetEventData(number int64) ([]EvtData, error) {
 	}
 
 	return result, nil
-}
-
-func GetDepositRecord(from, to string, destinationChainId, depositNonce *big.Int) (tron.DepositRecord, error) {
-	requestData, err := tron.GenerateBridgeDepositRecordsData(destinationChainId, depositNonce)
-	if err != nil {
-		return tron.DepositRecord{}, fmt.Errorf("generateBridgeDepositRecordsData error %v", err)
-	}
-	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
-	if !strings.HasPrefix(from, "0x") {
-		fromAddress, err := address.Base58ToAddress(from)
-		if err != nil {
-			return tron.DepositRecord{}, err
-		}
-		from = fromAddress.Hex()
-	}
-	if !strings.HasPrefix(to, "0x") {
-		toAddress, err := address.Base58ToAddress(to)
-		if err != nil {
-			return tron.DepositRecord{}, err
-		}
-		to = toAddress.Hex()
-	}
-	ethCallBody := fmt.Sprintf(`{
-	"jsonrpc": "2.0",
-	"method": "eth_call",
-	"params": [{
-		"from": "%s",
-		"to": "%s",
-		"gas": "0x0",
-		"gasPrice": "0x0",
-		"value": "0x0",
-		"data": "%s"
-	}, "latest"],
-	"id": %d
-}`, from, to, requestData, utils.RandInt(100, 10000))
-	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
-	req.Header.Add("accept", "application/json")
-	res, _ := http.DefaultClient.Do(req)
-	defer res.Body.Close()
-	body, _ := io.ReadAll(res.Body)
-	var jsonRpcResponse JsonRpcResponse
-	err = json.Unmarshal(body, &jsonRpcResponse)
-	if err != nil {
-		return tron.DepositRecord{}, errors.New("eth call failed")
-	}
-	return tron.ParseBridgeDepositRecordData(hexutils.HexToBytes("197649b0" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
-}
-
-func ResourceIdToTokenInfo(from, to string, requestId [32]byte) (tron.TokenInfo, error) {
-	requestData, err := tron.GenerateBridgeGetTokenInfoByResourceId(requestId)
-	if err != nil {
-		return tron.TokenInfo{}, err
-	}
-	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
-	if !strings.HasPrefix(from, "0x") {
-		fromAddress, err := address.Base58ToAddress(from)
-		if err != nil {
-			return tron.TokenInfo{}, err
-		}
-		from = fromAddress.Hex()
-	}
-	if !strings.HasPrefix(to, "0x") {
-		toAddress, err := address.Base58ToAddress(to)
-		if err != nil {
-			return tron.TokenInfo{}, err
-		}
-		to = toAddress.Hex()
-	}
-	ethCallBody := fmt.Sprintf(`{
-	"jsonrpc": "2.0",
-	"method": "eth_call",
-	"params": [{
-		"from": "%s",
-		"to": "%s",
-		"gas": "0x0",
-		"gasPrice": "0x0",
-		"value": "0x0",
-		"data": "%s"
-	}, "latest"],
-	"id": %d
-}`, from, to, requestData, utils.RandInt(100, 10000))
-	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
-	req.Header.Add("accept", "application/json")
-	res, _ := http.DefaultClient.Do(req)
-	defer res.Body.Close()
-	body, _ := io.ReadAll(res.Body)
-	var jsonRpcResponse JsonRpcResponse
-	err = json.Unmarshal(body, &jsonRpcResponse)
-	if err != nil {
-		return tron.TokenInfo{}, errors.New("eth call failed")
-	}
-	return tron.ParseBridgeResourceIdToTokenInfo(hexutils.HexToBytes("6cbfe81f" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }
