@@ -154,7 +154,9 @@ func GetProposal(from, to string, originChainID *big.Int, depositNonce *big.Int,
 	if err != nil {
 		return IVoteProposal{}, errors.New("eth call failed")
 	}
-	return ParseVoteGetProposal(hexutils.HexToBytes("6cbfe81f" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
+	fmt.Println("~")
+	fmt.Println(jsonRpcResponse.Result)
+	return ParseVoteGetProposal(hexutils.HexToBytes("5b95771f" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }
 
 func HasVotedOnProposal(from, to string, arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error) {

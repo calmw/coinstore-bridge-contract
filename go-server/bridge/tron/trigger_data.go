@@ -9,12 +9,12 @@ import (
 )
 
 type IVoteProposal struct {
-	ResourceId    [32]byte
-	DataHash      [32]byte
-	YesVotes      []common.Address
-	NoVotes       []common.Address
-	Status        uint8
-	ProposedBlock *big.Int
+	ResourceId    [32]byte         `json:"resourceId"`
+	DataHash      [32]byte         `json:"dataHash"`
+	YesVotes      []common.Address `json:"yesVotes"`
+	NoVotes       []common.Address `json:"noVotes"`
+	Status        uint8            `json:"status"`
+	ProposedBlock *big.Int         `json:"proposedBlock"`
 }
 type JsonRpcResponse struct {
 	Jsonrpc string `json:"jsonrpc"`
@@ -502,39 +502,31 @@ func ParseVoteGetProposal(inputData []byte) (IVoteProposal, error) {
 		fmt.Println("Error unpacking parameters:", err)
 		return IVoteProposal{}, err
 	}
-
+	type As struct {
+		ResourceId    [32]uint8        `json:"resourceId"`
+		DataHash      [32]uint8        `json:"dataHash"`
+		YesVotes      []common.Address `json:"yesVotes"`
+		NoVotes       []common.Address `json:"noVotes"`
+		Status        uint8            `json:"status"`
+		ProposedBlock *big.Int         `json:"proposedBlock"`
+	}
 	// 打印参数
-	resourceId, ok := outputs[0].([32]byte)
-	if !ok {
-		return IVoteProposal{}, fmt.Errorf("invalid resourceId type")
-	}
-	dataHash, ok := outputs[1].([32]byte)
-	if !ok {
-		return IVoteProposal{}, fmt.Errorf("invalid dataHash type")
-	}
-	yesVotes, ok := outputs[2].([]common.Address)
-	if !ok {
-		return IVoteProposal{}, fmt.Errorf("invalid yesVotes type")
-	}
-	noVotes, ok := outputs[3].([]common.Address)
-	if !ok {
-		return IVoteProposal{}, fmt.Errorf("invalid noVotes type")
-	}
-	status, ok := outputs[4].(uint8)
-	if !ok {
-		return IVoteProposal{}, fmt.Errorf("invalid status type")
-	}
-	proposedBlock, ok := outputs[5].(*big.Int)
-	if !ok {
-		return IVoteProposal{}, fmt.Errorf("invalid proposedBlock type")
-	}
+	output := outputs[0]
+	result := output.(struct {
+		ResourceId    [32]uint8        "json:\"resourceId\""
+		DataHash      [32]uint8        "json:\"dataHash\""
+		YesVotes      []common.Address "json:\"yesVotes\""
+		NoVotes       []common.Address "json:\"noVotes\""
+		Status        uint8            "json:\"status\""
+		ProposedBlock *big.Int         "json:\"proposedBlock\""
+	})
 	res := IVoteProposal{
-		ResourceId:    resourceId,
-		DataHash:      dataHash,
-		YesVotes:      yesVotes,
-		NoVotes:       noVotes,
-		Status:        status,
-		ProposedBlock: proposedBlock,
+		ResourceId:    result.ResourceId,
+		DataHash:      result.DataHash,
+		YesVotes:      result.YesVotes,
+		NoVotes:       result.NoVotes,
+		Status:        result.Status,
+		ProposedBlock: result.ProposedBlock,
 	}
 	return res, err
 }

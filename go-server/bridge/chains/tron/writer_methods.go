@@ -33,7 +33,7 @@ func (w *Writer) proposalIsComplete(m msg.Message, dataHash [32]byte) bool {
 		return false
 	}
 	///
-	w.log.Debug("🫥  proposalIsComplete,status:%v,nonce:%d", prop.Status, m.DepositNonce)
+	w.log.Debug("🫥  proposalIsComplete", "status", prop.Status, "nonce", m.DepositNonce)
 	if prop.Status >= 2 {
 		model.UpdateVoteStatus(m, 1)
 	}
@@ -99,8 +99,10 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 
 	metadata := m.Payload[0].([]byte)
 	data := ConstructGenericProposalData(metadata)
-	toHash := append(common.HexToAddress(w.Cfg.BridgeContractAddress).Bytes(), data...)
+	bridgeAddress, err := address.Base58ToAddress(w.Cfg.BridgeContractAddress)
+	toHash := append(common.HexToAddress(bridgeAddress.Hex()).Bytes(), data...)
 	dataHash := utils.Hash(toHash)
+	//fmt.Printf("####---%x\n", dataHash)
 
 	if !w.shouldVote(m, dataHash) {
 		if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
@@ -176,7 +178,7 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 				m.ResourceId,
 				dataHash,
 			)
-			w.conn.UnlockOpts()
+			//w.conn.UnlockOpts()
 
 			if err == nil {
 				w.log.Info("Submitted proposal vote", "tx", txHash, "src", m.Source, "depositNonce", m.DepositNonce)
