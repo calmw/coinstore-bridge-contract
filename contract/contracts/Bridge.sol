@@ -157,7 +157,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     }
 
     // 由resourceId获取token信息
-    function getToeknInfoByResourceId(
+    function getTokenInfoByResourceId(
         bytes32 resourceID
     ) public view returns (uint256, address, bool) {
         return (
