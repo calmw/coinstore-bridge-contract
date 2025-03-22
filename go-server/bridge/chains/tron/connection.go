@@ -1,9 +1,9 @@
 package tron
 
 import (
+	"coinstore/binding"
 	"coinstore/bridge/chains/ethereum/egs"
 	"coinstore/bridge/config"
-	"coinstore/contract"
 	"context"
 	"crypto/ecdsa"
 	"errors"
@@ -68,11 +68,15 @@ func NewConnection(chainType int, endpoint string, http bool, prvKey string, log
 			stop:        make(chan int),
 		}
 	} else if chainType == config.ChainTypeTron {
-		_, _, err := contract.GetKeyFromPrivateKey(prvKey, contract.AccountName, contract.Passphrase)
+		///
+		_, _, err := binding.GetKeyFromPrivateKey(prvKey, binding.AccountName, binding.Passphrase)
 		if err != nil && !strings.Contains(err.Error(), "already exists") {
 			panic("private key conversion failed")
 		}
-		ks, ka, err := store.UnlockedKeystore(contract.AccountName, contract.Passphrase)
+		ks, ka, err := store.UnlockedKeystore(binding.OwnerAccount, binding.Passphrase)
+		if err != nil {
+			panic("private key conversion failed")
+		}
 		return &Connection{
 			chainType:   chainType,
 			endpoint:    endpoint,

@@ -270,3 +270,9 @@ func TransferToken() (string, error) {
 	//log.Println(6, common.BytesToHexString(tx.GetResult().GetMessage()))
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
+
+func AA() {
+	toAddress, err := address.Base58ToAddress("TPrEMmYc2nz5bHbjs3M2f1gZ9PtWsLzr8A")
+	fmt.Println(toAddress, err)
+	fmt.Println(toAddress.Hex())
+}

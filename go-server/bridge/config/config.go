@@ -15,6 +15,7 @@ const (
 	DefaultGasPrice           = 20000000000
 	DefaultMinGasPrice        = 0
 	DefaultBlockConfirmations = 5
+	TronApiHost               = "https://nile.trongrid.io"
 )
 
 type Config struct {

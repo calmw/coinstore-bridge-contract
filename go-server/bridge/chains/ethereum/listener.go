@@ -31,7 +31,7 @@ type Listener struct {
 	cfg            config.Config
 	conn           *Connection
 	Router         chains.Router
-	bridgeContract *binding.Bridge
+	BridgeContract *binding.Bridge
 	log            log.Logger
 	latestBlock    core.LatestBlock
 	stop           <-chan int
@@ -47,7 +47,7 @@ func NewListener(conn *Connection, cfg *config.Config, log log.Logger, stop <-ch
 	listener := Listener{
 		cfg:            *cfg,
 		conn:           conn,
-		bridgeContract: bridgeContract,
+		BridgeContract: bridgeContract,
 		log:            log,
 		stop:           stop,
 		sysErr:         sysErr,
@@ -142,7 +142,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
 		nonce := msg.Nonce(log.Topics[3].Big().Uint64())
 
-		records, err := l.bridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
+		records, err := l.BridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
 		if err != nil {
 			return err
 		}
@@ -161,11 +161,11 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			l.log.Error("destination listener not found", "chainId", records.DestinationChainId)
 			return errors.New(fmt.Sprintf("destination listener not found, chainId %d", records.DestinationChainId))
 		}
-		_, t, _, err := dl.bridgeContract.GetToeknInfoByResourceId(nil, records.ResourceID)
+		_, t, _, err := dl.BridgeContract.GetToeknInfoByResourceId(nil, records.ResourceID)
 		if err != nil {
 			l.log.Error("destination token info not found", "chainId", records.DestinationChainId)
 		}
-		_, s, _, err := l.bridgeContract.GetToeknInfoByResourceId(nil, records.ResourceID)
+		_, s, _, err := l.BridgeContract.GetToeknInfoByResourceId(nil, records.ResourceID)
 		if err != nil {
 			l.log.Error("source token info not found", "chainId", records.DestinationChainId)
 		}

@@ -145,3 +145,68 @@ func ParseBridgeData(depositData []byte) (decimal.Decimal, string, string, error
 	receiver := strings.ToLower(params[3].(common.Address).String())
 	return amount, caller, receiver, nil
 }
+
+func GenerateBridgeDepositRecordsData(destinationChainId, depositNonce *big.Int) (string, error) {
+	contractABI := `[
+    {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "depositRecords",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "destinationChainId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "resourceID",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ctime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+  ]`
+
+	// 解析合约的ABI
+	parsedABI, err := abi.JSON(strings.NewReader(contractABI))
+	if err != nil {
+		panic(err)
+	}
+
+	// 创建一个方法对象，指向我们想要调用的合约函数
+	AbiPacked, err := parsedABI.Pack("depositRecords", destinationChainId, depositNonce)
+	if err != nil {
+		return "", err
+	}
+
+	// 打印出Inputs.Pack的结果
+	//fmt.Printf("Inputs.Pack: 0x%x\n", AbiPacked)
+	return fmt.Sprintf("0x%x", AbiPacked), nil
+}

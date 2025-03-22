@@ -1,24 +1,21 @@
 package tron
 
 import (
-	"bytes"
+	"coinstore/binding"
 	"coinstore/bridge/chains"
+	"coinstore/bridge/chains/ethereum"
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
-	"coinstore/bridge/event"
+	"coinstore/bridge/msg"
+	"coinstore/contract"
 	"coinstore/db"
 	"coinstore/model"
 	"coinstore/utils"
-	"encoding/json"
 	"errors"
 	"fmt"
 	log "github.com/calmw/clog"
-	eth "github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/shopspring/decimal"
-	"io"
 	"math/big"
-	"net/http"
 	"time"
 )
 
@@ -122,49 +119,81 @@ func (l *Listener) pollBlocks() error {
 func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	l.log.Debug("Querying block for deposit events", "block", latestBlock)
 	latestBlock = big.NewInt(55444496)
-	TestA(latestBlock.Int64())
-	//GetTronLog(l.cfg.BridgeContractAddress, latestBlock.Text(16), latestBlock.Text(16), "f8922d8955cfa0d76336adc31b6c0ba9255e8baf479e4ef06db6cabb8711806a")
-	//query := buildQuery(common.HexToAddress(l.cfg.BridgeContractAddress), event.Deposit, latestBlock, latestBlock)
-	//
-	//// 获取日志
-	//logs, err := l.conn.Client().FilterLogs(context.Background(), query)
-	//if err != nil {
-	//	return fmt.Errorf("unable to Filter Logs: %w", err)
-	//}
+	data, err := GetEventData(latestBlock.Int64())
+	if err != nil {
+		return err
+	}
 
-	//for _, log := range logs {
-	//	var m msg.Message
-	//destId := msg.ChainId(log.Topics[1].Big().Uint64())
-	//rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
-	//nonce := msg.Nonce(log.Topics[3].Big().Uint64())
+	for _, log := range data {
+		//var m msg.Message
+		//destId := msg.ChainId(log.Topics[1].Big().Uint64())
+		//rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
+		//nonce := msg.Nonce(log.Topics[3].Big().Uint64())
 
-	//records, err := l.bridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//l.log.Debug("get events:")
-	//l.log.Debug("ResourceID", records.ResourceID)
-	//l.log.Debug("DestinationChainId", records.DestinationChainId)
-	//l.log.Debug("Sender", records.Sender)
-	//l.log.Debug("Data", records.Data)
-	//
-	//m = msg.NewGenericTransfer(
-	//	msg.ChainId(l.cfg.ChainId),
-	//	destId,
-	//	nonce,
-	//	rId,
-	//	records.Data[:],
-	//)
+		depositRecords, err := GetDepositRecords(l.conn.ClientTron(), contract.OwnerAccount, l.cfg.BridgeContractAddress, log.DestinationChainId, log.DepositNonce, l.conn.keyStore, l.conn.keyAccount)
+		fmt.Println(depositRecords, err)
+		//records, err := l.bridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
+		//if err != nil {
+		//	return err
+		//}
 
-	//err = l.Router.Send(m)
-	//if err != nil {
-	//	l.log.Error("subscription error: failed to route message", "err", err)
-	//}
+		l.log.Debug("get events:")
+		l.log.Debug("ResourceID", log.ResourceID)
+		l.log.Debug("DestinationChainId", log.DestinationChainId)
+		//l.log.Debug("Sender", records.Sender)
+		l.log.Debug("Data", log.Data)
+		//var depositNonce big.Int
+		var bigIntD big.Int
+		var bigIntN big.Int
+		//var success bool
+		destinationChainId, success := bigIntD.SetString(log.DestinationChainId, 10)
+		if !success || destinationChainId == nil {
+			return errors.New("转换失败")
+		}
+		depositNonce, success := bigIntN.SetString(log.DepositNonce, 10)
+		if !success || depositNonce == nil {
+			return errors.New("转换失败")
+		}
+		fmt.Println("转换失败", log.DestinationChainId, log.DepositNonce)
+		fmt.Println("转换失败", destinationChainId, depositNonce)
+		recordsData, err := utils.GenerateBridgeDepositRecordsData(destinationChainId, depositNonce)
+		fmt.Println(recordsData, err)
+		record, err2 := GetDepositRecord(binding.OwnerAccount, l.cfg.BridgeContractAddress, recordsData)
 
-	// 保存到数据库
-	//model.SaveBridgeOrder(m, l.log)
-	//}
+		fmt.Println(record, err2)
+
+		m = msg.NewGenericTransfer(
+			msg.ChainId(l.cfg.ChainId),
+			destId,
+			nonce,
+			rId,
+			records.Data[:],
+		)
+
+		//// 获取目标链的信息
+		dl, ok := ethereum.Listeners[int(records.DestinationChainId.Int64())]
+		if !ok {
+			l.log.Error("destination listener not found", "chainId", records.DestinationChainId)
+			return errors.New(fmt.Sprintf("destination listener not found, chainId %d", records.DestinationChainId))
+		}
+		_, t, _, err := dl.BridgeContract.GetToeknInfoByResourceId(nil, records.ResourceID)
+		if err != nil {
+			l.log.Error("destination token info not found", "chainId", records.DestinationChainId)
+		}
+		//_, s, _, err := l.bridgeContract.GetToeknInfoByResourceId(nil, records.ResourceID)
+		//if err != nil {
+		//	l.log.Error("source token info not found", "chainId", records.DestinationChainId)
+		//}
+		//amount, caller, receiver, err := utils.ParseBridgeData(records.Data)
+		//// 保存到数据库
+		//model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", records.ResourceID), caller, receiver, strings.ToLower(s.String()), strings.ToLower(t.String()), log.TxHash.String(), time.Unix(records.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
+		//
+		//err = l.Router.Send(m)
+		//if err != nil {
+		//	l.log.Error("subscription error: failed to route message", "err", err)
+		//	return errors.New(fmt.Sprintf("subscription error: failed to route message,err %v", err))
+		//}
+	}
 
 	return nil
 }
@@ -179,116 +208,4 @@ func (l *Listener) LatestBlock() (*big.Int, error) {
 
 func (l *Listener) StoreBlock(blockHeight *big.Int) error {
 	return model.SetBlockHeight(db.DB, l.cfg.ChainId, l.cfg.From, decimal.NewFromBigInt(blockHeight, 0))
-}
-
-func buildQuery(contract common.Address, sig event.Sig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
-	query := eth.FilterQuery{
-		FromBlock: startBlock,
-		ToBlock:   endBlock,
-		Addresses: []common.Address{contract},
-		Topics: [][]common.Hash{
-			{sig.GetTopic()},
-		},
-	}
-	return query
-}
-
-type JSONRPCRequest struct {
-	JSONRPC string      `json:"jsonrpc"`
-	Method  string      `json:"method"`
-	Params  []Param     `json:"params,omitempty"`
-	ID      interface{} `json:"id"`
-}
-
-type Param struct {
-	Address   []string `json:"address"`
-	FromBlock string   `json:"fromBlock"`
-	ToBlock   string   `json:"toBlock"`
-	Topics    []string `json:"topics"`
-}
-
-func GetTronLog(bridgeAddress, fromBlock, toBlock, topic string) {
-	param := Param{}
-	param.FromBlock = "0x" + fromBlock
-	param.ToBlock = "0x" + toBlock
-	param.Topics = []string{"0x" + topic}
-	param.Address = []string{bridgeAddress}
-	fmt.Println(param, "!!!!!")
-	//uri := "https://api.shasta.trongrid.io/jsonrpc"
-	//uri := "https://event.nileex.io/jsonrpc"
-	//uri := "http://47.252.19.181:8090/jsonrpc"
-	//uri := "https://nile.trongrid.io/"
-	//uri := "https://nile.trongrid.io/jsonrpc/"
-	//uri := "https://api.nileex.io/jsonrpc"
-	uri := "https://api.shasta.trongrid.io/jsonrpc"
-	// 构造请求体
-	request := []JSONRPCRequest{{
-		JSONRPC: "2.0",
-		Method:  "eth_getLogs",
-		Params:  []Param{param},
-		ID:      utils.RandInt(10, 1000),
-	},
-	}
-
-	// 将请求结构体编码为JSON字节数组
-	requestBytes, err := json.Marshal(request)
-	if err != nil {
-		fmt.Println("Error marshaling JSON:", err)
-		return
-	}
-	fmt.Println("~~~~", string(requestBytes))
-
-	// 创建HTTP请求
-	req, err := http.NewRequest("POST", uri, bytes.NewBuffer(requestBytes))
-	if err != nil {
-		fmt.Println("Error creating request:", err)
-		return
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	// 发送请求并获取响应
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error sending request:", err)
-		return
-	}
-	defer resp.Body.Close()
-
-	// 读取响应体（根据需要处理响应）
-	responseBody, _ := io.ReadAll(resp.Body)
-	fmt.Println("Response:", string(responseBody))
-
-}
-
-func TestA(number int64) {
-	url := fmt.Sprintf("https://nile.trongrid.io/v1/blocks/%d/events", number)
-	//url := fmt.Sprintf("https://api.shasta.trongrid.io/v1/blocks/%d/events", number)
-
-	req, _ := http.NewRequest("GET", url, nil)
-
-	req.Header.Add("accept", "application/json")
-
-	res, _ := http.DefaultClient.Do(req)
-
-	defer res.Body.Close()
-	body, _ := io.ReadAll(res.Body)
-
-	var eventLog EventLog
-	err := json.Unmarshal(body, &eventLog)
-	fmt.Println(err, 66666)
-	if err != nil {
-		return
-	}
-	for _, d := range eventLog.Data {
-		if d.EventName == "Deposit" {
-			fmt.Println(d.BlockNumber, d.EventIndex)
-			fmt.Println(d.Result.ResourceID)
-			fmt.Println(d.Result.DepositNonce)
-			fmt.Println(d.Result.DestinationChainId)
-			fmt.Println(d.TransactionID)
-		}
-	}
-
-	fmt.Println(string(body))
 }
