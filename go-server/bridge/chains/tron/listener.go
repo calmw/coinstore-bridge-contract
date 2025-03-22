@@ -3,7 +3,6 @@ package tron
 import (
 	"coinstore/binding"
 	"coinstore/bridge/chains"
-	"coinstore/bridge/chains/ethereum"
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
 	"coinstore/bridge/msg"
@@ -160,17 +159,20 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		)
 
 		//// 获取目标链的信息
-		dl, ok := ethereum.Listeners[int(destinationChainId.Int64())]
-		if !ok {
-			l.log.Error("destination listener not found", "chainId", destinationChainId)
-			return errors.New(fmt.Sprintf("destination listener not found, chainId %d", destinationChainId))
-		}
-		_, t, _, err := dl.BridgeContract.GetToeknInfoByResourceId(nil, msg.ResourceId(hexutils.HexToBytes(log.ResourceID)))
-		if err != nil {
-			l.log.Error("destination token info not found", "chainId", destinationChainId)
-		}
-		fmt.Println("~~~~~~~~~t  ", t.String())
-		fmt.Println("~~~~~~~~~t  ", m, record)
+		//dl, ok := ethereum.Listeners[int(destinationChainId.Int64())]
+		//if !ok {
+		//	l.log.Error("destination listener not found", "chainId", destinationChainId)
+		//	return errors.New(fmt.Sprintf("destination listener not found, chainId %d", destinationChainId))
+		//}
+		//_, t, _, err := dl.BridgeContract.GetToeknInfoByResourceId(nil, msg.ResourceId(hexutils.HexToBytes(log.ResourceID)))
+		//if err != nil {
+		//	l.log.Error("destination token info not found", "chainId", destinationChainId)
+		//}
+		//fmt.Println("~~~~~~~~~t  ", t.String())
+		//fmt.Println("~~~~~~~~~t  ", m, record)
+		utils.GenerateBridgeGetTokenInfoByResourceId(record.ResourceID)
+		fmt.Println(m)
+		utils.ParseBridgeTokenInfoByResourceId()
 		//_, s, _, err := l.bridgeContract.GetTokenInfoByResourceId(nil, records.ResourceID)
 		//if err != nil {
 		//	l.log.Error("source token info not found", "chainId", records.DestinationChainId)

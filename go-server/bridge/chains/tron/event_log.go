@@ -162,19 +162,19 @@ func GetDepositRecord(from, to, data string) (utils.DepositRecord, error) {
 	return utils.ParseBridgeDepositRecordData(hexutils.HexToBytes("197649b0" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }
 
-func GetTokenInfoByResourceId(from, to, data string) (utils.DepositRecord, error) {
+func GetTokenInfoByResourceId(from, to, data string) (utils.TokenInfo, error) {
 	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
 	if !strings.HasPrefix(from, "0x") {
 		fromAddress, err := address.Base58ToAddress(from)
 		if err != nil {
-			return utils.DepositRecord{}, err
+			return utils.TokenInfo{}, err
 		}
 		from = fromAddress.Hex()
 	}
 	if !strings.HasPrefix(to, "0x") {
 		toAddress, err := address.Base58ToAddress(to)
 		if err != nil {
-			return utils.DepositRecord{}, err
+			return utils.TokenInfo{}, err
 		}
 		to = toAddress.Hex()
 	}
@@ -200,7 +200,8 @@ func GetTokenInfoByResourceId(from, to, data string) (utils.DepositRecord, error
 	var jsonRpcResponse JsonRpcResponse
 	err := json.Unmarshal(body, &jsonRpcResponse)
 	if err != nil {
-		return utils.DepositRecord{}, errors.New("eth call failed")
+		return utils.TokenInfo{}, errors.New("eth call failed")
 	}
-	return utils.ParseBridgeDepositRecordData(hexutils.HexToBytes("197649b0" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
+	//ParseBridgeTokenInfoByResourceId(resourceID)
+	return utils.ParseBridgeTokenInfoByResourceId(hexutils.HexToBytes("197649b0" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }
