@@ -43,10 +43,12 @@ func NewTanTinTron() (*TanTinTron, error) {
 }
 
 func (t *TanTinTron) Init() {
-	txHash, err := t.AdminSetEnv()
-	fmt.Println(txHash, err)
-	txHash, err = t.GrantBridgeRole(ChainConfig.BridgeContractAddress, "0x52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f")
-	fmt.Println(txHash, err)
+	//txHash, err := t.AdminSetEnv()
+	//fmt.Println(txHash, err)
+	//txHash, err := t.GrantBridgeRole("52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f", ChainConfig.BridgeContractAddress)
+	//fmt.Println(txHash, err)
+	//txHash, err := t.AdminSetToken(strings.TrimPrefix(ResourceIdUsdt, "0x"), "2", ChainConfig.UsdtAddress, false, false, false)
+	//fmt.Println(txHash, err)
 }
 
 func (t *TanTinTron) AdminSetEnv() (string, error) {
@@ -87,8 +89,8 @@ func (t *TanTinTron) GrantBridgeRole(role, addr string) (string, error) {
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
-func (t *TanTinTron) AdminSetToken(resourceID, assetsType, tokenAddress, burnable, mintable, pause string) (string, error) {
-	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%s\"},{\"address\":\"%s\"},{\"bool\":\"%s\"},{\"bool\":\"%s\"},{\"bool\":\"%s\"}]",
+func (t *TanTinTron) AdminSetToken(resourceID, assetsType, tokenAddress string, burnable, mintable, pause bool) (string, error) {
+	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%s\"},{\"address\":\"%s\"},{\"bool\":%v},{\"bool\":%v},{\"bool\":%v}]",
 		resourceID, assetsType, tokenAddress, burnable, mintable, pause,
 	)
 	cli := client.NewGrpcClient(NileGrpc)

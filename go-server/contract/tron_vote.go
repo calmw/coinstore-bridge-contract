@@ -45,8 +45,8 @@ func NewVoteTron() (*VoteTron, error) {
 func (v *VoteTron) Init() {
 	//txHash, err := v.AdminSetEnv(big.NewInt(1), big.NewInt(100000))
 	//fmt.Println(txHash, err)
-	txHash, err := v.GrantBridgeRole(ChainConfig.BridgeContractAddress, "52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f")
-	fmt.Println(txHash, err)
+	//txHash, err := v.GrantBridgeRole("52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f", ChainConfig.BridgeContractAddress)
+	//fmt.Println(txHash, err)
 }
 
 func (v *VoteTron) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) (string, error) {
