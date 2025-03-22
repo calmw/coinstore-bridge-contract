@@ -34,8 +34,6 @@ func InitializeChain(cfg *config.Config, logger log.Logger, sysErr chan<- error)
 	}
 
 	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.ClientEvm())
-	logger.Error("new connection 2", "error", cfg.BridgeContractAddress, "ChainId", cfg.ChainId)
-	logger.Error("new connection 2", "error", cfg.Endpoint, "ChainId", cfg.ChainId)
 	if err != nil {
 		return nil, err
 	}

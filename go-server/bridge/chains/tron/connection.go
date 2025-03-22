@@ -11,10 +11,8 @@ import (
 	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/fbsobreira/gotron-sdk/pkg/client"
 	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
 	"github.com/fbsobreira/gotron-sdk/pkg/store"
@@ -50,85 +48,39 @@ type Connection struct {
 }
 
 func NewConnection(chainType config.ChainType, endpoint string, http bool, prvKey string, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
-	if chainType == config.ChainTypeEvm {
-		//key:=utils2.ThreeDesDecrypt("",Cfg.PrivateKey) // TODO 线上要改
-		privateKey, err := crypto.HexToECDSA(prvKey)
-		if err != nil {
-			panic("private key conversion failed")
-		}
-		return &Connection{
-			chainType:   chainType,
-			endpoint:    endpoint,
-			http:        http,
-			prvKey:      privateKey,
-			gasLimit:    gasLimit,
-			maxGasPrice: maxGasPrice,
-			minGasPrice: minGasPrice,
-			optsLock:    &sync.Mutex{},
-			log:         log,
-			stop:        make(chan int),
-		}
-	} else if chainType == config.ChainTypeTron {
-		///
-		_, _, err := binding.GetKeyFromPrivateKey(prvKey, binding.AccountName, binding.Passphrase)
-		if err != nil && !strings.Contains(err.Error(), "already exists") {
-			panic("private key conversion failed")
-		}
-		ks, ka, err := store.UnlockedKeystore(binding.OwnerAccount, binding.Passphrase)
-		if err != nil {
-			panic("private key conversion failed")
-		}
-		return &Connection{
-			chainType:   chainType,
-			endpoint:    endpoint,
-			http:        http,
-			prvKey:      nil,
-			gasLimit:    gasLimit,
-			maxGasPrice: maxGasPrice,
-			minGasPrice: minGasPrice,
-			log:         log,
-			stop:        make(chan int),
-			keyStore:    ks,
-			keyAccount:  ka,
-		}
-	} else {
-		panic("Unsupported chain type")
+	_, _, err := binding.GetKeyFromPrivateKey(prvKey, binding.AccountName, binding.Passphrase)
+	if err != nil && !strings.Contains(err.Error(), "already exists") {
+		panic("private key conversion failed")
+	}
+	ks, ka, err := store.UnlockedKeystore(binding.OwnerAccount, binding.Passphrase)
+	if err != nil {
+		panic("private key conversion failed")
+	}
+	return &Connection{
+		chainType:   chainType,
+		endpoint:    endpoint,
+		http:        http,
+		prvKey:      nil,
+		gasLimit:    gasLimit,
+		maxGasPrice: maxGasPrice,
+		minGasPrice: minGasPrice,
+		log:         log,
+		stop:        make(chan int),
+		keyStore:    ks,
+		keyAccount:  ka,
 	}
 }
 
 // Connect starts the ethereum WS connection
 func (c *Connection) Connect() error {
 	c.log.Info("Connecting to ethereum chain...", "rpc", c.endpoint)
-	if c.chainType == config.ChainTypeEvm {
-		var rpcClient *rpc.Client
-		var err error
-		// Start http or ws client
-		if c.http {
-			rpcClient, err = rpc.DialHTTP(c.endpoint)
-		} else {
-			rpcClient, err = rpc.DialContext(context.Background(), c.endpoint)
-		}
-		if err != nil {
-			return err
-		}
-		c.connEvm = ethclient.NewClient(rpcClient)
-
-		opts, _, err := c.newTransactOpts(big.NewInt(0), c.gasLimit, c.maxGasPrice)
-		if err != nil {
-			return err
-		}
-		c.opts = opts
-		c.nonce = 0
-		c.callOpts = &bind.CallOpts{From: crypto.PubkeyToAddress(c.prvKey.PublicKey)}
-	} else if c.chainType == config.ChainTypeTron {
-		var err error
-		cli := client.NewGrpcClient(c.endpoint)
-		err = cli.Start(grpc.WithInsecure())
-		if err != nil {
-			return err
-		}
-		c.connTron = cli
+	var err error
+	cli := client.NewGrpcClient(c.endpoint)
+	err = cli.Start(grpc.WithInsecure())
+	if err != nil {
+		return err
 	}
+	c.connTron = cli
 	return nil
 }
 
@@ -313,23 +265,11 @@ func (c *Connection) UnlockOpts() {
 
 // LatestBlock returns the latest block from the current chain
 func (c *Connection) LatestBlock() (*big.Int, error) {
-
-	if c.chainType == config.ChainTypeEvm {
-		header, err := c.connEvm.HeaderByNumber(context.Background(), nil)
-		if err != nil {
-			return nil, err
-		}
-		return header.Number, nil
-	} else if c.chainType == config.ChainTypeTron {
-		block, err := c.connTron.GetNowBlock()
-		if err != nil {
-			return nil, fmt.Errorf("get block now: %v", err)
-		}
-		fmt.Println(block.String())
-		return big.NewInt(5), nil
+	header, err := c.ClientTron().GetNowBlock()
+	if err != nil {
+		return nil, err
 	}
-	return nil, errors.New("unexpected")
-
+	return big.NewInt(header.BlockHeader.RawData.Number), nil
 }
 
 // EnsureHasBytecode asserts if contract code exists at the specified address

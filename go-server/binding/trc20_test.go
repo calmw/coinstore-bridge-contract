@@ -27,9 +27,7 @@ func TestPrivateKeyToWalletAddress(t *testing.T) {
 func TestImportFromPrivateKey(t *testing.T) {
 	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
 	ks, ka, err := GetKeyFromPrivateKey(privateKey, AccountName, Passphrase)
-	fmt.Println(ks, ka, err)
 	ks, ka, err = store.UnlockedKeystore(OwnerAccount, Passphrase)
-	fmt.Println("~~~~~~~", ks, ka, err)
 	// /Users/cisco/.tronctl/account-keys/my_account/UTC--2025-03-15T15-30-58.603647000Z--413942fda93c573e2ce9e85b0bb00ba98a144f27f6
 }
 

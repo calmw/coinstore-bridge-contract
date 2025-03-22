@@ -154,8 +154,6 @@ func GetProposal(from, to string, originChainID *big.Int, depositNonce *big.Int,
 	if err != nil {
 		return IVoteProposal{}, errors.New("eth call failed")
 	}
-	fmt.Println("~")
-	fmt.Println(jsonRpcResponse.Result)
 	return ParseVoteGetProposal(hexutils.HexToBytes("5b95771f" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }
 
