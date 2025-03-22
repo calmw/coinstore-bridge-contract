@@ -120,28 +120,27 @@ func (l *Listener) pollBlocks() error {
 
 func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	l.log.Debug("Querying block for deposit events", "block", latestBlock)
-	latestBlock = big.NewInt(55444496)
+	//latestBlock = big.NewInt(55444496)
 	data, err := GetEventData(latestBlock.Int64())
 	if err != nil {
 		return err
 	}
-
-	for _, log := range data {
+	for _, logE := range data {
 		var m msg.Message
 		l.log.Debug("get events:")
-		l.log.Debug("ResourceID", log.ResourceID)
-		l.log.Debug("DestinationChainId", log.DestinationChainId)
+		l.log.Debug("ResourceID", logE.ResourceID)
+		l.log.Debug("DestinationChainId", logE.DestinationChainId)
 		//l.log.Debug("Sender", records.Sender)
-		l.log.Debug("Data", log.Data)
+		l.log.Debug("Data", logE.Data)
 		//var depositNonce big.Int
 		var bigIntD big.Int
 		var bigIntN big.Int
 		//var success bool
-		destinationChainId, success := bigIntD.SetString(log.DestinationChainId, 10)
+		destinationChainId, success := bigIntD.SetString(logE.DestinationChainId, 10)
 		if !success || destinationChainId == nil {
 			return errors.New("转换失败")
 		}
-		depositNonce, success := bigIntN.SetString(log.DepositNonce, 10)
+		depositNonce, success := bigIntN.SetString(logE.DepositNonce, 10)
 		if !success || depositNonce == nil {
 			return errors.New("转换失败")
 		}
@@ -157,8 +156,8 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			msg.ChainId(l.cfg.ChainId),
 			msg.ChainId(destinationChainId.Int64()),
 			msg.Nonce(depositNonce.Int64()),
-			msg.ResourceId(hexutils.HexToBytes(log.ResourceID)),
-			hexutils.HexToBytes(log.Data),
+			msg.ResourceId(hexutils.HexToBytes(logE.ResourceID)),
+			hexutils.HexToBytes(logE.Data),
 		)
 
 		//// 获取目标链的信息
@@ -167,17 +166,14 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			l.log.Error("destination listener not found", "chainId", destinationChainId)
 			return errors.New(fmt.Sprintf("destination listener not found, chainId %d", destinationChainId))
 		}
-		_, t, _, err := dl.BridgeContract.GetToeknInfoByResourceId(nil, msg.ResourceId(hexutils.HexToBytes(log.ResourceID)))
+		_, t, _, err := dl.BridgeContract.GetToeknInfoByResourceId(nil, msg.ResourceId(hexutils.HexToBytes(logE.ResourceID)))
 		if err != nil {
 			l.log.Error("destination token info not found", "chainId", destinationChainId)
 		}
-		//fmt.Println("~~~~~~~~~t  ", t.String())
-		//fmt.Println("~~~~~~~~~t  ", m, record)
 		requestData, err := utils.GenerateBridgeGetTokenInfoByResourceId(record.ResourceID)
 		if err != nil {
 			return err
 		}
-		fmt.Println(m)
 		tokenInfo, err := ResourceIdToTokenInfo(binding.OwnerAccount, l.cfg.BridgeContractAddress, requestData)
 		if err != nil {
 			return err
@@ -190,7 +186,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			return err
 		}
 		//保存到数据库
-		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, tokenAddress, strings.ToLower(t.String()), log.TxHash, time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
+		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, tokenAddress, strings.ToLower(t.String()), logE.TxHash, time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
 
 		err = l.Router.Send(m)
 		if err != nil {
