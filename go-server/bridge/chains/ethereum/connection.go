@@ -64,6 +64,7 @@ func NewConnection(chainType int, endpoint string, http bool, prvKey string, log
 			gasLimit:    gasLimit,
 			maxGasPrice: maxGasPrice,
 			minGasPrice: minGasPrice,
+			optsLock:    &sync.Mutex{},
 			log:         log,
 		}
 	} else if chainType == config.ChainTypeTron {
