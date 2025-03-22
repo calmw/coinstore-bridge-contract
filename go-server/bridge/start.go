@@ -53,7 +53,7 @@ func Run() error {
 			logger.Error("chain type", "error", err)
 			return errors.New("chain type not supported")
 		}
-
+		core.ChainType[cfg.ChainId] = config.ChainType(cfg.ChainType)
 		c.AddChain(newChain)
 	}
 

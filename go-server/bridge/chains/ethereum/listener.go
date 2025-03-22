@@ -3,6 +3,7 @@ package ethereum
 import (
 	"coinstore/binding"
 	"coinstore/bridge/chains"
+	"coinstore/bridge/chains/tron"
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
 	"coinstore/bridge/event"
@@ -16,6 +17,7 @@ import (
 	log "github.com/calmw/clog"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/shopspring/decimal"
 	"math/big"
 	"strings"
@@ -142,7 +144,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
 		nonce := msg.Nonce(log.Topics[3].Big().Uint64())
 
-		records, err := l.BridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
+		record, err := l.BridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
 		if err != nil {
 			return err
 		}
@@ -152,26 +154,45 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			destId,
 			nonce,
 			rId,
-			records.Data[:],
+			record.Data[:],
 		)
 
 		// 获取目标链的信息
-		dl, ok := Listeners[int(records.DestinationChainId.Int64())]
-		if !ok {
-			l.log.Error("destination listener not found", "chainId", records.DestinationChainId)
-			return errors.New(fmt.Sprintf("destination listener not found, chainId %d", records.DestinationChainId))
+		var t common.Address
+		var toAddr string
+		destChainType := core.ChainType[int(record.DestinationChainId.Int64())]
+		if destChainType == config.ChainTypeEvm {
+			dl, ok := Listeners[int(record.DestinationChainId.Int64())]
+			if !ok {
+				l.log.Error("destination listener not found", "chainId", record.DestinationChainId)
+				return errors.New(fmt.Sprintf("destination listener not found, chainId %d", record.DestinationChainId))
+			}
+			_, t, _, err = dl.BridgeContract.GetTokenInfoByResourceId(nil, record.ResourceID)
+			if err != nil {
+				l.log.Error("destination token info not found", "chainId", record.DestinationChainId)
+			}
+			toAddr = strings.ToLower(t.String())
+		} else if destChainType == config.ChainTypeTron {
+			tl := tron.ListenersTron
+			requestData, err := utils.GenerateBridgeGetTokenInfoByResourceId(record.ResourceID)
+			if err != nil {
+				return err
+			}
+			tokenInfo, err := tron.ResourceIdToTokenInfo(binding.OwnerAccount, tl.Cfg.BridgeContractAddress, requestData)
+			if err != nil {
+				return err
+			}
+			tokenAddress := "0x41" + strings.TrimPrefix(tokenInfo.TokenAddress.String(), "0x")
+			toAddr = address.HexToAddress(tokenAddress).String()
 		}
-		_, t, _, err := dl.BridgeContract.GetToeknInfoByResourceId(nil, records.ResourceID)
+
+		_, s, _, err := l.BridgeContract.GetTokenInfoByResourceId(nil, record.ResourceID)
 		if err != nil {
-			l.log.Error("destination token info not found", "chainId", records.DestinationChainId)
+			l.log.Error("source token info not found", "chainId", record.DestinationChainId)
 		}
-		_, s, _, err := l.BridgeContract.GetToeknInfoByResourceId(nil, records.ResourceID)
-		if err != nil {
-			l.log.Error("source token info not found", "chainId", records.DestinationChainId)
-		}
-		amount, caller, receiver, err := utils.ParseBridgeData(records.Data)
+		amount, caller, receiver, err := utils.ParseBridgeData(record.Data)
 		// 保存到数据库
-		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", records.ResourceID), caller, receiver, strings.ToLower(s.String()), strings.ToLower(t.String()), log.TxHash.String(), time.Unix(records.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
+		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, strings.ToLower(s.String()), toAddr, log.TxHash.String(), time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
 
 		err = l.Router.Send(m)
 		if err != nil {

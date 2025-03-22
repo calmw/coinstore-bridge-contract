@@ -12,7 +12,8 @@ import (
 var PassedStatus uint8 = 2
 var TransferredStatus uint8 = 3
 var CancelledStatus uint8 = 4
-var Writers = map[int]*Writer{}
+
+//var Writers = map[int]*Writer{}
 
 type Writer struct {
 	muVote       *sync.RWMutex
@@ -40,7 +41,7 @@ func NewWriter(conn *Connection, cfg *config.Config, log log.Logger, stop <-chan
 		stop:         stop,
 		sysErr:       sysErr,
 	}
-	Writers[cfg.ChainId] = &writer
+	//Writers[cfg.ChainId] = &writer
 	log.Debug("new writer", "id", cfg.ChainId)
 	return &writer
 }

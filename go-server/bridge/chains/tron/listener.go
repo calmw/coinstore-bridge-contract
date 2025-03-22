@@ -27,7 +27,7 @@ var ErrFatalPolling = errors.New("bridge block polling failed")
 var ListenersTron *Listener
 
 type Listener struct {
-	cfg         config.Config
+	Cfg         config.Config
 	conn        *Connection
 	Router      chains.Router
 	log         log.Logger
@@ -39,7 +39,7 @@ type Listener struct {
 // NewListener creates and returns a Listener
 func NewListener(conn *Connection, cfg *config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Listener {
 	listener := Listener{
-		cfg:    *cfg,
+		Cfg:    *cfg,
 		conn:   conn,
 		log:    log,
 		stop:   stop,
@@ -69,7 +69,7 @@ func (l *Listener) setRouter(r chains.Router) {
 }
 
 func (l *Listener) pollBlocks() error {
-	var currentBlock = l.cfg.StartBlock
+	var currentBlock = l.Cfg.StartBlock
 	l.log.Info("Polling Blocks...", "block", currentBlock)
 
 	var retry = BlockRetryLimit
@@ -93,7 +93,7 @@ func (l *Listener) pollBlocks() error {
 				continue
 			}
 
-			if big.NewInt(0).Sub(latestBlock, currentBlock).Cmp(l.cfg.BlockConfirmations) == -1 {
+			if big.NewInt(0).Sub(latestBlock, currentBlock).Cmp(l.Cfg.BlockConfirmations) == -1 {
 				l.log.Debug("Block not ready, will retry", "target", currentBlock, "latest", latestBlock)
 				time.Sleep(BlockRetryInterval)
 				continue
@@ -146,12 +146,12 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		if err != nil {
 			return fmt.Errorf("generateBridgeDepositRecordsData error %v", err)
 		}
-		record, err := GetDepositRecord(binding.OwnerAccount, l.cfg.BridgeContractAddress, recordsData)
+		record, err := GetDepositRecord(binding.OwnerAccount, l.Cfg.BridgeContractAddress, recordsData)
 		if err != nil {
 			return fmt.Errorf("getDepositRecord error %v", err)
 		}
 		m = msg.NewGenericTransfer(
-			msg.ChainId(l.cfg.ChainId),
+			msg.ChainId(l.Cfg.ChainId),
 			msg.ChainId(destinationChainId.Int64()),
 			msg.Nonce(depositNonce.Int64()),
 			msg.ResourceId(hexutils.HexToBytes(logE.ResourceID)),
@@ -164,7 +164,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			l.log.Error("destination listener not found", "chainId", destinationChainId)
 			return errors.New(fmt.Sprintf("destination listener not found, chainId %d", destinationChainId))
 		}
-		_, t, _, err := dl.BridgeContract.GetToeknInfoByResourceId(nil, msg.ResourceId(hexutils.HexToBytes(logE.ResourceID)))
+		_, t, _, err := dl.BridgeContract.GetTokenInfoByResourceId(nil, msg.ResourceId(hexutils.HexToBytes(logE.ResourceID)))
 		if err != nil {
 			l.log.Error("destination token info not found", "chainId", destinationChainId)
 		}
@@ -172,7 +172,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		if err != nil {
 			return err
 		}
-		tokenInfo, err := ResourceIdToTokenInfo(binding.OwnerAccount, l.cfg.BridgeContractAddress, requestData)
+		tokenInfo, err := ResourceIdToTokenInfo(binding.OwnerAccount, l.Cfg.BridgeContractAddress, requestData)
 		if err != nil {
 			return err
 		}
@@ -205,5 +205,5 @@ func (l *Listener) LatestBlock() (*big.Int, error) {
 }
 
 func (l *Listener) StoreBlock(blockHeight *big.Int) error {
-	return model.SetBlockHeight(db.DB, l.cfg.ChainId, l.cfg.From, decimal.NewFromBigInt(blockHeight, 0))
+	return model.SetBlockHeight(db.DB, l.Cfg.ChainId, l.Cfg.From, decimal.NewFromBigInt(blockHeight, 0))
 }

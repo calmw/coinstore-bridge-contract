@@ -34,3 +34,5 @@ type ChainConfig struct {
 	LatestBlock    bool              // If true, overrides blockstore or latest block in config and starts from current block
 	Opts           map[string]string // Per chain options
 }
+
+var ChainType = map[int]config.ChainType{}

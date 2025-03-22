@@ -21,10 +21,10 @@ type Router struct {
 
 func NewRouter(log log.Logger) *Router {
 	return &Router{
-		registry:  make(map[msg.ChainId]Writer),
-		chainType: make(map[msg.ChainId]config.ChainType),
-		lock:      &sync.RWMutex{},
-		log:       log,
+		registry: make(map[msg.ChainId]Writer),
+		//chainType: make(map[msg.ChainId]config.ChainType),
+		lock: &sync.RWMutex{},
+		log:  log,
 	}
 }
 

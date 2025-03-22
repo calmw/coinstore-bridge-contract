@@ -51,7 +51,7 @@ type Connection struct {
 
 func NewConnection(chainType config.ChainType, endpoint string, http bool, prvKey string, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
 	if chainType == config.ChainTypeEvm {
-		//key:=utils2.ThreeDesDecrypt("",cfg.PrivateKey) // TODO 线上要改
+		//key:=utils2.ThreeDesDecrypt("",Cfg.PrivateKey) // TODO 线上要改
 		privateKey, err := crypto.HexToECDSA(prvKey)
 		if err != nil {
 			panic("private key conversion failed")
