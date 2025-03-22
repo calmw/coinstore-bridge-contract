@@ -162,7 +162,7 @@ func GetDepositRecord(from, to, data string) (utils.DepositRecord, error) {
 	return utils.ParseBridgeDepositRecordData(hexutils.HexToBytes("197649b0" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }
 
-func GetTokenInfoByResourceId(from, to, data string) (utils.TokenInfo, error) {
+func ResourceIdToTokenInfo(from, to, data string) (utils.TokenInfo, error) {
 	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
 	if !strings.HasPrefix(from, "0x") {
 		fromAddress, err := address.Base58ToAddress(from)
@@ -202,6 +202,5 @@ func GetTokenInfoByResourceId(from, to, data string) (utils.TokenInfo, error) {
 	if err != nil {
 		return utils.TokenInfo{}, errors.New("eth call failed")
 	}
-	//ParseBridgeTokenInfoByResourceId(resourceID)
-	return utils.ParseBridgeTokenInfoByResourceId(hexutils.HexToBytes("197649b0" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
+	return utils.ParseBridgeResourceIdToTokenInfo(hexutils.HexToBytes("6cbfe81f" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }

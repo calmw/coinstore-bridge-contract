@@ -205,8 +205,8 @@ func GenerateBridgeDepositRecordsData(destinationChainId, depositNonce *big.Int)
 		return "", err
 	}
 	// 打印出Inputs.Pack的结果
-	fmt.Printf("Inputs.Pack: 0x%x\n", AbiPacked[:4])
-	fmt.Println(AbiPacked[:4])
+	//fmt.Printf("Inputs.Pack: 0x%x\n", AbiPacked[:4])
+	//fmt.Println(AbiPacked[:4])
 	return fmt.Sprintf("%x", AbiPacked), nil
 }
 
@@ -216,26 +216,31 @@ func GenerateBridgeGetTokenInfoByResourceId(resourceID [32]byte) (string, error)
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "resourceID",
+        "name": "",
         "type": "bytes32"
       }
     ],
-    "name": "getTokenInfoByResourceId",
+    "name": "resourceIdToTokenInfo",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "internalType": "enum IBridge.AssetsType",
+        "name": "assetsType",
+        "type": "uint8"
       },
       {
         "internalType": "address",
-        "name": "",
+        "name": "tokenAddress",
         "type": "address"
       },
       {
         "internalType": "bool",
-        "name": "",
+        "name": "pause",
         "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -250,15 +255,15 @@ func GenerateBridgeGetTokenInfoByResourceId(resourceID [32]byte) (string, error)
 	}
 
 	// 创建一个方法对象，指向我们想要调用的合约函数
-	AbiPacked, err := parsedABI.Pack("getTokenInfoByResourceId", resourceID)
+	AbiPacked, err := parsedABI.Pack("resourceIdToTokenInfo", resourceID)
 	if err != nil {
 		return "", err
 	}
 
 	// 打印出Inputs.Pack的结果
-	fmt.Printf("Inputs.Pack~~~~~~~~~~~~~~~~~~~~~~~~~~~~: 0x%x\n", AbiPacked[:4])
-	fmt.Println(AbiPacked[:4])
-	return hexutils.BytesToHex(AbiPacked[:4]), nil
+	//fmt.Printf("Inputs.Pack~~~~~~~~~~~~~~~~~~~~~~~~~~~~22222: 0x%x\n", AbiPacked[:4])
+	//fmt.Println(AbiPacked[:4])
+	return fmt.Sprintf("0x%x", AbiPacked), nil
 }
 
 type DepositRecord struct {
@@ -337,8 +342,8 @@ func ParseBridgeDepositRecordData(inputData []byte) (DepositRecord, error) {
 	}
 
 	// 打印参数
-	fmt.Println("Method name:", method.Name)
-	fmt.Println("outputs:", outputs)
+	//fmt.Println("Method name:", method.Name)
+	//fmt.Println("outputs:", outputs)
 	destinationChainId, ok := outputs[0].(*big.Int)
 	if !ok {
 		return DepositRecord{}, fmt.Errorf("invalid destinationChainId type")
@@ -376,32 +381,37 @@ type TokenInfo struct {
 	Fee          *big.Int
 }
 
-func ParseBridgeTokenInfoByResourceId(inputData []byte) (TokenInfo, error) {
+func ParseBridgeResourceIdToTokenInfo(inputData []byte) (TokenInfo, error) {
 	contractABI := `[
     {
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "resourceID",
+        "name": "",
         "type": "bytes32"
       }
     ],
-    "name": "getToeknInfoByResourceId",
+    "name": "resourceIdToTokenInfo",
     "outputs": [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "internalType": "enum IBridge.AssetsType",
+        "name": "assetsType",
+        "type": "uint8"
       },
       {
         "internalType": "address",
-        "name": "",
+        "name": "tokenAddress",
         "type": "address"
       },
       {
         "internalType": "bool",
-        "name": "",
+        "name": "pause",
         "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -429,8 +439,6 @@ func ParseBridgeTokenInfoByResourceId(inputData []byte) (TokenInfo, error) {
 	}
 
 	// 打印参数
-	fmt.Println("Method name:", method.Name)
-	fmt.Println("outputs:", outputs)
 	assetsType, ok := outputs[0].(uint8)
 	if !ok {
 		return TokenInfo{}, fmt.Errorf("invalid assetsType type")
