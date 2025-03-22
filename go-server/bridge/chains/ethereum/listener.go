@@ -138,13 +138,13 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		return fmt.Errorf("unable to Filter Logs: %w", err)
 	}
 
-	for _, log := range logs {
+	for _, logE := range logs {
 		var m msg.Message
-		destId := msg.ChainId(log.Topics[1].Big().Uint64())
-		rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
-		nonce := msg.Nonce(log.Topics[3].Big().Uint64())
+		destId := msg.ChainId(logE.Topics[1].Big().Uint64())
+		rId := msg.ResourceIdFromSlice(logE.Topics[2].Bytes())
+		nonce := msg.Nonce(logE.Topics[3].Big().Uint64())
 
-		record, err := l.BridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
+		record, err := l.BridgeContract.DepositRecords(nil, logE.Topics[1].Big(), logE.Topics[3].Big())
 		if err != nil {
 			return err
 		}
@@ -192,7 +192,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		}
 		amount, caller, receiver, err := utils.ParseBridgeData(record.Data)
 		// 保存到数据库
-		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, strings.ToLower(s.String()), toAddr, log.TxHash.String(), time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
+		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, strings.ToLower(s.String()), toAddr, logE.TxHash.String(), time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
 
 		err = l.Router.Send(m)
 		if err != nil {
