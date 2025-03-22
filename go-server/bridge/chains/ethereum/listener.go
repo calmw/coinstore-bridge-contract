@@ -161,11 +161,11 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			l.log.Error("destination listener not found", "chainId", records.DestinationChainId)
 			return errors.New(fmt.Sprintf("destination listener not found, chainId %d", records.DestinationChainId))
 		}
-		_, t, _, err := dl.bridgeContract.GetToeknInfoByResourceId(nil, records.ResourceID)
+		_, t, _, err := dl.bridgeContract.GetTokenInfoByResourceId(nil, records.ResourceID)
 		if err != nil {
 			l.log.Error("destination token info not found", "chainId", records.DestinationChainId)
 		}
-		_, s, _, err := l.bridgeContract.GetToeknInfoByResourceId(nil, records.ResourceID)
+		_, s, _, err := l.bridgeContract.GetTokenInfoByResourceId(nil, records.ResourceID)
 		if err != nil {
 			l.log.Error("source token info not found", "chainId", records.DestinationChainId)
 		}
