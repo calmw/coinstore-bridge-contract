@@ -532,64 +532,32 @@ func ParseVoteGetProposal(inputData []byte) (binding.IVoteProposal, error) {
 	return res, err
 }
 
-func GenerateVoteHasVotedOnProposal(originChainID *big.Int, depositNonce *big.Int, dataHash [32]byte) (bool, error) {
+func GenerateVoteHasVotedOnProposal(arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (string, error) {
 	contractABI := `[
     {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "originChainID",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "depositNonce",
-        "type": "uint256"
+        "internalType": "uint72",
+        "name": "",
+        "type": "uint72"
       },
       {
         "internalType": "bytes32",
-        "name": "dataHash",
+        "name": "",
         "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
-    "name": "getProposal",
+    "name": "hasVotedOnProposal",
     "outputs": [
       {
-        "components": [
-          {
-            "internalType": "bytes32",
-            "name": "resourceId",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "dataHash",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "address[]",
-            "name": "yesVotes",
-            "type": "address[]"
-          },
-          {
-            "internalType": "address[]",
-            "name": "noVotes",
-            "type": "address[]"
-          },
-          {
-            "internalType": "enum IVote.ProposalStatus",
-            "name": "status",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint256",
-            "name": "proposedBlock",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct IVote.Proposal",
+        "internalType": "bool",
         "name": "",
-        "type": "tuple"
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -604,7 +572,7 @@ func GenerateVoteHasVotedOnProposal(originChainID *big.Int, depositNonce *big.In
 	}
 
 	// 创建一个方法对象，指向我们想要调用的合约函数
-	AbiPacked, err := parsedABI.Pack("getProposal", originChainID, depositNonce, dataHash)
+	AbiPacked, err := parsedABI.Pack("hasVotedOnProposal", arg0, arg1, arg2)
 	if err != nil {
 		return "", err
 	}
@@ -616,59 +584,27 @@ func ParseVoteHasVotedOnProposal(inputData []byte) (bool, error) {
     {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "originChainID",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "depositNonce",
-        "type": "uint256"
+        "internalType": "uint72",
+        "name": "",
+        "type": "uint72"
       },
       {
         "internalType": "bytes32",
-        "name": "dataHash",
+        "name": "",
         "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
-    "name": "getProposal",
+    "name": "hasVotedOnProposal",
     "outputs": [
       {
-        "components": [
-          {
-            "internalType": "bytes32",
-            "name": "resourceId",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "dataHash",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "address[]",
-            "name": "yesVotes",
-            "type": "address[]"
-          },
-          {
-            "internalType": "address[]",
-            "name": "noVotes",
-            "type": "address[]"
-          },
-          {
-            "internalType": "enum IVote.ProposalStatus",
-            "name": "status",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint256",
-            "name": "proposedBlock",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct IVote.Proposal",
+        "internalType": "bool",
         "name": "",
-        "type": "tuple"
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -685,48 +621,20 @@ func ParseVoteHasVotedOnProposal(inputData []byte) (bool, error) {
 	method, err := parsedABI.MethodById(inputData)
 	if err != nil {
 		fmt.Println("Error parsing input data:", err)
-		return binding.IVoteProposal{}, err
+		return false, err
 	}
 
 	// 获取函数参数
 	outputs := make([]interface{}, len(method.Outputs))
 	if outputs, err = method.Outputs.Unpack(inputData[4:]); err != nil {
 		fmt.Println("Error unpacking parameters:", err)
-		return binding.IVoteProposal{}, err
+		return false, err
 	}
 
 	// 打印参数
-	resourceId, ok := outputs[0].([32]byte)
+	hashVote, ok := outputs[0].(bool)
 	if !ok {
-		return binding.IVoteProposal{}, fmt.Errorf("invalid resourceId type")
+		return false, fmt.Errorf("invalid hashVote type")
 	}
-	dataHash, ok := outputs[1].([32]byte)
-	if !ok {
-		return binding.IVoteProposal{}, fmt.Errorf("invalid dataHash type")
-	}
-	yesVotes, ok := outputs[2].([]common.Address)
-	if !ok {
-		return binding.IVoteProposal{}, fmt.Errorf("invalid yesVotes type")
-	}
-	noVotes, ok := outputs[3].([]common.Address)
-	if !ok {
-		return binding.IVoteProposal{}, fmt.Errorf("invalid noVotes type")
-	}
-	status, ok := outputs[4].(uint8)
-	if !ok {
-		return binding.IVoteProposal{}, fmt.Errorf("invalid status type")
-	}
-	proposedBlock, ok := outputs[5].(*big.Int)
-	if !ok {
-		return binding.IVoteProposal{}, fmt.Errorf("invalid proposedBlock type")
-	}
-	res := binding.IVoteProposal{
-		ResourceId:    resourceId,
-		DataHash:      dataHash,
-		YesVotes:      yesVotes,
-		NoVotes:       noVotes,
-		Status:        status,
-		ProposedBlock: proposedBlock,
-	}
-	return res, err
+	return hashVote, err
 }

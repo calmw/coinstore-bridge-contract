@@ -30,10 +30,7 @@ func (v *VoteTron) GetProposal(originChainID *big.Int, depositNonce *big.Int, da
 }
 
 func (v *VoteTron) HasVotedOnProposal(arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error) {
-	var out bool
-	var err error
-
-	return out, err
+	return tron.HasVotedOnProposal(v.Address, v.Address, arg0, arg1, arg2)
 }
 
 func (v *VoteTron) VoteProposal(originChainId *big.Int, originDepositNonce *big.Int, resourceId [32]byte, dataHash [32]byte) (*types.Transaction, error) {

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/status-im/keycard-go/hexutils"
 	"io"
@@ -153,23 +154,23 @@ func GetProposal(from, to string, originChainID *big.Int, depositNonce *big.Int,
 	return ParseVoteGetProposal(hexutils.HexToBytes("6cbfe81f" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }
 
-func HasVotedOnProposal(from, to string, originChainID *big.Int, depositNonce *big.Int, dataHash [32]byte) (bool, error) {
-	requestData, err := GenerateVoteGetProposal(originChainID, depositNonce, dataHash)
+func HasVotedOnProposal(from, to string, arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error) {
+	requestData, err := GenerateVoteHasVotedOnProposal(arg0, arg1, arg2)
 	if err != nil {
-		return binding.IVoteProposal{}, err
+		return false, err
 	}
 	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
 	if !strings.HasPrefix(from, "0x") {
 		fromAddress, err := address.Base58ToAddress(from)
 		if err != nil {
-			return binding.IVoteProposal{}, err
+			return false, err
 		}
 		from = fromAddress.Hex()
 	}
 	if !strings.HasPrefix(to, "0x") {
 		toAddress, err := address.Base58ToAddress(to)
 		if err != nil {
-			return binding.IVoteProposal{}, err
+			return false, err
 		}
 		to = toAddress.Hex()
 	}
@@ -194,7 +195,7 @@ func HasVotedOnProposal(from, to string, originChainID *big.Int, depositNonce *b
 	var jsonRpcResponse JsonRpcResponse
 	err = json.Unmarshal(body, &jsonRpcResponse)
 	if err != nil {
-		return binding.IVoteProposal{}, errors.New("eth call failed")
+		return false, errors.New("eth call failed")
 	}
-	return ParseVoteGetProposal(hexutils.HexToBytes("6cbfe81f" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
+	return ParseVoteHasVotedOnProposal(hexutils.HexToBytes("6cbfe81f" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }
