@@ -16,7 +16,6 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/status-im/keycard-go/hexutils"
 	"math/big"
-	"strings"
 	"time"
 )
 
@@ -171,20 +170,20 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			l.log.Error("destination token info not found", "chainId", destinationChainId)
 		}
 		fmt.Println("~~~~~~~~~t  ", t.String())
-		fmt.Println("~~~~~~~~~t  ", m)
+		fmt.Println("~~~~~~~~~t  ", m, record)
 		//_, s, _, err := l.bridgeContract.GetTokenInfoByResourceId(nil, records.ResourceID)
 		//if err != nil {
 		//	l.log.Error("source token info not found", "chainId", records.DestinationChainId)
 		//}
 		//amount, caller, receiver, err := utils.ParseBridgeData(records.Data)
 		// 保存到数据库
-		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, strings.ToLower(s.String()), strings.ToLower(t.String()), log.TxHash, time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
-
-		err = l.Router.Send(m)
-		if err != nil {
-			l.log.Error("subscription error: failed to route message", "err", err)
-			return errors.New(fmt.Sprintf("subscription error: failed to route message,err %v", err))
-		}
+		//model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, strings.ToLower(s.String()), strings.ToLower(t.String()), log.TxHash, time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
+		//
+		//err = l.Router.Send(m)
+		//if err != nil {
+		//	l.log.Error("subscription error: failed to route message", "err", err)
+		//	return errors.New(fmt.Sprintf("subscription error: failed to route message,err %v", err))
+		//}
 	}
 
 	return nil

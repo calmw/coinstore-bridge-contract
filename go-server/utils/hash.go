@@ -222,7 +222,7 @@ func GenerateBridgeGetTokenInfoByResourceId(resourceID [32]byte) (string, error)
         "type": "bytes32"
       }
     ],
-    "name": "getToeknInfoByResourceId",
+    "name": "getTokenInfoByResourceId",
     "outputs": [
       {
         "internalType": "uint256",
@@ -252,7 +252,7 @@ func GenerateBridgeGetTokenInfoByResourceId(resourceID [32]byte) (string, error)
 	}
 
 	// 创建一个方法对象，指向我们想要调用的合约函数
-	AbiPacked, err := parsedABI.Pack("depositRecords", destinationChainId, depositNonce)
+	AbiPacked, err := parsedABI.Pack("getTokenInfoByResourceId", resourceID)
 	if err != nil {
 		return "", err
 	}
