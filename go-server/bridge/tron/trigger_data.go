@@ -1,7 +1,6 @@
 package tron
 
 import (
-	"coinstore/binding"
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -9,6 +8,14 @@ import (
 	"strings"
 )
 
+type IVoteProposal struct {
+	ResourceId    [32]byte
+	DataHash      [32]byte
+	YesVotes      []common.Address
+	NoVotes       []common.Address
+	Status        uint8
+	ProposedBlock *big.Int
+}
 type JsonRpcResponse struct {
 	Jsonrpc string `json:"jsonrpc"`
 	ID      int    `json:"id"`
@@ -412,7 +419,7 @@ func GenerateVoteGetProposal(originChainID *big.Int, depositNonce *big.Int, data
 	return fmt.Sprintf("0x%x", AbiPacked), nil
 }
 
-func ParseVoteGetProposal(inputData []byte) (binding.IVoteProposal, error) {
+func ParseVoteGetProposal(inputData []byte) (IVoteProposal, error) {
 	contractABI := `[
     {
     "inputs": [
@@ -486,42 +493,42 @@ func ParseVoteGetProposal(inputData []byte) (binding.IVoteProposal, error) {
 	method, err := parsedABI.MethodById(inputData)
 	if err != nil {
 		fmt.Println("Error parsing input data:", err)
-		return binding.IVoteProposal{}, err
+		return IVoteProposal{}, err
 	}
 
 	// 获取函数参数
 	outputs := make([]interface{}, len(method.Outputs))
 	if outputs, err = method.Outputs.Unpack(inputData[4:]); err != nil {
 		fmt.Println("Error unpacking parameters:", err)
-		return binding.IVoteProposal{}, err
+		return IVoteProposal{}, err
 	}
 
 	// 打印参数
 	resourceId, ok := outputs[0].([32]byte)
 	if !ok {
-		return binding.IVoteProposal{}, fmt.Errorf("invalid resourceId type")
+		return IVoteProposal{}, fmt.Errorf("invalid resourceId type")
 	}
 	dataHash, ok := outputs[1].([32]byte)
 	if !ok {
-		return binding.IVoteProposal{}, fmt.Errorf("invalid dataHash type")
+		return IVoteProposal{}, fmt.Errorf("invalid dataHash type")
 	}
 	yesVotes, ok := outputs[2].([]common.Address)
 	if !ok {
-		return binding.IVoteProposal{}, fmt.Errorf("invalid yesVotes type")
+		return IVoteProposal{}, fmt.Errorf("invalid yesVotes type")
 	}
 	noVotes, ok := outputs[3].([]common.Address)
 	if !ok {
-		return binding.IVoteProposal{}, fmt.Errorf("invalid noVotes type")
+		return IVoteProposal{}, fmt.Errorf("invalid noVotes type")
 	}
 	status, ok := outputs[4].(uint8)
 	if !ok {
-		return binding.IVoteProposal{}, fmt.Errorf("invalid status type")
+		return IVoteProposal{}, fmt.Errorf("invalid status type")
 	}
 	proposedBlock, ok := outputs[5].(*big.Int)
 	if !ok {
-		return binding.IVoteProposal{}, fmt.Errorf("invalid proposedBlock type")
+		return IVoteProposal{}, fmt.Errorf("invalid proposedBlock type")
 	}
-	res := binding.IVoteProposal{
+	res := IVoteProposal{
 		ResourceId:    resourceId,
 		DataHash:      dataHash,
 		YesVotes:      yesVotes,

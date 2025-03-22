@@ -165,7 +165,7 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 			gasLimit := w.conn.Opts().GasLimit
 			gasPrice := w.conn.Opts().GasPrice
 
-			tx, err := w.voteContract.VoteProposal(
+			txHash, err := w.voteContract.VoteProposal(
 				m.Source.Big(),
 				m.DepositNonce.Big(),
 				m.ResourceId,
@@ -174,7 +174,7 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 			w.conn.UnlockOpts()
 
 			if err == nil {
-				w.log.Info("Submitted proposal vote", "tx", tx.Hash(), "src", m.Source, "depositNonce", m.DepositNonce, "gasPrice", tx.GasPrice().String())
+				w.log.Info("Submitted proposal vote", "tx", txHash, "src", m.Source, "depositNonce", m.DepositNonce)
 				for i := 0; i < 25; i++ {
 					if w.proposalIsComplete(m, dataHash) {
 						w.log.Info("Proposal voting complete on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
@@ -205,6 +205,7 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 	w.muExec.Lock()
 	defer w.muExec.Unlock()
 
+	var err error
 	var status bool
 	var txHash string
 	var txHashRes string
@@ -221,16 +222,7 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 		case <-w.stop:
 			return
 		default:
-			err := w.conn.LockAndUpdateOpts()
-			if err != nil {
-				w.log.Error("Failed to update nonce", "err", err)
-				return
-			}
-
-			gasLimit := w.conn.Opts().GasLimit
-			gasPrice := w.conn.Opts().GasPrice
-
-			tx, err := w.voteContract.ExecuteProposal(
+			txHash, err = w.voteContract.ExecuteProposal(
 				m.Source.Big(),
 				m.DepositNonce.Big(),
 				data,
@@ -239,14 +231,13 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 			w.conn.UnlockOpts()
 
 			if err == nil {
-				txHash = "0x" + tx.Hash().String()
-				w.log.Info("Submitted proposal execution", "tx", tx.Hash(), "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce, "gasPrice", tx.GasPrice().String())
+				w.log.Info("Submitted proposal execution", "tx", txHash, "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
 				///
 				for j := 0; j < 5; j++ {
 					if w.proposalIsFinalized(m.Source, m.DepositNonce, dataHash) {
 						status = true
 						txHashRes = txHash
-						receiveAt = tx.Time().Format("2006-01-02 15:04:05")
+						receiveAt = time.Now().Format("2006-01-02 15:04:05")
 						w.log.Info("Proposal finalized on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
 						break
 					}
@@ -258,7 +249,7 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 				w.log.Error("Nonce too low, will retry")
 				time.Sleep(TxRetryInterval)
 			} else {
-				w.log.Warn("Execution failed, proposal may already be complete", "gasLimit", gasLimit, "gasPrice", gasPrice, "err", err)
+				w.log.Warn("Execution failed, proposal may already be complete", "err", err)
 				time.Sleep(TxRetryInterval)
 			}
 
