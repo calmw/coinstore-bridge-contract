@@ -607,7 +607,7 @@
         "type": "bytes32"
       }
     ],
-    "name": "getToeknInfoByResourceId",
+    "name": "getTokenInfoByResourceId",
     "outputs": [
       {
         "internalType": "uint256",
