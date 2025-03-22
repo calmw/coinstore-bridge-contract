@@ -2,6 +2,7 @@ package event
 
 import (
 	"coinstore/bridge/config"
+	"coinstore/bridge/tron"
 	"coinstore/utils"
 	"encoding/json"
 	"errors"
@@ -80,6 +81,19 @@ type Param struct {
 	Topics    []string `json:"topics"`
 }
 
+type EthCallJsonRpcRequest struct {
+	Jsonrpc string `json:"jsonrpc"`
+	Method  string `json:"method"`
+	Params  string `json:"params"`
+	ID      int    `json:"id"`
+}
+
+type JsonRpcResponse struct {
+	Jsonrpc string `json:"jsonrpc"`
+	ID      int    `json:"id"`
+	Result  string `json:"result"`
+}
+
 func GetEventData(number int64) ([]EvtData, error) {
 	var result []EvtData
 	url := fmt.Sprintf("%s/v1/blocks/%d/events", config.TronApiHost, number)
@@ -108,36 +122,23 @@ func GetEventData(number int64) ([]EvtData, error) {
 	return result, nil
 }
 
-type EthCallJsonRpcRequest struct {
-	Jsonrpc string `json:"jsonrpc"`
-	Method  string `json:"method"`
-	Params  string `json:"params"`
-	ID      int    `json:"id"`
-}
-
-type JsonRpcResponse struct {
-	Jsonrpc string `json:"jsonrpc"`
-	ID      int    `json:"id"`
-	Result  string `json:"result"`
-}
-
-func GetDepositRecord(from, to string, destinationChainId, depositNonce *big.Int) (utils.DepositRecord, error) {
-	requestData, err := utils.GenerateBridgeDepositRecordsData(destinationChainId, depositNonce)
+func GetDepositRecord(from, to string, destinationChainId, depositNonce *big.Int) (tron.DepositRecord, error) {
+	requestData, err := tron.GenerateBridgeDepositRecordsData(destinationChainId, depositNonce)
 	if err != nil {
-		return utils.DepositRecord{}, fmt.Errorf("generateBridgeDepositRecordsData error %v", err)
+		return tron.DepositRecord{}, fmt.Errorf("generateBridgeDepositRecordsData error %v", err)
 	}
 	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
 	if !strings.HasPrefix(from, "0x") {
 		fromAddress, err := address.Base58ToAddress(from)
 		if err != nil {
-			return utils.DepositRecord{}, err
+			return tron.DepositRecord{}, err
 		}
 		from = fromAddress.Hex()
 	}
 	if !strings.HasPrefix(to, "0x") {
 		toAddress, err := address.Base58ToAddress(to)
 		if err != nil {
-			return utils.DepositRecord{}, err
+			return tron.DepositRecord{}, err
 		}
 		to = toAddress.Hex()
 	}
@@ -162,28 +163,28 @@ func GetDepositRecord(from, to string, destinationChainId, depositNonce *big.Int
 	var jsonRpcResponse JsonRpcResponse
 	err = json.Unmarshal(body, &jsonRpcResponse)
 	if err != nil {
-		return utils.DepositRecord{}, errors.New("eth call failed")
+		return tron.DepositRecord{}, errors.New("eth call failed")
 	}
-	return utils.ParseBridgeDepositRecordData(hexutils.HexToBytes("197649b0" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
+	return tron.ParseBridgeDepositRecordData(hexutils.HexToBytes("197649b0" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }
 
-func ResourceIdToTokenInfo(from, to string, requestId [32]byte) (utils.TokenInfo, error) {
-	requestData, err := utils.GenerateBridgeGetTokenInfoByResourceId(requestId)
+func ResourceIdToTokenInfo(from, to string, requestId [32]byte) (tron.TokenInfo, error) {
+	requestData, err := tron.GenerateBridgeGetTokenInfoByResourceId(requestId)
 	if err != nil {
-		return utils.TokenInfo{}, err
+		return tron.TokenInfo{}, err
 	}
 	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
 	if !strings.HasPrefix(from, "0x") {
 		fromAddress, err := address.Base58ToAddress(from)
 		if err != nil {
-			return utils.TokenInfo{}, err
+			return tron.TokenInfo{}, err
 		}
 		from = fromAddress.Hex()
 	}
 	if !strings.HasPrefix(to, "0x") {
 		toAddress, err := address.Base58ToAddress(to)
 		if err != nil {
-			return utils.TokenInfo{}, err
+			return tron.TokenInfo{}, err
 		}
 		to = toAddress.Hex()
 	}
@@ -208,7 +209,7 @@ func ResourceIdToTokenInfo(from, to string, requestId [32]byte) (utils.TokenInfo
 	var jsonRpcResponse JsonRpcResponse
 	err = json.Unmarshal(body, &jsonRpcResponse)
 	if err != nil {
-		return utils.TokenInfo{}, errors.New("eth call failed")
+		return tron.TokenInfo{}, errors.New("eth call failed")
 	}
-	return utils.ParseBridgeResourceIdToTokenInfo(hexutils.HexToBytes("6cbfe81f" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
+	return tron.ParseBridgeResourceIdToTokenInfo(hexutils.HexToBytes("6cbfe81f" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }

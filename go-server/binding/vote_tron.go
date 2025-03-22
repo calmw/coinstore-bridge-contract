@@ -27,7 +27,53 @@ func NewVoteTron(address string, keyStore *keystore.KeyStore, keyAccount *keysto
 func (v *VoteTron) GetProposal(originChainID *big.Int, depositNonce *big.Int, dataHash [32]byte) (IVoteProposal, error) {
 	var out IVoteProposal
 	var err error
+	///
 
+	//	requestData, err := tron.GenerateBridgeDepositRecordsData(destinationChainId, depositNonce)
+	//	if err != nil {
+	//		return utils.DepositRecord{}, fmt.Errorf("generateBridgeDepositRecordsData error %v", err)
+	//	}
+	//	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
+	//	if !strings.HasPrefix(from, "0x") {
+	//		fromAddress, err := address.Base58ToAddress(from)
+	//		if err != nil {
+	//			return utils.DepositRecord{}, err
+	//		}
+	//		from = fromAddress.Hex()
+	//	}
+	//	if !strings.HasPrefix(to, "0x") {
+	//		toAddress, err := address.Base58ToAddress(to)
+	//		if err != nil {
+	//			return utils.DepositRecord{}, err
+	//		}
+	//		to = toAddress.Hex()
+	//	}
+	//	ethCallBody := fmt.Sprintf(`{
+	//	"jsonrpc": "2.0",
+	//	"method": "eth_call",
+	//	"params": [{
+	//		"from": "%s",
+	//		"to": "%s",
+	//		"gas": "0x0",
+	//		"gasPrice": "0x0",
+	//		"value": "0x0",
+	//		"data": "%s"
+	//	}, "latest"],
+	//	"id": %d
+	//}`, from, to, requestData, utils.RandInt(100, 10000))
+	//	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
+	//	req.Header.Add("accept", "application/json")
+	//	res, _ := http.DefaultClient.Do(req)
+	//	defer res.Body.Close()
+	//	body, _ := io.ReadAll(res.Body)
+	//	var jsonRpcResponse JsonRpcResponse
+	//	err = json.Unmarshal(body, &jsonRpcResponse)
+	//	if err != nil {
+	//		return utils.DepositRecord{}, errors.New("eth call failed")
+	//	}
+	//	return utils.ParseBridgeDepositRecordData(hexutils.HexToBytes("197649b0" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
+
+	///
 	return out, err
 
 }
