@@ -19,7 +19,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
     mapping(bytes32 => address) public resourceIdToContractAddress; // resourceID => 业务合约地址(tantin address)
     mapping(address => bytes32) public contractAddressToResourceID; // 业务合约地址(tantin address) => resourceID
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
-    mapping(uint256 => mapping(uint256 => DepositRecord)) public depositRecords; // depositNonce => (destinationChainId => Deposit Record)
+    mapping(uint256 => mapping(uint256 => DepositRecord)) public depositRecords; // destinationChainId  => ( depositNonce => Deposit Record)
 
     constructor() {
         _grantRole(ADMIN_ROLE, msg.sender);
@@ -156,7 +156,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
     }
 
     // 由resourceId获取token信息
-    function getToeknInfoByResourceId(
+    function getTokenInfoByResourceId(
         bytes32 resourceID
     ) public view returns (uint256, address, bool) {
         return (

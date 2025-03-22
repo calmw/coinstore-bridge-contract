@@ -7,11 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
-	"github.com/fbsobreira/gotron-sdk/pkg/client"
-	"github.com/fbsobreira/gotron-sdk/pkg/client/transaction"
-	"github.com/fbsobreira/gotron-sdk/pkg/common"
-	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
-	"google.golang.org/grpc"
+	"github.com/status-im/keycard-go/hexutils"
 	"io"
 	"net/http"
 	"strings"
@@ -124,22 +120,61 @@ type JsonRpcResponse struct {
 	Result  string `json:"result"`
 }
 
-func GetDepositRecord(from, to, data string) ([]EventData, error) {
-	var result []EventData
-	//var err error
+func GetDepositRecord(from, to, data string) (utils.DepositRecord, error) {
 	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
-	fmt.Println(url)
 	if !strings.HasPrefix(from, "0x") {
 		fromAddress, err := address.Base58ToAddress(from)
 		if err != nil {
-			return nil, err
+			return utils.DepositRecord{}, err
 		}
 		from = fromAddress.Hex()
 	}
 	if !strings.HasPrefix(to, "0x") {
 		toAddress, err := address.Base58ToAddress(to)
 		if err != nil {
-			return nil, err
+			return utils.DepositRecord{}, err
+		}
+		to = toAddress.Hex()
+	}
+	ethCallBody := fmt.Sprintf(`{
+	"jsonrpc": "2.0",
+	"method": "eth_call",
+	"params": [{
+		"from": "%s",
+		"to": "%s",
+		"gas": "0x0",
+		"gasPrice": "0x0",
+		"value": "0x0",
+		"data": "%s"
+	}, "latest"],
+	"id": %d
+}`, from, to, data, utils.RandInt(100, 10000))
+	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
+	req.Header.Add("accept", "application/json")
+	res, _ := http.DefaultClient.Do(req)
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
+	var jsonRpcResponse JsonRpcResponse
+	err := json.Unmarshal(body, &jsonRpcResponse)
+	if err != nil {
+		return utils.DepositRecord{}, errors.New("eth call failed")
+	}
+	return utils.ParseBridgeDepositRecordData(hexutils.HexToBytes("197649b0" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
+}
+
+func GetTokenInfoByResourceId(from, to, data string) (utils.DepositRecord, error) {
+	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
+	if !strings.HasPrefix(from, "0x") {
+		fromAddress, err := address.Base58ToAddress(from)
+		if err != nil {
+			return utils.DepositRecord{}, err
+		}
+		from = fromAddress.Hex()
+	}
+	if !strings.HasPrefix(to, "0x") {
+		toAddress, err := address.Base58ToAddress(to)
+		if err != nil {
+			return utils.DepositRecord{}, err
 		}
 		to = toAddress.Hex()
 	}
@@ -165,26 +200,7 @@ func GetDepositRecord(from, to, data string) ([]EventData, error) {
 	var jsonRpcResponse JsonRpcResponse
 	err := json.Unmarshal(body, &jsonRpcResponse)
 	if err != nil {
-		return nil, errors.New("eth call failed")
+		return utils.DepositRecord{}, errors.New("eth call failed")
 	}
-	fmt.Println(string(body))
-
-	return result, nil
-}
-
-func GetDepositRecords(cli *client.GrpcClient, ownerAddress, contractAddress, destinationChainId, depositNonce string, senderKs *keystore.KeyStore, senderAcct *keystore.Account) (string, error) {
-	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"uint256\":\"%s\"}]", destinationChainId, depositNonce)
-	err := cli.Start(grpc.WithInsecure())
-	if err != nil {
-		return "", err
-	}
-	tx, err := cli.TriggerContract(ownerAddress, contractAddress, "depositRecords(uint256,uint256)", triggerData, 300000000, 0, "", 0)
-	if err != nil {
-		return "", err
-	}
-	ctrlr := transaction.NewController(cli, senderKs, senderAcct, tx.Transaction)
-	if err = ctrlr.ExecuteTransaction(); err != nil {
-		return "", err
-	}
-	return common.BytesToHexString(tx.GetTxid()), nil
+	return utils.ParseBridgeDepositRecordData(hexutils.HexToBytes("197649b0" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }

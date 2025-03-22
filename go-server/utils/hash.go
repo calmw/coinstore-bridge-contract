@@ -207,6 +207,166 @@ func GenerateBridgeDepositRecordsData(destinationChainId, depositNonce *big.Int)
 	}
 
 	// 打印出Inputs.Pack的结果
-	//fmt.Printf("Inputs.Pack: 0x%x\n", AbiPacked)
-	return fmt.Sprintf("0x%x", AbiPacked), nil
+	fmt.Printf("Inputs.Pack: 0x%x\n", AbiPacked[:4])
+	fmt.Println(AbiPacked[:4])
+	return fmt.Sprintf("%x", AbiPacked), nil
+}
+
+func GenerateBridgeGetTokenInfoByResourceId(resourceID [32]byte) (string, error) {
+	contractABI := `[
+    {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "resourceID",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getToeknInfoByResourceId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+  ]`
+
+	// 解析合约的ABI
+	parsedABI, err := abi.JSON(strings.NewReader(contractABI))
+	if err != nil {
+		panic(err)
+	}
+
+	// 创建一个方法对象，指向我们想要调用的合约函数
+	AbiPacked, err := parsedABI.Pack("depositRecords", destinationChainId, depositNonce)
+	if err != nil {
+		return "", err
+	}
+
+	// 打印出Inputs.Pack的结果
+	fmt.Printf("Inputs.Pack: 0x%x\n", AbiPacked[:4])
+	fmt.Println(AbiPacked[:4])
+	return fmt.Sprintf("%x", AbiPacked), nil
+}
+
+type DepositRecord struct {
+	DestinationChainId *big.Int
+	Sender             common.Address
+	ResourceID         [32]byte
+	Ctime              *big.Int
+	Data               []byte
+}
+
+func ParseBridgeDepositRecordData(inputData []byte) (DepositRecord, error) {
+	contractABI := `[
+    {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "depositRecords",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "destinationChainId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "resourceID",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ctime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+  ]`
+
+	// 解析合约的ABI
+	parsedABI, err := abi.JSON(strings.NewReader(contractABI))
+	if err != nil {
+		panic(err)
+	}
+	// 解析输入数据
+	method, err := parsedABI.MethodById(inputData)
+	if err != nil {
+		fmt.Println("Error parsing input data:", err)
+		return DepositRecord{}, err
+	}
+
+	// 获取函数参数
+	outputs := make([]interface{}, len(method.Outputs))
+	if outputs, err = method.Outputs.Unpack(inputData[4:]); err != nil {
+		fmt.Println("Error unpacking parameters:", err)
+		return DepositRecord{}, err
+	}
+
+	// 打印参数
+	fmt.Println("Method name:", method.Name)
+	fmt.Println("outputs:", outputs)
+	destinationChainId, ok := outputs[0].(*big.Int)
+	if !ok {
+		return DepositRecord{}, fmt.Errorf("invalid destinationChainId type")
+	}
+	resourceID, ok := outputs[2].([32]byte)
+	if !ok {
+		return DepositRecord{}, fmt.Errorf("invalid destinationChainId type")
+	}
+	sender, ok := outputs[1].(common.Address)
+	if !ok {
+		return DepositRecord{}, fmt.Errorf("invalid destinationChainId type")
+	}
+	ctime, ok := outputs[3].(*big.Int)
+	if !ok {
+		return DepositRecord{}, fmt.Errorf("invalid destinationChainId type")
+	}
+	data, ok := outputs[4].([]byte)
+	if !ok {
+		return DepositRecord{}, fmt.Errorf("invalid destinationChainId type")
+	}
+	res := DepositRecord{
+		DestinationChainId: destinationChainId,
+		Sender:             sender,
+		ResourceID:         resourceID,
+		Ctime:              ctime,
+		Data:               data,
+	}
+	return res, err
 }

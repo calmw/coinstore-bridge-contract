@@ -7,7 +7,6 @@ import (
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
 	"coinstore/bridge/msg"
-	"coinstore/contract"
 	"coinstore/db"
 	"coinstore/model"
 	"coinstore/utils"
@@ -15,7 +14,9 @@ import (
 	"fmt"
 	log "github.com/calmw/clog"
 	"github.com/shopspring/decimal"
+	"github.com/status-im/keycard-go/hexutils"
 	"math/big"
+	"strings"
 	"time"
 )
 
@@ -125,18 +126,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	}
 
 	for _, log := range data {
-		//var m msg.Message
-		//destId := msg.ChainId(log.Topics[1].Big().Uint64())
-		//rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
-		//nonce := msg.Nonce(log.Topics[3].Big().Uint64())
-
-		depositRecords, err := GetDepositRecords(l.conn.ClientTron(), contract.OwnerAccount, l.cfg.BridgeContractAddress, log.DestinationChainId, log.DepositNonce, l.conn.keyStore, l.conn.keyAccount)
-		fmt.Println(depositRecords, err)
-		//records, err := l.bridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
-		//if err != nil {
-		//	return err
-		//}
-
+		var m msg.Message
 		l.log.Debug("get events:")
 		l.log.Debug("ResourceID", log.ResourceID)
 		l.log.Debug("DestinationChainId", log.DestinationChainId)
@@ -154,45 +144,47 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		if !success || depositNonce == nil {
 			return errors.New("转换失败")
 		}
-		fmt.Println("转换失败", log.DestinationChainId, log.DepositNonce)
-		fmt.Println("转换失败", destinationChainId, depositNonce)
 		recordsData, err := utils.GenerateBridgeDepositRecordsData(destinationChainId, depositNonce)
-		fmt.Println(recordsData, err)
-		record, err2 := GetDepositRecord(binding.OwnerAccount, l.cfg.BridgeContractAddress, recordsData)
-
-		fmt.Println(record, err2)
-
+		if err != nil {
+			return fmt.Errorf("generateBridgeDepositRecordsData error %v", err)
+		}
+		record, err := GetDepositRecord(binding.OwnerAccount, l.cfg.BridgeContractAddress, recordsData)
+		if err != nil {
+			return fmt.Errorf("getDepositRecord error %v", err)
+		}
 		m = msg.NewGenericTransfer(
 			msg.ChainId(l.cfg.ChainId),
-			destId,
-			nonce,
-			rId,
-			records.Data[:],
+			msg.ChainId(destinationChainId.Int64()),
+			msg.Nonce(depositNonce.Int64()),
+			msg.ResourceId(hexutils.HexToBytes(log.ResourceID)),
+			hexutils.HexToBytes(log.Data),
 		)
 
 		//// 获取目标链的信息
-		dl, ok := ethereum.Listeners[int(records.DestinationChainId.Int64())]
+		dl, ok := ethereum.Listeners[int(destinationChainId.Int64())]
 		if !ok {
-			l.log.Error("destination listener not found", "chainId", records.DestinationChainId)
-			return errors.New(fmt.Sprintf("destination listener not found, chainId %d", records.DestinationChainId))
+			l.log.Error("destination listener not found", "chainId", destinationChainId)
+			return errors.New(fmt.Sprintf("destination listener not found, chainId %d", destinationChainId))
 		}
-		_, t, _, err := dl.BridgeContract.GetToeknInfoByResourceId(nil, records.ResourceID)
+		_, t, _, err := dl.BridgeContract.GetToeknInfoByResourceId(nil, msg.ResourceId(hexutils.HexToBytes(log.ResourceID)))
 		if err != nil {
-			l.log.Error("destination token info not found", "chainId", records.DestinationChainId)
+			l.log.Error("destination token info not found", "chainId", destinationChainId)
 		}
-		//_, s, _, err := l.bridgeContract.GetToeknInfoByResourceId(nil, records.ResourceID)
+		fmt.Println("~~~~~~~~~t  ", t.String())
+		fmt.Println("~~~~~~~~~t  ", m)
+		//_, s, _, err := l.bridgeContract.GetTokenInfoByResourceId(nil, records.ResourceID)
 		//if err != nil {
 		//	l.log.Error("source token info not found", "chainId", records.DestinationChainId)
 		//}
 		//amount, caller, receiver, err := utils.ParseBridgeData(records.Data)
-		//// 保存到数据库
-		//model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", records.ResourceID), caller, receiver, strings.ToLower(s.String()), strings.ToLower(t.String()), log.TxHash.String(), time.Unix(records.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
-		//
-		//err = l.Router.Send(m)
-		//if err != nil {
-		//	l.log.Error("subscription error: failed to route message", "err", err)
-		//	return errors.New(fmt.Sprintf("subscription error: failed to route message,err %v", err))
-		//}
+		// 保存到数据库
+		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, strings.ToLower(s.String()), strings.ToLower(t.String()), log.TxHash, time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
+
+		err = l.Router.Send(m)
+		if err != nil {
+			l.log.Error("subscription error: failed to route message", "err", err)
+			return errors.New(fmt.Sprintf("subscription error: failed to route message,err %v", err))
+		}
 	}
 
 	return nil
