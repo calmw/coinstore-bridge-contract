@@ -7,6 +7,7 @@ import (
 	"errors"
 	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"math/big"
 	"time"
 )
@@ -66,7 +67,11 @@ func IDAndNonce(srcId msg.ChainId, nonce msg.Nonce) *big.Int {
 }
 
 func (w *Writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
-	hasVoted, err := w.voteContract.HasVotedOnProposal(IDAndNonce(srcId, nonce), dataHash, w.conn.Opts().From)
+	from, err := address.Base58ToAddress(w.Cfg.From)
+	if err != nil {
+		panic(err)
+	}
+	hasVoted, err := w.voteContract.HasVotedOnProposal(IDAndNonce(srcId, nonce), dataHash, common.HexToAddress(from.Hex()))
 	if err != nil {
 		w.log.Error("Failed to check proposal existence", "err", err)
 		return false
@@ -156,14 +161,14 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 		case <-w.stop:
 			return
 		default:
-			err := w.conn.LockAndUpdateOpts()
-			if err != nil {
-				w.log.Error("Failed to update tx opts", "err", err)
-				continue
-			}
+			//err := w.conn.LockAndUpdateOpts()
+			//if err != nil {
+			//	w.log.Error("Failed to update tx opts", "err", err)
+			//	continue
+			//}
 
-			gasLimit := w.conn.Opts().GasLimit
-			gasPrice := w.conn.Opts().GasPrice
+			//gasLimit := w.conn.Opts().GasLimit
+			//gasPrice := w.conn.Opts().GasPrice
 
 			txHash, err := w.voteContract.VoteProposal(
 				m.Source.Big(),
@@ -187,7 +192,7 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 				w.log.Debug("Nonce too low, will retry")
 				time.Sleep(TxRetryInterval)
 			} else {
-				w.log.Warn("Voting failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce, "gasLimit", gasLimit, "gasPrice", gasPrice, "err", err)
+				w.log.Warn("Voting failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce, "err", err)
 				time.Sleep(TxRetryInterval)
 			}
 
