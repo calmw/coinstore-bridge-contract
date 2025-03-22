@@ -132,10 +132,8 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		l.log.Debug("DestinationChainId", logE.DestinationChainId)
 		//l.log.Debug("Sender", records.Sender)
 		l.log.Debug("Data", logE.Data)
-		//var depositNonce big.Int
 		var bigIntD big.Int
 		var bigIntN big.Int
-		//var success bool
 		destinationChainId, success := bigIntD.SetString(logE.DestinationChainId, 10)
 		if !success || destinationChainId == nil {
 			return errors.New("转换失败")
