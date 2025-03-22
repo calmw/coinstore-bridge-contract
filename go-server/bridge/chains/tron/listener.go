@@ -143,11 +143,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		if !success || depositNonce == nil {
 			return errors.New("转换失败")
 		}
-		recordsData, err := utils.GenerateBridgeDepositRecordsData(destinationChainId, depositNonce)
-		if err != nil {
-			return fmt.Errorf("generateBridgeDepositRecordsData error %v", err)
-		}
-		record, err := event.GetDepositRecord(binding.OwnerAccount, l.Cfg.BridgeContractAddress, recordsData)
+		record, err := event.GetDepositRecord(binding.OwnerAccount, l.Cfg.BridgeContractAddress, destinationChainId, depositNonce)
 		if err != nil {
 			return fmt.Errorf("getDepositRecord error %v", err)
 		}
@@ -169,11 +165,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		if err != nil {
 			l.log.Error("destination token info not found", "chainId", destinationChainId)
 		}
-		requestData, err := utils.GenerateBridgeGetTokenInfoByResourceId(record.ResourceID)
-		if err != nil {
-			return err
-		}
-		tokenInfo, err := event.ResourceIdToTokenInfo(binding.OwnerAccount, l.Cfg.BridgeContractAddress, requestData)
+		tokenInfo, err := event.ResourceIdToTokenInfo(binding.OwnerAccount, l.Cfg.BridgeContractAddress, record.ResourceID)
 		if err != nil {
 			return err
 		}

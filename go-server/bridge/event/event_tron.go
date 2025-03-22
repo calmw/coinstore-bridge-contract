@@ -9,6 +9,7 @@ import (
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/status-im/keycard-go/hexutils"
 	"io"
+	"math/big"
 	"net/http"
 	"strings"
 )
@@ -120,7 +121,11 @@ type JsonRpcResponse struct {
 	Result  string `json:"result"`
 }
 
-func GetDepositRecord(from, to, data string) (utils.DepositRecord, error) {
+func GetDepositRecord(from, to string, destinationChainId, depositNonce *big.Int) (utils.DepositRecord, error) {
+	requestData, err := utils.GenerateBridgeDepositRecordsData(destinationChainId, depositNonce)
+	if err != nil {
+		return utils.DepositRecord{}, fmt.Errorf("generateBridgeDepositRecordsData error %v", err)
+	}
 	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
 	if !strings.HasPrefix(from, "0x") {
 		fromAddress, err := address.Base58ToAddress(from)
@@ -148,21 +153,25 @@ func GetDepositRecord(from, to, data string) (utils.DepositRecord, error) {
 		"data": "%s"
 	}, "latest"],
 	"id": %d
-}`, from, to, data, utils.RandInt(100, 10000))
+}`, from, to, requestData, utils.RandInt(100, 10000))
 	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
 	req.Header.Add("accept", "application/json")
 	res, _ := http.DefaultClient.Do(req)
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
 	var jsonRpcResponse JsonRpcResponse
-	err := json.Unmarshal(body, &jsonRpcResponse)
+	err = json.Unmarshal(body, &jsonRpcResponse)
 	if err != nil {
 		return utils.DepositRecord{}, errors.New("eth call failed")
 	}
 	return utils.ParseBridgeDepositRecordData(hexutils.HexToBytes("197649b0" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }
 
-func ResourceIdToTokenInfo(from, to, data string) (utils.TokenInfo, error) {
+func ResourceIdToTokenInfo(from, to string, requestId [32]byte) (utils.TokenInfo, error) {
+	requestData, err := utils.GenerateBridgeGetTokenInfoByResourceId(requestId)
+	if err != nil {
+		return utils.TokenInfo{}, err
+	}
 	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
 	if !strings.HasPrefix(from, "0x") {
 		fromAddress, err := address.Base58ToAddress(from)
@@ -190,15 +199,14 @@ func ResourceIdToTokenInfo(from, to, data string) (utils.TokenInfo, error) {
 		"data": "%s"
 	}, "latest"],
 	"id": %d
-}`, from, to, data, utils.RandInt(100, 10000))
-
+}`, from, to, requestData, utils.RandInt(100, 10000))
 	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
 	req.Header.Add("accept", "application/json")
 	res, _ := http.DefaultClient.Do(req)
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
 	var jsonRpcResponse JsonRpcResponse
-	err := json.Unmarshal(body, &jsonRpcResponse)
+	err = json.Unmarshal(body, &jsonRpcResponse)
 	if err != nil {
 		return utils.TokenInfo{}, errors.New("eth call failed")
 	}

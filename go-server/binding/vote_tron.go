@@ -1,21 +1,30 @@
 package binding
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/fbsobreira/gotron-sdk/pkg/client"
+	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
 	"math/big"
 )
 
 type VoteTron struct {
-	Address string
+	Address    string
+	keyStore   *keystore.KeyStore
+	keyAccount *keystore.Account
+	cli        *client.GrpcClient
 }
 
-func NewVoteTron(address string) (*VoteTron, error) {
-	return &VoteTron{Address: address}, nil
+func NewVoteTron(address string, keyStore *keystore.KeyStore, keyAccount *keystore.Account, cli *client.GrpcClient) (*VoteTron, error) {
+	return &VoteTron{
+		Address:    address,
+		keyStore:   keyStore,
+		keyAccount: keyAccount,
+		cli:        cli,
+	}, nil
 }
 
-func (v *VoteTron) GetProposal(opts *bind.CallOpts, originChainID *big.Int, depositNonce *big.Int, dataHash [32]byte) (IVoteProposal, error) {
+func (v *VoteTron) GetProposal(originChainID *big.Int, depositNonce *big.Int, dataHash [32]byte) (IVoteProposal, error) {
 	var out IVoteProposal
 	var err error
 
@@ -23,20 +32,20 @@ func (v *VoteTron) GetProposal(opts *bind.CallOpts, originChainID *big.Int, depo
 
 }
 
-func (v *VoteTron) HasVotedOnProposal(opts *bind.CallOpts, arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error) {
+func (v *VoteTron) HasVotedOnProposal(arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error) {
 	var out bool
 	var err error
 
 	return out, err
 }
 
-func (v *VoteTron) VoteProposal(opts *bind.TransactOpts, originChainId *big.Int, originDepositNonce *big.Int, resourceId [32]byte, dataHash [32]byte) (*types.Transaction, error) {
+func (v *VoteTron) VoteProposal(originChainId *big.Int, originDepositNonce *big.Int, resourceId [32]byte, dataHash [32]byte) (*types.Transaction, error) {
 	var res types.Transaction
 
 	return &res, nil
 }
 
-func (v *VoteTron) ExecuteProposal(opts *bind.TransactOpts, originChainId *big.Int, originDepositNonce *big.Int, data []byte, resourceId [32]byte) (*types.Transaction, error) {
+func (v *VoteTron) ExecuteProposal(originChainId *big.Int, originDepositNonce *big.Int, data []byte, resourceId [32]byte) (*types.Transaction, error) {
 	var res types.Transaction
 
 	return &res, nil
