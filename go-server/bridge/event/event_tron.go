@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-type EventLog struct {
+type EvtLog struct {
 	Data []struct {
 		BlockNumber           int    `json:"block_number"`
 		BlockTimestamp        int64  `json:"block_timestamp"`
@@ -58,7 +58,7 @@ type EventLog struct {
 	} `json:"meta"`
 }
 
-type EventData struct {
+type EvtData struct {
 	Data               string `json:"data"`
 	TxHash             string `json:"tx_hash"`
 	ResourceID         string `json:"resourceID"`
@@ -80,22 +80,22 @@ type Param struct {
 	Topics    []string `json:"topics"`
 }
 
-func GetEventData(number int64) ([]EventData, error) {
-	var result []EventData
+func GetEventData(number int64) ([]EvtData, error) {
+	var result []EvtData
 	url := fmt.Sprintf("%s/v1/blocks/%d/events", config.TronApiHost, number)
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Add("accept", "application/json")
 	res, _ := http.DefaultClient.Do(req)
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
-	var eventLog EventLog
+	var eventLog EvtLog
 	err := json.Unmarshal(body, &eventLog)
 	if err != nil || !eventLog.Success {
 		return nil, errors.New("failed to parse event log")
 	}
 	for _, d := range eventLog.Data {
 		if d.EventName == "Deposit" {
-			result = append(result, EventData{
+			result = append(result, EvtData{
 				Data:               d.Result.Data,
 				TxHash:             d.TransactionID,
 				ResourceID:         d.Result.ResourceID,

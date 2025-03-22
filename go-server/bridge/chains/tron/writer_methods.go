@@ -26,7 +26,7 @@ var ErrFatalTx = errors.New("submission of transaction failed")
 var ErrFatalQuery = errors.New("query of chain state failed")
 
 func (w *Writer) proposalIsComplete(m msg.Message, dataHash [32]byte) bool {
-	prop, err := w.voteContract.GetProposal(nil, m.Source.Big(), m.DepositNonce.Big(), dataHash)
+	prop, err := w.voteContract.GetProposal(m.Source.Big(), m.DepositNonce.Big(), dataHash)
 	if err != nil {
 		w.log.Error("Failed to check proposal existence", "err", err)
 		return false
@@ -41,7 +41,7 @@ func (w *Writer) proposalIsComplete(m msg.Message, dataHash [32]byte) bool {
 }
 
 func (w *Writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
-	prop, err := w.voteContract.GetProposal(w.conn.CallOpts(), srcId.Big(), nonce.Big(), dataHash)
+	prop, err := w.voteContract.GetProposal(srcId.Big(), nonce.Big(), dataHash)
 	if err != nil {
 		w.log.Error("Failed to check proposal existence", "err", err)
 		return false
@@ -50,7 +50,7 @@ func (w *Writer) proposalIsFinalized(srcId msg.ChainId, nonce msg.Nonce, dataHas
 }
 
 func (w *Writer) proposalIsPassed(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
-	prop, err := w.voteContract.GetProposal(w.conn.CallOpts(), srcId.Big(), nonce.Big(), dataHash)
+	prop, err := w.voteContract.GetProposal(srcId.Big(), nonce.Big(), dataHash)
 	if err != nil {
 		w.log.Error("Failed to check proposal existence", "err", err)
 		return false
@@ -66,7 +66,7 @@ func IDAndNonce(srcId msg.ChainId, nonce msg.Nonce) *big.Int {
 }
 
 func (w *Writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
-	hasVoted, err := w.voteContract.HasVotedOnProposal(w.conn.CallOpts(), IDAndNonce(srcId, nonce), dataHash, w.conn.Opts().From)
+	hasVoted, err := w.voteContract.HasVotedOnProposal(IDAndNonce(srcId, nonce), dataHash, w.conn.Opts().From)
 	if err != nil {
 		w.log.Error("Failed to check proposal existence", "err", err)
 		return false
@@ -140,30 +140,6 @@ func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 					break
 				}
 			}
-
-			//query := buildQuery(w.Cfg.VoteContractAddress, event.ProposalEvent, latestBlock, latestBlock)
-			//evts, err := w.conn.Client().FilterLogs(context.Background(), query)
-			//query := buildQuery(common.HexToAddress(w.Cfg.VoteContractAddress), event.ProposalEvent, latestBlock, latestBlock)
-			//evts, err := w.conn.ClientTron().FilterLogs(context.Background(), query)
-			//if err != nil {
-			//	w.log.Error("Failed to fetch logs", "err", err)
-			//	return
-			//}
-			//
-			//for _, evt := range evts {
-			//	sourceId := evt.Topics[1].Big().Uint64()
-			//	depositNonce := evt.Topics[2].Big().Uint64()
-			//	status := evt.Topics[3].Big().Uint64()
-			//
-			//	if m.Source == msg.ChainId(sourceId) &&
-			//		m.DepositNonce.Big().Uint64() == depositNonce &&
-			//		event.IsFinalized(uint8(status)) {
-			//		w.ExecuteProposal(m, data, dataHash)
-			//		return
-			//	} else {
-			//		w.log.Trace("Ignoring event", "src", sourceId, "nonce", depositNonce)
-			//	}
-			//}
 			w.log.Trace("No finalization event found in current block", "block", latestBlock, "src", m.Source, "nonce", m.DepositNonce)
 			latestBlock = latestBlock.Add(latestBlock, big.NewInt(1))
 		}
@@ -190,7 +166,6 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 			gasPrice := w.conn.Opts().GasPrice
 
 			tx, err := w.voteContract.VoteProposal(
-				w.conn.Opts(),
 				m.Source.Big(),
 				m.DepositNonce.Big(),
 				m.ResourceId,
@@ -256,7 +231,6 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 			gasPrice := w.conn.Opts().GasPrice
 
 			tx, err := w.voteContract.ExecuteProposal(
-				w.conn.Opts(),
 				m.Source.Big(),
 				m.DepositNonce.Big(),
 				data,
