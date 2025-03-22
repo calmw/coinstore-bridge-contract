@@ -6,6 +6,7 @@ import (
 	"coinstore/bridge/chains/ethereum"
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
+	"coinstore/bridge/event"
 	"coinstore/bridge/msg"
 	"coinstore/db"
 	"coinstore/model"
@@ -121,7 +122,7 @@ func (l *Listener) pollBlocks() error {
 func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	l.log.Debug("Querying block for deposit events", "block", latestBlock)
 	//latestBlock = big.NewInt(55444496)
-	data, err := GetEventData(latestBlock.Int64())
+	data, err := event.GetEventData(latestBlock.Int64())
 	if err != nil {
 		return err
 	}
@@ -146,7 +147,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		if err != nil {
 			return fmt.Errorf("generateBridgeDepositRecordsData error %v", err)
 		}
-		record, err := GetDepositRecord(binding.OwnerAccount, l.Cfg.BridgeContractAddress, recordsData)
+		record, err := event.GetDepositRecord(binding.OwnerAccount, l.Cfg.BridgeContractAddress, recordsData)
 		if err != nil {
 			return fmt.Errorf("getDepositRecord error %v", err)
 		}
@@ -172,7 +173,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		if err != nil {
 			return err
 		}
-		tokenInfo, err := ResourceIdToTokenInfo(binding.OwnerAccount, l.Cfg.BridgeContractAddress, requestData)
+		tokenInfo, err := event.ResourceIdToTokenInfo(binding.OwnerAccount, l.Cfg.BridgeContractAddress, requestData)
 		if err != nil {
 			return err
 		}

@@ -44,6 +44,7 @@ func Run() error {
 				return err
 			}
 		} else if chainConfig.ChainType == config.ChainTypeTron {
+			config.TronCfg = chainConfig
 			newChain, err = tron.InitializeChain(&chainConfig, chainLogger, sysErr)
 			if err != nil {
 				logger.Error("initialize chain", "error", err)

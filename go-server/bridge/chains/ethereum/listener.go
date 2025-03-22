@@ -3,7 +3,6 @@ package ethereum
 import (
 	"coinstore/binding"
 	"coinstore/bridge/chains"
-	"coinstore/bridge/chains/tron"
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
 	"coinstore/bridge/event"
@@ -173,12 +172,12 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			}
 			toAddr = strings.ToLower(t.String())
 		} else if destChainType == config.ChainTypeTron {
-			tl := tron.ListenersTron
+			tCfg := config.TronCfg
 			requestData, err := utils.GenerateBridgeGetTokenInfoByResourceId(record.ResourceID)
 			if err != nil {
 				return err
 			}
-			tokenInfo, err := tron.ResourceIdToTokenInfo(binding.OwnerAccount, tl.Cfg.BridgeContractAddress, requestData)
+			tokenInfo, err := event.ResourceIdToTokenInfo(binding.OwnerAccount, tCfg.BridgeContractAddress, requestData)
 			if err != nil {
 				return err
 			}

@@ -20,6 +20,8 @@ const (
 	TronApiHost                         = "https://nile.trongrid.io"
 )
 
+var TronCfg Config
+
 type Config struct {
 	ChainName string
 	ChainId   int

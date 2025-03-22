@@ -1,4 +1,4 @@
-package tron
+package event
 
 import (
 	"coinstore/bridge/config"
