@@ -203,6 +203,12 @@ func VoteProposal(cli *client.GrpcClient, from, contractAddress string, ks *keys
 	if err = ctrlr.ExecuteTransaction(); err != nil {
 		return "", err
 	}
+	tx.GetLogs()
+	fmt.Println("00000)))))))((((((((8")
+	fmt.Println(tx.GetLogs())
+	fmt.Println(tx)
+	fmt.Println(tx.Txid)
+	fmt.Println(tx.String())
 	return hexutils.BytesToHex(tx.GetTxid()), nil
 }
 

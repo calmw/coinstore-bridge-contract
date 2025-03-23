@@ -3,12 +3,14 @@ package event
 import (
 	"coinstore/bridge/config"
 	"coinstore/bridge/msg"
+	"coinstore/utils"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type EvtLog struct {
@@ -102,12 +104,12 @@ type ProposalVoteEvent struct {
 }
 
 type ProposalEventData struct {
-	TxHash             string `json:"tx_hash"`
-	ResourceID         string `json:"resourceID"`
-	OriginDepositNonce string `json:"originDepositNonce"`
-	OriginChainID      string `json:"originChainID"`
-	DataHash           string `json:"dataHash"`
-	ProposalStatus     string `json:"proposalStatus"`
+	TxHash             string   `json:"tx_hash"`
+	ResourceID         [32]byte `json:"resourceID"`
+	OriginDepositNonce uint64   `json:"originDepositNonce"`
+	OriginChainID      int64    `json:"originChainID"`
+	DataHash           [32]byte `json:"dataHash"`
+	ProposalStatus     int64    `json:"proposalStatus"`
 }
 
 type JSONRPCRequest struct {
@@ -213,4 +215,56 @@ func GetProposalEvent(destChainId msg.ChainId, depositNonce msg.Nonce, number in
 		}
 	}
 	return result, nil
+}
+
+type EthTxData struct {
+	Jsonrpc string `json:"jsonrpc"`
+	ID      int    `json:"id"`
+	Result  struct {
+		BlockHash        string      `json:"blockHash"`
+		BlockNumber      string      `json:"blockNumber"`
+		From             string      `json:"from"`
+		Gas              string      `json:"gas"`
+		GasPrice         string      `json:"gasPrice"`
+		Hash             string      `json:"hash"`
+		Input            string      `json:"input"`
+		Nonce            interface{} `json:"nonce"`
+		R                string      `json:"r"`
+		S                string      `json:"s"`
+		To               string      `json:"to"`
+		TransactionIndex string      `json:"transactionIndex"`
+		Type             string      `json:"type"`
+		V                string      `json:"v"`
+		Value            string      `json:"value"`
+	} `json:"result"`
+}
+
+func EthGetTransactionByHash(txHash string) (int64, error) {
+	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
+	ethCallBody := fmt.Sprintf(`{
+	"jsonrpc": "2.0",
+	"method": "eth_getTransactionByHash",
+	"params": ["%s"],
+	"id": %d
+}`, txHash, utils.RandInt(100, 10000))
+	fmt.Println(ethCallBody)
+	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
+	req.Header.Add("accept", "application/json")
+	res, _ := http.DefaultClient.Do(req)
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
+	var ethTxData EthTxData
+	err := json.Unmarshal(body, &ethTxData)
+	if err != nil {
+		return 0, err
+	}
+	fmt.Println(string(body))
+	fmt.Println("==")
+	num, err := strconv.ParseInt(ethTxData.Result.BlockNumber, 10, 64)
+	if err != nil {
+		fmt.Println("转换错误:", err)
+		return 0, err
+	}
+
+	return num, nil
 }

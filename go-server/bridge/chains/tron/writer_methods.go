@@ -119,9 +119,7 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 		w.log.Error("Unable to fetch latest block", "err", err)
 		return false
 	}
-
 	go w.watchThenExecute(m, data, dataHash, latestBlock)
-
 	w.voteProposal(m, dataHash)
 
 	return true
@@ -130,7 +128,7 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte, latestBlock *big.Int) {
 	w.log.Info("Watching for finalization event", "src", m.Source, "nonce", m.DepositNonce)
 
-	for i := 0; i < ExecuteBlockWatchLimit; i++ {
+	for i := 0; i < ExecuteBlockWatchLimit*3/2; i++ {
 		select {
 		case <-w.stop:
 			return
@@ -151,27 +149,31 @@ func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 					break
 				}
 			}
-			fmt.Println("===== 4")
+
+			if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
+				w.ExecuteProposal(m, data, dataHash)
+			}
+
 			proposalEvent, err := event.GetProposalEvent(m.Destination, m.DepositNonce, latestBlock.Int64())
 			fmt.Println("===== 5")
-			fmt.Println(proposalEvent, err)
+			fmt.Println(len(proposalEvent), err, latestBlock.Int64())
 
-			//for _, evt := range evts {
-			//	sourceId := evt.Topics[1].Big().Uint64()
-			//	depositNonce := evt.Topics[2].Big().Uint64()
-			//	status := evt.Topics[3].Big().Uint64()
-			//
-			//	if m.Source == msg.ChainId(sourceId) &&
-			//		m.DepositNonce.Big().Uint64() == depositNonce &&
-			//		event.IsFinalized(uint8(status)) {
-			//		w.ExecuteProposal(m, data, dataHash)
-			//		return
-			//	} else {
-			//		w.log.Trace("Ignoring event", "src", sourceId, "nonce", depositNonce)
-			//	}
-			//}
-			//w.log.Trace("No finalization event found in current block", "block", latestBlock, "src", m.Source, "nonce", m.DepositNonce)
-			//latestBlock = latestBlock.Add(latestBlock, big.NewInt(1))
+			for _, evt := range proposalEvent {
+				sourceId := evt.OriginChainID
+				depositNonce := evt.OriginDepositNonce
+				status := evt.ProposalStatus
+
+				if m.Source == msg.ChainId(sourceId) &&
+					m.DepositNonce.Big().Uint64() == depositNonce &&
+					event.IsFinalized(uint8(status)) {
+					w.ExecuteProposal(m, data, dataHash)
+					return
+				} else {
+					w.log.Trace("Ignoring event", "src", sourceId, "nonce", depositNonce)
+				}
+			}
+			w.log.Trace("No finalization event found in current block", "block", latestBlock, "src", m.Source, "nonce", m.DepositNonce)
+			latestBlock = latestBlock.Add(latestBlock, big.NewInt(1))
 		}
 	}
 	log.Warn("Block watch limit exceeded, skipping execution", "source", m.Source, "dest", m.Destination, "nonce", m.DepositNonce)
