@@ -156,63 +156,38 @@ func GetProposal(from, to string, originChainID *big.Int, depositNonce *big.Int,
 	return ParseVoteGetProposal(hexutils.HexToBytes("5b95771f" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }
 
-func CallBody(from, to string, arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (string, error) {
+func HasVotedOnProposal(from, to string, arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error) {
 	requestData, err := GenerateVoteHasVotedOnProposal(arg0, arg1, arg2)
 	if err != nil {
-		return "", err
+		return false, err
 	}
+	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
 	if !strings.HasPrefix(from, "0x") {
 		fromAddress, err := address.Base58ToAddress(from)
 		if err != nil {
-			return "", err
+			return false, err
 		}
 		from = fromAddress.Hex()
 	}
 	if !strings.HasPrefix(to, "0x") {
 		toAddress, err := address.Base58ToAddress(to)
 		if err != nil {
-			return "", err
+			return false, err
 		}
 		to = toAddress.Hex()
 	}
 	ethCallBody := fmt.Sprintf(`{"jsonrpc":"2.0","method":"eth_call","params":[{"from":"%s","to":"%s","gas":"0x0","gasPrice":"0x0","value":"0x0","data":"%s"},"latest"],"id": %d}`,
 		from, to, requestData, utils.RandInt(100, 10000))
-	fmt.Println(ethCallBody)
-	return ethCallBody, nil
-}
-func HasVotedOnProposal(from, to string, arg0 *big.Int, arg1 [32]byte, arg2 common.Address) (bool, error) {
-	ethCallBody, err := CallBody(from, to, arg0, arg1, arg2)
-	fmt.Println(ethCallBody)
-	fmt.Println(err)
-	//	ethCallBody = `{
-	//	"jsonrpc": "2.0",
-	//	"method": "eth_call",
-	//	"params": [{
-	//		"from": "0x41f4a0d088ef4ec7b0e231cc365f16726ad552e051",
-	//		"to": "0x41f4a0d088ef4ec7b0e231cc365f16726ad552e051",
-	//		"gas": "0x0",
-	//		"gasPrice": "0x0",
-	//		"value": "0x0",
-	//		"data": "0xc70bf0b50000000000000000000000000000000000000000000000000000000000000f02f5ffe0a02a4b931713566e54bfafc450192c48bc69010f471fa6dd2d2639a65b0000000000000000000000003942fda93c573e2ce9e85b0bb00ba98a144f27f6"
-	//	}, "latest"],
-	//	"id": 8400
-	//}`
-	//	fmt.Println(ethCallBody)
-	req, _ := http.NewRequest("POST", "https://nile.trongrid.io/jsonrpc", strings.NewReader(ethCallBody))
+	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
 	req.Header.Add("accept", "application/json")
 	res, _ := http.DefaultClient.Do(req)
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
 	var jsonRpcResponse JsonRpcResponse
-	//err = json.Unmarshal(body, &jsonRpcResponse)
-	//if err != nil {
-	//	return false, errors.New("eth call failed")
-	//}
-	//fmt.Println(jsonRpcResponse.Result)
-	fmt.Println("==")
-	fmt.Println(string(body))
-	fmt.Println("==")
-	fmt.Println(jsonRpcResponse)
+	err = json.Unmarshal(body, &jsonRpcResponse)
+	if err != nil {
+		return false, errors.New("eth call failed")
+	}
 	return ParseVoteHasVotedOnProposal(hexutils.HexToBytes("c70bf0b5" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }
 

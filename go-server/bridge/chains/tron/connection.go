@@ -295,6 +295,8 @@ func (c *Connection) WaitForBlock(targetBlock *big.Int, delay *big.Int) error {
 			return errors.New("connection terminated")
 		default:
 			currBlock, err := c.LatestBlock()
+
+			fmt.Println("===== 11", err)
 			if err != nil {
 				return err
 			}

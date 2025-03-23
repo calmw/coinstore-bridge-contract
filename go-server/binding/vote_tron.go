@@ -3,6 +3,7 @@ package binding
 import (
 	"coinstore/bridge/tron"
 	"coinstore/utils"
+	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/client"
 	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
@@ -29,6 +30,9 @@ func (v *VoteTron) GetProposal(originChainID *big.Int, depositNonce *big.Int, da
 	from, _ := utils.TronToEth(v.Address)
 	to, _ := utils.TronToEth(v.Address)
 	proposal, err := tron.GetProposal(from, to, originChainID, depositNonce, dataHash)
+	fmt.Println("~")
+	fmt.Printf("originChainID:%d,depositNonce:%d dataHash:%x \n", originChainID, depositNonce, dataHash)
+	fmt.Println("~")
 	if err != nil {
 		return IVoteProposal{}, err
 	}
