@@ -274,7 +274,8 @@ func TransferToken() (string, error) {
 func AA() {
 	toAddress, err := address.Base58ToAddress("TPrEMmYc2nz5bHbjs3M2f1gZ9PtWsLzr8A")
 	address.HexToAddress("0xECa9bC828A3005B9a3b909f2cc5c2a54794DE05F")
-	fmt.Println(address.HexToAddress("0x41ECa9bC828A3005B9a3b909f2cc5c2a54794DE05F").String(), "~~~~")
+	//0x4180B27CDE65Fafb1f048405923fD4a624fEa2d1C6
+	fmt.Println(address.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6").String(), "~~~~")
 	fmt.Println(toAddress, err)
 
 	toAddress, err = address.Base58ToAddress("TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf")

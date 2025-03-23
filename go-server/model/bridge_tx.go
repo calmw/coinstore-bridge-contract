@@ -16,6 +16,7 @@ import (
 type BridgeTx struct {
 	Id                      uint64          `gorm:"primaryKey" json:"id"`
 	BridgeData              string          `gorm:"column:bridge_data;type:varchar(1000);comment:'跨链数据'" json:"bridge_data"`
+	BridgeMsg               []byte          `gorm:"column:bridge_msg;comment:'跨链nsg'" json:"bridge_msg"`
 	ResourceId              string          `gorm:"column:resource_id;type:varchar(100);comment:'resource ID'" json:"resource_id"`
 	Hash                    string          `gorm:"column:hash;comment:'唯一索引'" json:"hash"`
 	VoteStatus              int             `gorm:"column:vote_status;default:0;comment:'vote 0失败，1成功'" json:"vote_status"`
@@ -72,7 +73,8 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 			return
 		}
 		bridgeOrder = BridgeTx{
-			BridgeData:              fmt.Sprintf("%x", orderData),
+			BridgeData:              fmt.Sprintf("%x", m.Payload[0].([]byte)),
+			BridgeMsg:               orderData,
 			Hash:                    string(key),
 			Amount:                  amount,
 			ResourceId:              resourceId,

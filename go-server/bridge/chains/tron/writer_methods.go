@@ -5,6 +5,7 @@ import (
 	"coinstore/model"
 	"coinstore/utils"
 	"errors"
+	"fmt"
 	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
@@ -229,6 +230,11 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 		case <-w.stop:
 			return
 		default:
+			fmt.Println("ExecuteProposal ~~~~~~~~~~~")
+			fmt.Println(m.Source.Big(),
+				m.DepositNonce.Big(),
+				m.ResourceId)
+			fmt.Println(fmt.Printf("%x\n", data))
 			txHash, err = w.voteContract.ExecuteProposal(
 				m.Source.Big(),
 				m.DepositNonce.Big(),
