@@ -47,6 +47,8 @@ func (v *VoteTron) Init() {
 	//fmt.Println(txHash, err)
 	//txHash, err := v.GrantBridgeRole("52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f", ChainConfig.BridgeContractAddress)
 	//fmt.Println(txHash, err)
+	txHash, err := v.GrantBridgeRole("e2b7fb3b832174769106daebcfd6d1970523240dda11281102db9363b83b0dc4", OwnerAccount)
+	fmt.Println(txHash, err)
 }
 
 func (v *VoteTron) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) (string, error) {
