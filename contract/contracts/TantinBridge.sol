@@ -189,18 +189,6 @@ contract TantinBridge is AccessControl, ITantinBridge {
         return recoverAddress == sender;
     }
 
-    function checkDepositSignature2(
-        bytes memory signature,
-        address recipient
-    ) public pure returns (address) {
-        bytes32 messageHash = keccak256(abi.encodePacked(recipient));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
-            signature
-        );
-
-        return recoverAddress;
-    }
-
     /**
         @notice 目标链执行到帐操作
         @param data 跨链data, encode(originChainId,originDepositNonce,depositer,recipient,amount,resourceId)
