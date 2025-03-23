@@ -232,6 +232,7 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 
 func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) {
 	fmt.Println("1111111111111111111111111111111111111111111111111111")
+	fmt.Printf("---------------- chainId:%d,nonce:%d,dataHsh:%x\n", m.Source, m.DepositNonce, dataHash)
 	w.muExec.Lock()
 	defer w.muExec.Unlock()
 
