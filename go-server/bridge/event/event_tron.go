@@ -172,6 +172,7 @@ func ParseProposalEvent(originChainId msg.ChainId, originDepositNonce msg.Nonce,
 	fmt.Println("---=====", number)
 	fmt.Println("---=====", string(body))
 	var eventLog ProposalVoteEvent
+	fmt.Println("---=====-------------------------------------------------------------------------------------------------")
 	err := json.Unmarshal(body, &eventLog)
 	if err != nil || !eventLog.Success {
 		return nil, errors.New("failed to parse event log")
@@ -187,16 +188,15 @@ func ParseProposalEvent(originChainId msg.ChainId, originDepositNonce msg.Nonce,
 		}
 		fmt.Println(d.EventName, nonce, int64(originDepositNonce), chainID, int64(originChainId))
 		if (d.EventName == "ProposalEvent") && (nonce == int64(originDepositNonce)) && (chainID == int64(originChainId)) {
-			fmt.Println("---=====-------------------------------------------------------------------------------------------------")
 			fmt.Println(d)
 			fmt.Println(d.Result.DepositNonce)
 			result = append(result, ProposalEventData{
-				TxHash:             d.TransactionID,
-				ResourceID:         d.Result.ResourceID,
-				OriginDepositNonce: d.Result.DepositNonce,
-				OriginChainID:      d.Result.OriginChainID,
-				DataHash:           d.Result.DataHash,
-				ProposalStatus:     d.Result.Status,
+				//TxHash:             d.TransactionID,
+				//ResourceID:         d.Result.ResourceID,
+				//OriginDepositNonce: d.Result.DepositNonce,
+				//OriginChainID:      d.Result.OriginChainID,
+				//DataHash:           d.Result.DataHash,
+				//ProposalStatus:     d.Result.Status,
 			})
 		}
 	}
@@ -205,16 +205,11 @@ func ParseProposalEvent(originChainId msg.ChainId, originDepositNonce msg.Nonce,
 }
 
 func GetProposalEvent(destChainId msg.ChainId, depositNonce msg.Nonce, number int64) ([]ProposalEventData, error) {
-	var result []ProposalEventData
-	for i := number; i < number+50; i++ {
-		event, err := ParseProposalEvent(destChainId, depositNonce, i)
-		if err != nil {
-			continue
-		} else {
-			result = append(result, event...)
-		}
+	event, err := ParseProposalEvent(destChainId, depositNonce, number)
+	if err != nil {
+		return nil, err
 	}
-	return result, nil
+	return event, nil
 }
 
 type EthTxData struct {

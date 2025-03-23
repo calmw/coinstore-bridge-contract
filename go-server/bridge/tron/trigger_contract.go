@@ -3,18 +3,23 @@ package tron
 import (
 	"coinstore/bridge/config"
 	"coinstore/utils"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/fbsobreira/gotron-sdk/pkg/client"
 	"github.com/fbsobreira/gotron-sdk/pkg/client/transaction"
+	tcommon "github.com/fbsobreira/gotron-sdk/pkg/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
+	"github.com/fbsobreira/gotron-sdk/pkg/store"
 	"github.com/status-im/keycard-go/hexutils"
 	"io"
 	"math/big"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -212,6 +217,11 @@ func VoteProposal(cli *client.GrpcClient, from, contractAddress string, ks *keys
 	return hexutils.BytesToHex(tx.GetTxid()), nil
 }
 
+const (
+	AccountName = "my_account"
+	Passphrase  = "account_pwd"
+)
+
 func ExecuteProposal(cli *client.GrpcClient, from, contractAddress string, ks *keystore.KeyStore, ka *keystore.Account, originChainId *big.Int, originDepositNonce *big.Int, data []byte, resourceId [32]byte) (string, error) {
 	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"},{\"bytes32\":\"%s\"}]",
 		originChainId.String(), originDepositNonce.String(), hexutils.BytesToHex(data[:]), hexutils.BytesToHex(resourceId[:]),
@@ -219,7 +229,19 @@ func ExecuteProposal(cli *client.GrpcClient, from, contractAddress string, ks *k
 	fmt.Println("--")
 	fmt.Println(triggerData)
 
-	tx, err := cli.TriggerContract(from, contractAddress, "voteProposal(uint256,uint256,bytes32,bytes32)", triggerData, 300000000, 0, "", 0)
+	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
+	_, _, err := getKeyFromPrivateKey(privateKey, AccountName, Passphrase)
+	//if strings.Contains(err.Error(),"already exists")
+	if err != nil && !strings.Contains(err.Error(), "already exists") {
+		return "", err
+	}
+	// 获得keystore与account
+	ks, ka, err = unlockedKeystore(from, Passphrase)
+	if err != nil {
+		return "", err
+	}
+
+	tx, err := cli.TriggerContract(from, contractAddress, "executeProposal(uint256,uint256,bytes,bytes32)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
@@ -228,4 +250,47 @@ func ExecuteProposal(cli *client.GrpcClient, from, contractAddress string, ks *k
 		return "", err
 	}
 	return hexutils.BytesToHex(tx.GetTxid()), nil
+}
+
+func getKeyFromPrivateKey(privateKey, name, passphrase string) (*keystore.KeyStore, *keystore.Account, error) {
+	privateKey = strings.TrimPrefix(privateKey, "0x")
+
+	if store.DoesNamedAccountExist(name) {
+		return nil, nil, fmt.Errorf("account %s already exists", name)
+	}
+
+	privateKeyBytes, err := hex.DecodeString(privateKey)
+	if err != nil {
+		return nil, nil, err
+	}
+	if len(privateKeyBytes) != tcommon.Secp256k1PrivateKeyBytesLength {
+		return nil, nil, tcommon.ErrBadKeyLength
+	}
+
+	sk, _ := btcec.PrivKeyFromBytes(privateKeyBytes)
+	ks := store.FromAccountName(name)
+	account, err := ks.ImportECDSA(sk.ToECDSA(), passphrase)
+	if err != nil {
+		return nil, nil, err
+	}
+	return store.FromAccountName(name), &account, err
+}
+
+func unlockedKeystore(from, passphrase string) (*keystore.KeyStore, *keystore.Account, error) {
+	sender, err := address.Base58ToAddress(from)
+	if err != nil {
+		return nil, nil, fmt.Errorf("address not valid: %s", from)
+	}
+	ks := store.FromAddress(from)
+	if ks == nil {
+		return nil, nil, fmt.Errorf("could not open local keystore for %s", from)
+	}
+	account, lookupErr := ks.Find(keystore.Account{Address: sender})
+	if lookupErr != nil {
+		return nil, nil, fmt.Errorf("could not find %s in keystore", from)
+	}
+	if unlockError := ks.Unlock(account, passphrase); unlockError != nil {
+		return nil, nil, errors.Unwrap(unlockError)
+	}
+	return ks, &account, nil
 }

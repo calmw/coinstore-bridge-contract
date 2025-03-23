@@ -19,7 +19,7 @@ contract Vote is IVote, AccessControl {
     mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
         public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
-    constructor()  {
+    constructor() {
         _grantRole(ADMIN_ROLE, msg.sender);
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
@@ -259,18 +259,5 @@ contract Vote is IVote, AccessControl {
     ) external view returns (Proposal memory) {
         uint72 nonceAndID = (uint72(depositNonce) << 8) | uint72(originChainID);
         return proposals[nonceAndID][dataHash];
-    }
-
-    // 获取 relayerThreshold
-    function getRelayerThreshold() public view returns (uint256) {
-        return relayerThreshold;
-    }
-
-    /**
-        @notice 检查某地址是否是relayer账户
-        @param relayer地址
-     */
-    function isRelayer(address relayer) external view returns (bool) {
-        return hasRole(RELAYER_ROLE, relayer);
     }
 }

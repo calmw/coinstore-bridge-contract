@@ -1,7 +1,6 @@
 package tron
 
 import (
-	"coinstore/bridge/event"
 	"coinstore/bridge/msg"
 	"coinstore/model"
 	"coinstore/utils"
@@ -11,6 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"math/big"
+	"strings"
 	"time"
 )
 
@@ -103,8 +103,16 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 	metadata := m.Payload[0].([]byte)
 	data := ConstructGenericProposalData(metadata)
 	bridgeAddress, err := address.Base58ToAddress(w.Cfg.BridgeContractAddress)
-	toHash := append(common.HexToAddress(bridgeAddress.Hex()).Bytes(), data...)
+
+	//b :=hexutils.HexToBytes(strings.TrimPrefix(bridgeAddress.Hex(),"0x41"))
+	a := "0x" + strings.TrimPrefix(bridgeAddress.Hex(), "0x41")
+	fmt.Println("^^^^^^^^", bridgeAddress.Hex(), bridgeAddress.String(), w.Cfg.BridgeContractAddress)
+	// 0x52261B63a0395d98cA6453C0631363F7870F368D
+	toHash := append(common.HexToAddress(a).Bytes(), data...)
 	dataHash := utils.Hash(toHash)
+	fmt.Printf("---------------- chainId:%d,nonce:%d,dataHsh:%x\n", m.Source, m.DepositNonce, dataHash)
+	fmt.Printf("---------------- data:%x\n", m.Payload[0].([]byte))
+	fmt.Printf("---------------- data2:%x\n", data)
 	if !w.shouldVote(m, dataHash) {
 		if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
 			w.ExecuteProposal(m, data, dataHash)
@@ -151,27 +159,29 @@ func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 			}
 
 			if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
+				fmt.Println("===== 55555555")
 				w.ExecuteProposal(m, data, dataHash)
+				return
 			}
 
-			proposalEvent, err := event.GetProposalEvent(m.Destination, m.DepositNonce, latestBlock.Int64())
-			fmt.Println("===== 5")
-			fmt.Println(len(proposalEvent), err, latestBlock.Int64())
-
-			for _, evt := range proposalEvent {
-				sourceId := evt.OriginChainID
-				depositNonce := evt.OriginDepositNonce
-				status := evt.ProposalStatus
-
-				if m.Source == msg.ChainId(sourceId) &&
-					m.DepositNonce.Big().Uint64() == depositNonce &&
-					event.IsFinalized(uint8(status)) {
-					w.ExecuteProposal(m, data, dataHash)
-					return
-				} else {
-					w.log.Trace("Ignoring event", "src", sourceId, "nonce", depositNonce)
-				}
-			}
+			//proposalEvent, err := event.GetProposalEvent(m.Destination, m.DepositNonce, latestBlock.Int64())
+			//fmt.Println("===== 5")
+			//fmt.Println(len(proposalEvent), err, latestBlock.Int64())
+			//
+			//for _, evt := range proposalEvent {
+			//	sourceId := evt.OriginChainID
+			//	depositNonce := evt.OriginDepositNonce
+			//	status := evt.ProposalStatus
+			//
+			//	if m.Source == msg.ChainId(sourceId) &&
+			//		m.DepositNonce.Big().Uint64() == depositNonce &&
+			//		event.IsFinalized(uint8(status)) {
+			//		w.ExecuteProposal(m, data, dataHash)
+			//		return
+			//	} else {
+			//		w.log.Trace("Ignoring event", "src", sourceId, "nonce", depositNonce)
+			//	}
+			//}
 			w.log.Trace("No finalization event found in current block", "block", latestBlock, "src", m.Source, "nonce", m.DepositNonce)
 			latestBlock = latestBlock.Add(latestBlock, big.NewInt(1))
 		}
@@ -242,7 +252,6 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 		case <-w.stop:
 			return
 		default:
-			fmt.Println("ExecuteProposal ~~~~~~~~~~~")
 			fmt.Println(m.Source.Big(),
 				m.DepositNonce.Big(),
 				m.ResourceId)
@@ -257,30 +266,26 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 			if err == nil {
 				w.log.Info("Submitted proposal execution", "tx", txHash, "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
 				///
-				for j := 0; j < 5; j++ {
+				for j := 0; j < 20; j++ {
 					if w.proposalIsFinalized(m.Source, m.DepositNonce, dataHash) {
 						status = true
 						txHashRes = txHash
 						receiveAt = time.Now().Format("2006-01-02 15:04:05")
 						w.log.Info("Proposal finalized on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
-						break
+						return
 					}
-					time.Sleep(time.Second * 5)
+					time.Sleep(time.Second * 2)
 				}
 				///
 				return
-			} else if err.Error() == ErrNonceTooLow.Error() || err.Error() == ErrTxUnderpriced.Error() {
-				w.log.Error("Nonce too low, will retry")
-				time.Sleep(TxRetryInterval)
 			} else {
-				w.log.Warn("Execution failed, proposal may already be complete", "err", err)
+				if w.proposalIsFinalized(m.Source, m.DepositNonce, dataHash) {
+					status = true
+					w.log.Info("Proposal finalized on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
+					return
+				}
+				w.log.Warn("Execution failed, proposal may already be complete", "error", err)
 				time.Sleep(TxRetryInterval)
-			}
-
-			if w.proposalIsFinalized(m.Source, m.DepositNonce, dataHash) {
-				status = true
-				w.log.Info("Proposal finalized on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
-				return
 			}
 		}
 	}
