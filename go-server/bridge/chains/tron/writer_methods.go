@@ -111,7 +111,7 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 	toHash := append(common.HexToAddress(a).Bytes(), data...)
 	dataHash := utils.Hash(toHash)
 	fmt.Printf("---------------- chainId:%d,nonce:%d,dataHsh:%x\n", m.Source, m.DepositNonce, dataHash)
-	fmt.Printf("---------------- data:%x\n", m.Payload[0].([]byte))
+	fmt.Printf("---------------- data:%x\n", metadata)
 	fmt.Printf("---------------- data2:%x\n", data)
 	if !w.shouldVote(m, dataHash) {
 		if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
