@@ -115,15 +115,15 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes memory signature
     ) external payable {
         // 验证签名
-        require(
-            checkDepositSignature(signature, recipient, msg.sender),
-            "signature error"
-        );
+        //        require(
+        //            checkDepositSignature(signature, recipient, msg.sender),
+        //            "signature error"
+        //        );
         // 检测resource ID是否设置
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         require(uint8(tokenInfo.assetsType) > 0, "resourceId not exist");
         // 检测目标链ID
-        uint256 chainId = Bridge.getChainId();
+        uint256 chainId = Bridge.chainId();
         require(destinationChainId != chainId, "destinationChainId error");
         // 跨链费用比例，万分比
         uint256 fee = Bridge.getFeeByResourceId(resourceId);
@@ -191,18 +191,6 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         return recoverAddress == sender;
     }
 
-    function checkDepositSignature2(
-        bytes memory signature,
-        address recipient
-    ) public pure returns (address) {
-        bytes32 messageHash = keccak256(abi.encodePacked(recipient));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
-            signature
-        );
-
-        return recoverAddress;
-    }
-
     /**
         @notice 目标链执行到帐操作
         @param data 跨链data, encode(originChainId,originDepositNonce,depositer,recipient,amount,resourceId)
@@ -251,18 +239,6 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             originNonce,
             originChainId
         );
-    }
-
-    /**
-        @notice 获取跨链记录
-        @param user_ 用户地址
-        @param userDepositNonce_ nonce
-    */
-    function getDepositRecord(
-        address user_,
-        uint256 userDepositNonce_
-    ) external view returns (DepositRecord memory) {
-        return depositRecord[user_][userDepositNonce_];
     }
 
     /**

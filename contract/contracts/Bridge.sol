@@ -137,16 +137,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         ITantinBridge(tantinAddress).execute(data);
     }
 
-    // 获取自定义链ID
-    function getChainId() public view returns (uint256) {
-        return chainId;
-    }
-
-    // 获取自定义链类型ID
-    function getChainTypeId() public view returns (uint256) {
-        return chainType;
-    }
-
     // 获取跨链费用
     function getFeeByResourceId(
         bytes32 resourceId
