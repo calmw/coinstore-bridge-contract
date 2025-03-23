@@ -68,6 +68,7 @@ func NewConnection(chainType config.ChainType, endpoint string, http bool, prvKe
 		stop:        make(chan int),
 		keyStore:    ks,
 		keyAccount:  ka,
+		optsLock:    &sync.Mutex{},
 	}
 }
 

@@ -235,7 +235,6 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 				data,
 				m.ResourceId,
 			)
-			w.conn.UnlockOpts()
 
 			if err == nil {
 				w.log.Info("Submitted proposal execution", "tx", txHash, "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
