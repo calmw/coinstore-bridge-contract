@@ -174,10 +174,6 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			toAddr = strings.ToLower(t.String())
 		} else if destChainType == config.ChainTypeTron {
 			tCfg := config.TronCfg
-			//requestData, err := tron.GenerateBridgeGetTokenInfoByResourceId(record.ResourceID)
-			//if err != nil {
-			//	return err
-			//}
 			tokenInfo, err := tron.ResourceIdToTokenInfo(binding.OwnerAccount, tCfg.BridgeContractAddress, record.ResourceID)
 			if err != nil {
 				return err
