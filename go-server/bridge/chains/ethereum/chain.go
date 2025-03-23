@@ -38,7 +38,7 @@ func InitializeChain(cfg *config.Config, logger log.Logger, sysErr chan<- error)
 		return nil, err
 	}
 
-	chainId, err := bridgeContract.GetChainId(conn.CallOpts())
+	chainId, err := bridgeContract.ChainId(conn.CallOpts())
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func InitializeChain(cfg *config.Config, logger log.Logger, sysErr chan<- error)
 		return nil, fmt.Errorf("chainId (%d) and configuration chainId (%d) do not match", chainId.Int64(), cfg.ChainId)
 	}
 
-	chainTypeId, err := bridgeContract.GetChainTypeId(conn.CallOpts())
+	chainTypeId, err := bridgeContract.ChainType(conn.CallOpts())
 	if err != nil {
 		return nil, err
 	}
