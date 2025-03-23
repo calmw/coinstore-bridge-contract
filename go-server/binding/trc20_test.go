@@ -58,3 +58,7 @@ func TestTrc20_Transfer(t1 *testing.T) {
 func TestAA(t *testing.T) {
 	AA()
 }
+
+func TestHasVotedOnProposal(t *testing.T) {
+	HasVotedOnProposal()
+}

@@ -157,7 +157,7 @@ func ParseBridgeDepositRecordData(inputData []byte) (DepositRecord, error) {
 	// 解析输入数据
 	method, err := parsedABI.MethodById(inputData)
 	if err != nil {
-		fmt.Println("Error parsing input data:", err)
+		fmt.Println("Error parsing input data:1", err)
 		return DepositRecord{}, err
 	}
 
@@ -303,7 +303,7 @@ func ParseBridgeResourceIdToTokenInfo(inputData []byte) (TokenInfo, error) {
 	// 解析输入数据
 	method, err := parsedABI.MethodById(inputData)
 	if err != nil {
-		fmt.Println("Error parsing input data:", err)
+		fmt.Println("Error parsing input data:2", err)
 		return TokenInfo{}, err
 	}
 
@@ -492,7 +492,7 @@ func ParseVoteGetProposal(inputData []byte) (IVoteProposal, error) {
 	// 解析输入数据
 	method, err := parsedABI.MethodById(inputData)
 	if err != nil {
-		fmt.Println("Error parsing input data:", err)
+		fmt.Println("Error parsing input data:3", err)
 		return IVoteProposal{}, err
 	}
 
@@ -575,6 +575,7 @@ func GenerateVoteHasVotedOnProposal(arg0 *big.Int, arg1 [32]byte, arg2 common.Ad
 	if err != nil {
 		return "", err
 	}
+	fmt.Printf("----- %x\n", AbiPacked[:4])
 	return fmt.Sprintf("0x%x", AbiPacked), nil
 }
 
@@ -619,7 +620,8 @@ func ParseVoteHasVotedOnProposal(inputData []byte) (bool, error) {
 	// 解析输入数据
 	method, err := parsedABI.MethodById(inputData)
 	if err != nil {
-		fmt.Println("Error parsing input data:", err)
+		fmt.Printf("%x\n", inputData)
+		fmt.Println("Error parsing input data:4", err)
 		return false, err
 	}
 
@@ -635,5 +637,6 @@ func ParseVoteHasVotedOnProposal(inputData []byte) (bool, error) {
 	if !ok {
 		return false, fmt.Errorf("invalid hashVote type")
 	}
+	fmt.Println("~~~~~~~9", hashVote)
 	return hashVote, err
 }

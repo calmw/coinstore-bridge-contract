@@ -1,6 +1,7 @@
 package binding
 
 import (
+	"coinstore/utils"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
@@ -281,4 +282,32 @@ func AA() {
 	toAddress, err = address.Base58ToAddress("TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf")
 	fmt.Println(toAddress.String())
 	fmt.Println(toAddress.Hex())
+}
+
+func HasVotedOnProposal() {
+	url := "https://nile.trongrid.io/jsonrpc"
+
+	ethCallBody := fmt.Sprintf(`{
+	"jsonrpc": "2.0",
+	"method": "eth_call",
+	"params": [{
+		"from": "%s",
+		"to": "0x41f4a0d088ef4ec7b0e231cc365f16726ad552e051",
+		"gas": "0x0",
+		"gasPrice": "0x0",
+		"value": "0x0",
+		"data": "0xc70bf0b50000000000000000000000000000000000000000000000000000000000000f02f5ffe0a02a4b931713566e54bfafc450192c48bc69010f471fa6dd2d2639a65b0000000000000000000000003942fda93c573e2ce9e85b0bb00ba98a144f27f6"
+	}, "latest"],
+	"id": %d
+}`, "0x41f4a0d088ef4ec7b0e231cc365f16726ad552e051", utils.RandInt(100, 10000))
+	fmt.Println(ethCallBody)
+	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
+	req.Header.Add("accept", "application/json")
+	res, _ := http.DefaultClient.Do(req)
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
+
+	fmt.Println(string(body))
+	fmt.Println("==")
+
 }
