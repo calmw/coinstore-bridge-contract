@@ -20,8 +20,7 @@ func main() {
 	//	return
 	//}
 	//bridge.Init()
-	//someBytes := hexutils.HexToBytes("09c5eabe")
-	//bridge.AdminSetResource(big.NewInt(1), [4]byte(someBytes))
+	//bridge.AdminSetResource(big.NewInt(1))
 	//
 	//vote, err := contract.NewVote()
 	//if err != nil {

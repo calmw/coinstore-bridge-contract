@@ -127,7 +127,7 @@ func (b *BridgeEvm) GrantVoteRole(addr common.Address) {
 	log.Println(fmt.Sprintf("GrantVoteRole 确认成功"))
 }
 
-func (b *BridgeEvm) AdminSetResource(fee *big.Int, funcSig [4]byte) {
+func (b *BridgeEvm) AdminSetResource(fee *big.Int) {
 	var res *types.Transaction
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(ResourceIdUsdt, "0x"))
 	for {
