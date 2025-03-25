@@ -20,5 +20,6 @@ func main() {
 	// 使用限速中间件
 	router.GET("/history", tollbooth_gin.LimitHandler(limiter), service.BridgeTx)
 	router.GET("/check_address", tollbooth_gin.LimitHandler(limiter), service.CheckAddress)
+	router.GET("/bridge_latest_time", tollbooth_gin.LimitHandler(limiter), service.BridgeLatestTime)
 	_ = router.Run()
 }
