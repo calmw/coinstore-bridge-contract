@@ -20,7 +20,7 @@ func CheckAddress(c *gin.Context) {
 	if len(address) == 0 || len(addressType) == 0 {
 		c.JSON(200, gin.H{
 			"code": 1,
-			"msg":  "Address and address type are required",
+			"msg":  "address and address type are required",
 		})
 		return
 	}

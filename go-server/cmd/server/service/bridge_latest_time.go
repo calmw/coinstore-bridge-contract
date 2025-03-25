@@ -18,6 +18,13 @@ func BridgeLatestTime(c *gin.Context) {
 	}
 	chainIdFrom := c.Query("chain_id_from")
 	chainIdTo := c.Query("chain_id_to")
+	if len(chainIdFrom) == 0 || len(chainIdTo) == 0 {
+		c.JSON(200, gin.H{
+			"code": 1,
+			"msg":  "chain_id_from and chain_id_to type are required",
+		})
+		return
+	}
 	var bridgeTx model.BridgeTx
 	if err := db.DB.Model(model.BridgeTx{}).Where("source_chain_id=? and destination_chain_id=? and bridge_status=2", chainIdFrom, chainIdTo).Order("id desc").First(&bridgeTx).Error; err != nil {
 		c.JSON(200, gin.H{
