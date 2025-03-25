@@ -3,7 +3,6 @@ package service
 import (
 	"coinstore/db"
 	"coinstore/model"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"strings"
 	"time"
@@ -49,8 +48,6 @@ func BridgeTx(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(q)
-	fmt.Println(c.Query("source_tx_hash"))
 
 	var total int64
 	var page = 1

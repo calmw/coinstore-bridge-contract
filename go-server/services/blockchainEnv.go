@@ -15,9 +15,8 @@ func InitTantinEnv() {
 		BridgeContractAddress: "0x66bbc4d0916111aec07892B02d5330bdA7A800DD",
 		VoteContractAddress:   "0x99Cb6a45BAB822912AE0519477221ad42C64FF36",
 		TantinContractAddress: "0x22050578f91E9663A52D144A39740247FDbdb70A",
-		//UsdtAddress:           "0x66bbc4d0916111aec07892B02d5330bdA7A800DD",
-		UsdtAddress: "0xc7D34B0dC1742De46A346bee415Ad753e0e95370",
-		PrivateKey:  key,
+		UsdtAddress:           "0xc7D34B0dC1742De46A346bee415Ad753e0e95370",
+		PrivateKey:            key,
 	}
 }
 
