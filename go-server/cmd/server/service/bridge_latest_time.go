@@ -22,7 +22,7 @@ func BridgeLatestTime(c *gin.Context) {
 	if err := db.DB.Model(model.BridgeTx{}).Where("source_chain_id=? and destination_chain_id=? and bridge_status=2", chainIdFrom, chainIdTo).Order("id desc").First(&bridgeTx).Error; err != nil {
 		c.JSON(200, gin.H{
 			"code": 1,
-			"msg":  "参数错误",
+			"msg":  "no record",
 		})
 		return
 	}
