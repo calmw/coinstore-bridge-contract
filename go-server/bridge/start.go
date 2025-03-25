@@ -34,11 +34,12 @@ func Run() error {
 		chainConfig := config.NewConfig(cfg)
 		logger.Debug("chain config: ", "config=", chainConfig)
 
+		fmt.Println("~~~ 1 ", chainConfig.Endpoint, chainConfig.ChainId, chainConfig.BridgeContractAddress)
 		var newChain core.Chain
 		chainLogger := log.Root().New("chain", chainConfig.ChainName)
 
 		if chainConfig.ChainType == config.ChainTypeEvm {
-			newChain, err = ethereum.InitializeChain(&chainConfig, chainLogger, sysErr)
+			newChain, err = ethereum.InitializeChain(chainConfig, chainLogger, sysErr)
 			if err != nil {
 				logger.Error("initialize chain", "error", err)
 				return err

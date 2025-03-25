@@ -44,11 +44,6 @@ type Config struct {
 
 func NewConfig(cfg model.ChainInfo) Config {
 	key := os.Getenv("COINSTORE_BRIDGE")
-	//key:=utils2.ThreeDesDecrypt("",cfg.PrivateKey) // TODO 线上要改
-	//privateKey, err := crypto.HexToECDSA(key)
-	//if err != nil {
-	//	panic("private key conversion failed")
-	//}
 	gasLimit := big.NewInt(DefaultGasLimit)
 	if cfg.GasLimit > 0 {
 		gasLimit = big.NewInt(cfg.GasLimit)

@@ -15,14 +15,14 @@ import (
 var _ core.Chain = &Chain{}
 
 type Chain struct {
-	cfg      *config.Config    // The config of the chain
+	cfg      config.Config     // The config of the chain
 	conn     chains.Connection // THe chains connection
 	listener *Listener         // The listener of this chain
 	writer   *Writer           // The writer of the chain
 	stop     chan<- int
 }
 
-func InitializeChain(cfg *config.Config, logger log.Logger, sysErr chan<- error) (*Chain, error) {
+func InitializeChain(cfg config.Config, logger log.Logger, sysErr chan<- error) (*Chain, error) {
 	stop := make(chan int)
 	key := os.Getenv("COINSTORE_BRIDGE")
 	//key:=utils2.ThreeDesDecrypt("",cfg.PrivateKey) // TODO 线上要改

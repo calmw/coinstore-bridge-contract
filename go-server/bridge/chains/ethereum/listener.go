@@ -41,13 +41,13 @@ type Listener struct {
 }
 
 // NewListener creates and returns a Listener
-func NewListener(conn *Connection, cfg *config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Listener {
+func NewListener(conn *Connection, cfg config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Listener {
 	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.ClientEvm())
 	if err != nil {
 		panic("new bridge contract failed")
 	}
 	listener := Listener{
-		cfg:            *cfg,
+		cfg:            cfg,
 		conn:           conn,
 		BridgeContract: bridgeContract,
 		log:            log,

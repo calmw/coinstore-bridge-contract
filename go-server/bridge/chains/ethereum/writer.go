@@ -18,7 +18,7 @@ var CancelledStatus uint8 = 4
 type Writer struct {
 	muVote       *sync.RWMutex
 	muExec       *sync.RWMutex
-	Cfg          *config.Config
+	Cfg          config.Config
 	conn         *Connection
 	voteContract *binding.Vote
 	log          log.Logger
@@ -26,7 +26,7 @@ type Writer struct {
 	sysErr       chan<- error // Reports fatal error to core
 }
 
-func NewWriter(conn *Connection, cfg *config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Writer {
+func NewWriter(conn *Connection, cfg config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Writer {
 	voteContract, err := binding.NewVote(common.HexToAddress(cfg.VoteContractAddress), conn.ClientEvm())
 	if err != nil {
 		panic("new vote contract failed")
