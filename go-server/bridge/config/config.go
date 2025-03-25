@@ -42,7 +42,7 @@ type Config struct {
 	LatestBlock           bool // If true, overrides blockstore or latest block in config and starts from current block
 }
 
-func NewConfig(cfg model.Config) Config {
+func NewConfig(cfg model.ChainInfo) Config {
 	key := os.Getenv("COINSTORE_BRIDGE")
 	//key:=utils2.ThreeDesDecrypt("",cfg.PrivateKey) // TODO 线上要改
 	//privateKey, err := crypto.HexToECDSA(key)

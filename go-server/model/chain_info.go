@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Config struct {
+type ChainInfo struct {
 	gorm.Model
 	ChainName          string          `gorm:"chain_name;comment:'链名称'" json:"chain_name"`
 	ChainId            int             `gorm:"chain_id;comment:'自定义链ID'" json:"chain_id"`
@@ -28,17 +28,17 @@ type Config struct {
 	Open               int64           `gorm:"open;comment:'是否开启 1 开启 0关闭'；default:1" json:"open"`
 }
 
-func GetConfigByChainId(tx *gorm.DB, chainId int) (Config, error) {
-	var cfg Config
-	err := tx.Model(&Config{}).Where("chain_id=?", chainId).First(&cfg).Error
+func GetConfigByChainId(tx *gorm.DB, chainId int) (ChainInfo, error) {
+	var cfg ChainInfo
+	err := tx.Model(&ChainInfo{}).Where("chain_id=?", chainId).First(&cfg).Error
 	if err != nil {
-		return Config{}, err
+		return ChainInfo{}, err
 	}
 	return cfg, nil
 }
 
-func GetAllConfig() ([]Config, error) {
-	var cfgs []Config
-	err := db.DB.Model(&Config{}).Where("open>0").Find(&cfgs).Error
+func GetAllConfig() ([]ChainInfo, error) {
+	var cfgs []ChainInfo
+	err := db.DB.Model(&ChainInfo{}).Where("open>0").Find(&cfgs).Error
 	return cfgs, err
 }
