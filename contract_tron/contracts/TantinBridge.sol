@@ -222,7 +222,8 @@ contract TantinBridge is AccessControl, ITantinBridge {
                 erc20.mint(recipient, receiveAmount);
             } else {
                 IERC20 erc20 = IERC20(tokenAddress);
-                //                erc20.safeTransfer(recipient, receiveAmount); // TODO 上线取消注释
+                // erc20.safeTransfer(recipient, receiveAmount); // 不支持
+                erc20.transfer(recipient, receiveAmount); //
             }
         } else {
             revert ErrAssetsType(tokenInfo.assetsType);

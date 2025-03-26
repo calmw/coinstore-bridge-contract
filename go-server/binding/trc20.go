@@ -250,6 +250,9 @@ func AA() {
 	toAddress, err = address.Base58ToAddress("TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf")
 	fmt.Println(toAddress.String())
 	fmt.Println(toAddress.Hex())
+	toAddress, err = address.Base58ToAddress("TEy2BtGxixqhbcM7w65rJiotAerSBFR48W")
+	fmt.Println(toAddress.String())
+	fmt.Println(toAddress.Hex())
 }
 
 func HasVotedOnProposal() {

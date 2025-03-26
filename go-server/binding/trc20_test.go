@@ -2,7 +2,6 @@ package binding
 
 import (
 	"fmt"
-	"math/big"
 	"os"
 	"testing"
 )
@@ -30,30 +29,30 @@ func TestImportFromPrivateKey(t *testing.T) {
 	// /Users/cisco/.tronctl/account-keys/my_account/UTC--2025-03-15T15-30-58.603647000Z--413942fda93c573e2ce9e85b0bb00ba98a144f27f6
 }
 
-func TestTransferToken(t *testing.T) {
-	txHash, err := TransferToken()
-	fmt.Println(txHash, err)
-}
+//func TestTransferToken(t *testing.T) {
+//	txHash, err := TransferToken()
+//	fmt.Println(txHash, err)
+//}
 
-func TestTrc20_Approve(t1 *testing.T) {
-	erc20, err := NewTrc20(UsdtAddress)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	txHash, err := erc20.Approve("TEy2BtGxixqhbcM7w65rJiotAerSBFR48W", big.NewInt(1))
-	fmt.Println(txHash, err)
-}
+//func TestTrc20_Approve(t1 *testing.T) {
+//	erc20, err := NewTrc20(UsdtAddress)
+//	if err != nil {
+//		fmt.Println(err)
+//		return
+//	}
+//	txHash, err := erc20.Approve("TEy2BtGxixqhbcM7w65rJiotAerSBFR48W", big.NewInt(1))
+//	fmt.Println(txHash, err)
+//}
 
-func TestTrc20_Transfer(t1 *testing.T) {
-	erc20, err := NewTrc20(UsdtAddress)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	txHash, err := erc20.Transfer("TEy2BtGxixqhbcM7w65rJiotAerSBFR48W", big.NewInt(1))
-	fmt.Println(txHash, err)
-}
+//func TestTrc20_Transfer(t1 *testing.T) {
+//	erc20, err := NewTrc20(UsdtAddress)
+//	if err != nil {
+//		fmt.Println(err)
+//		return
+//	}
+//	txHash, err := erc20.Transfer("TEy2BtGxixqhbcM7w65rJiotAerSBFR48W", big.NewInt(1))
+//	fmt.Println(txHash, err)
+//}
 
 func TestAA(t *testing.T) {
 	AA()
@@ -63,8 +62,12 @@ func TestHasVotedOnProposal(t *testing.T) {
 	HasVotedOnProposal()
 }
 
-func TestExecuteProposal(t *testing.T) {
-	proposal, err := ExecuteProposal()
-	fmt.Println(proposal, err)
+//func TestExecuteProposal(t *testing.T) {
+//	proposal, err := ExecuteProposal()
+//	fmt.Println(proposal, err)
+//
+//}
 
-}
+// 0x4136cf9a3651f289996a23255cfc05ea609893af9a
+// 0x36cf9a3651f289996a23255cfc05ea609893af9a
+// 0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6
