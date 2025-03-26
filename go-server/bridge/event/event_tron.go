@@ -133,7 +133,7 @@ type EthCallJsonRpcRequest struct {
 	ID      int    `json:"id"`
 }
 
-func GetEventData(number int64) ([]EvtData, error) {
+func GetEventData(contractAddress string, number int64) ([]EvtData, error) {
 	var result []EvtData
 	url := fmt.Sprintf("%s/v1/blocks/%d/events", config.TronApiHost, number)
 	req, _ := http.NewRequest("GET", url, nil)
@@ -147,7 +147,13 @@ func GetEventData(number int64) ([]EvtData, error) {
 		return nil, errors.New("failed to parse event log")
 	}
 	for _, d := range eventLog.Data {
-		if d.EventName == "Deposit" {
+		if d.EventName == "Deposit" && strings.ToLower(d.ContractAddress) == strings.ToLower(contractAddress) {
+			fmt.Println("'--------'", d.Event)
+			fmt.Println("'--------'", d.Result)
+			fmt.Println("'--------'", d.Result.Data)
+			fmt.Println("'--------'", d.Result.ResourceID)
+			fmt.Println("'--------'", d.Result.DepositNonce)
+			fmt.Println("'--------'", d.Result.DestinationChainId)
 			result = append(result, EvtData{
 				Data:               d.Result.Data,
 				TxHash:             d.TransactionID,

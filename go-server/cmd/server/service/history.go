@@ -103,6 +103,14 @@ func BridgeTx(c *gin.Context) {
 	}
 
 	for _, record := range records {
+		status := 1
+		if record.VoteStatus == 1 {
+			if record.ExecuteStatus == 0 {
+				status = 2
+			} else if record.ExecuteStatus == 1 {
+				status = 3
+			}
+		}
 		data = append(data, Response{
 			Id:                      record.Id,
 			ResourceId:              record.ResourceId,
@@ -115,7 +123,7 @@ func BridgeTx(c *gin.Context) {
 			DestinationChainId:      record.DestinationChainId,
 			DestinationTokenAddress: record.DestinationTokenAddress,
 			DestinationTxHash:       record.ExecuteHash,
-			BridgeStatus:            record.BridgeStatus,
+			BridgeStatus:            status,
 			DepositAt:               record.DepositAt,
 			ReceiveAt:               record.ReceiveAt,
 		})
