@@ -1,9 +1,9 @@
 package tron
 
 import (
-	"coinstore/binding"
 	"coinstore/bridge/chains/ethereum/egs"
 	"coinstore/bridge/config"
+	"coinstore/tron_keystore"
 	"context"
 	"crypto/ecdsa"
 	"errors"
@@ -15,10 +15,8 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/fbsobreira/gotron-sdk/pkg/client"
 	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
-	"github.com/fbsobreira/gotron-sdk/pkg/store"
 	"google.golang.org/grpc"
 	"math/big"
-	"strings"
 	"sync"
 	"time"
 )
@@ -48,13 +46,18 @@ type Connection struct {
 }
 
 func NewConnection(chainType config.ChainType, endpoint string, http bool, prvKey string, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
-	_, _, err := binding.GetKeyFromPrivateKey(prvKey, binding.AccountName, binding.Passphrase)
-	if err != nil && !strings.Contains(err.Error(), "already exists") {
-		panic("private key conversion failed")
-	}
-	ks, ka, err := store.UnlockedKeystore(binding.OwnerAccount, binding.Passphrase)
+	//_, _, err := utils.GetKeyFromPrivateKey(prvKey, binding.AccountName, binding.Passphrase)
+	//if err != nil && !strings.Contains(err.Error(), "already exists") {
+	//	panic("private key conversion failed")
+	//}
+	//ks, ka, err := store.UnlockedKeystore(binding.OwnerAccount, binding.Passphrase)
+	//if err != nil {
+	//	panic("private key conversion failed")
+	//}
+
+	ks, ka, err := tron_keystore.InitKeyStore()
 	if err != nil {
-		panic("private key conversion failed")
+		panic(fmt.Sprintf("private key conversion failed %v", err))
 	}
 	return &Connection{
 		chainType:   chainType,

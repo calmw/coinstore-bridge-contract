@@ -1,16 +1,15 @@
 package tron
 
 import (
-	"coinstore/binding"
 	"coinstore/bridge/chains"
 	"coinstore/bridge/msg"
 	"coinstore/model"
+	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"errors"
 	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
-	"github.com/fbsobreira/gotron-sdk/pkg/store"
 	"math/big"
 	"time"
 )
@@ -165,12 +164,14 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 	w.muVote.Lock()
 	defer w.muVote.Unlock()
 
+	_ = w.conn.keyStore.Unlock(*w.conn.keyAccount, tron_keystore.KeyStorePassphrase)
+	defer w.conn.keyStore.Lock(w.conn.keyAccount.Address)
+
 	for i := 0; i < TxRetryLimit; i++ {
 		select {
 		case <-w.stop:
 			return
 		default:
-			w.FreshPrk()
 			txHash, err := w.voteContract.VoteProposal(
 				m.Source.Big(),
 				m.DepositNonce.Big(),
@@ -202,13 +203,6 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 	w.sysErr <- ErrFatalTx
 }
 
-func (w *Writer) FreshPrk() {
-	_, _, _ = binding.GetKeyFromPrivateKey(w.Cfg.PrivateKey, binding.AccountName, binding.Passphrase)
-	ks, ka, _ := store.UnlockedKeystore(binding.OwnerAccount, binding.Passphrase)
-	w.conn.keyStore = ks
-	w.conn.keyAccount = ka
-}
-
 func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) {
 	w.muExec.Lock()
 	defer w.muExec.Unlock()
@@ -225,12 +219,14 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 		}
 	}()
 
+	_ = w.conn.keyStore.Unlock(*w.conn.keyAccount, tron_keystore.KeyStorePassphrase)
+	defer w.conn.keyStore.Lock(w.conn.keyAccount.Address)
+
 	for i := 0; i < TxRetryLimit; i++ {
 		select {
 		case <-w.stop:
 			return
 		default:
-			w.FreshPrk()
 			txHash, err = w.voteContract.ExecuteProposal(
 				m.Source.Big(),
 				m.DepositNonce.Big(),

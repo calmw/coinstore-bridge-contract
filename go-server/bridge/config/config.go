@@ -3,6 +3,8 @@ package config
 import (
 	"coinstore/db"
 	"coinstore/model"
+	"fmt"
+	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/shopspring/decimal"
 	"math/big"
 	"os"
@@ -28,6 +30,7 @@ type Config struct {
 	ChainType ChainType
 	Endpoint  string
 	From      string
+	FromTron  address.Address
 	//PrivateKey            *ecdsa.PrivateKey
 	PrivateKey            string
 	BridgeContractAddress string
@@ -44,6 +47,7 @@ type Config struct {
 
 func NewConfig(cfg model.ChainInfo) Config {
 	key := os.Getenv("COINSTORE_BRIDGE")
+	var err error
 	gasLimit := big.NewInt(DefaultGasLimit)
 	if cfg.GasLimit > 0 {
 		gasLimit = big.NewInt(cfg.GasLimit)
@@ -71,6 +75,14 @@ func NewConfig(cfg model.ChainInfo) Config {
 	if cfg.Http > 0 {
 		http = true
 	}
+	fromAddress := address.Address{}
+	if cfg.ChainType == 2 {
+		fmt.Println(cfg.From, 99)
+		fromAddress, err = address.Base58ToAddress(cfg.From)
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	return Config{
 		ChainName:             cfg.ChainName,
@@ -78,6 +90,7 @@ func NewConfig(cfg model.ChainInfo) Config {
 		ChainType:             ChainType(cfg.ChainType),
 		Endpoint:              cfg.Endpoint,
 		From:                  cfg.From,
+		FromTron:              fromAddress,
 		PrivateKey:            key,
 		BridgeContractAddress: cfg.BridgeContract,
 		VoteContractAddress:   cfg.VoteContract,
