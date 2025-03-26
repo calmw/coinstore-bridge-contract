@@ -1,6 +1,7 @@
 package contract
 
 import (
+	"coinstore/tron_keystore"
 	"fmt"
 	"github.com/fbsobreira/gotron-sdk/pkg/client"
 	"github.com/fbsobreira/gotron-sdk/pkg/client/transaction"
@@ -51,25 +52,17 @@ func NewBridgeTron() (*BridgeTron, error) {
 }
 
 func (b *BridgeTron) Init() {
-	b.FreshPrk()
 	txHash, err := b.AdminSetEnv()
 	fmt.Println(txHash, err)
-	b.FreshPrk()
 	txHash2, err2 := b.GrantVoteRole("c65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7", ChainConfig.VoteContractAddress)
 	fmt.Println(txHash2, err2)
-	b.FreshPrk()
 	txHash3, err3 := b.AdminSetResource(big.NewInt(1))
 	fmt.Println(txHash3, err3)
 }
 
-func (b *BridgeTron) FreshPrk() {
-	_, _, _ = GetKeyFromPrivateKey(ChainConfig.PrivateKey, AccountName, Passphrase)
-	ks, ka, _ := store.UnlockedKeystore(OwnerAccount, Passphrase)
-	b.Ks = ks
-	b.Ka = ka
-}
-
 func (b *BridgeTron) AdminSetEnv() (string, error) {
+	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
+	defer b.Ks.Lock(b.Ka.Address)
 	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%d\"},{\"uint256\":\"%d\"}]", ChainConfig.VoteContractAddress, ChainConfig.BridgeId, ChainConfig.ChainTypeId)
 	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetEnv(address,uint256,uint256)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
@@ -83,6 +76,8 @@ func (b *BridgeTron) AdminSetEnv() (string, error) {
 }
 
 func (b *BridgeTron) GrantAdminRole(role, addr string) (string, error) {
+	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
+	defer b.Ks.Lock(b.Ka.Address)
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
 	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
@@ -97,6 +92,8 @@ func (b *BridgeTron) GrantAdminRole(role, addr string) (string, error) {
 }
 
 func (b *BridgeTron) GrantVoteRole(role, addr string) (string, error) {
+	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
+	defer b.Ks.Lock(b.Ka.Address)
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
 	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
 	if err != nil {
@@ -111,6 +108,8 @@ func (b *BridgeTron) GrantVoteRole(role, addr string) (string, error) {
 }
 
 func (b *BridgeTron) AdminSetResource(fee *big.Int) (string, error) {
+	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
+	defer b.Ks.Lock(b.Ka.Address)
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bool\":%v},{\"address\":\"%s\"}]",
 		strings.TrimPrefix(ResourceIdUsdt, "0x"),
 		uint8(2),

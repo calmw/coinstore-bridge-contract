@@ -8,19 +8,19 @@ import (
 
 func main() {
 	services.InitTronEnv()
-	//bridge, err := contract.NewBridgeTron()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//bridge.Init()
-	//
-	//vote, err := contract.NewVoteTron()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//vote.Init()
+	bridge, err := contract.NewBridgeTron()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	bridge.Init()
+
+	vote, err := contract.NewVoteTron()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	vote.Init()
 
 	tantin, err := contract.NewTanTinTron()
 	if err != nil {

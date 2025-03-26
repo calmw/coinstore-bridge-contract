@@ -1,6 +1,7 @@
 package contract
 
 import (
+	"coinstore/tron_keystore"
 	"fmt"
 	"github.com/fbsobreira/gotron-sdk/pkg/client"
 	"github.com/fbsobreira/gotron-sdk/pkg/client/transaction"
@@ -43,25 +44,18 @@ func NewTanTinTron() (*TanTinTron, error) {
 }
 
 func (t *TanTinTron) Init() {
-	t.FreshPrk()
 	txHash, err := t.AdminSetEnv()
 	fmt.Println(txHash, err)
-	t.FreshPrk()
 	txHash2, err2 := t.GrantBridgeRole("52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f", ChainConfig.BridgeContractAddress)
 	fmt.Println(txHash2, err2)
-	t.FreshPrk()
 	txHash3, err3 := t.AdminSetToken(strings.TrimPrefix(ResourceIdUsdt, "0x"), 2, ChainConfig.UsdtAddress, false, false, false)
 	fmt.Println(txHash3, err3)
 }
 
-func (t *TanTinTron) FreshPrk() {
-	_, _, _ = GetKeyFromPrivateKey(ChainConfig.PrivateKey, AccountName, Passphrase)
-	ks, ka, _ := store.UnlockedKeystore(OwnerAccount, Passphrase)
-	t.Ks = ks
-	t.Ka = ka
-}
-
 func (t *TanTinTron) AdminSetEnv() (string, error) {
+	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
+	defer t.Ks.Lock(t.Ka.Address)
+
 	triggerData := fmt.Sprintf("[{\"address\":\"%s\"}]", ChainConfig.BridgeContractAddress)
 	fmt.Println(triggerData)
 	tx, err := t.Cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetEnv(address)", triggerData, 1500000000, 0, "", 0)
@@ -77,6 +71,9 @@ func (t *TanTinTron) AdminSetEnv() (string, error) {
 }
 
 func (t *TanTinTron) GrantBridgeRole(role, addr string) (string, error) {
+	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
+	defer t.Ks.Lock(t.Ka.Address)
+
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
 	tx, err := t.Cli.TriggerContract(OwnerAccount, t.ContractAddress, "grantRole(bytes32,address)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
@@ -91,6 +88,9 @@ func (t *TanTinTron) GrantBridgeRole(role, addr string) (string, error) {
 }
 
 func (t *TanTinTron) AdminSetToken(resourceID string, assetsType uint8, tokenAddress string, burnable, mintable, pause bool) (string, error) {
+	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
+	defer t.Ks.Lock(t.Ka.Address)
+
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint256\":\"%d\"},{\"address\":\"%s\"},{\"bool\":%v},{\"bool\":%v},{\"bool\":%v}]",
 		resourceID,
 		assetsType,
