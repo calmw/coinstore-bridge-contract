@@ -2,16 +2,14 @@
 pragma solidity ^0.8.22;
 
 import "./interface/IERC20MintAble.sol";
+import {IBridge} from "./interface/IBridge.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+import {ITantinBridge} from "./interface/ITantinBridge.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
-import {IBridge} from "./interface/IBridge.sol";
-import {ITantinBridge} from "./interface/ITantinBridge.sol";
-
-/// ERC20/Coin跨链
 
 contract TantinBridge is AccessControl, ITantinBridge {
     using ECDSA for bytes32;
