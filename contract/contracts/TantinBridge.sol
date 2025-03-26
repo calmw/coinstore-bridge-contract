@@ -110,7 +110,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
         uint256 amount,
         bytes memory signature
     ) external payable {
-        // 验证签名
+        // 验证签名 TODO 上线取消注释
         //        require(
         //            checkDepositSignature(signature, recipient, msg.sender),
         //            "signature error"
@@ -222,7 +222,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
                 erc20.mint(recipient, receiveAmount);
             } else {
                 IERC20 erc20 = IERC20(tokenAddress);
-                erc20.safeTransfer(recipient, receiveAmount);
+//                erc20.safeTransfer(recipient, receiveAmount); // TODO 上线取消注释
             }
         } else {
             revert ErrAssetsType(tokenInfo.assetsType);
