@@ -218,8 +218,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
         address tokenAddress = tokenInfo.tokenAddress;
         if (tokenInfo.assetsType == AssetsType.Coin) {
             Address.sendValue(payable(recipient), receiveAmount);
-        }
-        if (tokenInfo.assetsType == AssetsType.Erc20) {
+        } else if (tokenInfo.assetsType == AssetsType.Erc20) {
             if (tokenInfo.mintable) {
                 IERC20MintAble erc20 = IERC20MintAble(tokenAddress);
                 erc20.mint(recipient, receiveAmount);
@@ -227,6 +226,8 @@ contract TantinBridge is AccessControl, ITantinBridge {
                 IERC20 erc20 = IERC20(tokenAddress);
                 erc20.safeTransfer(recipient, receiveAmount);
             }
+        } else {
+            revert ErrAssetsType(tokenInfo.assetsType);
         }
 
         emit ExecuteEvent(
