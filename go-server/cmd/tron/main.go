@@ -14,7 +14,7 @@ func main() {
 	//	return
 	//}
 	//bridge.Init()
-
+	//
 	//vote, err := contract.NewVoteTron()
 	//if err != nil {
 	//	fmt.Println(err)

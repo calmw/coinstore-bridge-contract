@@ -43,6 +43,7 @@ func NewVoteTron() (*VoteTron, error) {
 }
 
 func (v *VoteTron) Init() {
+	v.FreshPrk()
 	txHash, err := v.AdminSetEnv(big.NewInt(100000), big.NewInt(1))
 	fmt.Println(txHash, err)
 	v.FreshPrk()

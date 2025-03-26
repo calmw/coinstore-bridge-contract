@@ -51,6 +51,7 @@ func NewBridgeTron() (*BridgeTron, error) {
 }
 
 func (b *BridgeTron) Init() {
+	b.FreshPrk()
 	txHash, err := b.AdminSetEnv()
 	fmt.Println(txHash, err)
 	b.FreshPrk()
