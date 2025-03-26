@@ -1,6 +1,7 @@
 package ethereum
 
 import (
+	"coinstore/bridge/chains"
 	"coinstore/bridge/event"
 	"coinstore/bridge/msg"
 	"coinstore/model"
@@ -96,7 +97,7 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 	w.log.Info("Creating generic proposal", "src", m.Source, "nonce", m.DepositNonce)
 
 	metadata := m.Payload[0].([]byte)
-	data := ConstructGenericProposalData(metadata)
+	data := chains.ConstructGenericProposalData(metadata)
 	toHash := append(common.HexToAddress(w.Cfg.BridgeContractAddress).Bytes(), data...)
 	dataHash := utils.Hash(toHash)
 	fmt.Printf("---------------- chainId:%d,nonce:%d,dataHsh:%x\n", m.Source, m.DepositNonce, dataHash)

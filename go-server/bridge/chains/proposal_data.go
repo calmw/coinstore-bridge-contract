@@ -1,4 +1,4 @@
-package ethereum
+package chains
 
 import (
 	"github.com/ethereum/go-ethereum/common/math"

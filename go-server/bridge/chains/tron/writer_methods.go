@@ -1,6 +1,7 @@
 package tron
 
 import (
+	"coinstore/bridge/chains"
 	"coinstore/bridge/msg"
 	"coinstore/model"
 	"coinstore/utils"
@@ -101,7 +102,7 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 	w.log.Info("Creating generic proposal", "src", m.Source, "nonce", m.DepositNonce)
 
 	metadata := m.Payload[0].([]byte)
-	data := ConstructGenericProposalData(metadata)
+	data := chains.ConstructGenericProposalData(metadata)
 	bridgeAddress, err := address.Base58ToAddress(w.Cfg.BridgeContractAddress)
 
 	//b :=hexutils.HexToBytes(strings.TrimPrefix(bridgeAddress.Hex(),"0x41"))
