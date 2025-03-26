@@ -2,18 +2,15 @@
 pragma solidity ^0.8.22;
 
 import "./interface/IERC20MintAble.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IBridge} from "./interface/IBridge.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {ITantinBridge} from "./interface/ITantinBridge.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
-import {IBridge} from "./interface/IBridge.sol";
-
-import {ITantinBridge} from "./interface/ITantinBridge.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-
-/// ERC20/Coin跨链
 
 contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     using ECDSA for bytes32;
@@ -115,10 +112,10 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes memory signature
     ) external payable {
         // 验证签名
-        //        require(
-        //            checkDepositSignature(signature, recipient, msg.sender),
-        //            "signature error"
-        //        );
+        require(
+            checkDepositSignature(signature, recipient, msg.sender),
+            "signature error"
+        );
         // 检测resource ID是否设置
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         require(uint8(tokenInfo.assetsType) > 0, "resourceId not exist");
@@ -220,8 +217,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         address tokenAddress = tokenInfo.tokenAddress;
         if (tokenInfo.assetsType == AssetsType.Coin) {
             Address.sendValue(payable(recipient), receiveAmount);
-        }
-        if (tokenInfo.assetsType == AssetsType.Erc20) {
+        } else if (tokenInfo.assetsType == AssetsType.Erc20) {
             if (tokenInfo.mintable) {
                 IERC20MintAble erc20 = IERC20MintAble(tokenAddress);
                 erc20.mint(recipient, receiveAmount);
@@ -229,6 +225,8 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
                 IERC20 erc20 = IERC20(tokenAddress);
                 erc20.safeTransfer(recipient, receiveAmount);
             }
+        } else {
+            revert ErrAssetsType(tokenInfo.assetsType);
         }
 
         emit ExecuteEvent(
