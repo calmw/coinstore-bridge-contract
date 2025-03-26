@@ -100,15 +100,20 @@ func (t *TanTinTron) GrantBridgeRole(role, addr string) (string, error) {
 }
 
 func (t *TanTinTron) AdminSetToken(resourceID string, assetsType uint8, tokenAddress string, burnable, mintable, pause bool) (string, error) {
-	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"bool\":%v},{\"bool\":%v},{\"bool\":%v}]",
-		resourceID, assetsType, tokenAddress, burnable, mintable, pause,
+	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint256\":\"%d\"},{\"address\":\"%s\"},{\"bool\":%v},{\"bool\":%v},{\"bool\":%v}]",
+		resourceID,
+		assetsType,
+		tokenAddress,
+		burnable,
+		mintable,
+		pause,
 	)
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
 		return "", err
 	}
-	tx, err := cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetToken(bytes32,uint8,address,bool,bool,bool)", triggerData, 300000000, 0, "", 0)
+	tx, err := cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetToken(bytes32,uint8,address,bool,bool,bool)", triggerData, 5000000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
