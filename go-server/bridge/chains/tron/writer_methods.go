@@ -242,8 +242,6 @@ func (w *Writer) FreshPrk() {
 }
 
 func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) {
-	fmt.Println("1111111111111111111111111111111111111111111111111111")
-	fmt.Printf("---------------- chainId:%d,nonce:%d,dataHsh:%x\n", m.Source, m.DepositNonce, dataHash)
 	w.muExec.Lock()
 	defer w.muExec.Unlock()
 
@@ -264,10 +262,6 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 		case <-w.stop:
 			return
 		default:
-			fmt.Println(m.Source.Big(),
-				m.DepositNonce.Big(),
-				m.ResourceId)
-			fmt.Println(fmt.Printf("%x\n", data))
 			w.FreshPrk()
 			txHash, err = w.voteContract.ExecuteProposal(
 				m.Source.Big(),
