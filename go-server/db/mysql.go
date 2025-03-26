@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	log "github.com/calmw/blog"
+	log "github.com/calmw/clog"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"

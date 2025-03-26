@@ -15,7 +15,7 @@ func InitTantinEnv() {
 		BridgeContractAddress: "0x66bbc4d0916111aec07892B02d5330bdA7A800DD",
 		VoteContractAddress:   "0x99Cb6a45BAB822912AE0519477221ad42C64FF36",
 		TantinContractAddress: "0x22050578f91E9663A52D144A39740247FDbdb70A",
-		UsdtAddress:           "0x66bbc4d0916111aec07892B02d5330bdA7A800DD",
+		UsdtAddress:           "0xc7D34B0dC1742De46A346bee415Ad753e0e95370",
 		PrivateKey:            key,
 	}
 }
@@ -42,10 +42,10 @@ func InitTronEnv() {
 		ChainId:               3448148188,
 		ChainTypeId:           2,
 		RPC:                   "grpc.nile.trongrid.io:50051",
-		BridgeContractAddress: "TH9j26HtSzmRQC11xSMarhDFVnJsLhxRLr",
-		VoteContractAddress:   "TEgAohYmMTz8sRRZSf5ht69Q3jPBA4vKSz",
-		TantinContractAddress: "TBVtUdewEJJ1zYif9tmYUC2sgERDYfWUUS",
-		UsdtAddress:           "TU6UjUJadm8TungBHvL4n9apv8Jns4wJiz",
+		BridgeContractAddress: "TWRj9YzaaDki5iUaji3D3jfoUwS3CBLJLq",
+		VoteContractAddress:   "TV9ET14nSTmKZ88Dt15USBqKJHfaPsXbXH",
+		TantinContractAddress: "TRPag9uX6pgA98YSKiuWSVNnFZG1EBGiQW",
+		UsdtAddress:           "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf",
 		PrivateKey:            key,
 	}
 }

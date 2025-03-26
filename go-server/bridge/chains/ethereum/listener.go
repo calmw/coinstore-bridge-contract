@@ -7,15 +7,17 @@ import (
 	"coinstore/bridge/core"
 	"coinstore/bridge/event"
 	"coinstore/bridge/msg"
+	"coinstore/bridge/tron"
 	"coinstore/db"
 	"coinstore/model"
 	"coinstore/utils"
 	"context"
 	"errors"
 	"fmt"
-	"github.com/calmw/blog"
+	log "github.com/calmw/clog"
 	eth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/shopspring/decimal"
 	"math/big"
 	"strings"
@@ -29,25 +31,25 @@ var Listeners = map[int]*Listener{}
 
 type Listener struct {
 	cfg            config.Config
-	conn           Connection
+	conn           *Connection
 	Router         chains.Router
-	bridgeContract *binding.Bridge
-	log            log15.Logger
+	BridgeContract *binding.Bridge
+	log            log.Logger
 	latestBlock    core.LatestBlock
 	stop           <-chan int
 	sysErr         chan<- error
 }
 
 // NewListener creates and returns a Listener
-func NewListener(conn Connection, cfg *config.Config, log log15.Logger, stop <-chan int, sysErr chan<- error) *Listener {
-	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.Client())
+func NewListener(conn *Connection, cfg config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Listener {
+	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.ClientEvm())
 	if err != nil {
 		panic("new bridge contract failed")
 	}
 	listener := Listener{
-		cfg:            *cfg,
+		cfg:            cfg,
 		conn:           conn,
-		bridgeContract: bridgeContract,
+		BridgeContract: bridgeContract,
 		log:            log,
 		stop:           stop,
 		sysErr:         sysErr,
@@ -131,18 +133,18 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	query := buildQuery(common.HexToAddress(l.cfg.BridgeContractAddress), event.Deposit, latestBlock, latestBlock)
 
 	// 获取日志
-	logs, err := l.conn.Client().FilterLogs(context.Background(), query)
+	logs, err := l.conn.ClientEvm().FilterLogs(context.Background(), query)
 	if err != nil {
 		return fmt.Errorf("unable to Filter Logs: %w", err)
 	}
 
-	for _, log := range logs {
+	for _, logE := range logs {
 		var m msg.Message
-		destId := msg.ChainId(log.Topics[1].Big().Uint64())
-		rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
-		nonce := msg.Nonce(log.Topics[3].Big().Uint64())
+		destId := msg.ChainId(logE.Topics[1].Big().Uint64())
+		rId := msg.ResourceIdFromSlice(logE.Topics[2].Bytes())
+		nonce := msg.Nonce(logE.Topics[3].Big().Uint64())
 
-		records, err := l.bridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
+		record, err := l.BridgeContract.DepositRecords(nil, logE.Topics[1].Big(), logE.Topics[3].Big())
 		if err != nil {
 			return err
 		}
@@ -152,26 +154,41 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			destId,
 			nonce,
 			rId,
-			records.Data[:],
+			record.Data[:],
 		)
 
 		// 获取目标链的信息
-		dl, ok := Listeners[int(records.DestinationChainId.Int64())]
-		if !ok {
-			l.log.Error("destination listener not found", "chainId", records.DestinationChainId)
-			return errors.New(fmt.Sprintf("destination listener not found, chainId %d", records.DestinationChainId))
+		var t common.Address
+		var toAddr string
+		destChainType := core.ChainType[int(record.DestinationChainId.Int64())]
+		if destChainType == config.ChainTypeEvm {
+			dl, ok := Listeners[int(record.DestinationChainId.Int64())]
+			if !ok {
+				l.log.Error("destination listener not found", "chainId", record.DestinationChainId)
+				return errors.New(fmt.Sprintf("destination listener not found, chainId %d", record.DestinationChainId))
+			}
+			_, t, _, err = dl.BridgeContract.GetTokenInfoByResourceId(nil, record.ResourceID)
+			if err != nil {
+				l.log.Error("destination token info not found", "chainId", record.DestinationChainId)
+			}
+			toAddr = strings.ToLower(t.String())
+		} else if destChainType == config.ChainTypeTron {
+			tCfg := config.TronCfg
+			tokenInfo, err := tron.ResourceIdToTokenInfo(binding.OwnerAccount, tCfg.BridgeContractAddress, record.ResourceID)
+			if err != nil {
+				return err
+			}
+			tokenAddress := "0x41" + strings.TrimPrefix(tokenInfo.TokenAddress.String(), "0x")
+			toAddr = address.HexToAddress(tokenAddress).String()
 		}
-		_, t, _, err := dl.bridgeContract.GetTokenInfoByResourceId(nil, records.ResourceID)
+
+		_, s, _, err := l.BridgeContract.GetTokenInfoByResourceId(nil, record.ResourceID)
 		if err != nil {
-			l.log.Error("destination token info not found", "chainId", records.DestinationChainId)
+			l.log.Error("source token info not found", "chainId", record.DestinationChainId)
 		}
-		_, s, _, err := l.bridgeContract.GetTokenInfoByResourceId(nil, records.ResourceID)
-		if err != nil {
-			l.log.Error("source token info not found", "chainId", records.DestinationChainId)
-		}
-		amount, caller, receiver, err := utils.ParseBridgeData(records.Data)
+		amount, caller, receiver, err := utils.ParseBridgeData(record.Data)
 		// 保存到数据库
-		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", records.ResourceID), caller, receiver, strings.ToLower(s.String()), strings.ToLower(t.String()), log.TxHash.String(), time.Unix(records.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
+		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, strings.ToLower(s.String()), toAddr, logE.TxHash.String(), time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
 
 		err = l.Router.Send(m)
 		if err != nil {
@@ -184,7 +201,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 }
 
 func (l *Listener) LatestBlock() (*big.Int, error) {
-	header, err := l.conn.Client().HeaderByNumber(context.Background(), nil)
+	header, err := l.conn.ClientEvm().HeaderByNumber(context.Background(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -196,7 +213,7 @@ func (l *Listener) LatestBlock() (*big.Int, error) {
 }
 
 func (l *Listener) StoreBlock(blockHeight *big.Int) error {
-	return model.SetBlockHeight(db.DB, l.cfg.ChainId, decimal.NewFromBigInt(blockHeight, 0))
+	return model.SetBlockHeight(db.DB, l.cfg.ChainId, l.cfg.From, decimal.NewFromBigInt(blockHeight, 0))
 }
 
 func buildQuery(contract common.Address, sig event.Sig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {

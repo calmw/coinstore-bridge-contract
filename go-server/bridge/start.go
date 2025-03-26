@@ -9,12 +9,7 @@ import (
 	"coinstore/model"
 	"errors"
 	"fmt"
-	log "github.com/calmw/blog"
-)
-
-const (
-	ChainTypeEvm  = 1
-	ChainTypeTron = 2
+	log "github.com/calmw/clog"
 )
 
 func Run() error {
@@ -23,7 +18,7 @@ func Run() error {
 	db.InitMysql(logger)
 
 	//自动迁移为给定模型运行自动迁移，只会添加缺失的字段，不会删除/更改当前数据
-	err := db.DB.AutoMigrate(&model.Config{}, &model.PollState{}, &model.BridgeTx{})
+	err := db.DB.AutoMigrate(&model.ChainInfo{}, &model.PollState{}, &model.BridgeTx{})
 	if err != nil {
 		logger.Debug("db AutoMigrate err: ", err)
 	}
@@ -39,30 +34,32 @@ func Run() error {
 		chainConfig := config.NewConfig(cfg)
 		logger.Debug("chain config: ", "config=", chainConfig)
 
+		fmt.Println("~~~ 1 ", chainConfig.Endpoint, chainConfig.ChainId, chainConfig.BridgeContractAddress)
 		var newChain core.Chain
 		chainLogger := log.Root().New("chain", chainConfig.ChainName)
 
-		if chainConfig.ChainType == ChainTypeEvm {
-			newChain, err = ethereum.InitializeChain(&chainConfig, chainLogger, sysErr)
+		if chainConfig.ChainType == config.ChainTypeEvm {
+			newChain, err = ethereum.InitializeChain(chainConfig, chainLogger, sysErr)
 			if err != nil {
-				logger.Error("chain config", "error", err)
+				logger.Error("initialize chain", "error", err)
 				return err
 			}
-		} else if chainConfig.ChainType == ChainTypeTron {
+		} else if chainConfig.ChainType == config.ChainTypeTron {
+			config.TronCfg = chainConfig
 			newChain, err = tron.InitializeChain(&chainConfig, chainLogger, sysErr)
 			if err != nil {
-				logger.Error("chain config", "error", err)
+				logger.Error("initialize chain", "error", err)
 				return err
 			}
 		} else {
 			logger.Error("chain type", "error", err)
 			return errors.New("chain type not supported")
 		}
-
+		core.ChainType[cfg.ChainId] = config.ChainType(cfg.ChainType)
 		c.AddChain(newChain)
 	}
 
-	logger.Debug("Config on initialization... ")
+	logger.Debug("ChainInfo on initialization... ")
 
 	c.Start()
 	return nil

@@ -43,14 +43,26 @@ func NewTanTinTron() (*TanTinTron, error) {
 }
 
 func (t *TanTinTron) Init() {
-	txHash, err := t.AdminSetEnv()
-	fmt.Println(txHash, err)
-	txHash, err = t.GrantBridgeRole(ChainConfig.BridgeContractAddress, "0x52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f")
-	fmt.Println(txHash, err)
+	//txHash, err := t.AdminSetEnv()
+	//fmt.Println(txHash, err)
+	//t.FreshPrk()
+	//txHash2, err2 := t.GrantBridgeRole("52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f", ChainConfig.BridgeContractAddress)
+	//fmt.Println(txHash2, err2)
+	//t.FreshPrk()
+	txHash3, err3 := t.AdminSetToken(strings.TrimPrefix(ResourceIdUsdt, "0x"), 2, ChainConfig.UsdtAddress, false, false, false)
+	fmt.Println(txHash3, err3)
+}
+
+func (t *TanTinTron) FreshPrk() {
+	_, _, _ = GetKeyFromPrivateKey(ChainConfig.PrivateKey, AccountName, Passphrase)
+	ks, ka, _ := store.UnlockedKeystore(OwnerAccount, Passphrase)
+	t.Ks = ks
+	t.Ka = ka
 }
 
 func (t *TanTinTron) AdminSetEnv() (string, error) {
 	triggerData := fmt.Sprintf("[{\"address\":\"%s\"}]", ChainConfig.BridgeContractAddress)
+	fmt.Println(triggerData)
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
@@ -87,16 +99,21 @@ func (t *TanTinTron) GrantBridgeRole(role, addr string) (string, error) {
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
-func (t *TanTinTron) AdminSetToken(resourceID, assetsType, tokenAddress, burnable, mintable, pause string) (string, error) {
-	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%s\"},{\"address\":\"%s\"},{\"bool\":\"%s\"},{\"bool\":\"%s\"},{\"bool\":\"%s\"}]",
-		resourceID, assetsType, tokenAddress, burnable, mintable, pause,
+func (t *TanTinTron) AdminSetToken(resourceID string, assetsType uint8, tokenAddress string, burnable, mintable, pause bool) (string, error) {
+	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint256\":\"%d\"},{\"address\":\"%s\"},{\"bool\":%v},{\"bool\":%v},{\"bool\":%v}]",
+		resourceID,
+		assetsType,
+		tokenAddress,
+		burnable,
+		mintable,
+		pause,
 	)
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
 		return "", err
 	}
-	tx, err := cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetToken(bytes32,uint8,address,bool,bool,bool)", triggerData, 300000000, 0, "", 0)
+	tx, err := cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetToken(bytes32,uint8,address,bool,bool,bool)", triggerData, 5000000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
@@ -109,15 +126,16 @@ func (t *TanTinTron) AdminSetToken(resourceID, assetsType, tokenAddress, burnabl
 }
 
 func (t *TanTinTron) Deposit(destinationChainId, resourceId, recipient, signature string, amount *big.Int) (string, error) {
-	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"bytes32\":\"%s\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"signature\":\"%s\"}]",
+	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"bytes32\":\"%s\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"}]",
 		destinationChainId, resourceId, recipient, amount.String(), signature,
 	)
+	fmt.Println(triggerData)
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
 		return "", err
 	}
-	tx, err := cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetToken(bytes32,uint8,address,bool,bool,bool)", triggerData, 300000000, 0, "", 0)
+	tx, err := cli.TriggerContract(OwnerAccount, t.ContractAddress, "deposit(uint256,bytes32,address,uint256,bytes)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}

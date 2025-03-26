@@ -1,75 +1,29 @@
 package tron
 
 import (
-	"coinstore/binding"
+	"coinstore/bridge/chains"
 	"coinstore/bridge/config"
-	"coinstore/bridge/connections"
 	"coinstore/bridge/core"
 	"coinstore/bridge/msg"
-	"crypto/ecdsa"
-	"fmt"
-	log "github.com/calmw/blog"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"math/big"
+	log "github.com/calmw/clog"
 )
 
 var _ core.Chain = &Chain{}
 
-var _ Connection = &connections.Connection{}
-
-type Connection interface {
-	Connect() error
-	KeyPrv() *ecdsa.PrivateKey
-	Opts() *bind.TransactOpts
-	CallOpts() *bind.CallOpts
-	LockAndUpdateOpts() error
-	UnlockOpts()
-	Client() *ethclient.Client
-	EnsureHasBytecode(address common.Address) error
-	LatestBlock() (*big.Int, error)
-	WaitForBlock(block *big.Int, delay *big.Int) error
-	Close()
-}
-
 type Chain struct {
-	cfg      *config.Config // The config of the chain
-	conn     Connection     // THe chains connection
-	listener *Listener      // The listener of this chain
-	writer   *Writer        // The writer of the chain
+	cfg      *config.Config    // The config of the chain
+	conn     chains.Connection // THe chains connection
+	listener *Listener         // The listener of this chain
+	writer   *Writer           // The writer of the chain
 	stop     chan<- int
 }
 
 func InitializeChain(cfg *config.Config, logger log.Logger, sysErr chan<- error) (*Chain, error) {
 	stop := make(chan int)
-	conn := connections.NewConnection(cfg.Endpoint, cfg.Http, cfg.PrivateKey, logger, cfg.GasLimit, cfg.MaxGasPrice, cfg.MinGasPrice)
+	conn := NewConnection(cfg.ChainType, cfg.Endpoint, cfg.Http, cfg.PrivateKey, logger, cfg.GasLimit, cfg.MaxGasPrice, cfg.MinGasPrice)
 	err := conn.Connect()
 	if err != nil {
 		return nil, err
-	}
-
-	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.Client())
-	if err != nil {
-		return nil, err
-	}
-
-	chainId, err := bridgeContract.GetChainId(conn.CallOpts())
-	if err != nil {
-		return nil, err
-	}
-
-	if chainId.Int64() != int64(cfg.ChainId) {
-		return nil, fmt.Errorf("chainId (%d) and configuration chainId (%d) do not match", chainId.Int64(), cfg.ChainId)
-	}
-
-	chainTypeId, err := bridgeContract.GetChainTypeId(conn.CallOpts())
-	if err != nil {
-		return nil, err
-	}
-
-	if chainTypeId.Int64() != int64(cfg.ChainType) {
-		return nil, fmt.Errorf("chainTypeId (%d) and configuration chainTypeId (%d) do not match", chainTypeId.Int64(), cfg.ChainType)
 	}
 
 	if cfg.LatestBlock {
@@ -120,6 +74,10 @@ func (c *Chain) Id() msg.ChainId {
 
 func (c *Chain) Name() string {
 	return c.cfg.ChainName
+}
+
+func (c *Chain) ChainType() config.ChainType {
+	return c.cfg.ChainType
 }
 
 func (c *Chain) LatestBlock() core.LatestBlock {

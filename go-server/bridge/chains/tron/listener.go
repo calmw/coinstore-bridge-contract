@@ -3,55 +3,52 @@ package tron
 import (
 	"coinstore/binding"
 	"coinstore/bridge/chains"
+	"coinstore/bridge/chains/ethereum"
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
 	"coinstore/bridge/event"
 	"coinstore/bridge/msg"
+	"coinstore/bridge/tron"
 	"coinstore/db"
 	"coinstore/model"
-	"context"
+	"coinstore/utils"
 	"errors"
 	"fmt"
-	"github.com/calmw/blog"
-	eth "github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
+	log "github.com/calmw/clog"
+	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/shopspring/decimal"
+	"github.com/status-im/keycard-go/hexutils"
 	"math/big"
+	"strings"
 	"time"
 )
 
 var BlockRetryInterval = time.Second * 5
 var BlockRetryLimit = 5
 var ErrFatalPolling = errors.New("bridge block polling failed")
-var Listeners = map[int]*Listener{}
+var ListenersTron *Listener
 
 type Listener struct {
-	cfg            config.Config
-	conn           Connection
-	Router         chains.Router
-	bridgeContract *binding.BridgeTron
-	log            log15.Logger
-	latestBlock    core.LatestBlock
-	stop           <-chan int
-	sysErr         chan<- error
+	Cfg         config.Config
+	conn        *Connection
+	Router      chains.Router
+	log         log.Logger
+	latestBlock core.LatestBlock
+	stop        <-chan int
+	sysErr      chan<- error
 }
 
 // NewListener creates and returns a Listener
-func NewListener(conn Connection, cfg *config.Config, log log15.Logger, stop <-chan int, sysErr chan<- error) *Listener {
-	bridgeContract, err := binding.NewBridgeTron(cfg.BridgeContractAddress)
-	if err != nil {
-		panic("new bridge contract failed")
-	}
+func NewListener(conn *Connection, cfg *config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Listener {
 	listener := Listener{
-		cfg:            *cfg,
-		conn:           conn,
-		bridgeContract: bridgeContract,
-		log:            log,
-		stop:           stop,
-		sysErr:         sysErr,
+		Cfg:    *cfg,
+		conn:   conn,
+		log:    log,
+		stop:   stop,
+		sysErr: sysErr,
 	}
 
-	Listeners[cfg.ChainId] = &listener
+	ListenersTron = &listener
 	log.Debug("new listener", "id", cfg.ChainId)
 	return &listener
 }
@@ -74,7 +71,7 @@ func (l *Listener) setRouter(r chains.Router) {
 }
 
 func (l *Listener) pollBlocks() error {
-	var currentBlock = l.cfg.StartBlock
+	var currentBlock = l.Cfg.StartBlock
 	l.log.Info("Polling Blocks...", "block", currentBlock)
 
 	var retry = BlockRetryLimit
@@ -98,8 +95,7 @@ func (l *Listener) pollBlocks() error {
 				continue
 			}
 
-			// Sleep if the difference is less than BlockDelay; (latest - current) < BlockDelay
-			if big.NewInt(0).Sub(latestBlock, currentBlock).Cmp(l.cfg.BlockConfirmations) == -1 {
+			if big.NewInt(0).Sub(latestBlock, currentBlock).Cmp(l.Cfg.BlockConfirmations) == -1 {
 				l.log.Debug("Block not ready, will retry", "target", currentBlock, "latest", latestBlock)
 				time.Sleep(BlockRetryInterval)
 				continue
@@ -126,72 +122,84 @@ func (l *Listener) pollBlocks() error {
 
 func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	l.log.Debug("Querying block for deposit events", "block", latestBlock)
-
-	query := buildQuery(common.HexToAddress(l.cfg.BridgeContractAddress), event.Deposit, latestBlock, latestBlock)
-
-	// 获取日志
-	logs, err := l.conn.Client().FilterLogs(context.Background(), query)
+	//latestBlock = big.NewInt(55444496)
+	data, err := event.GetEventData(l.Cfg.BridgeContractAddress, latestBlock.Int64())
 	if err != nil {
-		return fmt.Errorf("unable to Filter Logs: %w", err)
+		return err
 	}
-
-	for _, log := range logs {
+	for _, logE := range data {
 		var m msg.Message
-		destId := msg.ChainId(log.Topics[1].Big().Uint64())
-		rId := msg.ResourceIdFromSlice(log.Topics[2].Bytes())
-		nonce := msg.Nonce(log.Topics[3].Big().Uint64())
+		l.log.Debug("get events:")
+		l.log.Debug("ResourceID", logE.ResourceID)
+		l.log.Debug("DestinationChainId", logE.DestinationChainId)
+		l.log.Debug("Data", logE.Data)
+		var bigIntD big.Int
+		var bigIntN big.Int
+		fmt.Println(logE, "~~~~~~~~~ 2222 ")
+		destinationChainId, success := bigIntD.SetString(logE.DestinationChainId, 10)
+		if !success || destinationChainId == nil {
+			fmt.Println(success, destinationChainId, "~~~~~~~~~ 2 ")
+			return errors.New("转换失败")
+		}
+		depositNonce, success := bigIntN.SetString(logE.DepositNonce, 10)
+		if !success || depositNonce == nil {
+			fmt.Println(success, depositNonce, "~~~~~~~~~ 3 ")
+			return errors.New("转换失败")
+		}
+		record, err := tron.GetDepositRecord(binding.OwnerAccount, l.Cfg.BridgeContractAddress, destinationChainId, depositNonce)
+		if err != nil {
+			return fmt.Errorf("getDepositRecord error %v", err)
+		}
+		m = msg.NewGenericTransfer(
+			msg.ChainId(l.Cfg.ChainId),
+			msg.ChainId(destinationChainId.Int64()),
+			msg.Nonce(depositNonce.Int64()),
+			msg.ResourceId(hexutils.HexToBytes(logE.ResourceID)),
+			hexutils.HexToBytes(logE.Data),
+		)
 
-		records, err := l.bridgeContract.DepositRecords(nil, log.Topics[1].Big(), log.Topics[3].Big())
+		//// 获取目标链的信息
+		dl, ok := ethereum.Listeners[int(destinationChainId.Int64())]
+		if !ok {
+			l.log.Error("destination listener not found", "chainId", destinationChainId)
+			return errors.New(fmt.Sprintf("destination listener not found, chainId %d", destinationChainId))
+		}
+		_, t, _, err := dl.BridgeContract.GetTokenInfoByResourceId(nil, msg.ResourceId(hexutils.HexToBytes(logE.ResourceID)))
+		if err != nil {
+			l.log.Error("destination token info not found", "chainId", destinationChainId)
+		}
+		tokenInfo, err := tron.ResourceIdToTokenInfo(binding.OwnerAccount, l.Cfg.BridgeContractAddress, record.ResourceID)
 		if err != nil {
 			return err
 		}
+		tokenAddress := "0x41" + strings.TrimPrefix(tokenInfo.TokenAddress.String(), "0x")
+		tokenAddress = address.HexToAddress(tokenAddress).String()
 
-		l.log.Debug("get events:")
-		l.log.Debug("ResourceID", records.ResourceID)
-		l.log.Debug("DestinationChainId", records.DestinationChainId)
-		l.log.Debug("Sender", records.Sender)
-		l.log.Debug("Data", records.Data)
-
-		m = msg.NewGenericTransfer(
-			msg.ChainId(l.cfg.ChainId),
-			destId,
-			nonce,
-			rId,
-			records.Data[:],
-		)
+		amount, caller, receiver, err := utils.ParseBridgeData(record.Data)
+		if err != nil {
+			return err
+		}
+		//保存到数据库
+		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, tokenAddress, strings.ToLower(t.String()), logE.TxHash, time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
 
 		err = l.Router.Send(m)
 		if err != nil {
 			l.log.Error("subscription error: failed to route message", "err", err)
+			return errors.New(fmt.Sprintf("subscription error: failed to route message,err %v", err))
 		}
-
-		// 保存到数据库
-		//model.SaveBridgeOrder(m, l.log)
 	}
 
 	return nil
 }
 
 func (l *Listener) LatestBlock() (*big.Int, error) {
-	header, err := l.conn.Client().HeaderByNumber(context.Background(), nil)
+	header, err := l.conn.ClientTron().GetNowBlock()
 	if err != nil {
 		return nil, err
 	}
-	return header.Number, nil
+	return big.NewInt(header.BlockHeader.RawData.Number), nil
 }
 
 func (l *Listener) StoreBlock(blockHeight *big.Int) error {
-	return model.SetBlockHeight(db.DB, l.cfg.ChainId, decimal.NewFromBigInt(blockHeight, 0))
-}
-
-func buildQuery(contract common.Address, sig event.Sig, startBlock *big.Int, endBlock *big.Int) eth.FilterQuery {
-	query := eth.FilterQuery{
-		FromBlock: startBlock,
-		ToBlock:   endBlock,
-		Addresses: []common.Address{contract},
-		Topics: [][]common.Hash{
-			{sig.GetTopic()},
-		},
-	}
-	return query
+	return model.SetBlockHeight(db.DB, l.Cfg.ChainId, l.Cfg.From, decimal.NewFromBigInt(blockHeight, 0))
 }

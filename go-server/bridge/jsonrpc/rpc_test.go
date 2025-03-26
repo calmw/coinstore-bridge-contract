@@ -3,7 +3,7 @@ package jsonrpc
 import (
 	"coinstore/utils"
 	"fmt"
-	log "github.com/calmw/blog"
+	log "github.com/calmw/clog"
 	"testing"
 )
 

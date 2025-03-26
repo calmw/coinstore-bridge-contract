@@ -10,7 +10,7 @@ replace github.com/codahale/hdrhistogram => github.com/HdrHistogram/hdrhistogram
 
 require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.2
-	github.com/calmw/blog v0.0.1
+	github.com/calmw/clog v0.0.3
 	github.com/didip/tollbooth/v7 v7.0.2
 	github.com/didip/tollbooth_gin v0.0.0-20250112173845-11eddec067c4
 	github.com/ethereum/go-ethereum v1.14.3
@@ -33,6 +33,7 @@ require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bits-and-blooms/bitset v1.10.0 // indirect
+	github.com/btcsuite/btcutil v1.0.2 // indirect
 	github.com/bytedance/sonic v1.13.1 // indirect
 	github.com/bytedance/sonic/loader v0.2.4 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect

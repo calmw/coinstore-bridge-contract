@@ -48,6 +48,7 @@ func (b *BridgeEvm) AdminSetEnv() {
 			log.Println(err)
 			return
 		}
+		fmt.Println("~~111", common.HexToAddress(ChainConfig.VoteContractAddress).Hex(), big.NewInt(ChainConfig.BridgeId).Int64(), big.NewInt(ChainConfig.ChainTypeId).Int64())
 		res, err = b.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.VoteContractAddress), big.NewInt(ChainConfig.BridgeId), big.NewInt(ChainConfig.ChainTypeId))
 		if err == nil {
 			break
@@ -64,7 +65,7 @@ func (b *BridgeEvm) AdminSetEnv() {
 		time.Sleep(time.Second * 2)
 	}
 
-	fmt.Println(fmt.Sprintf("AdminSetEnv 确认成功"))
+	fmt.Println(fmt.Sprintf("AdminSetEnv 确认成功", res.Hash()))
 }
 
 func (b *BridgeEvm) GrantAdminRole(addr common.Address) {
@@ -127,7 +128,7 @@ func (b *BridgeEvm) GrantVoteRole(addr common.Address) {
 	log.Println(fmt.Sprintf("GrantVoteRole 确认成功"))
 }
 
-func (b *BridgeEvm) AdminSetResource(fee *big.Int, funcSig [4]byte) {
+func (b *BridgeEvm) AdminSetResource(fee *big.Int) {
 	var res *types.Transaction
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(ResourceIdUsdt, "0x"))
 	for {

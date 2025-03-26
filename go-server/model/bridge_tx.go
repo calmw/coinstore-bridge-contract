@@ -7,7 +7,7 @@ import (
 	"encoding/gob"
 	"errors"
 	"fmt"
-	log "github.com/calmw/blog"
+	log "github.com/calmw/clog"
 	"github.com/shopspring/decimal"
 	"github.com/status-im/keycard-go/hexutils"
 	"gorm.io/gorm"
@@ -16,6 +16,7 @@ import (
 type BridgeTx struct {
 	Id                      uint64          `gorm:"primaryKey" json:"id"`
 	BridgeData              string          `gorm:"column:bridge_data;type:varchar(1000);comment:'跨链数据'" json:"bridge_data"`
+	BridgeMsg               []byte          `gorm:"column:bridge_msg;comment:'跨链nsg'" json:"bridge_msg"`
 	ResourceId              string          `gorm:"column:resource_id;type:varchar(100);comment:'resource ID'" json:"resource_id"`
 	Hash                    string          `gorm:"column:hash;comment:'唯一索引'" json:"hash"`
 	VoteStatus              int             `gorm:"column:vote_status;default:0;comment:'vote 0失败，1成功'" json:"vote_status"`
@@ -27,7 +28,7 @@ type BridgeTx struct {
 	SourceTokenAddress      string          `gorm:"column:source_token_address;comment:'源链token地址'" json:"source_token_address"`
 	DestinationChainId      int             `gorm:"column:destination_chain_id;comment:'目标链ID'" json:"destination_chain_id"`
 	DestinationTokenAddress string          `gorm:"column:destination_token_address;comment:'目标链token地址'" json:"destination_token_address"`
-	BridgeStatus            int             `gorm:"column:bridge_status;type:tinyint;comment:'跨链状态 1 源链deposit成功 2 目标链执行成功';default:1" json:"bridge_status"`
+	BridgeStatus            int             `gorm:"column:bridge_status;type:tinyint;comment:'跨链状态 1 源链deposit成功 2 目标链执行成功 3 失败';default:1" json:"bridge_status"`
 	DepositHash             string          `gorm:"column:deposit_hash;comment:'deposit tx hash'" json:"deposit_hash"`
 	ExecuteHash             string          `gorm:"column:execute_hash;comment:'execute tx hash'" json:"execute_hash"`
 	DepositAt               string          `gorm:"column:deposit_at;comment:'跨链发起时间'" json:"deposit_at"`
@@ -72,7 +73,8 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 			return
 		}
 		bridgeOrder = BridgeTx{
-			BridgeData:              fmt.Sprintf("%x", orderData),
+			BridgeData:              fmt.Sprintf("%x", m.Payload[0].([]byte)),
+			BridgeMsg:               orderData,
 			Hash:                    string(key),
 			Amount:                  amount,
 			ResourceId:              resourceId,

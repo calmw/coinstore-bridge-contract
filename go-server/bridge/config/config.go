@@ -3,25 +3,33 @@ package config
 import (
 	"coinstore/db"
 	"coinstore/model"
-	"crypto/ecdsa"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/shopspring/decimal"
 	"math/big"
 	"os"
 )
 
-const DefaultGasLimit = 6721975
-const DefaultGasPrice = 20000000000
-const DefaultMinGasPrice = 0
-const DefaultBlockConfirmations = 5
+type ChainType int
+
+const (
+	ChainTypeEvm              ChainType = 1
+	ChainTypeTron             ChainType = 2
+	DefaultGasLimit                     = 6721975
+	DefaultGasPrice                     = 20000000000
+	DefaultMinGasPrice                  = 0
+	DefaultBlockConfirmations           = 5
+	TronApiHost                         = "https://nile.trongrid.io"
+)
+
+var TronCfg Config
 
 type Config struct {
-	ChainName             string
-	ChainId               int
-	ChainType             int
-	Endpoint              string
-	From                  string
-	PrivateKey            *ecdsa.PrivateKey
+	ChainName string
+	ChainId   int
+	ChainType ChainType
+	Endpoint  string
+	From      string
+	//PrivateKey            *ecdsa.PrivateKey
+	PrivateKey            string
 	BridgeContractAddress string
 	VoteContractAddress   string
 	GasLimit              *big.Int
@@ -34,13 +42,8 @@ type Config struct {
 	LatestBlock           bool // If true, overrides blockstore or latest block in config and starts from current block
 }
 
-func NewConfig(cfg model.Config) Config {
+func NewConfig(cfg model.ChainInfo) Config {
 	key := os.Getenv("COINSTORE_BRIDGE")
-	//key:=utils2.ThreeDesDecrypt("",cfg.PrivateKey) // TODO 线上要改
-	privateKey, err := crypto.HexToECDSA(key)
-	if err != nil {
-		panic("private key conversion failed")
-	}
 	gasLimit := big.NewInt(DefaultGasLimit)
 	if cfg.GasLimit > 0 {
 		gasLimit = big.NewInt(cfg.GasLimit)
@@ -54,12 +57,12 @@ func NewConfig(cfg model.Config) Config {
 		minGasPrice = big.NewInt(cfg.MinGasPrice)
 	}
 	blockConfirmations := big.NewInt(DefaultBlockConfirmations)
-	if cfg.MaxGasPrice > 0 {
+	if cfg.BlockConfirmations > 0 {
 		blockConfirmations = big.NewInt(cfg.BlockConfirmations)
 	}
 	startBlock := cfg.StartBlock
 	if !cfg.FreshStart {
-		height, err := model.GetBlockHeight(db.DB, cfg.ChainId)
+		height, err := model.GetBlockHeight(db.DB, cfg.ChainId, cfg.From)
 		if err == nil {
 			startBlock = decimal.NewFromBigInt(height, 0)
 		}
@@ -72,10 +75,10 @@ func NewConfig(cfg model.Config) Config {
 	return Config{
 		ChainName:             cfg.ChainName,
 		ChainId:               cfg.ChainId,
-		ChainType:             cfg.ChainType,
+		ChainType:             ChainType(cfg.ChainType),
 		Endpoint:              cfg.Endpoint,
 		From:                  cfg.From,
-		PrivateKey:            privateKey,
+		PrivateKey:            key,
 		BridgeContractAddress: cfg.BridgeContract,
 		VoteContractAddress:   cfg.VoteContract,
 		GasLimit:              gasLimit,

@@ -3,7 +3,7 @@ package main
 import (
 	"coinstore/cmd/server/service"
 	"coinstore/db"
-	log "github.com/calmw/blog"
+	log "github.com/calmw/clog"
 	"github.com/didip/tollbooth/v7"
 	"github.com/didip/tollbooth_gin"
 	"github.com/gin-gonic/gin"
@@ -19,5 +19,7 @@ func main() {
 	limiter := tollbooth.NewLimiter(5, nil)
 	// 使用限速中间件
 	router.GET("/history", tollbooth_gin.LimitHandler(limiter), service.BridgeTx)
+	router.GET("/check_address", tollbooth_gin.LimitHandler(limiter), service.CheckAddress)
+	router.GET("/bridge_latest_time", tollbooth_gin.LimitHandler(limiter), service.BridgeLatestTime)
 	_ = router.Run()
 }

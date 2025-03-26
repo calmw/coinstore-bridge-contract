@@ -1,6 +1,7 @@
 package ethereum
 
 import (
+	"coinstore/bridge/chains"
 	"coinstore/bridge/event"
 	"coinstore/bridge/msg"
 	"coinstore/model"
@@ -8,7 +9,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	log "github.com/calmw/blog"
+	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 	"time"
@@ -96,9 +97,12 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 	w.log.Info("Creating generic proposal", "src", m.Source, "nonce", m.DepositNonce)
 
 	metadata := m.Payload[0].([]byte)
-	data := ConstructGenericProposalData(metadata)
+	data := chains.ConstructGenericProposalData(metadata)
 	toHash := append(common.HexToAddress(w.Cfg.BridgeContractAddress).Bytes(), data...)
 	dataHash := utils.Hash(toHash)
+	fmt.Printf("---------------- chainId:%d,nonce:%d,dataHsh:%x\n", m.Source, m.DepositNonce, dataHash)
+	fmt.Printf("---------------- data:%x\n", metadata)
+	fmt.Printf("---------------- data2:%x\n", data)
 	if !w.shouldVote(m, dataHash) {
 		if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
 			w.ExecuteProposal(m, data, dataHash)
@@ -144,7 +148,7 @@ func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 			}
 
 			query := buildQuery(common.HexToAddress(w.Cfg.VoteContractAddress), event.ProposalEvent, latestBlock, latestBlock)
-			evts, err := w.conn.Client().FilterLogs(context.Background(), query)
+			evts, err := w.conn.ClientEvm().FilterLogs(context.Background(), query)
 			if err != nil {
 				w.log.Error("Failed to fetch logs", "err", err)
 				return

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	log "github.com/calmw/blog"
+	log "github.com/calmw/clog"
 	"math/rand"
 	"net/http"
 	"strings"

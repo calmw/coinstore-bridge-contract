@@ -1,6 +1,7 @@
 package binding
 
 import (
+	"coinstore/utils"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
@@ -269,4 +270,85 @@ func TransferToken() (string, error) {
 	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
 	//log.Println(6, common.BytesToHexString(tx.GetResult().GetMessage()))
 	return common.BytesToHexString(tx.GetTxid()), nil
+}
+
+func AA() {
+	toAddress, err := address.Base58ToAddress("TPrEMmYc2nz5bHbjs3M2f1gZ9PtWsLzr8A")
+	address.HexToAddress("0xECa9bC828A3005B9a3b909f2cc5c2a54794DE05F")
+	//0x4180B27CDE65Fafb1f048405923fD4a624fEa2d1C6
+	fmt.Println(address.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6").String(), "~~~~")
+	fmt.Println(toAddress, err)
+
+	toAddress, err = address.Base58ToAddress("TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf")
+	fmt.Println(toAddress.String())
+	fmt.Println(toAddress.Hex())
+}
+
+func HasVotedOnProposal() {
+	url := "https://nile.trongrid.io/jsonrpc"
+
+	ethCallBody := fmt.Sprintf(`{
+	"jsonrpc": "2.0",
+	"method": "eth_call",
+	"params": [{
+		"from": "%s",
+		"to": "0x41f4a0d088ef4ec7b0e231cc365f16726ad552e051",
+		"gas": "0x0",
+		"gasPrice": "0x0",
+		"value": "0x0",
+		"data": "0xc70bf0b50000000000000000000000000000000000000000000000000000000000000f02f5ffe0a02a4b931713566e54bfafc450192c48bc69010f471fa6dd2d2639a65b0000000000000000000000003942fda93c573e2ce9e85b0bb00ba98a144f27f6"
+	}, "latest"],
+	"id": %d
+}`, "0x41f4a0d088ef4ec7b0e231cc365f16726ad552e051", utils.RandInt(100, 10000))
+	fmt.Println(ethCallBody)
+	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
+	req.Header.Add("accept", "application/json")
+	res, _ := http.DefaultClient.Do(req)
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
+
+	fmt.Println(string(body))
+	fmt.Println("==")
+
+}
+
+func ExecuteProposal() (string, error) {
+
+	cli := client.NewGrpcClient(NileGrpc)
+	err := cli.Start(grpc.WithInsecure())
+	if err != nil {
+		return "", err
+	}
+	from := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
+	contractAddress := "TV9ET14nSTmKZ88Dt15USBqKJHfaPsXbXH"
+
+	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
+	_, _, err = GetKeyFromPrivateKey(privateKey, AccountName, Passphrase)
+	//if strings.Contains(err.Error(),"already exists")
+	if err != nil && !strings.Contains(err.Error(), "already exists") {
+		return "", err
+	}
+	// 获得keystore与account
+	ks, ka, err := store.UnlockedKeystore(from, Passphrase)
+	if err != nil {
+		return "", err
+	}
+
+	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"},{\"bytes32\":\"%s\"}]",
+		"2",
+		"78",
+		"00000000000000000000000000000000000000000000000000000000000000C0AC589789ED8C9D2C61F17B13369864B5F181E58EBA230A6EE4EC4C3E7750CD1D000000000000000000000000000000000000000000000000000000000000000200000000000000000000000080B27CDE65FAFB1F048405923FD4A624FEA2D1C600000000000000000000000080B27CDE65FAFB1F048405923FD4A624FEA2D1C600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000098",
+		"AC589789ED8C9D2C61F17B13369864B5F181E58EBA230A6EE4EC4C3E7750CD1D",
+	)
+
+	tx, err := cli.TriggerContract(from, contractAddress, "executeProposal(uint256,uint256,bytes,bytes32)", triggerData, 15000000000, 0, "", 0)
+	if err != nil {
+		return "", err
+	}
+	ctrlr := transaction.NewController(cli, ks, ka, tx.Transaction)
+	if err = ctrlr.ExecuteTransaction(); err != nil {
+		return "", err
+	}
+	fmt.Println(tx, err)
+	return hexutils.BytesToHex(tx.GetTxid()), nil
 }

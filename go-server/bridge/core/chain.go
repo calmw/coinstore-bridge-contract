@@ -1,6 +1,7 @@
 package core
 
 import (
+	"coinstore/bridge/config"
 	"coinstore/bridge/msg"
 	"math/big"
 	"time"
@@ -10,6 +11,7 @@ type Chain interface {
 	Start() error // Start chain
 	SetRouter(*Router)
 	Id() msg.ChainId
+	ChainType() config.ChainType
 	Name() string
 	LatestBlock() LatestBlock
 	Stop()
@@ -32,3 +34,5 @@ type ChainConfig struct {
 	LatestBlock    bool              // If true, overrides blockstore or latest block in config and starts from current block
 	Opts           map[string]string // Per chain options
 }
+
+var ChainType = map[int]config.ChainType{}

@@ -1,9 +1,8 @@
-package tron
+package chains
 
 import (
-	"math/big"
-
 	"github.com/ethereum/go-ethereum/common/math"
+	"math/big"
 )
 
 func ConstructGenericProposalData(metadata []byte) []byte {
