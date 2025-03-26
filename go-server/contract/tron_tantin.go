@@ -43,16 +43,26 @@ func NewTanTinTron() (*TanTinTron, error) {
 }
 
 func (t *TanTinTron) Init() {
-	//txHash, err := t.AdminSetEnv()
-	//fmt.Println(txHash, err)
-	//txHash, err := t.GrantBridgeRole("52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f", ChainConfig.BridgeContractAddress)
-	//fmt.Println(txHash, err)
-	//txHash, err := t.AdminSetToken(strings.TrimPrefix(ResourceIdUsdt, "0x"), "2", ChainConfig.UsdtAddress, false, false, false)
-	//fmt.Println(txHash, err)
+	txHash, err := t.AdminSetEnv()
+	fmt.Println(txHash, err)
+	t.FreshPrk()
+	txHash2, err2 := t.GrantBridgeRole("52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f", ChainConfig.BridgeContractAddress)
+	fmt.Println(txHash2, err2)
+	t.FreshPrk()
+	txHash3, err3 := t.AdminSetToken(strings.TrimPrefix(ResourceIdUsdt, "0x"), "2", ChainConfig.UsdtAddress, false, false, false)
+	fmt.Println(txHash3, err3)
+}
+
+func (t *TanTinTron) FreshPrk() {
+	_, _, _ = GetKeyFromPrivateKey(ChainConfig.PrivateKey, AccountName, Passphrase)
+	ks, ka, _ := store.UnlockedKeystore(OwnerAccount, Passphrase)
+	t.Ks = ks
+	t.Ka = ka
 }
 
 func (t *TanTinTron) AdminSetEnv() (string, error) {
 	triggerData := fmt.Sprintf("[{\"address\":\"%s\"}]", ChainConfig.BridgeContractAddress)
+	fmt.Println(triggerData)
 	cli := client.NewGrpcClient(NileGrpc)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {

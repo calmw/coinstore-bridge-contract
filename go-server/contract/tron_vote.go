@@ -43,12 +43,21 @@ func NewVoteTron() (*VoteTron, error) {
 }
 
 func (v *VoteTron) Init() {
-	//txHash, err := v.AdminSetEnv(big.NewInt(1), big.NewInt(100000))
-	//fmt.Println(txHash, err)
-	//txHash, err := v.GrantBridgeRole("52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f", ChainConfig.BridgeContractAddress)
-	//fmt.Println(txHash, err)
-	txHash, err := v.GrantBridgeRole("e2b7fb3b832174769106daebcfd6d1970523240dda11281102db9363b83b0dc4", OwnerAccount)
+	txHash, err := v.AdminSetEnv(big.NewInt(1), big.NewInt(100000))
 	fmt.Println(txHash, err)
+	v.FreshPrk()
+	txHash2, err2 := v.GrantBridgeRole("52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f", ChainConfig.BridgeContractAddress)
+	fmt.Println(txHash2, err2)
+	v.FreshPrk()
+	txHash3, err3 := v.GrantBridgeRole("e2b7fb3b832174769106daebcfd6d1970523240dda11281102db9363b83b0dc4", OwnerAccount)
+	fmt.Println(txHash3, err3)
+}
+
+func (v *VoteTron) FreshPrk() {
+	_, _, _ = GetKeyFromPrivateKey(ChainConfig.PrivateKey, AccountName, Passphrase)
+	ks, ka, _ := store.UnlockedKeystore(OwnerAccount, Passphrase)
+	v.Ks = ks
+	v.Ka = ka
 }
 
 func (v *VoteTron) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) (string, error) {

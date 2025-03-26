@@ -46,17 +46,26 @@ func NewBridgeTron() (*BridgeTron, error) {
 		Ks:              ks,
 		Ka:              ka,
 		Cli:             cli,
-		ContractAddress: ChainConfig.VoteContractAddress,
+		ContractAddress: ChainConfig.BridgeContractAddress,
 	}, nil
 }
 
 func (b *BridgeTron) Init() {
-	//txHash, err := b.AdminSetEnv()
-	//fmt.Println(txHash, err)
-	//txHash2, err2 := b.GrantVoteRole("c65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7", ChainConfig.VoteContractAddress)
-	//fmt.Println(txHash2, err2)
-	//txHash, err := b.AdminSetResource(big.NewInt(1))
-	//fmt.Println(txHash, err)
+	txHash, err := b.AdminSetEnv()
+	fmt.Println(txHash, err)
+	b.FreshPrk()
+	txHash2, err2 := b.GrantVoteRole("c65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7", ChainConfig.VoteContractAddress)
+	fmt.Println(txHash2, err2)
+	b.FreshPrk()
+	txHash3, err3 := b.AdminSetResource(big.NewInt(1))
+	fmt.Println(txHash3, err3)
+}
+
+func (b *BridgeTron) FreshPrk() {
+	_, _, _ = GetKeyFromPrivateKey(ChainConfig.PrivateKey, AccountName, Passphrase)
+	ks, ka, _ := store.UnlockedKeystore(OwnerAccount, Passphrase)
+	b.Ks = ks
+	b.Ka = ka
 }
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {
