@@ -135,15 +135,12 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		l.log.Debug("Data", logE.Data)
 		var bigIntD big.Int
 		var bigIntN big.Int
-		fmt.Println(logE, "~~~~~~~~~ 2222 ")
 		destinationChainId, success := bigIntD.SetString(logE.DestinationChainId, 10)
 		if !success || destinationChainId == nil {
-			fmt.Println(success, destinationChainId, "~~~~~~~~~ 2 ")
 			return errors.New("转换失败")
 		}
 		depositNonce, success := bigIntN.SetString(logE.DepositNonce, 10)
 		if !success || depositNonce == nil {
-			fmt.Println(success, depositNonce, "~~~~~~~~~ 3 ")
 			return errors.New("转换失败")
 		}
 		record, err := tron.GetDepositRecord(binding.OwnerAccount, l.Cfg.BridgeContractAddress, destinationChainId, depositNonce)

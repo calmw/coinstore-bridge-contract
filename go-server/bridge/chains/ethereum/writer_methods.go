@@ -100,9 +100,6 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 	data := chains.ConstructGenericProposalData(metadata)
 	toHash := append(common.HexToAddress(w.Cfg.BridgeContractAddress).Bytes(), data...)
 	dataHash := utils.Hash(toHash)
-	fmt.Printf("---------------- chainId:%d,nonce:%d,dataHsh:%x\n", m.Source, m.DepositNonce, dataHash)
-	fmt.Printf("---------------- data:%x\n", metadata)
-	fmt.Printf("---------------- data2:%x\n", data)
 	if !w.shouldVote(m, dataHash) {
 		if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
 			w.ExecuteProposal(m, data, dataHash)

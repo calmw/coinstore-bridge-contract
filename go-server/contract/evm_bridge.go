@@ -48,7 +48,6 @@ func (b *BridgeEvm) AdminSetEnv() {
 			log.Println(err)
 			return
 		}
-		fmt.Println("~~111", common.HexToAddress(ChainConfig.VoteContractAddress).Hex(), big.NewInt(ChainConfig.BridgeId).Int64(), big.NewInt(ChainConfig.ChainTypeId).Int64())
 		res, err = b.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.VoteContractAddress), big.NewInt(ChainConfig.BridgeId), big.NewInt(ChainConfig.ChainTypeId))
 		if err == nil {
 			break

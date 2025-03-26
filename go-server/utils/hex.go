@@ -2,7 +2,6 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 	"math/big"
 	"strings"
 )
@@ -12,8 +11,6 @@ func HexToBigInt(hexStr string) (*big.Int, error) {
 	if strings.HasPrefix(hexStr, "0x") {
 		hexStr = strings.TrimPrefix(hexStr, "0x")
 	}
-
-	fmt.Println(hexStr, "~~~~~~~~~ 1 ")
 
 	var bigInt big.Int
 	_, ok := bigInt.SetString(hexStr, 16)

@@ -148,12 +148,6 @@ func GetEventData(contractAddress string, number int64) ([]EvtData, error) {
 	}
 	for _, d := range eventLog.Data {
 		if d.EventName == "Deposit" && strings.ToLower(d.ContractAddress) == strings.ToLower(contractAddress) {
-			fmt.Println("'--------'", d.Event)
-			fmt.Println("'--------'", d.Result)
-			fmt.Println("'--------'", d.Result.Data)
-			fmt.Println("'--------'", d.Result.ResourceID)
-			fmt.Println("'--------'", d.Result.DepositNonce)
-			fmt.Println("'--------'", d.Result.DestinationChainId)
 			result = append(result, EvtData{
 				Data:               d.Result.Data,
 				TxHash:             d.TransactionID,
@@ -175,10 +169,7 @@ func ParseProposalEvent(originChainId msg.ChainId, originDepositNonce msg.Nonce,
 	res, _ := http.DefaultClient.Do(req)
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
-	fmt.Println("---=====", number)
-	fmt.Println("---=====", string(body))
 	var eventLog ProposalVoteEvent
-	fmt.Println("---=====-------------------------------------------------------------------------------------------------")
 	err := json.Unmarshal(body, &eventLog)
 	if err != nil || !eventLog.Success {
 		return nil, errors.New("failed to parse event log")

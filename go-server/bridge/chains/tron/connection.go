@@ -303,8 +303,6 @@ func (c *Connection) WaitForBlock(targetBlock *big.Int, delay *big.Int) error {
 				currBlock.Sub(currBlock, delay)
 			}
 
-			//fmt.Println("===== 3 ", currBlock, targetBlock, currBlock.Cmp(targetBlock))
-			// Equal or greater than target
 			if currBlock.Cmp(targetBlock) >= 0 {
 				return nil
 			}

@@ -252,8 +252,6 @@ func GenerateBridgeGetTokenInfoByResourceId(resourceID [32]byte) (string, error)
 	}
 
 	// 打印出Inputs.Pack的结果
-	//fmt.Printf("Inputs.Pack~~~~~~~~~~~~~~~~~~~~~~~~~~~~22222: 0x%x\n", AbiPacked[:4])
-	//fmt.Println(AbiPacked[:4])
 	return fmt.Sprintf("0x%x", AbiPacked), nil
 }
 
@@ -575,7 +573,6 @@ func GenerateVoteHasVotedOnProposal(arg0 *big.Int, arg1 [32]byte, arg2 common.Ad
 	if err != nil {
 		return "", err
 	}
-	//fmt.Printf("----- %x\n", AbiPacked[:4])
 	return fmt.Sprintf("0x%x", AbiPacked), nil
 }
 

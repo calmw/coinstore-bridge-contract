@@ -7,13 +7,11 @@ import (
 	"coinstore/model"
 	"coinstore/utils"
 	"errors"
-	"fmt"
 	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/fbsobreira/gotron-sdk/pkg/store"
 	"math/big"
-	"strings"
 	"time"
 )
 
@@ -21,7 +19,7 @@ import (
 const ExecuteBlockWatchLimit = 100
 
 // TxRetryInterval Time between retrying a failed tx
-const TxRetryInterval = time.Second * 2
+const TxRetryInterval = time.Second * 3
 
 // TxRetryLimit Maximum number of tx retries before exiting
 const TxRetryLimit = 10
@@ -38,7 +36,6 @@ func (w *Writer) proposalIsComplete(m msg.Message, dataHash [32]byte) bool {
 		return false
 	}
 	///
-	w.log.Debug("🫥  proposalIsComplete", "status", prop.Status, "nonce", m.DepositNonce)
 	if prop.Status >= 2 {
 		model.UpdateVoteStatus(m, 1)
 	}
@@ -86,7 +83,6 @@ func (w *Writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte)
 }
 
 func (w *Writer) shouldVote(m msg.Message, dataHash [32]byte) bool {
-	fmt.Println("----- 1")
 	if w.proposalIsComplete(m, dataHash) {
 		w.log.Info("Proposal complete, not voting", "src", m.Source, "nonce", m.DepositNonce)
 		return false
@@ -105,17 +101,12 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 
 	metadata := m.Payload[0].([]byte)
 	data := chains.ConstructGenericProposalData(metadata)
-	bridgeAddress, err := address.Base58ToAddress(w.Cfg.BridgeContractAddress)
+	//bridgeAddress, err := address.Base58ToAddress(w.Cfg.BridgeContractAddress)
 
 	//b :=hexutils.HexToBytes(strings.TrimPrefix(bridgeAddress.Hex(),"0x41"))
-	a := "0x" + strings.TrimPrefix(bridgeAddress.Hex(), "0x41")
-	fmt.Println("^^^^^^^^", bridgeAddress.Hex(), bridgeAddress.String(), w.Cfg.BridgeContractAddress, a)
-	// 0x52261B63a0395d98cA6453C0631363F7870F368D
+	//a := "0x" + strings.TrimPrefix(bridgeAddress.Hex(), "0x41")
 	toHash := append(common.HexToAddress("0xE0667eE3AA3C5ADBf1034aD6CA42DD67258FaF27").Bytes(), data...)
 	dataHash := utils.Hash(toHash)
-	fmt.Printf("---------------- chainId:%d,nonce:%d,dataHsh:%x\n", m.Source, m.DepositNonce, dataHash)
-	fmt.Printf("---------------- data:%x\n", metadata)
-	fmt.Printf("---------------- data2:%x\n", data)
 	if !w.shouldVote(m, dataHash) {
 		if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
 			w.ExecuteProposal(m, data, dataHash)
@@ -144,11 +135,8 @@ func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 		case <-w.stop:
 			return
 		default:
-			fmt.Println("===== 1")
 			for waitRetrys := 0; waitRetrys < BlockRetryLimit; waitRetrys++ {
-				fmt.Println("===== 2")
 				err := w.conn.WaitForBlock(latestBlock, w.Cfg.BlockConfirmations)
-				fmt.Println("===== 3 ", err)
 				if err != nil {
 					w.log.Error("Waiting for block failed", "err", err)
 					if waitRetrys+1 == BlockRetryLimit {
@@ -162,29 +150,10 @@ func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 			}
 
 			if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
-				fmt.Println("===== 55555555")
 				w.ExecuteProposal(m, data, dataHash)
 				return
 			}
 
-			//proposalEvent, err := event.GetProposalEvent(m.Destination, m.DepositNonce, latestBlock.Int64())
-			//fmt.Println("===== 5")
-			//fmt.Println(len(proposalEvent), err, latestBlock.Int64())
-			//
-			//for _, evt := range proposalEvent {
-			//	sourceId := evt.OriginChainID
-			//	depositNonce := evt.OriginDepositNonce
-			//	status := evt.ProposalStatus
-			//
-			//	if m.Source == msg.ChainId(sourceId) &&
-			//		m.DepositNonce.Big().Uint64() == depositNonce &&
-			//		event.IsFinalized(uint8(status)) {
-			//		w.ExecuteProposal(m, data, dataHash)
-			//		return
-			//	} else {
-			//		w.log.Trace("Ignoring event", "src", sourceId, "nonce", depositNonce)
-			//	}
-			//}
 			w.log.Trace("No finalization event found in current block", "block", latestBlock, "src", m.Source, "nonce", m.DepositNonce)
 			latestBlock = latestBlock.Add(latestBlock, big.NewInt(1))
 		}
@@ -212,7 +181,6 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 			if err == nil {
 				w.log.Info("Submitted proposal vote", "tx", txHash, "src", m.Source, "depositNonce", m.DepositNonce)
 				for i := 0; i < 25; i++ {
-					fmt.Println("----- 2")
 					if w.proposalIsComplete(m, dataHash) {
 						w.log.Info("Proposal voting complete on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
 						break

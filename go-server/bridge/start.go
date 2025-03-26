@@ -34,7 +34,6 @@ func Run() error {
 		chainConfig := config.NewConfig(cfg)
 		logger.Debug("chain config: ", "config=", chainConfig)
 
-		fmt.Println("~~~ 1 ", chainConfig.Endpoint, chainConfig.ChainId, chainConfig.BridgeContractAddress)
 		var newChain core.Chain
 		chainLogger := log.Root().New("chain", chainConfig.ChainName)
 

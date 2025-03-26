@@ -209,11 +209,6 @@ func VoteProposal(cli *client.GrpcClient, from, contractAddress string, ks *keys
 		return "", err
 	}
 	tx.GetLogs()
-	fmt.Println("00000)))))))((((((((8")
-	fmt.Println(tx.GetLogs())
-	fmt.Println(tx)
-	fmt.Println(tx.Txid)
-	fmt.Println(tx.String())
 	return hexutils.BytesToHex(tx.GetTxid()), nil
 }
 
@@ -226,8 +221,6 @@ func ExecuteProposal(cli *client.GrpcClient, from, contractAddress string, ks *k
 	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"},{\"bytes32\":\"%s\"}]",
 		originChainId.String(), originDepositNonce.String(), hexutils.BytesToHex(data[:]), hexutils.BytesToHex(resourceId[:]),
 	)
-	fmt.Println("--")
-	fmt.Println(triggerData)
 
 	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
 	_, _, err := getKeyFromPrivateKey(privateKey, AccountName, Passphrase)
