@@ -109,7 +109,7 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 	a := "0x" + strings.TrimPrefix(bridgeAddress.Hex(), "0x41")
 	fmt.Println("^^^^^^^^", bridgeAddress.Hex(), bridgeAddress.String(), w.Cfg.BridgeContractAddress, a)
 	// 0x52261B63a0395d98cA6453C0631363F7870F368D
-	toHash := append(common.HexToAddress("0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775").Bytes(), data...)
+	toHash := append(common.HexToAddress("0xE0667eE3AA3C5ADBf1034aD6CA42DD67258FaF27").Bytes(), data...)
 	dataHash := utils.Hash(toHash)
 	fmt.Printf("---------------- chainId:%d,nonce:%d,dataHsh:%x\n", m.Source, m.DepositNonce, dataHash)
 	fmt.Printf("---------------- data:%x\n", metadata)

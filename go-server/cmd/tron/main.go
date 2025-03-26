@@ -8,13 +8,13 @@ import (
 
 func main() {
 	services.InitTronEnv()
-	bridge, err := contract.NewBridgeTron()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	bridge.Init()
-	//
+	//bridge, err := contract.NewBridgeTron()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//bridge.Init()
+
 	//vote, err := contract.NewVoteTron()
 	//if err != nil {
 	//	fmt.Println(err)
@@ -22,12 +22,12 @@ func main() {
 	//}
 	//vote.Init()
 
-	//tantin, err := contract.NewTanTinTron()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//tantin.Init()
+	tantin, err := contract.NewTanTinTron()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	tantin.Init()
 
 	////for {
 	//toAddress, err := address.Base58ToAddress("TFBymbm7LrbRreGtByMPRD2HUyneKabsqb")

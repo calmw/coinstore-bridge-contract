@@ -311,3 +311,44 @@ func HasVotedOnProposal() {
 	fmt.Println("==")
 
 }
+
+func ExecuteProposal() (string, error) {
+
+	cli := client.NewGrpcClient(NileGrpc)
+	err := cli.Start(grpc.WithInsecure())
+	if err != nil {
+		return "", err
+	}
+	from := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
+	contractAddress := "TV9ET14nSTmKZ88Dt15USBqKJHfaPsXbXH"
+
+	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
+	_, _, err = GetKeyFromPrivateKey(privateKey, AccountName, Passphrase)
+	//if strings.Contains(err.Error(),"already exists")
+	if err != nil && !strings.Contains(err.Error(), "already exists") {
+		return "", err
+	}
+	// 获得keystore与account
+	ks, ka, err := store.UnlockedKeystore(from, Passphrase)
+	if err != nil {
+		return "", err
+	}
+
+	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"},{\"bytes32\":\"%s\"}]",
+		"2",
+		"78",
+		"00000000000000000000000000000000000000000000000000000000000000C0AC589789ED8C9D2C61F17B13369864B5F181E58EBA230A6EE4EC4C3E7750CD1D000000000000000000000000000000000000000000000000000000000000000200000000000000000000000080B27CDE65FAFB1F048405923FD4A624FEA2D1C600000000000000000000000080B27CDE65FAFB1F048405923FD4A624FEA2D1C600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000098",
+		"AC589789ED8C9D2C61F17B13369864B5F181E58EBA230A6EE4EC4C3E7750CD1D",
+	)
+
+	tx, err := cli.TriggerContract(from, contractAddress, "executeProposal(uint256,uint256,bytes,bytes32)", triggerData, 15000000000, 0, "", 0)
+	if err != nil {
+		return "", err
+	}
+	ctrlr := transaction.NewController(cli, ks, ka, tx.Transaction)
+	if err = ctrlr.ExecuteTransaction(); err != nil {
+		return "", err
+	}
+	fmt.Println(tx, err)
+	return hexutils.BytesToHex(tx.GetTxid()), nil
+}

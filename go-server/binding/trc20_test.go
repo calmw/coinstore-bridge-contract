@@ -62,3 +62,9 @@ func TestAA(t *testing.T) {
 func TestHasVotedOnProposal(t *testing.T) {
 	HasVotedOnProposal()
 }
+
+func TestExecuteProposal(t *testing.T) {
+	proposal, err := ExecuteProposal()
+	fmt.Println(proposal, err)
+
+}
