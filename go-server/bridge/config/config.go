@@ -3,7 +3,6 @@ package config
 import (
 	"coinstore/db"
 	"coinstore/model"
-	"fmt"
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/shopspring/decimal"
 	"math/big"

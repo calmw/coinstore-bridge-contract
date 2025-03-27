@@ -26,7 +26,7 @@ import (
 
 var BlockRetryInterval = time.Second * 5
 var BlockRetryLimit = 5
-var ErrFatalPolling = errors.New("bridge block polling failed")
+var ErrFatalPolling = errors.New("bridgeaa block polling failed")
 var Listeners = map[int]*Listener{}
 
 type Listener struct {
@@ -44,7 +44,7 @@ type Listener struct {
 func NewListener(conn *Connection, cfg config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Listener {
 	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.ClientEvm())
 	if err != nil {
-		panic("new bridge contract failed")
+		panic("new bridgeaa contract failed")
 	}
 	listener := Listener{
 		cfg:            cfg,

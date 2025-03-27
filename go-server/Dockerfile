@@ -1,5 +1,5 @@
 FROM  golang AS builder
-ADD . /src
+ADD .. /src
 WORKDIR /src
 ENV GO111MODULE=on
 ENV GOPROXY=https://goproxy.cn,direct

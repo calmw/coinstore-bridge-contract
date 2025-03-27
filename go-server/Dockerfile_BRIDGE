@@ -1,15 +1,15 @@
 FROM  golang AS builder
-ADD . /src
+ADD .. /src
 WORKDIR /src
 ENV GO111MODULE=on
 ENV GOPROXY=https://goproxy.cn
 RUN go mod tidy
-RUN cd cmd/server && go build -o /bridge .
+RUN cd cmd/server && go build -o /bridgeaa .
 
 # final stage
 FROM golang
 COPY --from=builder /bridge_api ./
-RUN chmod +x ./bridge
+RUN chmod +x ./bridgeaa
 RUN mkdir -p "/src/tron_keystore/keystore"
 
 ENTRYPOINT ["./bridge"]
