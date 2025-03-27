@@ -8,7 +8,7 @@ networks:
 services:
 
   cs_bridge_one:
-    image: calmw/cs_bridge:0.0.2
+    image: calmw/cs_bridge:0.0.1
     container_name: bridge_one
     restart: always
     environment:
@@ -29,7 +29,7 @@ services:
           memory: 2G
 
   cs_bridge_two:
-    image: calmw/cs_bridge:0.0.2
+    image: calmw/cs_bridge:0.0.1
     container_name: bridge_two
     restart: always
     environment:
@@ -50,7 +50,7 @@ services:
           memory: 2G
 
   cs_bridge_three:
-    image: calmw/cs_bridge:0.0.2
+    image: calmw/cs_bridge:0.0.1
     container_name: bridge_three
     restart: always
     environment:
@@ -71,13 +71,14 @@ services:
           memory: 2G
 
   mysql:
-    image: calmw/cs_bridge:0.0.2
+    image: mysql:latest
     container_name: bridge_mysql
     restart: always
     ports:
       - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=let_me_in_0x4f7d21e8ed
+      - MYSQL_DATABASE=bridge
     volumes:
       - ./mysql_data:/var/lib/mysql
     networks:
@@ -94,11 +95,16 @@ services:
           memory: 2G
 
   cs_bridge_api:
-    image: calmw/cs_bridge_api:0.0.2
+    image: calmw/cs_bridge_api:0.0.1
     container_name: cs_bridge_api
     restart: always
     environment:
       - LISTEN_ADDR=0.0.0.0:8080
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
+      - MYSQL_HOST=127.0.0.1
+      - MYSQL_PORT=3306
+      - MYSQL_DB=bridge
     networks:
       - cs_bridge
     logging:
