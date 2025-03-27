@@ -59,7 +59,7 @@ func ConvertAddress(c *gin.Context) {
 			})
 			return
 		}
-		res = strings.TrimPrefix(toAddress.Hex(), "0x41")
+		res = "0x" + strings.TrimPrefix(toAddress.Hex(), "0x41")
 	} else {
 		c.JSON(200, gin.H{
 			"code": 1,

@@ -77,7 +77,6 @@ func NewConfig(cfg model.ChainInfo) Config {
 	}
 	fromAddress := address.Address{}
 	if cfg.ChainType == 2 {
-		fmt.Println(cfg.From, 99)
 		fromAddress, err = address.Base58ToAddress(cfg.From)
 		if err != nil {
 			panic(err)

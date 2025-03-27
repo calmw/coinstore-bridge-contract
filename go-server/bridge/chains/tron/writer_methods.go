@@ -11,6 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"math/big"
+	"strings"
 	"time"
 )
 
@@ -23,8 +24,6 @@ const TxRetryInterval = time.Second * 3
 // TxRetryLimit Maximum number of tx retries before exiting
 const TxRetryLimit = 10
 
-var ErrNonceTooLow = errors.New("nonce too low")
-var ErrTxUnderpriced = errors.New("replacement transaction underpriced")
 var ErrFatalTx = errors.New("submission of transaction failed")
 var ErrFatalQuery = errors.New("query of chain state failed")
 
@@ -100,11 +99,13 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 
 	metadata := m.Payload[0].([]byte)
 	data := chains.ConstructGenericProposalData(metadata)
-	//bridgeAddress, err := address.Base58ToAddress(w.Cfg.BridgeContractAddress)
-
-	//b :=hexutils.HexToBytes(strings.TrimPrefix(bridgeAddress.Hex(),"0x41"))
-	//a := "0x" + strings.TrimPrefix(bridgeAddress.Hex(), "0x41")
-	toHash := append(common.HexToAddress("0xE0667eE3AA3C5ADBf1034aD6CA42DD67258FaF27").Bytes(), data...)
+	bridgeAddress, err := address.Base58ToAddress(w.Cfg.BridgeContractAddress)
+	if err != nil {
+		return false
+	}
+	bridgeEthAddress := "0x" + strings.TrimPrefix(bridgeAddress.Hex(), "0x41")
+	//toHash := append(common.HexToAddress("0xE0667eE3AA3C5ADBf1034aD6CA42DD67258FaF27").Bytes(), data...) // 正常
+	toHash := append(common.HexToAddress(bridgeEthAddress).Bytes(), data...)
 	dataHash := utils.Hash(toHash)
 	if !w.shouldVote(m, dataHash) {
 		if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {

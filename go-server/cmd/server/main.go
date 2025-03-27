@@ -23,6 +23,9 @@ func main() {
 	router.GET("/check_address", tollbooth_gin.LimitHandler(limiter), service.CheckAddress)
 	router.GET("/bridge_latest_time", tollbooth_gin.LimitHandler(limiter), service.BridgeLatestTime)
 	router.GET("/convert_address", tollbooth_gin.LimitHandler(limiter), service.ConvertAddress)
-	_ = router.Run(os.Getenv("LISTEN_ADDR"))
-	//_ = router.Run()
+	addr := os.Getenv("LISTEN_ADDR")
+	if addr == "" {
+		addr = "0.0.0.0:8080"
+	}
+	_ = router.Run(addr)
 }

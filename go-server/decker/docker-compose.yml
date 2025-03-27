@@ -13,6 +13,7 @@ services:
     restart: always
     environment:
       - KEY_STORE_PASSPHRASE=your_strong_password
+      - FAILED_JOB_INTERVAL=300
     volumes:
       - ./tron_keystore/keystore:/src/tron_keystore/keystore
     networks:
@@ -34,6 +35,7 @@ services:
     restart: always
     environment:
       - KEY_STORE_PASSPHRASE=your_strong_password
+      - FAILED_JOB_INTERVAL=300
     volumes:
       - ./tron_keystore/keystore:/src/tron_keystore/keystore
     networks:
@@ -55,6 +57,7 @@ services:
     restart: always
     environment:
       - KEY_STORE_PASSPHRASE=your_strong_password
+      - FAILED_JOB_INTERVAL=300
     volumes:
       - ./tron_keystore/keystore:/src/tron_keystore/keystore
     networks:
