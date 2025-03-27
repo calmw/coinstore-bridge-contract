@@ -138,11 +138,14 @@ func GetEventData(contractAddress string, number int64) ([]EvtData, error) {
 	url := fmt.Sprintf("%s/v1/blocks/%d/events", config.TronApiHost, number)
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Add("accept", "application/json")
-	res, _ := http.DefaultClient.Do(req)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
 	var eventLog EvtLog
-	err := json.Unmarshal(body, &eventLog)
+	err = json.Unmarshal(body, &eventLog)
 	if err != nil || !eventLog.Success {
 		return nil, errors.New("failed to parse event log")
 	}
