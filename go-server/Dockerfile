@@ -8,6 +8,7 @@ RUN cd cmd/server && go build -o /bridge_api .
 
 # final stage
 FROM ubuntu
+RUN apt-get -y update && apt-get -y upgrade
 COPY --from=builder /bridge_api ./
 RUN chmod +x ./bridge_api
 
