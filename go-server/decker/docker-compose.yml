@@ -1,0 +1,113 @@
+# Copyright 2025 calm.wang@hotmail.com
+# SPDX-License-Identifier: LGPL-3.0-only
+version: '3.9'
+
+networks:
+  cs_bridge:
+
+services:
+
+  cs_bridge_one:
+    image: calmw/cs_bridge:0.0.2
+    container_name: bridge_one
+    restart: always
+    environment:
+      - KEY_STORE_PASSPHRASE=your_strong_password
+    volumes:
+      - ./tron_keystore/keystore:/src/tron_keystore/keystore
+    networks:
+      - cs_bridge
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "1"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  cs_bridge_two:
+    image: calmw/cs_bridge:0.0.2
+    container_name: bridge_two
+    restart: always
+    environment:
+      - KEY_STORE_PASSPHRASE=your_strong_password
+    volumes:
+      - ./tron_keystore/keystore:/src/tron_keystore/keystore
+    networks:
+      - cs_bridge
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "1"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  cs_bridge_three:
+    image: calmw/cs_bridge:0.0.2
+    container_name: bridge_three
+    restart: always
+    environment:
+      - KEY_STORE_PASSPHRASE=your_strong_password
+    volumes:
+      - ./tron_keystore/keystore:/src/tron_keystore/keystore
+    networks:
+      - cs_bridge
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "1"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  mysql:
+    image: calmw/cs_bridge:0.0.2
+    container_name: bridge_mysql
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=let_me_in_0x4f7d21e8ed
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    networks:
+      - cs_bridge
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "1"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  cs_bridge_api:
+    image: calmw/cs_bridge_api:0.0.2
+    container_name: cs_bridge_api
+    restart: always
+    environment:
+      - LISTEN_ADDR=0.0.0.0:8080
+    networks:
+      - cs_bridge
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "1"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
