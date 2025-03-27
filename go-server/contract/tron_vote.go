@@ -7,11 +7,9 @@ import (
 	"github.com/fbsobreira/gotron-sdk/pkg/client/transaction"
 	"github.com/fbsobreira/gotron-sdk/pkg/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
-	"github.com/fbsobreira/gotron-sdk/pkg/store"
 	"google.golang.org/grpc"
 	"log"
 	"math/big"
-	"strings"
 )
 
 type VoteTron struct {
@@ -27,13 +25,9 @@ func NewVoteTron() (*VoteTron, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, _, err = GetKeyFromPrivateKey(ChainConfig.PrivateKey, AccountName, Passphrase)
-	if err != nil && !strings.Contains(err.Error(), "already exists") {
-		return nil, err
-	}
-	ks, ka, err := store.UnlockedKeystore(OwnerAccount, Passphrase)
+	ks, ka, err := tron_keystore.InitKeyStore()
 	if err != nil {
-		return nil, err
+		panic(fmt.Sprintf("private key conversion failed %v", err))
 	}
 	return &VoteTron{
 		Ks:              ks,
