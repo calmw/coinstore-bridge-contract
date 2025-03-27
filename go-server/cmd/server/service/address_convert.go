@@ -67,25 +67,3 @@ func ConvertAddress(c *gin.Context) {
 		})
 	}
 }
-
-// 波场地址格式检测
-func isValidTronAddress(address string) bool {
-	// 有效的Base58字符集，除去容易混淆的数字和字母
-	validChars := "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
-	for _, char := range address {
-		if !strings.ContainsRune(validChars, char) {
-			return false // 包含无效字符
-		}
-	}
-	// 检查长度（通常是34个字符）但这不是绝对标准，因为长度也可能根据版本字节变化
-	if len(address) != 34 { // 示例长度，实际应根据具体版本调整
-		return false // 长度不符合预期（可根据需要调整）
-	}
-	return true
-}
-
-// 以太坊地址格式检测
-func isValidEthAddress(address string) bool {
-	re := regexp.MustCompile("^0x[0-9a-fA-F]{40}$")
-	return re.MatchString(address)
-}
