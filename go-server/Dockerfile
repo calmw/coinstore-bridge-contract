@@ -7,7 +7,7 @@ RUN go mod tidy
 RUN cd cmd/server && go build -o /bridge_api .
 
 # final stage
-FROM golang
+FROM ubuntu
 COPY --from=builder /bridge_api ./
 RUN chmod +x ./bridge_api
 
