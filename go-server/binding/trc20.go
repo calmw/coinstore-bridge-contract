@@ -251,8 +251,13 @@ func AA() {
 	fmt.Println(toAddress.String())
 	fmt.Println(toAddress.Hex())
 	toAddress, err = address.Base58ToAddress("TEy2BtGxixqhbcM7w65rJiotAerSBFR48W")
+	fmt.Println("--")
 	fmt.Println(toAddress.String())
 	fmt.Println(toAddress.Hex())
+	fmt.Println("--")
+	toAddress = address.HexToAddress("0x41" + strings.TrimPrefix(toAddress.Hex(), "0x41"))
+	toAddress = address.HexToAddress("0x4136cf9a3651f289996a23255cfc05ea609893af9a")
+	fmt.Println(toAddress.String())
 }
 
 func HasVotedOnProposal() {

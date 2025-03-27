@@ -1,13 +1,14 @@
 package service
 
 import (
+	tronAddress "github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/gin-gonic/gin"
-	"regexp"
 	"strings"
 )
 
 func ConvertAddress(c *gin.Context) {
 	var q Query
+	var res string
 	if c.ShouldBindQuery(&q) != nil {
 		c.JSON(200, gin.H{
 			"code": 1,
@@ -32,38 +33,42 @@ func ConvertAddress(c *gin.Context) {
 		})
 		return
 	}
-	if (chainIdFrom == "1" || chainIdFrom == "1" || chainIdFrom == "1") && (chainIdFrom == "1") {
-		if isValidEthAddress(address) {
-			c.JSON(200, gin.H{
-				"code": 0,
-				"msg":  "OK",
-			})
-			return
-		} else {
+	if (chainIdFrom == "1" || chainIdFrom == "2" || chainIdFrom == "4") && (chainIdTo == "3") {
+		if !isValidEthAddress(address) {
 			c.JSON(200, gin.H{
 				"code": 1,
-				"msg":  "Invalid address",
+				"msg":  "invalid address",
 			})
 			return
 		}
-	} else if addressType == "2" {
-		if isValidTronAddress(address) {
-			c.JSON(200, gin.H{
-				"code": 0,
-				"msg":  "OK",
-			})
-			return
-		} else {
+		toAddress := tronAddress.HexToAddress("0x41" + strings.TrimPrefix(address, "0x"))
+		res = toAddress.String()
+	} else if (chainIdFrom == "3") && (chainIdTo == "1" || chainIdTo == "2" || chainIdTo == "4") {
+		if !isValidTronAddress(address) {
 			c.JSON(200, gin.H{
 				"code": 1,
-				"msg":  "Invalid address",
+				"msg":  "invalid address",
 			})
 			return
 		}
+		toAddress, err := tronAddress.Base58ToAddress(address)
+		if err != nil {
+			c.JSON(200, gin.H{
+				"code": 1,
+				"msg":  "invalid address",
+			})
+			return
+		}
+		res = strings.TrimPrefix(toAddress.Hex(), "0x41")
 	} else {
 		c.JSON(200, gin.H{
 			"code": 1,
-			"msg":  "Invalid addressType",
+			"msg":  "invalid parameter",
 		})
 	}
+	c.JSON(200, gin.H{
+		"code": 0,
+		"msg":  "OK",
+		"data": res,
+	})
 }
