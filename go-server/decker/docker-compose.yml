@@ -17,7 +17,7 @@ services:
       - MYSQL_DATABASE=bridge
       - MYSQL_USERNAME=root
       - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
-      - MYSQL_HOST=localhost
+      - MYSQL_HOST=tt_bridge_mysql
       - MYSQL_PORT=3306
     volumes:
       - ./tron_keystore/keystore:/src/tron_keystore/keystore
@@ -44,7 +44,7 @@ services:
       - MYSQL_DATABASE=bridge
       - MYSQL_USERNAME=root
       - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
-      - MYSQL_HOST=localhost
+      - MYSQL_HOST=tt_bridge_mysql
       - MYSQL_PORT=3306
     volumes:
       - ./tron_keystore/keystore:/src/tron_keystore/keystore
@@ -71,7 +71,7 @@ services:
       - MYSQL_DATABASE=bridge
       - MYSQL_USERNAME=root
       - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
-      - MYSQL_HOST=localhost
+      - MYSQL_HOST=tt_bridge_mysql
       - MYSQL_PORT=3306
     volumes:
       - ./tron_keystore/keystore:/src/tron_keystore/keystore
@@ -93,7 +93,7 @@ services:
     container_name: tt_bridge_mysql
     restart: always
     ports:
-      - 3307:3306
+      - "3307:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=let_me_in_0x4f7d21e8ed
       - MYSQL_DATABASE=bridge
@@ -117,12 +117,14 @@ services:
     image: calmw/tt_bridge_api:0.0.3
     container_name: tt_bridge_api
     restart: always
+    ports:
+      - "8080:8080"
     environment:
       - LISTEN_ADDR=0.0.0.0:8080
       - MYSQL_DATABASE=bridge
       - MYSQL_USERNAME=root
       - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
-      - MYSQL_HOST=localhost
+      - MYSQL_HOST=tt_bridge_mysql
       - MYSQL_PORT=3306
     networks:
       - tt_bridge
