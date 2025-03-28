@@ -6,22 +6,23 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+	"os"
 )
 
 var DB *gorm.DB
 
 func InitMysql(log log.Logger) {
 	log.Debug("Init Mysql")
-	var userName = "root"
-	var password = "root"
-	var host = "127.0.0.1"
-	var port = "3306"
-	var database = "bridge"
-	//var userName = os.Getenv("MYSQL_USERNAME")
-	//var password = os.Getenv("MYSQL_PASSWORD")
-	//var host = os.Getenv("MYSQL_HOST")
-	//var port = os.Getenv("MYSQL_PORT")
-	//var database = os.Getenv("MYSQL_DB")
+	//var userName = "root"
+	//var password = "root"
+	//var host = "127.0.0.1"
+	//var port = "3306"
+	//var database = "bridge"
+	var userName = os.Getenv("MYSQL_USERNAME")
+	var password = os.Getenv("MYSQL_PASSWORD")
+	var host = os.Getenv("MYSQL_HOST")
+	var port = os.Getenv("MYSQL_PORT")
+	var database = os.Getenv("MYSQL_DATABASE")
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		userName,
 		password,

@@ -3,21 +3,26 @@
 version: '3.9'
 
 networks:
-  cs_bridge:
+  tt_bridge:
 
 services:
 
-  cs_bridge_one:
-    image: calmw/cs_bridge:0.0.1
+  tt_bridge_one:
+    image: calmw/tt_bridge:0.0.1
     container_name: bridge_one
     restart: always
     environment:
       - KEY_STORE_PASSPHRASE=your_strong_password
       - FAILED_JOB_INTERVAL=300
+      - MYSQL_DATABASE=bridge
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
+      - MYSQL_HOST=127.0.0.1
+      - MYSQL_PORT=3307
     volumes:
       - ./tron_keystore/keystore:/src/tron_keystore/keystore
     networks:
-      - cs_bridge
+      - tt_bridge
     logging:
       driver: "json-file"
       options:
@@ -29,17 +34,22 @@ services:
           cpus: '1'
           memory: 2G
 
-  cs_bridge_two:
-    image: calmw/cs_bridge:0.0.1
+  tt_bridge_two:
+    image: calmw/tt_bridge:0.0.1
     container_name: bridge_two
     restart: always
     environment:
       - KEY_STORE_PASSPHRASE=your_strong_password
       - FAILED_JOB_INTERVAL=300
+      - MYSQL_DATABASE=bridge
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
+      - MYSQL_HOST=127.0.0.1
+      - MYSQL_PORT=3307
     volumes:
       - ./tron_keystore/keystore:/src/tron_keystore/keystore
     networks:
-      - cs_bridge
+      - tt_bridge
     logging:
       driver: "json-file"
       options:
@@ -51,17 +61,22 @@ services:
           cpus: '1'
           memory: 2G
 
-  cs_bridge_three:
-    image: calmw/cs_bridge:0.0.1
+  tt_bridge_three:
+    image: calmw/tt_bridge:0.0.1
     container_name: bridge_three
     restart: always
     environment:
       - KEY_STORE_PASSPHRASE=your_strong_password
       - FAILED_JOB_INTERVAL=300
+      - MYSQL_DATABASE=bridge
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
+      - MYSQL_HOST=127.0.0.1
+      - MYSQL_PORT=3307
     volumes:
       - ./tron_keystore/keystore:/src/tron_keystore/keystore
     networks:
-      - cs_bridge
+      - tt_bridge
     logging:
       driver: "json-file"
       options:
@@ -78,14 +93,14 @@ services:
     container_name: bridge_mysql
     restart: always
     ports:
-      - 3306:3306
+      - 3307:3306
     environment:
       - MYSQL_ROOT_PASSWORD=let_me_in_0x4f7d21e8ed
       - MYSQL_DATABASE=bridge
     volumes:
       - ./mysql_data:/var/lib/mysql
     networks:
-      - cs_bridge
+      - tt_bridge
     logging:
       driver: "json-file"
       options:
@@ -97,19 +112,19 @@ services:
           cpus: '1'
           memory: 2G
 
-  cs_bridge_api:
-    image: calmw/cs_bridge_api:0.0.1
-    container_name: cs_bridge_api
+  tt_bridge_api:
+    image: calmw/tt_bridge_api:0.0.1
+    container_name: tt_bridge_api
     restart: always
     environment:
       - LISTEN_ADDR=0.0.0.0:8080
+      - MYSQL_DATABASE=bridge
       - MYSQL_USERNAME=root
       - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
       - MYSQL_HOST=127.0.0.1
-      - MYSQL_PORT=3306
-      - MYSQL_DB=bridge
+      - MYSQL_PORT=3307
     networks:
-      - cs_bridge
+      - tt_bridge
     logging:
       driver: "json-file"
       options:
