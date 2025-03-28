@@ -1,14 +1,17 @@
-FROM  golang AS builder
-ADD .. /src
-WORKDIR /src
+# 第一阶段：构建应用
+FROM golang AS builder
+WORKDIR /app
+ADD . /app
 ENV GO111MODULE=on
 ENV GOPROXY=https://goproxy.cn
+RUN apt-get update && apt-get install -y gcc g++ make
 RUN go mod tidy
-RUN cd cmd/server && go build -o /bridge_api .
+RUN go build -o /app/bridge_api cmd/server/main.go
 
-# final stage
+# 第二阶段：创建最小运行时镜像
 FROM golang
-COPY --from=builder /bridge_api ./
-RUN chmod +x ./bridge_api
+WORKDIR /app
+COPY --from=builder /app/bridge_api /app/bridge_api
+RUN chmod +x /app/bridge_api
 
 ENTRYPOINT ["./bridge_api"]
