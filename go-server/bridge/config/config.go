@@ -45,7 +45,7 @@ type Config struct {
 }
 
 func NewConfig(cfg model.ChainInfo) Config {
-	key := os.Getenv("COINSTORE_BRIDGE")
+	key := os.Getenv("COIN_STORE_BRIDGE")
 	var err error
 	gasLimit := big.NewInt(DefaultGasLimit)
 	if cfg.GasLimit > 0 {

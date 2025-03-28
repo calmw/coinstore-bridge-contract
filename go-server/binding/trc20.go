@@ -54,7 +54,7 @@ func NewTrc20(address string) (*Trc20, error) {
 //	if err != nil {
 //		return "", err
 //	}
-//	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
+//	privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
 //	_, _, err = utils.GetKeyFromPrivateKey(privateKey, tron_keystore.AccountName, tron.Passphrase)
 //	if err != nil && !strings.Contains(err.Error(), "already exists") {
 //		return "", err
@@ -82,7 +82,7 @@ func NewTrc20(address string) (*Trc20, error) {
 //	if err != nil {
 //		return "", err
 //	}
-//	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
+//	privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
 //	_, _, err = utils.GetKeyFromPrivateKey(privateKey, AccountName, Passphrase)
 //	if err != nil && !strings.Contains(err.Error(), "already exists") {
 //		return "", err
@@ -217,7 +217,7 @@ func TransferCoin(privateKey, fromAddress, toAddress string, amount int64) (stri
 //	if err != nil {
 //		return "", err
 //	}
-//	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
+//	privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
 //	_, _, err = utils.GetKeyFromPrivateKey(privateKey, AccountName, Passphrase)
 //	//if strings.Contains(err.Error(),"already exists")
 //	if err != nil && !strings.Contains(err.Error(), "already exists") {
@@ -298,7 +298,7 @@ func HasVotedOnProposal() {
 //	from := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
 //	contractAddress := "TV9ET14nSTmKZ88Dt15USBqKJHfaPsXbXH"
 //
-//	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
+//	privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
 //	_, _, err = utils.GetKeyFromPrivateKey(privateKey, AccountName, Passphrase)
 //	//if strings.Contains(err.Error(),"already exists")
 //	if err != nil && !strings.Contains(err.Error(), "already exists") {

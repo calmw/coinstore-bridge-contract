@@ -7,7 +7,7 @@ import (
 )
 
 func TestTransferCoin(t *testing.T) {
-	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
+	privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
 	fromAddress := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
 	toAddress := "TEwX7WKNQqsRpxd6KyHHQPMMigLg9c258y"
 	amount := int64(1)
@@ -17,13 +17,13 @@ func TestTransferCoin(t *testing.T) {
 }
 
 func TestPrivateKeyToWalletAddress(t *testing.T) {
-	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
+	privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
 	address, err := PrivateKeyToWalletAddress(privateKey)
 	fmt.Println(address, err)
 }
 
 func TestImportFromPrivateKey(t *testing.T) {
-	//privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
+	//privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
 	//ks, ka, err := GetKeyFromPrivateKey(privateKey, AccountName, Passphrase)
 	//ks, ka, err = store.UnlockedKeystore(OwnerAccount, Passphrase)
 	// /Users/cisco/.tronctl/account-keys/my_account/UTC--2025-03-15T15-30-58.603647000Z--413942fda93c573e2ce9e85b0bb00ba98a144f27f6

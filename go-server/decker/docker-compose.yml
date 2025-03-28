@@ -12,6 +12,8 @@ services:
     container_name: tt_bridge_one
     restart: always
     environment:
+      - COIN_STORE_BRIDGE_TRON=lUfPFEirkoXVyH9nI4vNQiXdMjSFKzIvKqegCHpqeEWkYGx2yGpuQJZhV8+1hKuAWQB11FEWMWxsj/zWD6gFgKflWLqfgVBr
+      - COIN_STORE_BRIDGE=0Y1oZhCtcLNBIgvbr+Rsz733fBuLPp34iml9YrQudRx73UwLmadVfcNHVRft8QaO2hOf4GB+DkQAbqdXE1G4CaflWLqfgVBr
       - KEY_STORE_PASSPHRASE=your_strong_password
       - FAILED_JOB_INTERVAL=300
       - MYSQL_DATABASE=bridge
@@ -39,6 +41,8 @@ services:
     container_name: tt_bridge_two
     restart: always
     environment:
+      - COIN_STORE_BRIDGE_TRON=lUfPFEirkoXVyH9nI4vNQiXdMjSFKzIvKqegCHpqeEWkYGx2yGpuQJZhV8+1hKuAWQB11FEWMWxsj/zWD6gFgKflWLqfgVBr
+      - COIN_STORE_BRIDGE=0Y1oZhCtcLNBIgvbr+Rsz733fBuLPp34iml9YrQudRx73UwLmadVfcNHVRft8QaO2hOf4GB+DkQAbqdXE1G4CaflWLqfgVBr
       - KEY_STORE_PASSPHRASE=your_strong_password
       - FAILED_JOB_INTERVAL=300
       - MYSQL_DATABASE=bridge
@@ -66,6 +70,8 @@ services:
     container_name: tt_bridge_three
     restart: always
     environment:
+      - COIN_STORE_BRIDGE_TRON=lUfPFEirkoXVyH9nI4vNQiXdMjSFKzIvKqegCHpqeEWkYGx2yGpuQJZhV8+1hKuAWQB11FEWMWxsj/zWD6gFgKflWLqfgVBr
+      - COIN_STORE_BRIDGE=0Y1oZhCtcLNBIgvbr+Rsz733fBuLPp34iml9YrQudRx73UwLmadVfcNHVRft8QaO2hOf4GB+DkQAbqdXE1G4CaflWLqfgVBr
       - KEY_STORE_PASSPHRASE=your_strong_password
       - FAILED_JOB_INTERVAL=300
       - MYSQL_DATABASE=bridge

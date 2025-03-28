@@ -222,7 +222,7 @@ func ExecuteProposal(cli *client.GrpcClient, from, contractAddress string, ks *k
 		originChainId.String(), originDepositNonce.String(), hexutils.BytesToHex(data[:]), hexutils.BytesToHex(resourceId[:]),
 	)
 
-	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON")
+	privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
 	_, _, err := getKeyFromPrivateKey(privateKey, AccountName, Passphrase)
 	//if strings.Contains(err.Error(),"already exists")
 	if err != nil && !strings.Contains(err.Error(), "already exists") {

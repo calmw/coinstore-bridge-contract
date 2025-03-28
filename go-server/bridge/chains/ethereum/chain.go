@@ -9,7 +9,6 @@ import (
 	"fmt"
 	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/common"
-	"os"
 )
 
 var _ core.Chain = &Chain{}
@@ -24,9 +23,7 @@ type Chain struct {
 
 func InitializeChain(cfg config.Config, logger log.Logger, sysErr chan<- error) (*Chain, error) {
 	stop := make(chan int)
-	key := os.Getenv("COINSTORE_BRIDGE")
-	//key:=utils2.ThreeDesDecrypt("",cfg.PrivateKey) // TODO 线上要改
-	conn := NewConnection(cfg.ChainType, cfg.Endpoint, cfg.Http, key, logger, cfg.GasLimit, cfg.MaxGasPrice, cfg.MinGasPrice)
+	conn := NewConnection(cfg.ChainType, cfg.Endpoint, cfg.Http, cfg.PrivateKey, logger, cfg.GasLimit, cfg.MaxGasPrice, cfg.MinGasPrice)
 	err := conn.Connect()
 	if err != nil {
 		logger.Error("new connection", "error", err)

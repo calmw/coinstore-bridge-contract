@@ -46,16 +46,7 @@ type Connection struct {
 }
 
 func NewConnection(chainType config.ChainType, endpoint string, http bool, prvKey string, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
-	//_, _, err := utils.GetKeyFromPrivateKey(prvKey, binding.AccountName, binding.Passphrase)
-	//if err != nil && !strings.Contains(err.Error(), "already exists") {
-	//	panic("private key conversion failed")
-	//}
-	//ks, ka, err := store.UnlockedKeystore(binding.OwnerAccount, binding.Passphrase)
-	//if err != nil {
-	//	panic("private key conversion failed")
-	//}
-
-	ks, ka, err := tron_keystore.InitKeyStore()
+	ks, ka, err := tron_keystore.InitKeyStore(prvKey)
 	if err != nil {
 		panic(fmt.Sprintf("private key conversion failed %v", err))
 	}

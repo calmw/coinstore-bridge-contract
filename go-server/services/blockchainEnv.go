@@ -2,11 +2,13 @@ package services
 
 import (
 	"coinstore/contract"
+	"coinstore/utils"
 	"os"
 )
 
 func InitTantinEnv() {
-	key := os.Getenv("COINSTORE_BRIDGE")
+	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
+	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	contract.ChainConfig = contract.ChainConfigs{
 		BridgeId:              1,
 		ChainId:               202502,
@@ -16,12 +18,13 @@ func InitTantinEnv() {
 		VoteContractAddress:   "0x99Cb6a45BAB822912AE0519477221ad42C64FF36",
 		TantinContractAddress: "0x22050578f91E9663A52D144A39740247FDbdb70A",
 		UsdtAddress:           "0xc7D34B0dC1742De46A346bee415Ad753e0e95370",
-		PrivateKey:            key,
+		PrivateKey:            privateKeyStr,
 	}
 }
 
 func InitOpenBnbEnv() {
-	key := os.Getenv("COINSTORE_BRIDGE")
+	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
+	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	contract.ChainConfig = contract.ChainConfigs{
 		BridgeId:              2,
 		ChainId:               5611,
@@ -31,12 +34,13 @@ func InitOpenBnbEnv() {
 		VoteContractAddress:   "0x7EC7dca61c29773466D33aEB9e4f7adbBA960Ca1",
 		TantinContractAddress: "0x09125BB80eb099073b392637De2b6f3A42f7D1aC",
 		UsdtAddress:           "0xfBe1e02C25a04f6CD6b044F847697b48B3E99a16",
-		PrivateKey:            key,
+		PrivateKey:            privateKeyStr,
 	}
 }
 
 func InitTronEnv() {
-	key := os.Getenv("COINSTORE_BRIDGE_TRON")
+	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE_TRON")
+	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	contract.ChainConfig = contract.ChainConfigs{
 		BridgeId:              3,
 		ChainId:               3448148188,
@@ -46,6 +50,6 @@ func InitTronEnv() {
 		VoteContractAddress:   "TV9ET14nSTmKZ88Dt15USBqKJHfaPsXbXH",
 		TantinContractAddress: "TD4HbwLCW558wrBF3Qd5VgC8sG3poejKyS",
 		UsdtAddress:           "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf",
-		PrivateKey:            key,
+		PrivateKey:            privateKeyStr,
 	}
 }

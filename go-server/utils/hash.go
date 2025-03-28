@@ -18,7 +18,7 @@ func Hash(data []byte) [32]byte {
 }
 
 func RecipientSignature() ([]byte, error) {
-	key := os.Getenv("COINSTORE_BRIDGE")
+	key := os.Getenv("COIN_STORE_BRIDGE")
 	abiString := `
 [
 	{

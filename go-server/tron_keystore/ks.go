@@ -14,8 +14,7 @@ const (
 	KeyStoreDir        = "./tron_keystore/keystore"
 )
 
-func InitKeyStore() (*keystore.KeyStore, *keystore.Account, error) {
-	privateKeyStr := os.Getenv("COINSTORE_BRIDGE_TRON")
+func InitKeyStore(privateKeyStr string) (*keystore.KeyStore, *keystore.Account, error) {
 	if err := os.MkdirAll(KeyStoreDir, 0700); err != nil {
 		return nil, nil, err
 	}
