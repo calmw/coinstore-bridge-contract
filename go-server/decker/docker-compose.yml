@@ -98,7 +98,8 @@ services:
       - MYSQL_ROOT_PASSWORD=let_me_in_0x4f7d21e8ed
       - MYSQL_DATABASE=bridge
     volumes:
-      - ./mysql_data:/var/lib/mysql
+      - ./mysql_data/data:/var/lib/mysql
+      - ./mysql_data/conf:/etc/mysql/conf.d/
     networks:
       - tt_bridge
     logging:
@@ -113,7 +114,7 @@ services:
           memory: 2G
 
   tt_bridge_api:
-    image: calmw/tt_bridge_api:0.0.2
+    image: calmw/tt_bridge_api:0.0.3
     container_name: tt_bridge_api
     restart: always
     environment:
