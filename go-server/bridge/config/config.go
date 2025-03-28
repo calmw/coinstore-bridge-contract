@@ -3,7 +3,6 @@ package config
 import (
 	"coinstore/db"
 	"coinstore/model"
-	"fmt"
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/shopspring/decimal"
 	"math/big"
@@ -25,13 +24,12 @@ const (
 var TronCfg Config
 
 type Config struct {
-	ChainName string
-	ChainId   int
-	ChainType ChainType
-	Endpoint  string
-	From      string
-	FromTron  address.Address
-	//PrivateKey            *ecdsa.PrivateKey
+	ChainName             string
+	ChainId               int
+	ChainType             ChainType
+	Endpoint              string
+	From                  string
+	FromTron              address.Address
 	PrivateKey            string
 	BridgeContractAddress string
 	VoteContractAddress   string
@@ -41,8 +39,8 @@ type Config struct {
 	Http                  bool
 	StartBlock            *big.Int
 	BlockConfirmations    *big.Int
-	FreshStart            bool // If true, blockstore is ignored at start.
-	LatestBlock           bool // If true, overrides blockstore or latest block in config and starts from current block
+	FreshStart            bool
+	LatestBlock           bool
 }
 
 func NewConfig(cfg model.ChainInfo) Config {
@@ -50,7 +48,6 @@ func NewConfig(cfg model.ChainInfo) Config {
 	if ChainType(cfg.ChainType) == ChainTypeTron {
 		key = os.Getenv("COIN_STORE_BRIDGE_TRON")
 	}
-	fmt.Println(key, "!!!!!!!!!!")
 	var err error
 	gasLimit := big.NewInt(DefaultGasLimit)
 	if cfg.GasLimit > 0 {
