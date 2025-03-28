@@ -12,7 +12,8 @@ import (
 var DB *gorm.DB
 
 func InitMysql(log log.Logger) {
-	//log.Debug("Init Mysql")
+	log.Debug("Init Mysql")
+
 	//var userName = "root"
 	//var password = "root"
 	//var host = "127.0.0.1"
