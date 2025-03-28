@@ -122,7 +122,6 @@ func (l *Listener) pollBlocks() error {
 
 func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	l.log.Debug("Querying block for deposit events", "block", latestBlock)
-	//latestBlock = big.NewInt(55444496)
 	data, err := event.GetEventData(l.Cfg.BridgeContractAddress, latestBlock.Int64())
 	if err != nil {
 		return err
