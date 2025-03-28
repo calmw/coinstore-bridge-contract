@@ -37,6 +37,7 @@ func Run() error {
 		var newChain core.Chain
 		chainLogger := log.Root().New("chain", chainConfig.ChainName)
 
+		fmt.Println(cfg.PrivateKey, "~~~~", cfg.ChainId)
 		if chainConfig.ChainType == config.ChainTypeEvm {
 			newChain, err = ethereum.InitializeChain(chainConfig, chainLogger, sysErr)
 			if err != nil {

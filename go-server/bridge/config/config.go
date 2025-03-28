@@ -3,6 +3,7 @@ package config
 import (
 	"coinstore/db"
 	"coinstore/model"
+	"fmt"
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/shopspring/decimal"
 	"math/big"
@@ -46,6 +47,10 @@ type Config struct {
 
 func NewConfig(cfg model.ChainInfo) Config {
 	key := os.Getenv("COIN_STORE_BRIDGE")
+	if ChainType(cfg.ChainType) == ChainTypeTron {
+		key = os.Getenv("COIN_STORE_BRIDGE_TRON")
+	}
+	fmt.Println(key, "!!!!!!!!!!")
 	var err error
 	gasLimit := big.NewInt(DefaultGasLimit)
 	if cfg.GasLimit > 0 {

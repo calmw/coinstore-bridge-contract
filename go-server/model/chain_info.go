@@ -10,7 +10,7 @@ type ChainInfo struct {
 	gorm.Model
 	ChainName          string          `gorm:"chain_name;comment:'链名称'" json:"chain_name"`
 	ChainId            int             `gorm:"chain_id;comment:'自定义链ID'" json:"chain_id"`
-	ChainType          int             `gorm:"chain_id;comment:'自定义链类型ID'" json:"chain_type"`
+	ChainType          int             `gorm:"chain_id;comment:'自定义链类型ID,1 EVM 2 TRON'" json:"chain_type"`
 	Endpoint           string          `gorm:"endpoint;comment:'RPC'" json:"endpoint"`
 	From               string          `gorm:"from;comment:'签名账户地址'" json:"from"`
 	PrivateKey         string          `gorm:"private_key;comment:'签名账户私钥'" json:"private_key"`
