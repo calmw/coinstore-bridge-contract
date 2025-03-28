@@ -32,7 +32,7 @@ var GenericTransfer TransferType = "GenericTransfer"
 type Message struct {
 	Source       ChainId      // Source where message was initiated
 	Destination  ChainId      // Destination chain of message
-	Type         TransferType // type of bridgeaa transfer
+	Type         TransferType // type of bridge transfer
 	DepositNonce Nonce        // Nonce for the deposit
 	ResourceId   ResourceId
 	Payload      []interface{} // data associated with event sequence

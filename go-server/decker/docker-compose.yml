@@ -81,7 +81,7 @@ services:
       - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=let_me_in_0x4f7d21e8ed
-      - MYSQL_DATABASE=bridgeaa
+      - MYSQL_DATABASE=bridge
     volumes:
       - ./mysql_data:/var/lib/mysql
     networks:
@@ -107,7 +107,7 @@ services:
       - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
       - MYSQL_HOST=127.0.0.1
       - MYSQL_PORT=3306
-      - MYSQL_DB=bridgeaa
+      - MYSQL_DB=bridge
     networks:
       - cs_bridge
     logging:

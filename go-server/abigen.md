@@ -6,7 +6,7 @@
 
 ```shell
 # Bridge
-./abigen --abi ../abi/Bridge.json --pkg binding --type Bridge --out ./binding/bridgeaa.go
+./abigen --abi ../abi/Bridge.json --pkg binding --type Bridge --out ./binding/bridge.go
 ```
 
 ```shell

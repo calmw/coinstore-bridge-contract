@@ -8,12 +8,12 @@ import (
 
 func main() {
 	services.InitTronEnv()
-	//bridgeaa, err := contract.NewBridgeTron()
+	//bridge, err := contract.NewBridgeTron()
 	//if err != nil {
 	//	fmt.Println(err)
 	//	return
 	//}
-	//bridgeaa.Init()
+	//bridge.Init()
 	//
 	//vote, err := contract.NewVoteTron()
 	//if err != nil {

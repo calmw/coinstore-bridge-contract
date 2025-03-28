@@ -14,13 +14,13 @@ import (
 
 func main() {
 	services.InitOpenBnbEnv()
-	//bridgeaa, err := contract.NewBridge()
+	//bridge, err := contract.NewBridge()
 	//if err != nil {
 	//	fmt.Println(err)
 	//	return
 	//}
-	//bridgeaa.Init()
-	//bridgeaa.AdminSetResource(big.NewInt(1))
+	//bridge.Init()
+	//bridge.AdminSetResource(big.NewInt(1))
 	//
 	//vote, err := contract.NewVote()
 	//if err != nil {

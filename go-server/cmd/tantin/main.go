@@ -15,13 +15,13 @@ import (
 func main() {
 	services.InitTantinEnv()
 
-	//bridgeaa, err := contract.NewBridge()
+	//bridge, err := contract.NewBridge()
 	//if err != nil {
 	//	fmt.Println(err)
 	//	return
 	//}
-	//bridgeaa.Init()
-	//bridgeaa.AdminSetResource(big.NewInt(0))
+	//bridge.Init()
+	//bridge.AdminSetResource(big.NewInt(0))
 	//
 	//vote, err := contract.NewVote()
 	//if err != nil {

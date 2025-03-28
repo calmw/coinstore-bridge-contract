@@ -25,7 +25,7 @@ import (
 
 var BlockRetryInterval = time.Second * 5
 var BlockRetryLimit = 5
-var ErrFatalPolling = errors.New("bridgeaa block polling failed")
+var ErrFatalPolling = errors.New("bridge block polling failed")
 var ListenersTron *Listener
 
 type Listener struct {
