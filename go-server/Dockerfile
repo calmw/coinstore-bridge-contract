@@ -1,7 +1,9 @@
 # 第一阶段：构建应用
 FROM golang AS builder
 WORKDIR /app
-COPY . /app
+ADD . /app
+ENV GO111MODULE=on
+ENV GOPROXY=https://goproxy.cn
 RUN go build -o /app/bridge_api cmd/server/main.go
 
 # 第二阶段：创建最小运行时镜像
