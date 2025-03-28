@@ -4,6 +4,8 @@ WORKDIR /app
 ADD . /app
 ENV GO111MODULE=on
 ENV GOPROXY=https://goproxy.cn
+RUN apt-get update && apt-get install -y gcc g++ make
+RUN go mod tidy
 RUN go build -o /app/bridge_api cmd/server/main.go
 
 # 第二阶段：创建最小运行时镜像
