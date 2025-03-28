@@ -23,6 +23,7 @@ func InitMysql(log log.Logger) {
 	var host = os.Getenv("MYSQL_HOST")
 	var port = os.Getenv("MYSQL_PORT")
 	var database = os.Getenv("MYSQL_DATABASE")
+	log.Debug(userName, password, host, port, database)
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		userName,
 		password,
