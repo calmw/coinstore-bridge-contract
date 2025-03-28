@@ -19,6 +19,7 @@ func InitMysql(log log.Logger) {
 	//var host = "127.0.0.1"
 	//var port = "3306"
 	//var database = "bridge"
+
 	var userName = os.Getenv("MYSQL_USERNAME")
 	var password = os.Getenv("MYSQL_PASSWORD")
 	var host = os.Getenv("MYSQL_HOST")
