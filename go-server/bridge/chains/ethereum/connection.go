@@ -3,6 +3,7 @@ package ethereum
 import (
 	"coinstore/bridge/chains/ethereum/egs"
 	"coinstore/bridge/config"
+	"coinstore/utils"
 	"context"
 	"crypto/ecdsa"
 	"errors"
@@ -46,7 +47,7 @@ type Connection struct {
 }
 
 func NewConnection(chainType config.ChainType, endpoint string, http bool, prvKey string, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
-	//key:=utils2.ThreeDesDecrypt("",cfg.PrivateKey) // TODO 线上要改
+	prvKey = utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", prvKey)
 	privateKey, err := crypto.HexToECDSA(prvKey)
 	if err != nil {
 		panic("private key conversion failed")

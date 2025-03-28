@@ -4,6 +4,7 @@ import (
 	"coinstore/bridge/chains/ethereum/egs"
 	"coinstore/bridge/config"
 	"coinstore/tron_keystore"
+	"coinstore/utils"
 	"context"
 	"crypto/ecdsa"
 	"errors"
@@ -46,6 +47,7 @@ type Connection struct {
 }
 
 func NewConnection(chainType config.ChainType, endpoint string, http bool, prvKey string, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
+	prvKey = utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", prvKey)
 	ks, ka, err := tron_keystore.InitKeyStore(prvKey)
 	if err != nil {
 		panic(fmt.Sprintf("private key conversion failed %v", err))
