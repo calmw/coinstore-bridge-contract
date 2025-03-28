@@ -10,6 +10,6 @@ RUN go build -o /bridge_api cmd/server/main.go
 FROM golang
 WORKDIR /app
 COPY --from=builder /bridge_api ./
-RUN chmod +x /app/bridge_api
+RUN chmod +x ./bridge_api
 
 ENTRYPOINT ["./bridge_api"]
