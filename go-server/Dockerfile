@@ -15,4 +15,4 @@ COPY --from=builder /app/bridge /app/bridge
 RUN chmod +x /app/bridge
 RUN mkdir -p "/src/tron_keystore/keystore"
 
-ENTRYPOINT ["./bridge"]
+ENTRYPOINT ["/app/bridge"]
