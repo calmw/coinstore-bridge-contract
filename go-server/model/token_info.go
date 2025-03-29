@@ -21,7 +21,8 @@ func AddToken(chainId, tokenAddress, iconFile string) error {
 	if err != nil {
 		return err
 	}
-	base64Str := "data:image/png;base64," + base64.StdEncoding.EncodeToString(srcByte)
+	//base64Str := "data:image/png;base64," + base64.StdEncoding.EncodeToString(srcByte)
+	base64Str := base64.StdEncoding.EncodeToString(srcByte)
 
 	var token TokenInfo
 	err = db.DB.Model(&TokenInfo{}).Where("chain_id=? and token_address=?", chainId, tokenAddress).First(&token).Error
