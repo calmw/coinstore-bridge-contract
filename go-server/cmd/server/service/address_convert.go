@@ -33,6 +33,14 @@ func ConvertAddress(c *gin.Context) {
 		})
 		return
 	}
+
+	if !isValidEthAddress(address) && !isValidTronAddress(address) {
+		c.JSON(200, gin.H{
+			"code": 1,
+			"msg":  "invalid address",
+		})
+		return
+	}
 	if (chainIdFrom == "1" || chainIdFrom == "2" || chainIdFrom == "4") && (chainIdTo == "3") {
 		if !isValidEthAddress(address) {
 			c.JSON(200, gin.H{
@@ -61,10 +69,7 @@ func ConvertAddress(c *gin.Context) {
 		}
 		res = "0x" + strings.TrimPrefix(toAddress.Hex(), "0x41")
 	} else {
-		c.JSON(200, gin.H{
-			"code": 1,
-			"msg":  "invalid parameter",
-		})
+		res = address
 	}
 	c.JSON(200, gin.H{
 		"code": 0,
