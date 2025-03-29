@@ -4,6 +4,7 @@ import (
 	"coinstore/db"
 	"coinstore/model"
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 	"strings"
 	"time"
 )
@@ -23,20 +24,21 @@ type Query struct {
 }
 
 type Response struct {
-	Id                      uint64 `json:"id"`
-	ResourceId              string `json:"resource_id"`
-	Amount                  string `json:"amount"`
-	From                    string `json:"from"`
-	Recipient               string `json:"recipient"`
-	SourceChainId           int    `json:"source_chain_id"`
-	SourceTokenAddress      string `json:"source_token_address"`
-	SourceTxHash            string `json:"source_tx_hash"`
-	DestinationChainId      int    `json:"destination_chain_id"`
-	DestinationTokenAddress string `json:"destination_token_address"`
-	DestinationTxHash       string `json:"destination_tx_hash"`
-	BridgeStatus            int    `json:"bridge_status"`
-	DepositAt               string `json:"deposit_at"`
-	ReceiveAt               string `json:"receive_at"`
+	Id                uint64          `json:"id"`
+	ResourceId        string          `json:"resource_id"`
+	ReceiveAmount     decimal.Decimal `json:"receive_amount"`
+	Amount            decimal.Decimal `json:"amount"`
+	From              string          `json:"from"`
+	Recipient         string          `json:"recipient"`
+	SourceChain       string          `json:"source_chain"`
+	SourceToken       string          `json:"source_token"`
+	SourceTxHash      string          `json:"source_tx_hash"`
+	DestinationChain  string          `json:"destination_chain"`
+	DestinationToken  string          `json:"destination_token"`
+	DestinationTxHash string          `json:"destination_tx_hash"`
+	BridgeStatus      int             `json:"bridge_status"`
+	DepositAt         string          `json:"deposit_at"`
+	ReceiveAt         string          `json:"receive_at"`
 }
 
 func BridgeTx(c *gin.Context) {
@@ -101,6 +103,7 @@ func BridgeTx(c *gin.Context) {
 		})
 		return
 	}
+	deciW := decimal.NewFromInt(10000)
 
 	for _, record := range records {
 		status := 1
@@ -111,21 +114,23 @@ func BridgeTx(c *gin.Context) {
 				status = 3
 			}
 		}
+		totalAmount := record.Amount.Mul(deciW).Div(deciW.Sub(record.Fee))
 		data = append(data, Response{
-			Id:                      record.Id,
-			ResourceId:              record.ResourceId,
-			Amount:                  record.Amount.String(),
-			From:                    record.Caller,
-			Recipient:               record.Receiver,
-			SourceChainId:           record.SourceChainId,
-			SourceTokenAddress:      record.SourceTokenAddress,
-			SourceTxHash:            record.DepositHash,
-			DestinationChainId:      record.DestinationChainId,
-			DestinationTokenAddress: record.DestinationTokenAddress,
-			DestinationTxHash:       record.ExecuteHash,
-			BridgeStatus:            status,
-			DepositAt:               record.DepositAt,
-			ReceiveAt:               record.ReceiveAt,
+			Id:                record.Id,
+			ResourceId:        record.ResourceId,
+			Amount:            totalAmount,
+			ReceiveAmount:     record.Amount,
+			From:              record.Caller,
+			Recipient:         record.Receiver,
+			SourceChain:       record.SourceChainId.String(),
+			SourceToken:       record.SourceTokenAddress,
+			SourceTxHash:      record.DepositHash,
+			DestinationChain:  record.DestinationChainId.String(),
+			DestinationToken:  record.DestinationTokenAddress,
+			DestinationTxHash: record.ExecuteHash,
+			BridgeStatus:      status,
+			DepositAt:         record.DepositAt,
+			ReceiveAt:         record.ReceiveAt,
 		})
 	}
 

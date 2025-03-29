@@ -22,11 +22,12 @@ type BridgeTx struct {
 	VoteStatus              int             `gorm:"column:vote_status;default:0;comment:'vote 0失败，1成功'" json:"vote_status"`
 	ExecuteStatus           int             `gorm:"column:execute_status;default:0;comment:'execute 0失败，1成功'" json:"execute_status"`
 	Amount                  decimal.Decimal `gorm:"column:amount;type:decimal(20,0);comment:'跨链数额'" json:"amount"`
+	Fee                     decimal.Decimal `gorm:"column:fee;type:decimal(20,0);comment:'跨链费用，万分比'" json:"fee"`
 	Caller                  string          `gorm:"column:caller;comment:'链链发起者地址'" json:"caller"`
 	Receiver                string          `gorm:"column:receiver;comment:'目标链接受者地址'" json:"receiver"`
-	SourceChainId           int             `gorm:"column:source_chain_id;comment:'源链ID'" json:"source_chain_id"`
+	SourceChainId           ChainId         `gorm:"column:source_chain_id;comment:'源链ID'" json:"source_chain_id"`
 	SourceTokenAddress      string          `gorm:"column:source_token_address;comment:'源链token地址'" json:"source_token_address"`
-	DestinationChainId      int             `gorm:"column:destination_chain_id;comment:'目标链ID'" json:"destination_chain_id"`
+	DestinationChainId      ChainId         `gorm:"column:destination_chain_id;comment:'目标链ID'" json:"destination_chain_id"`
 	DestinationTokenAddress string          `gorm:"column:destination_token_address;comment:'目标链token地址'" json:"destination_token_address"`
 	BridgeStatus            int             `gorm:"column:bridge_status;type:tinyint;comment:'跨链状态 1 源链deposit成功 2 目标链执行成功 3 失败';default:1" json:"bridge_status"`
 	DepositHash             string          `gorm:"column:deposit_hash;comment:'deposit tx hash'" json:"deposit_hash"`
@@ -34,6 +35,23 @@ type BridgeTx struct {
 	DepositAt               string          `gorm:"column:deposit_at;comment:'跨链发起时间'" json:"deposit_at"`
 	ReceiveAt               string          `gorm:"column:receive_at;comment:'跨链到账时间'" json:"receive_at"`
 	DeletedAt               gorm.DeletedAt  `gorm:"index"`
+}
+
+type ChainId int
+
+func (c ChainId) String() string {
+	switch c {
+	case 1:
+		return "Tantin"
+	case 2:
+		return "Ethereum"
+	case 3:
+		return "BSC"
+	case 4:
+		return "TRON"
+	default:
+		return ""
+	}
 }
 
 func MsgDataToBytes(el msg.Message) ([]byte, error) {
@@ -80,9 +98,9 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 			ResourceId:              resourceId,
 			Caller:                  caller,
 			Receiver:                receiver,
-			SourceChainId:           int(m.Source),
+			SourceChainId:           ChainId(m.Source),
 			SourceTokenAddress:      sourceTokenAddress,
-			DestinationChainId:      int(m.Destination),
+			DestinationChainId:      ChainId(m.Destination),
 			DestinationTokenAddress: destinationTokenAddress,
 			DepositAt:               dateTime,
 			DepositHash:             "0x" + depositTxHash,
