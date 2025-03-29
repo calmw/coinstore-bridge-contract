@@ -11,6 +11,7 @@ import (
 
 type TokenInfo struct {
 	Id           uint64 `gorm:"primaryKey" json:"id"`
+	TokenName    string `gorm:"column:token_name;type:varchar(100);comment:' token名称'" json:"token_name"`
 	TokenAddress string `gorm:"column:token_address;type:varchar(100);comment:' token地址，coin为0地址'" json:"token_address"`
 	Icon         []byte `gorm:"column:icon;comment:'icon'" json:"icon"`
 	ChainId      string `gorm:"column:chain_id;default:0;comment:'链ID'" json:"chain_id"`
