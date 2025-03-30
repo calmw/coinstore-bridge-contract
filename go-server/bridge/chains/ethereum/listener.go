@@ -187,6 +187,9 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			l.log.Error("source token info not found", "chainId", record.DestinationChainId)
 		}
 		amount, caller, receiver, err := utils.ParseBridgeData(record.Data)
+		if destChainType == config.ChainTypeTron {
+			receiver, _ = utils.EthToTron(receiver)
+		}
 		// 保存到数据库
 		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, strings.ToLower(s.String()), toAddr, logE.TxHash.String(), time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
 

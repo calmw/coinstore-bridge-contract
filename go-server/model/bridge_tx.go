@@ -44,11 +44,11 @@ func (c ChainId) String() string {
 	case 1:
 		return "Tantin"
 	case 2:
-		return "Ethereum"
-	case 3:
 		return "BSC"
-	case 4:
+	case 3:
 		return "TRON"
+	case 4:
+		return "Ethereum"
 	default:
 		return ""
 	}

@@ -175,6 +175,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		if err != nil {
 			return err
 		}
+		caller, _ = utils.EthToTron(caller)
 		//保存到数据库
 		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, tokenAddress, strings.ToLower(t.String()), logE.TxHash, time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
 

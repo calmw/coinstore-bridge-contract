@@ -70,7 +70,7 @@ func (m *Monitor) RetryFailedOrder(order model.BridgeTx) {
 	}
 	if order.VoteStatus > 0 { // 投票已经成功，执行execute
 		if order.DestinationChainId == 3 {
-			writer := ethereum.Writers[order.DestinationChainId]
+			writer := ethereum.Writers[int(order.DestinationChainId)]
 			m.log.Debug("🍺 重试execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
 			metadata := bridgeData.Payload[0].([]byte)
 			data := chains.ConstructGenericProposalData(metadata)

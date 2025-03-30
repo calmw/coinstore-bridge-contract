@@ -10,10 +10,9 @@ func TronToEth(addr string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return toAddress.Hex(), nil
+	return "0x" + strings.TrimPrefix(toAddress.Hex(), "0x41"), nil
 }
 func EthToTron(addr string) (string, error) {
-	tokenAddress := "0x41" + strings.TrimPrefix(addr, "0x")
-	tokenAddress = address.HexToAddress(tokenAddress).String()
-	return tokenAddress, nil
+	toAddress := address.HexToAddress("0x41" + strings.TrimPrefix(addr, "0x"))
+	return toAddress.String(), nil
 }
