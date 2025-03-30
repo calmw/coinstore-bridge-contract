@@ -170,6 +170,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		}
 		tokenAddress := "0x41" + strings.TrimPrefix(tokenInfo.TokenAddress.String(), "0x")
 		tokenAddress = address.HexToAddress(tokenAddress).String()
+		fee := decimal.NewFromBigInt(tokenInfo.Fee, 0)
 
 		amount, caller, receiver, err := utils.ParseBridgeData(record.Data)
 		if err != nil {
@@ -177,7 +178,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		}
 		caller, _ = utils.EthToTron(caller)
 		//保存到数据库
-		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, tokenAddress, strings.ToLower(t.String()), logE.TxHash, time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
+		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, tokenAddress, strings.ToLower(t.String()), logE.TxHash, time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"), fee)
 
 		err = l.Router.Send(m)
 		if err != nil {

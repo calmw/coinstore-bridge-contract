@@ -75,7 +75,7 @@ func BytesToMsg(b []byte) (msg.Message, error) {
 	return *m, nil
 }
 
-func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, resourceId, caller, receiver, sourceTokenAddress, destinationTokenAddress, depositTxHash, dateTime string) {
+func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, resourceId, caller, receiver, sourceTokenAddress, destinationTokenAddress, depositTxHash, dateTime string, fee decimal.Decimal) {
 	log.Debug("🐧 检查订单是否存在", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 	var bridgeOrder BridgeTx
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
@@ -95,6 +95,7 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 			BridgeMsg:               orderData,
 			Hash:                    string(key),
 			Amount:                  amount,
+			Fee:                     fee,
 			ResourceId:              resourceId,
 			Caller:                  caller,
 			Receiver:                receiver,

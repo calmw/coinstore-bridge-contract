@@ -182,7 +182,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			toAddr = address.HexToAddress(tokenAddress).String()
 		}
 
-		_, s, _, err := l.BridgeContract.GetTokenInfoByResourceId(nil, record.ResourceID)
+		tokenInfo, err := l.BridgeContract.ResourceIdToTokenInfo(nil, record.ResourceID)
 		if err != nil {
 			l.log.Error("source token info not found", "chainId", record.DestinationChainId)
 		}
@@ -190,8 +190,9 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		if destChainType == config.ChainTypeTron {
 			receiver, _ = utils.EthToTron(receiver)
 		}
+		fee := decimal.NewFromBigInt(tokenInfo.Fee, 0)
 		// 保存到数据库
-		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, strings.ToLower(s.String()), toAddr, logE.TxHash.String(), time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"))
+		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, strings.ToLower(tokenInfo.TokenAddress.String()), toAddr, logE.TxHash.String(), time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"), fee)
 
 		err = l.Router.Send(m)
 		if err != nil {
