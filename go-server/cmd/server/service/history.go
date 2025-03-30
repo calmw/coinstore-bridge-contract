@@ -3,6 +3,7 @@ package service
 import (
 	"coinstore/db"
 	"coinstore/model"
+	"coinstore/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 	"strings"
@@ -41,6 +42,7 @@ type Response struct {
 	BridgeStatus            int             `json:"bridge_status"`
 	DepositAt               string          `json:"deposit_at"`
 	ReceiveAt               string          `json:"receive_at"`
+	Elapse                  int64           `json:"elapse"`
 }
 
 func BridgeTx(c *gin.Context) {
@@ -126,6 +128,9 @@ func BridgeTx(c *gin.Context) {
 		if err == nil {
 			destinationToken = info.TokenName
 		}
+		receiveAt, _ := utils.DatetimeToUnix(record.ReceiveAt)
+		depositAt, _ := utils.DatetimeToUnix(record.DepositAt)
+		elapse := depositAt - receiveAt
 		totalAmount := record.Amount.Mul(deciW).Div(deciW.Sub(record.Fee))
 		data = append(data, Response{
 			Id:                      record.Id,
@@ -145,6 +150,7 @@ func BridgeTx(c *gin.Context) {
 			BridgeStatus:            status,
 			DepositAt:               record.DepositAt,
 			ReceiveAt:               record.ReceiveAt,
+			Elapse:                  elapse,
 		})
 	}
 
