@@ -173,6 +173,11 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 		case <-w.stop:
 			return
 		default:
+			vStatus, _, err := model.GetBridgeTxStatus(m)
+			if err == nil && vStatus > 0 {
+				w.log.Info("voteProposal", "skip,src", m.Source, "depositNonce", m.DepositNonce)
+				return
+			}
 			txHash, err := w.voteContract.VoteProposal(
 				m.Source.Big(),
 				m.DepositNonce.Big(),
@@ -208,7 +213,7 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 	w.muExec.Lock()
 	defer w.muExec.Unlock()
 
-	var err error
+	//var err error
 	var status bool
 	var txHash string
 	var txHashRes string
@@ -228,6 +233,11 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 		case <-w.stop:
 			return
 		default:
+			_, eStatus, err := model.GetBridgeTxStatus(m)
+			if err == nil && eStatus > 0 {
+				w.log.Info("ExecuteProposal", "skip,src", m.Source, "depositNonce", m.DepositNonce)
+				return
+			}
 			txHash, err = w.voteContract.ExecuteProposal(
 				m.Source.Big(),
 				m.DepositNonce.Big(),

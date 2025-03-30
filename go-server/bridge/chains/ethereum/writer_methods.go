@@ -181,7 +181,12 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 		case <-w.stop:
 			return
 		default:
-			err := w.conn.LockAndUpdateOpts()
+			vStatus, _, err := model.GetBridgeTxStatus(m)
+			if err == nil && vStatus > 0 {
+				w.log.Info("voteProposal", "skip,src", m.Source, "depositNonce", m.DepositNonce)
+				return
+			}
+			err = w.conn.LockAndUpdateOpts()
 			if err != nil {
 				w.log.Error("Failed to update tx opts", "err", err)
 				continue
@@ -250,7 +255,12 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 		case <-w.stop:
 			return
 		default:
-			err := w.conn.LockAndUpdateOpts()
+			_, eStatus, err := model.GetBridgeTxStatus(m)
+			if err == nil && eStatus > 0 {
+				w.log.Info("ExecuteProposal", "skip,src", m.Source, "depositNonce", m.DepositNonce)
+				return
+			}
+			err = w.conn.LockAndUpdateOpts()
 			if err != nil {
 				w.log.Error("Failed to update nonce", "err", err)
 				return

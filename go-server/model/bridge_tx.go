@@ -166,3 +166,15 @@ func UpdateVoteStatus(m msg.Message, voteStatus int) {
 		return
 	}
 }
+
+func GetBridgeTxStatus(m msg.Message) (int, int, error) {
+	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
+	key := []byte(fmt.Sprintf("%s%d%d%d", resourceIdHex, m.Source, m.Destination, m.DepositNonce))
+	// 更新记录
+	var record BridgeTx
+	err := db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).First(&record).Error
+	if err != nil {
+		return 0, 0, err
+	}
+	return record.VoteStatus, record.ExecuteStatus, nil
+}
