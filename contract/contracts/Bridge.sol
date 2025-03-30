@@ -146,17 +146,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         return tokenInfo.fee;
     }
 
-    // 由resourceId获取token信息
-    function getTokenInfoByResourceId(
-        bytes32 resourceID
-    ) public view returns (uint256, address, bool) {
-        return (
-            uint256(resourceIdToTokenInfo[resourceID].assetsType),
-            resourceIdToTokenInfo[resourceID].tokenAddress,
-            resourceIdToTokenInfo[resourceID].pause
-        );
-    }
-
     // 由resourceId获取tantin address信息
     function getContractAddressByResourceId(
         bytes32 resourceId
