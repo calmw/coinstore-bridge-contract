@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	services.InitOpenBnbEnv()
+	services.InitBscEnv()
 	//bridge, err := contract.NewBridge()
 	//if err != nil {
 	//	fmt.Println(err)

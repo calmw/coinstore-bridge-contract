@@ -21,7 +21,7 @@ module.exports = {
             gasPrice: 1000000000000
         },
         sepolia_testnet: {
-            url: "https://rpc.tantin.com",
+            url: "https://sepolia.infura.io/v3/732f6502b35c486fb07e333b32e89c04",
             accounts: [`${PRIVATE_KEY}`],
             gasPrice: 1000000000000
         }
