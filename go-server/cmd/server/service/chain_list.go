@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetTokenList(c *gin.Context) {
+func GetChainList(c *gin.Context) {
 	var q Query
 	if c.ShouldBindQuery(&q) != nil {
 		c.JSON(200, gin.H{
@@ -15,16 +15,16 @@ func GetTokenList(c *gin.Context) {
 		})
 		return
 	}
-	tx := db.DB.Model(&model.TokenInfo{})
+	tx := db.DB.Model(&model.ChainInfo{})
 	chainId := c.Query("chain_id")
 	if len(chainId) > 0 {
 		tx = tx.Where("chain_id=?", chainId)
 	}
-	var tokenInfo []model.TokenInfo
-	tx.Find(&tokenInfo)
+	var chainInfo []model.ChainInfo
+	tx.Find(&chainInfo)
 	c.JSON(200, gin.H{
 		"code": 0,
 		"msg":  "OK",
-		"data": tokenInfo,
+		"data": chainInfo,
 	})
 }

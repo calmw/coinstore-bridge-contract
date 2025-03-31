@@ -31,6 +31,7 @@ func main() {
 	router.GET("/bridge_latest_time", tollbooth_gin.LimitHandler(limiter), service.BridgeLatestTime)
 	router.GET("/convert_address", tollbooth_gin.LimitHandler(limiter), service.ConvertAddress)
 	router.GET("/get_resource_id", tollbooth_gin.LimitHandler(limiter), service.GetResourceId)
+	router.GET("/get_chain_list", tollbooth_gin.LimitHandler(limiter), service.GetChainList)
 	router.GET("/get_token_list", tollbooth_gin.LimitHandler(limiter), service.GetTokenList)
 	addr := os.Getenv("LISTEN_ADDR")
 	if addr == "" {
