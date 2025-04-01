@@ -35,8 +35,9 @@ func NewBridge() (*BridgeEvm, error) {
 }
 
 func (b *BridgeEvm) Init() {
-	b.AdminSetEnv()
-	b.GrantVoteRole(common.HexToAddress(ChainConfig.VoteContractAddress))
+	fmt.Println(b.Cli.BlockNumber(context.Background()))
+	//b.AdminSetEnv()
+	//b.GrantVoteRole(common.HexToAddress(ChainConfig.VoteContractAddress))
 }
 
 func (b *BridgeEvm) AdminSetEnv() {

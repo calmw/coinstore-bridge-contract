@@ -42,10 +42,11 @@ func InitEthEnv() {
 	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	contract.ChainConfig = contract.ChainConfigs{
-		BridgeId:              2,
-		ChainId:               5611,
-		ChainTypeId:           1,
-		RPC:                   "https://sepolia.infura.io/v3/732f6502b35c486fb07e333b32e89c04",
+		BridgeId:    2,
+		ChainId:     5611,
+		ChainTypeId: 1,
+		//RPC:         "https://sepolia.infura.io/v3/732f6502b35c486fb07e333b32e89c04",
+		RPC:                   "https://sepolia.drpc.org",
 		BridgeContractAddress: "0xca540876A5c64eB1A0E51115CF7a5b2687F6e0d2",
 		VoteContractAddress:   "0x7EC7dca61c29773466D33aEB9e4f7adbBA960Ca1",
 		TantinContractAddress: "0x09125BB80eb099073b392637De2b6f3A42f7D1aC",

@@ -2,6 +2,7 @@ package contract
 
 import (
 	"coinstore/tron_keystore"
+	"coinstore/utils"
 	"fmt"
 	"github.com/fbsobreira/gotron-sdk/pkg/client"
 	"github.com/fbsobreira/gotron-sdk/pkg/client/transaction"
@@ -10,6 +11,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"math/big"
+	"os"
 	"strings"
 )
 
@@ -34,7 +36,8 @@ func NewBridgeTron() (*BridgeTron, error) {
 	if err != nil {
 		return nil, err
 	}
-	ks, ka, err := tron_keystore.InitKeyStore()
+	prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
+	ks, ka, err := tron_keystore.InitKeyStore(prvKey)
 	if err != nil {
 		panic(fmt.Sprintf("private key conversion failed %v", err))
 	}
