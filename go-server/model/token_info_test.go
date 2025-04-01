@@ -50,4 +50,12 @@ func TestAddToken(t *testing.T) {
 	fmt.Println(11, err)
 	err = AddToken(4, "USDC", "0x424cF9Dc24c7c8F006421937d3E288Be84D2daa4", "../cmd/server/images/token/tusdc.png")
 	fmt.Println(12, err)
+	err = AddToken(41, "USDC", "0x424cF9Dc24c7c8F006421937d3E288Be84D2daa4", "../cmd/server/images/tt.png")
+	fmt.Println(12, err)
+	err = AddToken(42, "USDC", "0x424cF9Dc24c7c8F006421937d3E288Be84D2daa4", "../cmd/server/images/bsc.png")
+	fmt.Println(12, err)
+	err = AddToken(43, "USDC", "0x424cF9Dc24c7c8F006421937d3E288Be84D2daa4", "../cmd/server/images/tron.png")
+	fmt.Println(12, err)
+	err = AddToken(44, "USDC", "0x424cF9Dc24c7c8F006421937d3E288Be84D2daa4", "../cmd/server/images/eth.png")
+	fmt.Println(12, err)
 }
