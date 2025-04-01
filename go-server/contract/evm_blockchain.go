@@ -24,6 +24,7 @@ type ChainConfigs struct {
 	VoteContractAddress   string
 	TantinContractAddress string
 	UsdtAddress           string
+	UsdcAddress           string
 	PrivateKey            string
 }
 
