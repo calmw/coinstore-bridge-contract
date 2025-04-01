@@ -52,7 +52,7 @@ func InitTronEnv() {
 		VoteContractAddress:   "TV9ET14nSTmKZ88Dt15USBqKJHfaPsXbXH",
 		TantinContractAddress: "TD4HbwLCW558wrBF3Qd5VgC8sG3poejKyS",
 		UsdtAddress:           "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf",
-		UsdcAddress:           "",
+		UsdcAddress:           "te1zsjwwtfhsszmajkv45tgg1jqutbhjuz",
 		PrivateKey:            privateKeyStr,
 	}
 }
