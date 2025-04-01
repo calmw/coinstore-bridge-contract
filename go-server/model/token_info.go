@@ -17,7 +17,7 @@ type TokenInfo struct {
 	ChainId      ChainId `gorm:"column:chain_id;default:0;comment:'链ID'" json:"chain_id"`
 }
 
-func AddToken(chainId ChainId, tokenAddress, iconFile string) error {
+func AddToken(chainId ChainId, tokenName, tokenAddress, iconFile string) error {
 	srcByte, err := os.ReadFile(iconFile)
 	if err != nil {
 		return err
@@ -27,17 +27,18 @@ func AddToken(chainId ChainId, tokenAddress, iconFile string) error {
 	base64Str := base64.StdEncoding.EncodeToString(srcByte)
 
 	var token TokenInfo
-	err = db.DB.Model(&TokenInfo{}).Where("chain_id=? and token_address=?", chainId, tokenAddress).First(&token).Error
+	err = db.DB.Model(&TokenInfo{}).Where("token_name=? and chain_id=? and token_address=?", tokenName, chainId, tokenAddress).First(&token).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return db.DB.Model(&TokenInfo{}).Where("chain_id=? and token_address=?", chainId, tokenAddress).Create(&TokenInfo{
+		return db.DB.Model(&TokenInfo{}).Create(&TokenInfo{
 			TokenAddress: tokenAddress,
 			Icon:         base64Str,
 			ChainId:      chainId,
+			TokenName:    tokenName,
 		}).Error
 	} else if err != nil {
 		return err
 	} else {
-		return db.DB.Model(&TokenInfo{}).Where("chain_id=? and token_address=?", chainId, tokenAddress).Update(
+		return db.DB.Model(&TokenInfo{}).Where("token_name=? and chain_id=? and token_address=?", tokenName, chainId, tokenAddress).Update(
 			"icon", base64Str,
 		).Error
 	}
