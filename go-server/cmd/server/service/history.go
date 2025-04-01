@@ -39,6 +39,8 @@ type Response struct {
 	DestinationToken        string          `json:"destination_token"`
 	DestinationTokenAddress string          `json:"destination_token_address"`
 	DestinationTxHash       string          `json:"destination_tx_hash"`
+	SourceStatus            int             `json:"source_status"`
+	DestinationStatus       int             `json:"destination_status"`
 	BridgeStatus            int             `json:"bridge_status"`
 	DepositAt               string          `json:"deposit_at"`
 	ReceiveAt               string          `json:"receive_at"`
@@ -110,12 +112,16 @@ func BridgeTx(c *gin.Context) {
 	deciW := decimal.NewFromInt(10000)
 
 	for _, record := range records {
+		sourceStatus := 1
+		destinationStatus := 1
 		status := 1
 		if record.VoteStatus == 1 {
 			if record.ExecuteStatus == 0 {
 				status = 2
+				sourceStatus = 2
 			} else if record.ExecuteStatus == 1 {
 				status = 3
+				destinationStatus = 3
 			}
 		}
 		sourceToken := ""
@@ -148,6 +154,8 @@ func BridgeTx(c *gin.Context) {
 			DestinationTokenAddress: record.DestinationTokenAddress,
 			DestinationTxHash:       record.ExecuteHash,
 			BridgeStatus:            status,
+			SourceStatus:            sourceStatus,
+			DestinationStatus:       destinationStatus,
 			DepositAt:               record.DepositAt,
 			ReceiveAt:               record.ReceiveAt,
 			Elapse:                  elapse,
