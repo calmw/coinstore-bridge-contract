@@ -1,18 +1,12 @@
 package contract
 
 import (
-	"bytes"
 	"context"
-	"errors"
-	"fmt"
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"log"
 	"math/big"
-	"reflect"
-	"strings"
 )
 
 type ChainConfigs struct {
@@ -113,65 +107,5 @@ func GetAuthWithValue(cli *ethclient.Client, value *big.Int) (error, *bind.Trans
 		GasLimit:  0,
 		Context:   context.Background(),
 		NoSend:    false,
-	}
-}
-
-func AbiEncode(opts []interface{}) ([]byte, error) {
-	abiStr, err := generateAbi(opts)
-	if err != nil {
-		return nil, err
-	}
-
-	parsedABI, err := abi.JSON(bytes.NewBufferString(abiStr))
-	if err != nil {
-		return nil, err
-	}
-
-	callData, err := parsedABI.Pack("draw", opts...)
-	if err != nil {
-		return nil, err
-	}
-
-	return callData[4:], nil
-}
-
-func generateAbi(data []interface{}) (string, error) {
-	var inputs string
-	for i, d := range data {
-		t, err := parseType(d)
-		if err != nil {
-			return "", err
-		}
-		inputs += fmt.Sprintf(`{
-                "internalType": "%s",
-                "name": "parameter%d",
-                "type": "%s"
-            },`, t, i, t)
-	}
-	inputs = strings.TrimRight(inputs, ",")
-
-	return fmt.Sprintf(`
-[
-    {
-        "inputs": [
-            %s
-        ],
-        "name": "draw",
-        "stateMutability": "pure",
-        "type": "function"
-    }
-]`, inputs), nil
-
-}
-
-func parseType(data interface{}) (string, error) {
-	t := reflect.TypeOf(data)
-	switch t.String() {
-	case "*big.Int":
-		return "uint256", nil
-	case "[]*big.Int":
-		return "uint256[]", nil
-	default:
-		return "", errors.New("opts type error")
 	}
 }
