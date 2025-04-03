@@ -20,10 +20,7 @@ contract Vote is IVote, AccessControl, Initializable {
     mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
         public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
-    function initialize() public initializer {
-        _grantRole(ADMIN_ROLE, msg.sender);
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    }
+    function initialize() public initializer {}
 
     /**
         @notice 设置
@@ -241,7 +238,7 @@ contract Vote is IVote, AccessControl, Initializable {
         require(dataHash == proposal.dataHash, "data doesn't match datahash");
 
         proposal.status = ProposalStatus.Executed;
-        Bridge.execute(resourceId, data);
+        Bridge.execute(resourceId, data); // TODO
 
         emit ProposalEvent(
             originChainId,

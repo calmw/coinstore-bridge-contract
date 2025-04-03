@@ -131,7 +131,8 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             tokenAddress = tokenInfo.tokenAddress;
             IERC20 erc20 = IERC20(tokenAddress);
             if (tokenInfo.burnable) {
-                erc20.safeTransferFrom(msg.sender, address(0), amount);
+                erc20.safeTransferFrom(msg.sender, address(this), amount - receiveAmount);
+                erc20.safeTransferFrom(msg.sender, address(0), receiveAmount);
             } else {
                 erc20.safeTransferFrom(msg.sender, address(this), amount);
             }

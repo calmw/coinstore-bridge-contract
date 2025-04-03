@@ -19,10 +19,7 @@ contract Vote is IVote, AccessControl {
     mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
         public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
-    constructor() {
-        _grantRole(ADMIN_ROLE, msg.sender);
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    }
+    constructor() {}
 
     /**
         @notice 设置

@@ -28,11 +28,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
     mapping(address => bool) public blacklist; // 用户地址 => 是否在黑名单
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
 
-    constructor() {
-        localNonce = 1;
-        _grantRole(ADMIN_ROLE, msg.sender);
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    }
+    constructor() {}
 
     /**
         @notice 设置
@@ -150,6 +146,8 @@ contract TantinBridge is AccessControl, ITantinBridge {
             fee,
             destId
         );
+
+        localNonce++;
         // data
         bytes memory data = abi.encode(
             resourceId,
@@ -168,9 +166,6 @@ contract TantinBridge is AccessControl, ITantinBridge {
             localNonce,
             destId
         );
-
-        // 自增nonce
-        localNonce++;
     }
 
     // 验证签名

@@ -21,10 +21,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
     mapping(uint256 => mapping(uint256 => DepositRecord)) public depositRecords; // destinationChainId  => ( depositNonce => Deposit Record)
 
-    constructor() {
-        _grantRole(ADMIN_ROLE, msg.sender);
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    }
+    constructor() {}
 
     /**
         @notice 设置
