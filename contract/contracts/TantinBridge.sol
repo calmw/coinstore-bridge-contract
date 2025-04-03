@@ -23,13 +23,16 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
 
     error ErrAssetsType(AssetsType assetsType);
 
+    address private superAdminAddress;
     IBridge public Bridge; // bridge 合约
     uint256 public localNonce; // 跨链nonce
     mapping(address => mapping(uint256 => DepositRecord)) public depositRecord; // user => (depositNonce=> Deposit Record)
     mapping(address => bool) public blacklist; // 用户地址 => 是否在黑名单
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
 
-    function initialize() public initializer {}
+    function initialize() public initializer {
+        superAdminAddress = 0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6;
+    }
 
     /**
         @notice 设置
@@ -131,7 +134,11 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             tokenAddress = tokenInfo.tokenAddress;
             IERC20 erc20 = IERC20(tokenAddress);
             if (tokenInfo.burnable) {
-                erc20.safeTransferFrom(msg.sender, address(this), amount - receiveAmount);
+                erc20.safeTransferFrom(
+                    msg.sender,
+                    address(this),
+                    amount - receiveAmount
+                );
                 erc20.safeTransferFrom(msg.sender, address(0), receiveAmount);
             } else {
                 erc20.safeTransferFrom(msg.sender, address(this), amount);

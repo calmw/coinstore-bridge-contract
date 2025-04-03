@@ -5,13 +5,14 @@ import "./interface/IBridge.sol";
 import "./interface/IVote.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {ITantinBridge} from "./interface/ITantinBridge.sol";
 
 contract Vote is IVote, AccessControl, Initializable {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
     bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
 
-    IBridge public Bridge; // bridge 合约
+    ITantinBridge public TantinBridge; // bridge 合约
     uint256 public totalProposal; // 提案数量，每个天加1
     uint256 public totalRelayer; // 总的relayer账户数量
     uint256 public relayerThreshold; // 提案可以通过的最少投票数量
@@ -24,17 +25,17 @@ contract Vote is IVote, AccessControl, Initializable {
 
     /**
         @notice 设置
-        @param bridgeAddress_ bridge合约地址
+        @param tantinBridgeAddress_ TantinBridge合约地址
         @param expiry_ 提案过期的块高差
         @param relayerThreshold_ 提案通过的投票数量
      */
     function adminSetEnv(
-        address bridgeAddress_,
+        address tantinBridgeAddress_,
         uint256 expiry_,
         uint256 relayerThreshold_
     ) external onlyRole(ADMIN_ROLE) {
         expiry = expiry_;
-        Bridge = IBridge(bridgeAddress_);
+        TantinBridge = ITantinBridge(tantinBridgeAddress_);
         relayerThreshold = relayerThreshold_;
     }
 
@@ -213,18 +214,16 @@ contract Vote is IVote, AccessControl, Initializable {
         @notice relayer执行投票通过后的到帐操作
         @param originChainId 源链ID
         @param originDepositNonce 源链nonce
-        @param resourceId 跨链的resourceID
         @param data 跨链data
      */
     function executeProposal(
         uint256 originChainId,
         uint256 originDepositNonce,
-        bytes calldata data,
-        bytes32 resourceId
+        bytes calldata data
     ) external onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
             uint72(originChainId);
-        bytes32 dataHash = keccak256(abi.encodePacked(Bridge, data));
+        bytes32 dataHash = keccak256(abi.encodePacked(address(this), data));
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
         require(
@@ -238,7 +237,7 @@ contract Vote is IVote, AccessControl, Initializable {
         require(dataHash == proposal.dataHash, "data doesn't match datahash");
 
         proposal.status = ProposalStatus.Executed;
-        Bridge.execute(resourceId, data); // TODO
+        TantinBridge.execute(data);
 
         emit ProposalEvent(
             originChainId,
