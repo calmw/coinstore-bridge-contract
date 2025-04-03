@@ -27,5 +27,21 @@ module.exports = {
             accounts: [`${PRIVATE_KEY}`]
             // gasPrice: 1000000000000
         }
+    },
+    etherscan: {
+        apiKey: {
+            open_bnb: "95d7c8f518a549b1a5a844c552f3725e"
+        },
+        customChains: [
+            {
+                network: "open_bnb",
+                chainId: 5611,
+                urls: {
+                    apiURL:
+                        "https://open-platform.nodereal.io/95d7c8f518a549b1a5a844c552f3725e/op-bnb-testnet/contract/",
+                    browserURL: "https://testnet.opbnbscan.com/"
+                }
+            }
+        ]
     }
 }

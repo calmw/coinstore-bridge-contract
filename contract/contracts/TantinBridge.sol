@@ -29,11 +29,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     mapping(address => bool) public blacklist; // 用户地址 => 是否在黑名单
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
 
-    function initialize() public initializer {
-        localNonce = 1;
-        _grantRole(ADMIN_ROLE, msg.sender);
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    }
+    function initialize() public initializer {}
 
     /**
         @notice 设置
@@ -143,6 +139,8 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             revert ErrAssetsType(tokenInfo.assetsType);
         }
         uint256 destId = destinationChainId;
+
+        localNonce++;
         depositRecord[msg.sender][localNonce] = DepositRecord(
             tokenAddress,
             msg.sender,
@@ -169,9 +167,6 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             localNonce,
             destId
         );
-
-        // 自增nonce
-        localNonce++;
     }
 
     // 验证签名
