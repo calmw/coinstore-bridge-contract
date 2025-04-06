@@ -130,8 +130,14 @@ func (b *BridgeEvm) AdminSetResource(resourceId string, assetsType uint8, tokenA
 		fmt.Println(err)
 		return
 	}
+	chainId, err := b.Contract.ChainId(nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	signature, _ := abi.BridgeAdminSetResourceSignature(
 		sigNonce,
+		chainId,
 		[32]byte(resourceIdBytes),
 		assetsType, //uint8(2),
 		common.HexToAddress(ChainConfig.UsdtAddress),
