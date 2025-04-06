@@ -8,7 +8,7 @@ import (
 )
 
 func BridgeAdminSetResourceSignature(resourceID [32]byte, assetsType uint8, tokenAddress, tantinAddress common.Address, fee *big.Int, pause bool, recipient common.Address) ([]byte, error) {
-	contractAbi, _ := abi.JSON(strings.NewReader(TantinSig))
+	contractAbi, _ := abi.JSON(strings.NewReader(BridgeSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminSetResourceSignature",
 		resourceID,
 		assetsType,
@@ -21,7 +21,7 @@ func BridgeAdminSetResourceSignature(resourceID [32]byte, assetsType uint8, toke
 }
 
 func BridgeAdminSetEnvSignature(voteAddress common.Address, chainId, chainType *big.Int) ([]byte, error) {
-	contractAbi, _ := abi.JSON(strings.NewReader(TantinSig))
+	contractAbi, _ := abi.JSON(strings.NewReader(BridgeSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminSetEnvSignature",
 		voteAddress,
 		chainId,
