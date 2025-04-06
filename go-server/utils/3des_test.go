@@ -6,7 +6,7 @@ import (
 )
 
 func TestThreeDes(t *testing.T) {
-	key := "gZIMfo6LJm6GYXdClPhIMfo5"
+	key := "gZIMfo6LJm6GYXdClPhIMfo6"
 	data := ""
 	encrypt := ThreeDesEncrypt(key, data)
 	fmt.Println(encrypt)

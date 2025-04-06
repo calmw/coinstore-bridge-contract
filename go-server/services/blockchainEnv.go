@@ -8,7 +8,7 @@ import (
 
 func InitTantinEnv() {
 	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
-	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo5", coinStoreBridge)
+	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	contract.ChainConfig = contract.ChainConfigs{
 		BridgeId:              1,
 		ChainId:               202502,
@@ -25,7 +25,7 @@ func InitTantinEnv() {
 
 func InitBscEnv() {
 	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
-	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo5", coinStoreBridge)
+	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	contract.ChainConfig = contract.ChainConfigs{
 		BridgeId:              2,
 		ChainId:               5611,
@@ -42,7 +42,7 @@ func InitBscEnv() {
 
 func InitTronEnv() {
 	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE_TRON")
-	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo5", coinStoreBridge)
+	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	contract.ChainConfig = contract.ChainConfigs{
 		BridgeId:              3,
 		ChainId:               3448148188,
@@ -59,7 +59,7 @@ func InitTronEnv() {
 
 func InitEthEnv() {
 	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
-	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo5", coinStoreBridge)
+	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	contract.ChainConfig = contract.ChainConfigs{
 		BridgeId:    4,
 		ChainId:     11155111,
