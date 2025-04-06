@@ -41,7 +41,7 @@ type IVoteProposal struct {
 
 // VoteMetaData contains all meta data concerning the Vote contract.
 var VoteMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"name\":\"AccessControlBadConfirmation\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"neededRole\",\"type\":\"bytes32\"}],\"name\":\"AccessControlUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidInitialization\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotInitializing\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint64\",\"name\":\"version\",\"type\":\"uint64\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"originChainID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"depositNonce\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"enumIVote.ProposalStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"ProposalEvent\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"originChainID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"depositNonce\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"enumIVote.ProposalStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"}],\"name\":\"ProposalVote\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"relayer\",\"type\":\"address\"}],\"name\":\"RelayerAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"relayer\",\"type\":\"address\"}],\"name\":\"RelayerRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"newThreshold\",\"type\":\"uint256\"}],\"name\":\"RelayerThresholdChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"BRIDGE_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"Bridge\",\"outputs\":[{\"internalType\":\"contractIBridge\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"RELAYER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"relayerAddress\",\"type\":\"address\"}],\"name\":\"adminAddRelayer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newThreshold\",\"type\":\"uint256\"}],\"name\":\"adminChangeRelayerThreshold\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"relayerAddress\",\"type\":\"address\"}],\"name\":\"adminRemoveRelayer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"bridgeAddress_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"expiry_\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"relayerThreshold_\",\"type\":\"uint256\"}],\"name\":\"adminSetEnv\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"originChainID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"originDepositNonce\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"cancelProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"originChainId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"originDepositNonce\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"}],\"name\":\"executeProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"expiry\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"originChainID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"depositNonce\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"getProposal\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"},{\"internalType\":\"address[]\",\"name\":\"yesVotes\",\"type\":\"address[]\"},{\"internalType\":\"address[]\",\"name\":\"noVotes\",\"type\":\"address[]\"},{\"internalType\":\"enumIVote.ProposalStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"proposedBlock\",\"type\":\"uint256\"}],\"internalType\":\"structIVote.Proposal\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint72\",\"name\":\"\",\"type\":\"uint72\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"hasVotedOnProposal\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint72\",\"name\":\"\",\"type\":\"uint72\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"proposals\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"},{\"internalType\":\"enumIVote.ProposalStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"proposedBlock\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"relayerThreshold\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"callerConfirmation\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalProposal\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalRelayer\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"originChainId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"originDepositNonce\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"voteProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[],\"name\":\"AccessControlBadConfirmation\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"neededRole\",\"type\":\"bytes32\"}],\"name\":\"AccessControlUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ECDSAInvalidSignature\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"length\",\"type\":\"uint256\"}],\"name\":\"ECDSAInvalidSignatureLength\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"s\",\"type\":\"bytes32\"}],\"name\":\"ECDSAInvalidSignatureS\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidInitialization\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotInitializing\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint64\",\"name\":\"version\",\"type\":\"uint64\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"originChainID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"depositNonce\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"enumIVote.ProposalStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"ProposalEvent\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"originChainID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"depositNonce\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"enumIVote.ProposalStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"}],\"name\":\"ProposalVote\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"relayer\",\"type\":\"address\"}],\"name\":\"RelayerAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"relayer\",\"type\":\"address\"}],\"name\":\"RelayerRemoved\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"newThreshold\",\"type\":\"uint256\"}],\"name\":\"RelayerThresholdChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"BRIDGE_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"Bridge\",\"outputs\":[{\"internalType\":\"contractIBridge\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"RELAYER_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"TantinBridge\",\"outputs\":[{\"internalType\":\"contractITantinBridge\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"relayerAddress\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"adminAddRelayer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newThreshold\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"adminChangeRelayerThreshold\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"relayerAddress\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"adminRemoveRelayer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tantinBridgeAddress_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"expiry_\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"relayerThreshold_\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"signature_\",\"type\":\"bytes\"}],\"name\":\"adminSetEnv\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"originChainID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"originDepositNonce\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"cancelProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"originChainId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"originDepositNonce\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"executeProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"expiry\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"originChainID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"depositNonce\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"getProposal\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"},{\"internalType\":\"address[]\",\"name\":\"yesVotes\",\"type\":\"address[]\"},{\"internalType\":\"address[]\",\"name\":\"noVotes\",\"type\":\"address[]\"},{\"internalType\":\"enumIVote.ProposalStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"proposedBlock\",\"type\":\"uint256\"}],\"internalType\":\"structIVote.Proposal\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint72\",\"name\":\"\",\"type\":\"uint72\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"hasVotedOnProposal\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint72\",\"name\":\"\",\"type\":\"uint72\"},{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"proposals\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"},{\"internalType\":\"enumIVote.ProposalStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"proposedBlock\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"relayerThreshold\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"callerConfirmation\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sigNonce\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalProposal\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalRelayer\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"originChainId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"originDepositNonce\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"dataHash\",\"type\":\"bytes32\"}],\"name\":\"voteProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
 }
 
 // VoteABI is the input ABI used to generate the binding from.
@@ -345,6 +345,37 @@ func (_Vote *VoteCallerSession) RELAYERROLE() ([32]byte, error) {
 	return _Vote.Contract.RELAYERROLE(&_Vote.CallOpts)
 }
 
+// TantinBridge is a free data retrieval call binding the contract method 0x8e09d1b1.
+//
+// Solidity: function TantinBridge() view returns(address)
+func (_Vote *VoteCaller) TantinBridge(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _Vote.contract.Call(opts, &out, "TantinBridge")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// TantinBridge is a free data retrieval call binding the contract method 0x8e09d1b1.
+//
+// Solidity: function TantinBridge() view returns(address)
+func (_Vote *VoteSession) TantinBridge() (common.Address, error) {
+	return _Vote.Contract.TantinBridge(&_Vote.CallOpts)
+}
+
+// TantinBridge is a free data retrieval call binding the contract method 0x8e09d1b1.
+//
+// Solidity: function TantinBridge() view returns(address)
+func (_Vote *VoteCallerSession) TantinBridge() (common.Address, error) {
+	return _Vote.Contract.TantinBridge(&_Vote.CallOpts)
+}
+
 // Expiry is a free data retrieval call binding the contract method 0xe184c9be.
 //
 // Solidity: function expiry() view returns(uint256)
@@ -586,6 +617,37 @@ func (_Vote *VoteCallerSession) RelayerThreshold() (*big.Int, error) {
 	return _Vote.Contract.RelayerThreshold(&_Vote.CallOpts)
 }
 
+// SigNonce is a free data retrieval call binding the contract method 0xcd868c9c.
+//
+// Solidity: function sigNonce() view returns(uint256)
+func (_Vote *VoteCaller) SigNonce(opts *bind.CallOpts) (*big.Int, error) {
+	var out []interface{}
+	err := _Vote.contract.Call(opts, &out, "sigNonce")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// SigNonce is a free data retrieval call binding the contract method 0xcd868c9c.
+//
+// Solidity: function sigNonce() view returns(uint256)
+func (_Vote *VoteSession) SigNonce() (*big.Int, error) {
+	return _Vote.Contract.SigNonce(&_Vote.CallOpts)
+}
+
+// SigNonce is a free data retrieval call binding the contract method 0xcd868c9c.
+//
+// Solidity: function sigNonce() view returns(uint256)
+func (_Vote *VoteCallerSession) SigNonce() (*big.Int, error) {
+	return _Vote.Contract.SigNonce(&_Vote.CallOpts)
+}
+
 // SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
 //
 // Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
@@ -679,88 +741,88 @@ func (_Vote *VoteCallerSession) TotalRelayer() (*big.Int, error) {
 	return _Vote.Contract.TotalRelayer(&_Vote.CallOpts)
 }
 
-// AdminAddRelayer is a paid mutator transaction binding the contract method 0xcdb0f73a.
+// AdminAddRelayer is a paid mutator transaction binding the contract method 0x4f2b5b05.
 //
-// Solidity: function adminAddRelayer(address relayerAddress) returns()
-func (_Vote *VoteTransactor) AdminAddRelayer(opts *bind.TransactOpts, relayerAddress common.Address) (*types.Transaction, error) {
-	return _Vote.contract.Transact(opts, "adminAddRelayer", relayerAddress)
+// Solidity: function adminAddRelayer(address relayerAddress, bytes signature) returns()
+func (_Vote *VoteTransactor) AdminAddRelayer(opts *bind.TransactOpts, relayerAddress common.Address, signature []byte) (*types.Transaction, error) {
+	return _Vote.contract.Transact(opts, "adminAddRelayer", relayerAddress, signature)
 }
 
-// AdminAddRelayer is a paid mutator transaction binding the contract method 0xcdb0f73a.
+// AdminAddRelayer is a paid mutator transaction binding the contract method 0x4f2b5b05.
 //
-// Solidity: function adminAddRelayer(address relayerAddress) returns()
-func (_Vote *VoteSession) AdminAddRelayer(relayerAddress common.Address) (*types.Transaction, error) {
-	return _Vote.Contract.AdminAddRelayer(&_Vote.TransactOpts, relayerAddress)
+// Solidity: function adminAddRelayer(address relayerAddress, bytes signature) returns()
+func (_Vote *VoteSession) AdminAddRelayer(relayerAddress common.Address, signature []byte) (*types.Transaction, error) {
+	return _Vote.Contract.AdminAddRelayer(&_Vote.TransactOpts, relayerAddress, signature)
 }
 
-// AdminAddRelayer is a paid mutator transaction binding the contract method 0xcdb0f73a.
+// AdminAddRelayer is a paid mutator transaction binding the contract method 0x4f2b5b05.
 //
-// Solidity: function adminAddRelayer(address relayerAddress) returns()
-func (_Vote *VoteTransactorSession) AdminAddRelayer(relayerAddress common.Address) (*types.Transaction, error) {
-	return _Vote.Contract.AdminAddRelayer(&_Vote.TransactOpts, relayerAddress)
+// Solidity: function adminAddRelayer(address relayerAddress, bytes signature) returns()
+func (_Vote *VoteTransactorSession) AdminAddRelayer(relayerAddress common.Address, signature []byte) (*types.Transaction, error) {
+	return _Vote.Contract.AdminAddRelayer(&_Vote.TransactOpts, relayerAddress, signature)
 }
 
-// AdminChangeRelayerThreshold is a paid mutator transaction binding the contract method 0x4e056005.
+// AdminChangeRelayerThreshold is a paid mutator transaction binding the contract method 0xa7e5c067.
 //
-// Solidity: function adminChangeRelayerThreshold(uint256 newThreshold) returns()
-func (_Vote *VoteTransactor) AdminChangeRelayerThreshold(opts *bind.TransactOpts, newThreshold *big.Int) (*types.Transaction, error) {
-	return _Vote.contract.Transact(opts, "adminChangeRelayerThreshold", newThreshold)
+// Solidity: function adminChangeRelayerThreshold(uint256 newThreshold, bytes signature) returns()
+func (_Vote *VoteTransactor) AdminChangeRelayerThreshold(opts *bind.TransactOpts, newThreshold *big.Int, signature []byte) (*types.Transaction, error) {
+	return _Vote.contract.Transact(opts, "adminChangeRelayerThreshold", newThreshold, signature)
 }
 
-// AdminChangeRelayerThreshold is a paid mutator transaction binding the contract method 0x4e056005.
+// AdminChangeRelayerThreshold is a paid mutator transaction binding the contract method 0xa7e5c067.
 //
-// Solidity: function adminChangeRelayerThreshold(uint256 newThreshold) returns()
-func (_Vote *VoteSession) AdminChangeRelayerThreshold(newThreshold *big.Int) (*types.Transaction, error) {
-	return _Vote.Contract.AdminChangeRelayerThreshold(&_Vote.TransactOpts, newThreshold)
+// Solidity: function adminChangeRelayerThreshold(uint256 newThreshold, bytes signature) returns()
+func (_Vote *VoteSession) AdminChangeRelayerThreshold(newThreshold *big.Int, signature []byte) (*types.Transaction, error) {
+	return _Vote.Contract.AdminChangeRelayerThreshold(&_Vote.TransactOpts, newThreshold, signature)
 }
 
-// AdminChangeRelayerThreshold is a paid mutator transaction binding the contract method 0x4e056005.
+// AdminChangeRelayerThreshold is a paid mutator transaction binding the contract method 0xa7e5c067.
 //
-// Solidity: function adminChangeRelayerThreshold(uint256 newThreshold) returns()
-func (_Vote *VoteTransactorSession) AdminChangeRelayerThreshold(newThreshold *big.Int) (*types.Transaction, error) {
-	return _Vote.Contract.AdminChangeRelayerThreshold(&_Vote.TransactOpts, newThreshold)
+// Solidity: function adminChangeRelayerThreshold(uint256 newThreshold, bytes signature) returns()
+func (_Vote *VoteTransactorSession) AdminChangeRelayerThreshold(newThreshold *big.Int, signature []byte) (*types.Transaction, error) {
+	return _Vote.Contract.AdminChangeRelayerThreshold(&_Vote.TransactOpts, newThreshold, signature)
 }
 
-// AdminRemoveRelayer is a paid mutator transaction binding the contract method 0x9d82dd63.
+// AdminRemoveRelayer is a paid mutator transaction binding the contract method 0x56d57510.
 //
-// Solidity: function adminRemoveRelayer(address relayerAddress) returns()
-func (_Vote *VoteTransactor) AdminRemoveRelayer(opts *bind.TransactOpts, relayerAddress common.Address) (*types.Transaction, error) {
-	return _Vote.contract.Transact(opts, "adminRemoveRelayer", relayerAddress)
+// Solidity: function adminRemoveRelayer(address relayerAddress, bytes signature) returns()
+func (_Vote *VoteTransactor) AdminRemoveRelayer(opts *bind.TransactOpts, relayerAddress common.Address, signature []byte) (*types.Transaction, error) {
+	return _Vote.contract.Transact(opts, "adminRemoveRelayer", relayerAddress, signature)
 }
 
-// AdminRemoveRelayer is a paid mutator transaction binding the contract method 0x9d82dd63.
+// AdminRemoveRelayer is a paid mutator transaction binding the contract method 0x56d57510.
 //
-// Solidity: function adminRemoveRelayer(address relayerAddress) returns()
-func (_Vote *VoteSession) AdminRemoveRelayer(relayerAddress common.Address) (*types.Transaction, error) {
-	return _Vote.Contract.AdminRemoveRelayer(&_Vote.TransactOpts, relayerAddress)
+// Solidity: function adminRemoveRelayer(address relayerAddress, bytes signature) returns()
+func (_Vote *VoteSession) AdminRemoveRelayer(relayerAddress common.Address, signature []byte) (*types.Transaction, error) {
+	return _Vote.Contract.AdminRemoveRelayer(&_Vote.TransactOpts, relayerAddress, signature)
 }
 
-// AdminRemoveRelayer is a paid mutator transaction binding the contract method 0x9d82dd63.
+// AdminRemoveRelayer is a paid mutator transaction binding the contract method 0x56d57510.
 //
-// Solidity: function adminRemoveRelayer(address relayerAddress) returns()
-func (_Vote *VoteTransactorSession) AdminRemoveRelayer(relayerAddress common.Address) (*types.Transaction, error) {
-	return _Vote.Contract.AdminRemoveRelayer(&_Vote.TransactOpts, relayerAddress)
+// Solidity: function adminRemoveRelayer(address relayerAddress, bytes signature) returns()
+func (_Vote *VoteTransactorSession) AdminRemoveRelayer(relayerAddress common.Address, signature []byte) (*types.Transaction, error) {
+	return _Vote.Contract.AdminRemoveRelayer(&_Vote.TransactOpts, relayerAddress, signature)
 }
 
-// AdminSetEnv is a paid mutator transaction binding the contract method 0x3a49916c.
+// AdminSetEnv is a paid mutator transaction binding the contract method 0xeb79344b.
 //
-// Solidity: function adminSetEnv(address bridgeAddress_, uint256 expiry_, uint256 relayerThreshold_) returns()
-func (_Vote *VoteTransactor) AdminSetEnv(opts *bind.TransactOpts, bridgeAddress_ common.Address, expiry_ *big.Int, relayerThreshold_ *big.Int) (*types.Transaction, error) {
-	return _Vote.contract.Transact(opts, "adminSetEnv", bridgeAddress_, expiry_, relayerThreshold_)
+// Solidity: function adminSetEnv(address tantinBridgeAddress_, uint256 expiry_, uint256 relayerThreshold_, bytes signature_) returns()
+func (_Vote *VoteTransactor) AdminSetEnv(opts *bind.TransactOpts, tantinBridgeAddress_ common.Address, expiry_ *big.Int, relayerThreshold_ *big.Int, signature_ []byte) (*types.Transaction, error) {
+	return _Vote.contract.Transact(opts, "adminSetEnv", tantinBridgeAddress_, expiry_, relayerThreshold_, signature_)
 }
 
-// AdminSetEnv is a paid mutator transaction binding the contract method 0x3a49916c.
+// AdminSetEnv is a paid mutator transaction binding the contract method 0xeb79344b.
 //
-// Solidity: function adminSetEnv(address bridgeAddress_, uint256 expiry_, uint256 relayerThreshold_) returns()
-func (_Vote *VoteSession) AdminSetEnv(bridgeAddress_ common.Address, expiry_ *big.Int, relayerThreshold_ *big.Int) (*types.Transaction, error) {
-	return _Vote.Contract.AdminSetEnv(&_Vote.TransactOpts, bridgeAddress_, expiry_, relayerThreshold_)
+// Solidity: function adminSetEnv(address tantinBridgeAddress_, uint256 expiry_, uint256 relayerThreshold_, bytes signature_) returns()
+func (_Vote *VoteSession) AdminSetEnv(tantinBridgeAddress_ common.Address, expiry_ *big.Int, relayerThreshold_ *big.Int, signature_ []byte) (*types.Transaction, error) {
+	return _Vote.Contract.AdminSetEnv(&_Vote.TransactOpts, tantinBridgeAddress_, expiry_, relayerThreshold_, signature_)
 }
 
-// AdminSetEnv is a paid mutator transaction binding the contract method 0x3a49916c.
+// AdminSetEnv is a paid mutator transaction binding the contract method 0xeb79344b.
 //
-// Solidity: function adminSetEnv(address bridgeAddress_, uint256 expiry_, uint256 relayerThreshold_) returns()
-func (_Vote *VoteTransactorSession) AdminSetEnv(bridgeAddress_ common.Address, expiry_ *big.Int, relayerThreshold_ *big.Int) (*types.Transaction, error) {
-	return _Vote.Contract.AdminSetEnv(&_Vote.TransactOpts, bridgeAddress_, expiry_, relayerThreshold_)
+// Solidity: function adminSetEnv(address tantinBridgeAddress_, uint256 expiry_, uint256 relayerThreshold_, bytes signature_) returns()
+func (_Vote *VoteTransactorSession) AdminSetEnv(tantinBridgeAddress_ common.Address, expiry_ *big.Int, relayerThreshold_ *big.Int, signature_ []byte) (*types.Transaction, error) {
+	return _Vote.Contract.AdminSetEnv(&_Vote.TransactOpts, tantinBridgeAddress_, expiry_, relayerThreshold_, signature_)
 }
 
 // CancelProposal is a paid mutator transaction binding the contract method 0x34818d79.
@@ -784,25 +846,25 @@ func (_Vote *VoteTransactorSession) CancelProposal(originChainID *big.Int, origi
 	return _Vote.Contract.CancelProposal(&_Vote.TransactOpts, originChainID, originDepositNonce, dataHash)
 }
 
-// ExecuteProposal is a paid mutator transaction binding the contract method 0xdfb9d260.
+// ExecuteProposal is a paid mutator transaction binding the contract method 0xde3cdb29.
 //
-// Solidity: function executeProposal(uint256 originChainId, uint256 originDepositNonce, bytes data, bytes32 resourceId) returns()
-func (_Vote *VoteTransactor) ExecuteProposal(opts *bind.TransactOpts, originChainId *big.Int, originDepositNonce *big.Int, data []byte, resourceId [32]byte) (*types.Transaction, error) {
-	return _Vote.contract.Transact(opts, "executeProposal", originChainId, originDepositNonce, data, resourceId)
+// Solidity: function executeProposal(uint256 originChainId, uint256 originDepositNonce, bytes data) returns()
+func (_Vote *VoteTransactor) ExecuteProposal(opts *bind.TransactOpts, originChainId *big.Int, originDepositNonce *big.Int, data []byte) (*types.Transaction, error) {
+	return _Vote.contract.Transact(opts, "executeProposal", originChainId, originDepositNonce, data)
 }
 
-// ExecuteProposal is a paid mutator transaction binding the contract method 0xdfb9d260.
+// ExecuteProposal is a paid mutator transaction binding the contract method 0xde3cdb29.
 //
-// Solidity: function executeProposal(uint256 originChainId, uint256 originDepositNonce, bytes data, bytes32 resourceId) returns()
-func (_Vote *VoteSession) ExecuteProposal(originChainId *big.Int, originDepositNonce *big.Int, data []byte, resourceId [32]byte) (*types.Transaction, error) {
-	return _Vote.Contract.ExecuteProposal(&_Vote.TransactOpts, originChainId, originDepositNonce, data, resourceId)
+// Solidity: function executeProposal(uint256 originChainId, uint256 originDepositNonce, bytes data) returns()
+func (_Vote *VoteSession) ExecuteProposal(originChainId *big.Int, originDepositNonce *big.Int, data []byte) (*types.Transaction, error) {
+	return _Vote.Contract.ExecuteProposal(&_Vote.TransactOpts, originChainId, originDepositNonce, data)
 }
 
-// ExecuteProposal is a paid mutator transaction binding the contract method 0xdfb9d260.
+// ExecuteProposal is a paid mutator transaction binding the contract method 0xde3cdb29.
 //
-// Solidity: function executeProposal(uint256 originChainId, uint256 originDepositNonce, bytes data, bytes32 resourceId) returns()
-func (_Vote *VoteTransactorSession) ExecuteProposal(originChainId *big.Int, originDepositNonce *big.Int, data []byte, resourceId [32]byte) (*types.Transaction, error) {
-	return _Vote.Contract.ExecuteProposal(&_Vote.TransactOpts, originChainId, originDepositNonce, data, resourceId)
+// Solidity: function executeProposal(uint256 originChainId, uint256 originDepositNonce, bytes data) returns()
+func (_Vote *VoteTransactorSession) ExecuteProposal(originChainId *big.Int, originDepositNonce *big.Int, data []byte) (*types.Transaction, error) {
+	return _Vote.Contract.ExecuteProposal(&_Vote.TransactOpts, originChainId, originDepositNonce, data)
 }
 
 // GrantRole is a paid mutator transaction binding the contract method 0x2f2ff15d.
