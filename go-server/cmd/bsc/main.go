@@ -2,12 +2,11 @@ package main
 
 import (
 	"coinstore/contract"
-	"coinstore/services"
 	"fmt"
 )
 
 func main() {
-	services.InitBscEnv()
+	contract.InitBscEnv()
 	//bridge, err := contract.NewBridge()
 	//if err != nil {
 	//	fmt.Println(err)

@@ -54,7 +54,9 @@ func (b *BridgeEvm) AdminSetEnv() {
 		big.NewInt(ChainConfig.BridgeId),
 		big.NewInt(ChainConfig.ChainTypeId),
 	)
-	fmt.Println(common.HexToAddress(ChainConfig.VoteContractAddress),
+	fmt.Println(
+		sigNonce,
+		common.HexToAddress(ChainConfig.VoteContractAddress),
 		big.NewInt(ChainConfig.BridgeId),
 		big.NewInt(ChainConfig.ChainTypeId))
 	fmt.Println(signature)

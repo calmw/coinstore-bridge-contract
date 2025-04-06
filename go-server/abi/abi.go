@@ -1,7 +1,6 @@
 package abi
 
 import (
-	"coinstore/utils"
 	"fmt"
 	"github.com/ethereum/go-ethereum/crypto"
 	beeCrypto "github.com/ethersphere/bee/v2/pkg/crypto"
@@ -309,9 +308,11 @@ var VoteSig = `[{
 }]`
 
 func GenerateSignature(parameter []byte) ([]byte, error) {
-	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
-	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
+	privateKeyStr := os.Getenv("TT_BRIDGE_SIGN")
+	//coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
+	//privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	privateKey, err := crypto.HexToECDSA(privateKeyStr)
+	fmt.Println(privateKeyStr)
 	if err != nil {
 		return nil, err
 	}
