@@ -320,7 +320,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     ) private returns (bool) {
         uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(bridgeAddress, sigNonce, chainId)
+            abi.encode(sigNonce, bridgeAddress, sigNonce, chainId)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
@@ -331,7 +331,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             sigNonce++;
         }
 
-        return recoverAddress == superAdminAddress;
+        return res;
     }
 
     // 验证adminAddBlacklist签名
@@ -340,7 +340,9 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         address user
     ) private returns (bool) {
         uint256 chainId = Bridge.chainId();
-        bytes32 messageHash = keccak256(abi.encode(user, sigNonce, chainId));
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, user, sigNonce, chainId)
+        );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
         );
@@ -350,7 +352,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             sigNonce++;
         }
 
-        return recoverAddress == superAdminAddress;
+        return res;
     }
 
     // 验证adminRemoveBlacklist签名
@@ -359,7 +361,9 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         address user
     ) private returns (bool) {
         uint256 chainId = Bridge.chainId();
-        bytes32 messageHash = keccak256(abi.encode(user, sigNonce, chainId));
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, user, sigNonce, chainId)
+        );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
         );
@@ -369,7 +373,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             sigNonce++;
         }
 
-        return recoverAddress == superAdminAddress;
+        return res;
     }
 
     // 验证adminSetTokenSignature签名
@@ -385,6 +389,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
             abi.encode(
+                sigNonce,
                 resourceID,
                 assetsType,
                 tokenAddress,
@@ -414,7 +419,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     ) private returns (bool) {
         uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(tokenAddress, amount, sigNonce, chainId)
+            abi.encode(sigNonce, tokenAddress, amount, sigNonce, chainId)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature

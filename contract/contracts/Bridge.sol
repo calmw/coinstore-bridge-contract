@@ -205,7 +205,14 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         uint256 chainType_
     ) private returns (bool) {
         bytes32 messageHash = keccak256(
-            abi.encode(voteAddress_, chainId_, chainType_, sigNonce, chainId)
+            abi.encode(
+                sigNonce,
+                voteAddress_,
+                chainId_,
+                chainType_,
+                sigNonce,
+                chainId
+            )
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature_
@@ -214,7 +221,31 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         if (res) {
             sigNonce++;
         }
-        return recoverAddress == superAdminAddress;
+        return res;
+    }
+
+    // 验证adminSetEnv签名
+    function checkAdminSetEnvSignatureTest(
+        bytes memory signature_,
+        address voteAddress_,
+        uint256 chainId_,
+        uint256 chainType_
+    ) public view returns (bool) {
+        bytes32 messageHash = keccak256(
+            abi.encode(
+                sigNonce,
+                voteAddress_,
+                chainId_,
+                chainType_,
+                sigNonce,
+                chainId
+            )
+        );
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature_
+        );
+        bool res = recoverAddress == superAdminAddress;
+        return res;
     }
 
     // 验证adminPauseTransfers签名
@@ -229,7 +260,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         if (res) {
             sigNonce++;
         }
-        return recoverAddress == superAdminAddress;
+        return res;
     }
 
     // 验证adminUnpauseTransfers签名
@@ -244,7 +275,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         if (res) {
             sigNonce++;
         }
-        return recoverAddress == superAdminAddress;
+        return res;
     }
 
     // 验证adminSetResource签名
@@ -259,6 +290,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     ) private returns (bool) {
         bytes32 messageHash = keccak256(
             abi.encode(
+                sigNonce,
                 resourceID,
                 assetsType,
                 tokenAddress,
@@ -276,6 +308,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         if (res) {
             sigNonce++;
         }
-        return recoverAddress == superAdminAddress;
+        return res;
     }
 }

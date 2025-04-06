@@ -307,6 +307,7 @@ contract Vote is IVote, AccessControl, Initializable {
         uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
             abi.encode(
+                sigNonce,
                 tantinBridgeAddress_,
                 expiry_,
                 relayerThreshold_,
@@ -323,7 +324,7 @@ contract Vote is IVote, AccessControl, Initializable {
             sigNonce++;
         }
 
-        return recoverAddress == superAdminAddress;
+        return res;
     }
 
     // 验证adminChangeRelayerThreshold签名
@@ -333,7 +334,7 @@ contract Vote is IVote, AccessControl, Initializable {
     ) private returns (bool) {
         uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(newThreshold, sigNonce, chainId)
+            abi.encode(sigNonce, newThreshold, chainId)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature_
@@ -344,7 +345,7 @@ contract Vote is IVote, AccessControl, Initializable {
             sigNonce++;
         }
 
-        return recoverAddress == superAdminAddress;
+        return res;
     }
 
     // 验证adminAddRelayer签名
@@ -354,7 +355,7 @@ contract Vote is IVote, AccessControl, Initializable {
     ) private returns (bool) {
         uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(relayerAddress, sigNonce, chainId)
+            abi.encode(sigNonce, relayerAddress, chainId)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature_
@@ -365,7 +366,7 @@ contract Vote is IVote, AccessControl, Initializable {
             sigNonce++;
         }
 
-        return recoverAddress == superAdminAddress;
+        return res;
     }
 
     // 验证adminRemoveRelayer签名
@@ -375,7 +376,7 @@ contract Vote is IVote, AccessControl, Initializable {
     ) private returns (bool) {
         uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(relayerAddress, sigNonce, chainId)
+            abi.encode(sigNonce, relayerAddress, chainId)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature_
@@ -386,6 +387,6 @@ contract Vote is IVote, AccessControl, Initializable {
             sigNonce++;
         }
 
-        return recoverAddress == superAdminAddress;
+        return res;
     }
 }
