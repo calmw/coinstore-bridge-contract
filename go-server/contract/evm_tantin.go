@@ -16,11 +16,6 @@ import (
 	"time"
 )
 
-const (
-	ResourceIdUsdt = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
-	ResourceIdCoin = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1c"
-)
-
 type TanTinEvm struct {
 	Cli      *ethclient.Client
 	Contract *binding.Tantin

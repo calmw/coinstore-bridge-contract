@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func BridgeAdminSetResourceSignature(resourceID [32]byte, assetsType uint8, tokenAddress, tantinAddress common.Address, fee *big.Int, pause bool, recipient common.Address) ([]byte, error) {
+func BridgeAdminSetResourceSignature(resourceID [32]byte, assetsType uint8, tokenAddress, tantinAddress common.Address, fee *big.Int, pause bool) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(BridgeSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminSetResourceSignature",
 		resourceID,

@@ -29,7 +29,9 @@ contract Vote is IVote, AccessControl, Initializable {
     mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
         public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
-    function initialize() public initializer {}
+    function initialize() public initializer {
+        superAdminAddress = 0xa47142f08f859aCeb2127C6Ab66eC8c8bc4FFBA9;
+    }
 
     /**
         @notice 设置

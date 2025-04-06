@@ -29,7 +29,9 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
     mapping(uint256 => mapping(uint256 => DepositRecord)) public depositRecords; // depositNonce => (destinationChainId => Deposit Record)
 
-    function initialize() public initializer {}
+    function initialize() public initializer {
+        superAdminAddress = 0xa47142f08f859aCeb2127C6Ab66eC8c8bc4FFBA9;
+    }
 
     /**
         @notice 设置

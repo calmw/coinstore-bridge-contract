@@ -6,6 +6,13 @@ import (
 	"os"
 )
 
+const (
+	AdminRole      = "a49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775"
+	VoteRole       = "c65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7"
+	ResourceIdUsdt = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
+	ResourceIdCoin = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1c"
+)
+
 func InitTantinEnv() {
 	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
@@ -14,9 +21,9 @@ func InitTantinEnv() {
 		ChainId:               202502,
 		ChainTypeId:           1,
 		RPC:                   "https://rpc.tantin.com",
-		BridgeContractAddress: "0x66bbc4d0916111aec07892B02d5330bdA7A800DD",
-		VoteContractAddress:   "0x99Cb6a45BAB822912AE0519477221ad42C64FF36",
-		TantinContractAddress: "0x22050578f91E9663A52D144A39740247FDbdb70A",
+		BridgeContractAddress: "0x52a863863e51C4c59eCFDea2E602D915593901c1",
+		VoteContractAddress:   "0xa3783FD9F28bcd9028F16F54d978DC48910c2a1b",
+		TantinContractAddress: "0xB6E2F38e92eACE6fE814F3bb8B3409bD541c2EF6",
 		UsdtAddress:           "0x2Bf013133aE838B6934B7F96fd43A10EE3FC3e18",
 		UsdcAddress:           "0xe82F64b73D58C85803D78be00407fD44c6DeBe63",
 		PrivateKey:            privateKeyStr,
