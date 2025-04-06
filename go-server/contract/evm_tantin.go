@@ -43,7 +43,12 @@ func (c TanTinEvm) Init() {
 
 func (c TanTinEvm) AdminSetEnv() {
 	var res *types.Transaction
-	signature, _ := abi.TantinAdminSetEnvSignature(common.HexToAddress(ChainConfig.BridgeContractAddress))
+	sigNonce, err := c.Contract.SigNonce(nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	signature, _ := abi.TantinAdminSetEnvSignature(sigNonce, common.HexToAddress(ChainConfig.BridgeContractAddress))
 
 	for {
 		err, txOpts := GetAuth(c.Cli)
@@ -100,9 +105,16 @@ func (c TanTinEvm) GrantBridgeRole(addr common.Address) {
 	log.Println(fmt.Sprintf("GrantBridgeRole 确认成功"))
 }
 
-func (c TanTinEvm) AdminSetToken() {
-	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(ResourceIdUsdt, "0x"))
-	signature, _ := abi.TantinAdminSetTokenSignature([32]byte(resourceIdBytes),
+func (c TanTinEvm) AdminSetToken(resourceId string) {
+	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
+	sigNonce, err := c.Contract.SigNonce(nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	signature, _ := abi.TantinAdminSetTokenSignature(
+		sigNonce,
+		[32]byte(resourceIdBytes),
 		uint8(2),
 		common.HexToAddress(ChainConfig.UsdtAddress),
 		false,
@@ -140,51 +152,15 @@ func (c TanTinEvm) AdminSetToken() {
 	}
 
 	log.Println(fmt.Sprintf("AdminSetToken 确认成功"))
-
-	resourceIdBytes = hexutils.HexToBytes(strings.TrimPrefix(ResourceIdCoin, "0x"))
-	signature, _ = abi.TantinAdminSetTokenSignature(
-		[32]byte(resourceIdBytes),
-		uint8(1),
-		common.HexToAddress("0x0000000000000000000000000000000000000000"),
-		false,
-		false,
-		false,
-	)
-	for {
-		err, txOpts := GetAuth(c.Cli)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		res, err = c.Contract.AdminSetToken(
-			txOpts,
-			[32]byte(resourceIdBytes),
-			uint8(1),
-			common.HexToAddress("0x0000000000000000000000000000000000000000"),
-			false,
-			false,
-			false,
-			signature,
-		)
-		if err == nil {
-			break
-		}
-		time.Sleep(3 * time.Second)
-	}
-	log.Println(fmt.Sprintf("AdminSetToken 成功"))
-	for {
-		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
-		if err == nil && receipt.Status == 1 {
-			break
-		}
-		time.Sleep(time.Second * 2)
-	}
-
-	log.Println(fmt.Sprintf("AdminSetToken 确认成功"))
 }
 
 func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount *big.Int) {
-	signature, _ := abi.TantinDepositSignature(receiver)
+	sigNonce, err := c.Contract.SigNonce(nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	signature, _ := abi.TantinDepositSignature(sigNonce, receiver)
 	token, err := NewErc20(common.HexToAddress(ChainConfig.UsdtAddress))
 	if err != nil {
 		fmt.Println(err)

@@ -42,7 +42,13 @@ func (c VoteEvm) Init() {
 
 func (c VoteEvm) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) {
 	var res *types.Transaction
+	sigNonce, err := c.Contract.SigNonce(nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	signature, _ := abi.VoteAdminSetEnvSignature(
+		sigNonce,
 		common.HexToAddress(ChainConfig.BridgeContractAddress),
 		expiry,
 		relayerThreshold,

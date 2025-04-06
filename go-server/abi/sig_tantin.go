@@ -3,20 +3,23 @@ package abi
 import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
+	"math/big"
 	"strings"
 )
 
-func TantinDepositSignature(recipient common.Address) ([]byte, error) {
+func TantinDepositSignature(sigNonce *big.Int, recipient common.Address) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(TantinSig))
 	parameterBytes, _ := contractAbi.Pack("checkDepositSignature",
+		sigNonce,
 		recipient,
 	)
 	return GenerateSignature(parameterBytes[4:])
 }
 
-func TantinAdminSetTokenSignature(resourceID [32]byte, assetsType uint8, tokenAddress common.Address, burnable, mintable, pause bool) ([]byte, error) {
+func TantinAdminSetTokenSignature(sigNonce *big.Int, resourceID [32]byte, assetsType uint8, tokenAddress common.Address, burnable, mintable, pause bool) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(TantinSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminSetTokenSignature",
+		sigNonce,
 		resourceID,
 		assetsType,
 		tokenAddress,
@@ -27,9 +30,10 @@ func TantinAdminSetTokenSignature(resourceID [32]byte, assetsType uint8, tokenAd
 	return GenerateSignature(parameterBytes[4:])
 }
 
-func TantinAdminSetEnvSignature(bridgeAddress common.Address) ([]byte, error) {
+func TantinAdminSetEnvSignature(sigNonce *big.Int, bridgeAddress common.Address) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(TantinSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminSetEnvSignature",
+		sigNonce,
 		bridgeAddress,
 	)
 	return GenerateSignature(parameterBytes[4:])

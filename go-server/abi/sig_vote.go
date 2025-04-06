@@ -7,33 +7,37 @@ import (
 	"strings"
 )
 
-func VoteAdminRemoveRelayerSignature(relayerAddress common.Address) ([]byte, error) {
+func VoteAdminRemoveRelayerSignature(sigNonce *big.Int, relayerAddress common.Address) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(VoteSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminRemoveRelayerSignature",
+		sigNonce,
 		relayerAddress,
 	)
 	return GenerateSignature(parameterBytes[4:])
 }
 
-func VoteAdminAddRelayerSignature(relayerAddress common.Address) ([]byte, error) {
+func VoteAdminAddRelayerSignature(sigNonce *big.Int, relayerAddress common.Address) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(VoteSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminAddRelayerSignature",
+		sigNonce,
 		relayerAddress,
 	)
 	return GenerateSignature(parameterBytes[4:])
 }
 
-func VoteAdminChangeRelayerThresholdSignature(newThreshold *big.Int) ([]byte, error) {
+func VoteAdminChangeRelayerThresholdSignature(sigNonce *big.Int, newThreshold *big.Int) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(VoteSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminChangeRelayerThresholdSignature",
+		sigNonce,
 		newThreshold,
 	)
 	return GenerateSignature(parameterBytes[4:])
 }
 
-func VoteAdminSetEnvSignature(tantinBridgeAddress common.Address, expiry, relayerThreshold *big.Int) ([]byte, error) {
+func VoteAdminSetEnvSignature(sigNonce *big.Int, tantinBridgeAddress common.Address, expiry, relayerThreshold *big.Int) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(VoteSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminSetEnvSignature",
+		sigNonce,
 		tantinBridgeAddress,
 		expiry,
 		relayerThreshold,
