@@ -1,35 +1,36 @@
 package abi
 
 import (
-	"coinstore/utils"
-	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	beeCrypto "github.com/ethersphere/bee/v2/pkg/crypto"
-	"os"
 	"strings"
 )
 
-func DepositSignature(recipient string) ([]byte, error) {
-	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
-	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
-	privateKey, err := crypto.HexToECDSA(privateKeyStr)
-	if err != nil {
-		return nil, err
-	}
-	singer := beeCrypto.NewDefaultSigner(privateKey)
-
+func TantinDepositSignature(recipient string) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(TantinSig))
-	parameterBytes, _ := contractAbi.Pack("depositSignature",
+	parameterBytes, _ := contractAbi.Pack("checkDepositSignature",
 		common.HexToAddress(recipient),
 	)
-	hash := crypto.Keccak256Hash(parameterBytes[4:])
-	// 私钥签名hash
-	sign, err := singer.Sign(hash.Bytes())
-	if err != nil {
-		return nil, err
-	}
-	fmt.Printf("0x%x\n", sign)
-	return sign, err
+	return GenerateSignature(parameterBytes[4:])
+}
+
+func TantinAdminSetTokenSignature(resourceID [32]byte, assetsType uint8, tokenAddress common.Address, burnable, mintable, pause bool) ([]byte, error) {
+	contractAbi, _ := abi.JSON(strings.NewReader(TantinSig))
+	parameterBytes, _ := contractAbi.Pack("checkAdminSetTokenSignature",
+		resourceID,
+		assetsType,
+		tokenAddress,
+		burnable,
+		mintable,
+		pause,
+	)
+	return GenerateSignature(parameterBytes[4:])
+}
+
+func TantinAdminSetEnvSignature(bridgeAddress common.Address) ([]byte, error) {
+	contractAbi, _ := abi.JSON(strings.NewReader(TantinSig))
+	parameterBytes, _ := contractAbi.Pack("checkAdminSetEnvSignature",
+		bridgeAddress,
+	)
+	return GenerateSignature(parameterBytes[4:])
 }
