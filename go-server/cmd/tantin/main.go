@@ -2,14 +2,13 @@ package main
 
 import (
 	"coinstore/contract"
-	"coinstore/services"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 )
 
 func main() {
-	services.InitTantinEnv()
+	contract.InitTantinEnv()
 
 	bridge, err := contract.NewBridge()
 	if err != nil {
@@ -18,7 +17,7 @@ func main() {
 	}
 	bridge.Init()
 	bridge.AdminSetResource(
-		services.ResourceIdUsdt,
+		contract.ResourceIdUsdt,
 		2,
 		common.HexToAddress(contract.ChainConfig.UsdtAddress),
 		big.NewInt(100),

@@ -1,6 +1,7 @@
 package contract
 
 import (
+	"coinstore/abi"
 	"coinstore/binding"
 	"context"
 	"fmt"
@@ -41,6 +42,11 @@ func (c VoteEvm) Init() {
 
 func (c VoteEvm) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) {
 	var res *types.Transaction
+	signature, _ := abi.VoteAdminSetEnvSignature(
+		common.HexToAddress(ChainConfig.BridgeContractAddress),
+		expiry,
+		relayerThreshold,
+	)
 
 	for {
 		err, txOpts := GetAuth(c.Cli)
@@ -48,7 +54,13 @@ func (c VoteEvm) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) {
 			log.Println(err)
 			return
 		}
-		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.BridgeContractAddress), expiry, relayerThreshold)
+		res, err = c.Contract.AdminSetEnv(
+			txOpts,
+			common.HexToAddress(ChainConfig.BridgeContractAddress),
+			expiry,
+			relayerThreshold,
+			signature,
+		)
 		if err == nil {
 			break
 		}
