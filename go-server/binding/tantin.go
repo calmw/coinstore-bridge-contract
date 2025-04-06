@@ -31,7 +31,7 @@ var (
 
 // TantinMetaData contains all meta data concerning the Tantin contract.
 var TantinMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"name\":\"AccessControlBadConfirmation\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"neededRole\",\"type\":\"bytes32\"}],\"name\":\"AccessControlUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"}],\"name\":\"AddressEmptyCode\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"AddressInsufficientBalance\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"enumITantinBridge.AssetsType\",\"name\":\"assetsType\",\"type\":\"uint8\"}],\"name\":\"ErrAssetsType\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"FailedInnerCall\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidInitialization\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotInitializing\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"SafeERC20FailedOperation\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"}],\"name\":\"AddBlacklist\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"depositer\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"depositNonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"destinationChainId\",\"type\":\"uint256\"}],\"name\":\"DepositEvent\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"depositer\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"depositNonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"destinationChainId\",\"type\":\"uint256\"}],\"name\":\"DepositNftEvent\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"depositer\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"originDepositNonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"originChainId\",\"type\":\"uint256\"}],\"name\":\"ExecuteEvent\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"depositer\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"originDepositNonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"originChainId\",\"type\":\"uint256\"}],\"name\":\"ExecuteNftEvent\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint64\",\"name\":\"version\",\"type\":\"uint64\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"}],\"name\":\"RemoveBlacklist\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"enumITantinBridge.AssetsType\",\"name\":\"assetsType\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"burnable\",\"type\":\"bool\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"mintable\",\"type\":\"bool\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"pause\",\"type\":\"bool\"}],\"name\":\"SetTokenEvent\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"BRIDGE_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"Bridge\",\"outputs\":[{\"internalType\":\"contractIBridge\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"}],\"name\":\"adminAddBlacklist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"}],\"name\":\"adminRemoveBlacklist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"bridgeAddress_\",\"type\":\"address\"}],\"name\":\"adminSetEnv\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"enumITantinBridge.AssetsType\",\"name\":\"assetsType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"burnable\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"mintable\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pause\",\"type\":\"bool\"}],\"name\":\"adminSetToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"adminWithdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"blacklist\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"destinationChainId\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"depositRecord\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"destinationChainId\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"execute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"}],\"name\":\"getFee\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"localNonce\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"callerConfirmation\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"resourceIdToTokenInfo\",\"outputs\":[{\"internalType\":\"enumITantinBridge.AssetsType\",\"name\":\"assetsType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"burnable\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"mintable\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pause\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[],\"name\":\"AccessControlBadConfirmation\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"neededRole\",\"type\":\"bytes32\"}],\"name\":\"AccessControlUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"target\",\"type\":\"address\"}],\"name\":\"AddressEmptyCode\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"AddressInsufficientBalance\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ECDSAInvalidSignature\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"length\",\"type\":\"uint256\"}],\"name\":\"ECDSAInvalidSignatureLength\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"s\",\"type\":\"bytes32\"}],\"name\":\"ECDSAInvalidSignatureS\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"enumITantinBridge.AssetsType\",\"name\":\"assetsType\",\"type\":\"uint8\"}],\"name\":\"ErrAssetsType\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"FailedInnerCall\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidInitialization\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotInitializing\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"SafeERC20FailedOperation\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"}],\"name\":\"AddBlacklist\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"depositer\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"depositNonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"destinationChainId\",\"type\":\"uint256\"}],\"name\":\"DepositEvent\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"depositer\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"depositNonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"destinationChainId\",\"type\":\"uint256\"}],\"name\":\"DepositNftEvent\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"depositer\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"originDepositNonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"originChainId\",\"type\":\"uint256\"}],\"name\":\"ExecuteEvent\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"depositer\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"originDepositNonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"originChainId\",\"type\":\"uint256\"}],\"name\":\"ExecuteNftEvent\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint64\",\"name\":\"version\",\"type\":\"uint64\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"}],\"name\":\"RemoveBlacklist\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"enumITantinBridge.AssetsType\",\"name\":\"assetsType\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"burnable\",\"type\":\"bool\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"mintable\",\"type\":\"bool\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"pause\",\"type\":\"bool\"}],\"name\":\"SetTokenEvent\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"BRIDGE_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"Bridge\",\"outputs\":[{\"internalType\":\"contractIBridge\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"adminAddBlacklist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"adminRemoveBlacklist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"bridgeAddress_\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature_\",\"type\":\"bytes\"}],\"name\":\"adminSetEnv\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"enumITantinBridge.AssetsType\",\"name\":\"assetsType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"burnable\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"mintable\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pause\",\"type\":\"bool\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"adminSetToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"adminWithdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"blacklist\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"destinationChainId\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"depositRecord\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"destinationChainId\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"execute\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"}],\"name\":\"getFee\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"localNonce\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"callerConfirmation\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"resourceIdToTokenInfo\",\"outputs\":[{\"internalType\":\"enumITantinBridge.AssetsType\",\"name\":\"assetsType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"burnable\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"mintable\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pause\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sigNonce\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // TantinABI is the input ABI used to generate the binding from.
@@ -584,6 +584,37 @@ func (_Tantin *TantinCallerSession) ResourceIdToTokenInfo(arg0 [32]byte) (struct
 	return _Tantin.Contract.ResourceIdToTokenInfo(&_Tantin.CallOpts, arg0)
 }
 
+// SigNonce is a free data retrieval call binding the contract method 0xcd868c9c.
+//
+// Solidity: function sigNonce() view returns(uint256)
+func (_Tantin *TantinCaller) SigNonce(opts *bind.CallOpts) (*big.Int, error) {
+	var out []interface{}
+	err := _Tantin.contract.Call(opts, &out, "sigNonce")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// SigNonce is a free data retrieval call binding the contract method 0xcd868c9c.
+//
+// Solidity: function sigNonce() view returns(uint256)
+func (_Tantin *TantinSession) SigNonce() (*big.Int, error) {
+	return _Tantin.Contract.SigNonce(&_Tantin.CallOpts)
+}
+
+// SigNonce is a free data retrieval call binding the contract method 0xcd868c9c.
+//
+// Solidity: function sigNonce() view returns(uint256)
+func (_Tantin *TantinCallerSession) SigNonce() (*big.Int, error) {
+	return _Tantin.Contract.SigNonce(&_Tantin.CallOpts)
+}
+
 // SupportsInterface is a free data retrieval call binding the contract method 0x01ffc9a7.
 //
 // Solidity: function supportsInterface(bytes4 interfaceId) view returns(bool)
@@ -615,109 +646,109 @@ func (_Tantin *TantinCallerSession) SupportsInterface(interfaceId [4]byte) (bool
 	return _Tantin.Contract.SupportsInterface(&_Tantin.CallOpts, interfaceId)
 }
 
-// AdminAddBlacklist is a paid mutator transaction binding the contract method 0x456d32fa.
+// AdminAddBlacklist is a paid mutator transaction binding the contract method 0xd8954afd.
 //
-// Solidity: function adminAddBlacklist(address user) returns()
-func (_Tantin *TantinTransactor) AdminAddBlacklist(opts *bind.TransactOpts, user common.Address) (*types.Transaction, error) {
-	return _Tantin.contract.Transact(opts, "adminAddBlacklist", user)
+// Solidity: function adminAddBlacklist(address user, bytes signature) returns()
+func (_Tantin *TantinTransactor) AdminAddBlacklist(opts *bind.TransactOpts, user common.Address, signature []byte) (*types.Transaction, error) {
+	return _Tantin.contract.Transact(opts, "adminAddBlacklist", user, signature)
 }
 
-// AdminAddBlacklist is a paid mutator transaction binding the contract method 0x456d32fa.
+// AdminAddBlacklist is a paid mutator transaction binding the contract method 0xd8954afd.
 //
-// Solidity: function adminAddBlacklist(address user) returns()
-func (_Tantin *TantinSession) AdminAddBlacklist(user common.Address) (*types.Transaction, error) {
-	return _Tantin.Contract.AdminAddBlacklist(&_Tantin.TransactOpts, user)
+// Solidity: function adminAddBlacklist(address user, bytes signature) returns()
+func (_Tantin *TantinSession) AdminAddBlacklist(user common.Address, signature []byte) (*types.Transaction, error) {
+	return _Tantin.Contract.AdminAddBlacklist(&_Tantin.TransactOpts, user, signature)
 }
 
-// AdminAddBlacklist is a paid mutator transaction binding the contract method 0x456d32fa.
+// AdminAddBlacklist is a paid mutator transaction binding the contract method 0xd8954afd.
 //
-// Solidity: function adminAddBlacklist(address user) returns()
-func (_Tantin *TantinTransactorSession) AdminAddBlacklist(user common.Address) (*types.Transaction, error) {
-	return _Tantin.Contract.AdminAddBlacklist(&_Tantin.TransactOpts, user)
+// Solidity: function adminAddBlacklist(address user, bytes signature) returns()
+func (_Tantin *TantinTransactorSession) AdminAddBlacklist(user common.Address, signature []byte) (*types.Transaction, error) {
+	return _Tantin.Contract.AdminAddBlacklist(&_Tantin.TransactOpts, user, signature)
 }
 
-// AdminRemoveBlacklist is a paid mutator transaction binding the contract method 0xd756f2a5.
+// AdminRemoveBlacklist is a paid mutator transaction binding the contract method 0x807a5222.
 //
-// Solidity: function adminRemoveBlacklist(address user) returns()
-func (_Tantin *TantinTransactor) AdminRemoveBlacklist(opts *bind.TransactOpts, user common.Address) (*types.Transaction, error) {
-	return _Tantin.contract.Transact(opts, "adminRemoveBlacklist", user)
+// Solidity: function adminRemoveBlacklist(address user, bytes signature) returns()
+func (_Tantin *TantinTransactor) AdminRemoveBlacklist(opts *bind.TransactOpts, user common.Address, signature []byte) (*types.Transaction, error) {
+	return _Tantin.contract.Transact(opts, "adminRemoveBlacklist", user, signature)
 }
 
-// AdminRemoveBlacklist is a paid mutator transaction binding the contract method 0xd756f2a5.
+// AdminRemoveBlacklist is a paid mutator transaction binding the contract method 0x807a5222.
 //
-// Solidity: function adminRemoveBlacklist(address user) returns()
-func (_Tantin *TantinSession) AdminRemoveBlacklist(user common.Address) (*types.Transaction, error) {
-	return _Tantin.Contract.AdminRemoveBlacklist(&_Tantin.TransactOpts, user)
+// Solidity: function adminRemoveBlacklist(address user, bytes signature) returns()
+func (_Tantin *TantinSession) AdminRemoveBlacklist(user common.Address, signature []byte) (*types.Transaction, error) {
+	return _Tantin.Contract.AdminRemoveBlacklist(&_Tantin.TransactOpts, user, signature)
 }
 
-// AdminRemoveBlacklist is a paid mutator transaction binding the contract method 0xd756f2a5.
+// AdminRemoveBlacklist is a paid mutator transaction binding the contract method 0x807a5222.
 //
-// Solidity: function adminRemoveBlacklist(address user) returns()
-func (_Tantin *TantinTransactorSession) AdminRemoveBlacklist(user common.Address) (*types.Transaction, error) {
-	return _Tantin.Contract.AdminRemoveBlacklist(&_Tantin.TransactOpts, user)
+// Solidity: function adminRemoveBlacklist(address user, bytes signature) returns()
+func (_Tantin *TantinTransactorSession) AdminRemoveBlacklist(user common.Address, signature []byte) (*types.Transaction, error) {
+	return _Tantin.Contract.AdminRemoveBlacklist(&_Tantin.TransactOpts, user, signature)
 }
 
-// AdminSetEnv is a paid mutator transaction binding the contract method 0xb39fced5.
+// AdminSetEnv is a paid mutator transaction binding the contract method 0x7aac640e.
 //
-// Solidity: function adminSetEnv(address bridgeAddress_) returns()
-func (_Tantin *TantinTransactor) AdminSetEnv(opts *bind.TransactOpts, bridgeAddress_ common.Address) (*types.Transaction, error) {
-	return _Tantin.contract.Transact(opts, "adminSetEnv", bridgeAddress_)
+// Solidity: function adminSetEnv(address bridgeAddress_, bytes signature_) returns()
+func (_Tantin *TantinTransactor) AdminSetEnv(opts *bind.TransactOpts, bridgeAddress_ common.Address, signature_ []byte) (*types.Transaction, error) {
+	return _Tantin.contract.Transact(opts, "adminSetEnv", bridgeAddress_, signature_)
 }
 
-// AdminSetEnv is a paid mutator transaction binding the contract method 0xb39fced5.
+// AdminSetEnv is a paid mutator transaction binding the contract method 0x7aac640e.
 //
-// Solidity: function adminSetEnv(address bridgeAddress_) returns()
-func (_Tantin *TantinSession) AdminSetEnv(bridgeAddress_ common.Address) (*types.Transaction, error) {
-	return _Tantin.Contract.AdminSetEnv(&_Tantin.TransactOpts, bridgeAddress_)
+// Solidity: function adminSetEnv(address bridgeAddress_, bytes signature_) returns()
+func (_Tantin *TantinSession) AdminSetEnv(bridgeAddress_ common.Address, signature_ []byte) (*types.Transaction, error) {
+	return _Tantin.Contract.AdminSetEnv(&_Tantin.TransactOpts, bridgeAddress_, signature_)
 }
 
-// AdminSetEnv is a paid mutator transaction binding the contract method 0xb39fced5.
+// AdminSetEnv is a paid mutator transaction binding the contract method 0x7aac640e.
 //
-// Solidity: function adminSetEnv(address bridgeAddress_) returns()
-func (_Tantin *TantinTransactorSession) AdminSetEnv(bridgeAddress_ common.Address) (*types.Transaction, error) {
-	return _Tantin.Contract.AdminSetEnv(&_Tantin.TransactOpts, bridgeAddress_)
+// Solidity: function adminSetEnv(address bridgeAddress_, bytes signature_) returns()
+func (_Tantin *TantinTransactorSession) AdminSetEnv(bridgeAddress_ common.Address, signature_ []byte) (*types.Transaction, error) {
+	return _Tantin.Contract.AdminSetEnv(&_Tantin.TransactOpts, bridgeAddress_, signature_)
 }
 
-// AdminSetToken is a paid mutator transaction binding the contract method 0x7b105f92.
+// AdminSetToken is a paid mutator transaction binding the contract method 0xfc9e199d.
 //
-// Solidity: function adminSetToken(bytes32 resourceID, uint8 assetsType, address tokenAddress, bool burnable, bool mintable, bool pause) returns()
-func (_Tantin *TantinTransactor) AdminSetToken(opts *bind.TransactOpts, resourceID [32]byte, assetsType uint8, tokenAddress common.Address, burnable bool, mintable bool, pause bool) (*types.Transaction, error) {
-	return _Tantin.contract.Transact(opts, "adminSetToken", resourceID, assetsType, tokenAddress, burnable, mintable, pause)
+// Solidity: function adminSetToken(bytes32 resourceID, uint8 assetsType, address tokenAddress, bool burnable, bool mintable, bool pause, bytes signature) returns()
+func (_Tantin *TantinTransactor) AdminSetToken(opts *bind.TransactOpts, resourceID [32]byte, assetsType uint8, tokenAddress common.Address, burnable bool, mintable bool, pause bool, signature []byte) (*types.Transaction, error) {
+	return _Tantin.contract.Transact(opts, "adminSetToken", resourceID, assetsType, tokenAddress, burnable, mintable, pause, signature)
 }
 
-// AdminSetToken is a paid mutator transaction binding the contract method 0x7b105f92.
+// AdminSetToken is a paid mutator transaction binding the contract method 0xfc9e199d.
 //
-// Solidity: function adminSetToken(bytes32 resourceID, uint8 assetsType, address tokenAddress, bool burnable, bool mintable, bool pause) returns()
-func (_Tantin *TantinSession) AdminSetToken(resourceID [32]byte, assetsType uint8, tokenAddress common.Address, burnable bool, mintable bool, pause bool) (*types.Transaction, error) {
-	return _Tantin.Contract.AdminSetToken(&_Tantin.TransactOpts, resourceID, assetsType, tokenAddress, burnable, mintable, pause)
+// Solidity: function adminSetToken(bytes32 resourceID, uint8 assetsType, address tokenAddress, bool burnable, bool mintable, bool pause, bytes signature) returns()
+func (_Tantin *TantinSession) AdminSetToken(resourceID [32]byte, assetsType uint8, tokenAddress common.Address, burnable bool, mintable bool, pause bool, signature []byte) (*types.Transaction, error) {
+	return _Tantin.Contract.AdminSetToken(&_Tantin.TransactOpts, resourceID, assetsType, tokenAddress, burnable, mintable, pause, signature)
 }
 
-// AdminSetToken is a paid mutator transaction binding the contract method 0x7b105f92.
+// AdminSetToken is a paid mutator transaction binding the contract method 0xfc9e199d.
 //
-// Solidity: function adminSetToken(bytes32 resourceID, uint8 assetsType, address tokenAddress, bool burnable, bool mintable, bool pause) returns()
-func (_Tantin *TantinTransactorSession) AdminSetToken(resourceID [32]byte, assetsType uint8, tokenAddress common.Address, burnable bool, mintable bool, pause bool) (*types.Transaction, error) {
-	return _Tantin.Contract.AdminSetToken(&_Tantin.TransactOpts, resourceID, assetsType, tokenAddress, burnable, mintable, pause)
+// Solidity: function adminSetToken(bytes32 resourceID, uint8 assetsType, address tokenAddress, bool burnable, bool mintable, bool pause, bytes signature) returns()
+func (_Tantin *TantinTransactorSession) AdminSetToken(resourceID [32]byte, assetsType uint8, tokenAddress common.Address, burnable bool, mintable bool, pause bool, signature []byte) (*types.Transaction, error) {
+	return _Tantin.Contract.AdminSetToken(&_Tantin.TransactOpts, resourceID, assetsType, tokenAddress, burnable, mintable, pause, signature)
 }
 
-// AdminWithdraw is a paid mutator transaction binding the contract method 0x401d4482.
+// AdminWithdraw is a paid mutator transaction binding the contract method 0x3ebc4a0f.
 //
-// Solidity: function adminWithdraw(address tokenAddress, uint256 amount) returns()
-func (_Tantin *TantinTransactor) AdminWithdraw(opts *bind.TransactOpts, tokenAddress common.Address, amount *big.Int) (*types.Transaction, error) {
-	return _Tantin.contract.Transact(opts, "adminWithdraw", tokenAddress, amount)
+// Solidity: function adminWithdraw(address tokenAddress, uint256 amount, bytes signature) returns()
+func (_Tantin *TantinTransactor) AdminWithdraw(opts *bind.TransactOpts, tokenAddress common.Address, amount *big.Int, signature []byte) (*types.Transaction, error) {
+	return _Tantin.contract.Transact(opts, "adminWithdraw", tokenAddress, amount, signature)
 }
 
-// AdminWithdraw is a paid mutator transaction binding the contract method 0x401d4482.
+// AdminWithdraw is a paid mutator transaction binding the contract method 0x3ebc4a0f.
 //
-// Solidity: function adminWithdraw(address tokenAddress, uint256 amount) returns()
-func (_Tantin *TantinSession) AdminWithdraw(tokenAddress common.Address, amount *big.Int) (*types.Transaction, error) {
-	return _Tantin.Contract.AdminWithdraw(&_Tantin.TransactOpts, tokenAddress, amount)
+// Solidity: function adminWithdraw(address tokenAddress, uint256 amount, bytes signature) returns()
+func (_Tantin *TantinSession) AdminWithdraw(tokenAddress common.Address, amount *big.Int, signature []byte) (*types.Transaction, error) {
+	return _Tantin.Contract.AdminWithdraw(&_Tantin.TransactOpts, tokenAddress, amount, signature)
 }
 
-// AdminWithdraw is a paid mutator transaction binding the contract method 0x401d4482.
+// AdminWithdraw is a paid mutator transaction binding the contract method 0x3ebc4a0f.
 //
-// Solidity: function adminWithdraw(address tokenAddress, uint256 amount) returns()
-func (_Tantin *TantinTransactorSession) AdminWithdraw(tokenAddress common.Address, amount *big.Int) (*types.Transaction, error) {
-	return _Tantin.Contract.AdminWithdraw(&_Tantin.TransactOpts, tokenAddress, amount)
+// Solidity: function adminWithdraw(address tokenAddress, uint256 amount, bytes signature) returns()
+func (_Tantin *TantinTransactorSession) AdminWithdraw(tokenAddress common.Address, amount *big.Int, signature []byte) (*types.Transaction, error) {
+	return _Tantin.Contract.AdminWithdraw(&_Tantin.TransactOpts, tokenAddress, amount, signature)
 }
 
 // Deposit is a paid mutator transaction binding the contract method 0xc78089b1.

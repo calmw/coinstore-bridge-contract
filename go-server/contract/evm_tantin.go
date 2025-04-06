@@ -54,7 +54,7 @@ func (c TanTinEvm) AdminSetEnv() {
 			log.Println(err)
 			return
 		}
-		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.BridgeContractAddress))
+		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.BridgeContractAddress), AdminSetEnvSig())
 		if err == nil {
 			break
 		}
@@ -120,6 +120,7 @@ func (c TanTinEvm) AdminSetToken() {
 			false,
 			false,
 			false,
+			AdminSetTokenSig(),
 		)
 		if err == nil {
 			break
@@ -152,6 +153,7 @@ func (c TanTinEvm) AdminSetToken() {
 			false,
 			false,
 			false,
+			AdminSetTokenSig(),
 		)
 		if err == nil {
 			break
@@ -214,4 +216,11 @@ func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destina
 	}
 
 	log.Println(fmt.Sprintf("Deposit 确认成功 %s", res.Hash()))
+}
+
+func AdminSetEnvSig() []byte {
+
+}
+func AdminSetTokenSig() []byte {
+
 }
