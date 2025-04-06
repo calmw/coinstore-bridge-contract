@@ -4,6 +4,7 @@ import (
 	"coinstore/contract"
 	"coinstore/services"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 )
 
@@ -16,7 +17,12 @@ func main() {
 		return
 	}
 	bridge.Init()
-	bridge.AdminSetResource(big.NewInt(0))
+	bridge.AdminSetResource(
+		services.ResourceIdUsdt,
+		2,
+		common.HexToAddress(contract.ChainConfig.UsdtAddress),
+		big.NewInt(100),
+	)
 
 	//vote, err := contract.NewVote()
 	//if err != nil {

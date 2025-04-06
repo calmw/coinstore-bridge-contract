@@ -1,14 +1,33 @@
 package contract
 
 import (
+	"coinstore/utils"
 	"encoding/hex"
 	"fmt"
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/fbsobreira/gotron-sdk/pkg/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
 	"github.com/fbsobreira/gotron-sdk/pkg/store"
+	"os"
 	"strings"
 )
+
+func InitTronEnv() {
+	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE_TRON")
+	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
+	ChainConfig = ChainConfigs{
+		BridgeId:              3,
+		ChainId:               3448148188,
+		ChainTypeId:           2,
+		RPC:                   "grpc.nile.trongrid.io:50051",
+		BridgeContractAddress: "TWRj9YzaaDki5iUaji3D3jfoUwS3CBLJLq",
+		VoteContractAddress:   "TV9ET14nSTmKZ88Dt15USBqKJHfaPsXbXH",
+		TantinContractAddress: "TD4HbwLCW558wrBF3Qd5VgC8sG3poejKyS",
+		UsdtAddress:           "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf",
+		UsdcAddress:           "te1zsjwwtfhsszmajkv45tgg1jqutbhjuz",
+		PrivateKey:            privateKeyStr,
+	}
+}
 
 func GetKeyFromPrivateKey(privateKey, name, passphrase string) (*keystore.KeyStore, *keystore.Account, error) {
 	privateKey = strings.TrimPrefix(privateKey, "0x")

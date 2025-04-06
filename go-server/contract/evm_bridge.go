@@ -3,6 +3,7 @@ package contract
 import (
 	"coinstore/abi"
 	"coinstore/binding"
+	"coinstore/services"
 	"context"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
@@ -36,9 +37,9 @@ func NewBridge() (*BridgeEvm, error) {
 }
 
 func (b *BridgeEvm) Init() {
-	//fmt.Println(b.Cli.ChainID(context.Background()))
 	b.AdminSetEnv()
-	b.GrantVoteRole(common.HexToAddress(ChainConfig.VoteContractAddress))
+	b.GrantRole(services.VoteRole, common.HexToAddress(ChainConfig.VoteContractAddress))
+	b.GrantRole(services.AdminRole, common.HexToAddress(services.AdminAccount))
 }
 
 func (b *BridgeEvm) AdminSetEnv() {
