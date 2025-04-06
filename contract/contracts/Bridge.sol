@@ -30,6 +30,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     mapping(uint256 => mapping(uint256 => DepositRecord)) public depositRecords; // depositNonce => (destinationChainId => Deposit Record)
 
     function initialize() public initializer {
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         superAdminAddress = 0xa47142f08f859aCeb2127C6Ab66eC8c8bc4FFBA9;
     }
 
@@ -289,14 +290,13 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         bytes32 messageHash = keccak256(
             abi.encode(
                 sigNonce,
+                chainId,
                 resourceID,
                 assetsType,
                 tokenAddress,
                 fee,
                 pause,
-                tantinAddress,
-                sigNonce,
-                chainId
+                tantinAddress
             )
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(

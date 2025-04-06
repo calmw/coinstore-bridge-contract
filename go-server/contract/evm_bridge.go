@@ -36,9 +36,9 @@ func NewBridge() (*BridgeEvm, error) {
 }
 
 func (b *BridgeEvm) Init() {
-	b.AdminSetEnv()
-	b.GrantRole(VoteRole, common.HexToAddress(ChainConfig.VoteContractAddress))
 	b.GrantRole(AdminRole, common.HexToAddress(AdminAccount))
+	b.GrantRole(VoteRole, common.HexToAddress(ChainConfig.VoteContractAddress))
+	b.AdminSetEnv()
 }
 
 func (b *BridgeEvm) AdminSetEnv() {
@@ -107,6 +107,7 @@ func (b *BridgeEvm) GrantRole(role string, addr common.Address) {
 		if err == nil {
 			break
 		}
+		fmt.Println(err)
 		time.Sleep(3 * time.Second)
 	}
 	log.Println(fmt.Sprintf("GrantRole 成功"))
@@ -125,27 +126,33 @@ func (b *BridgeEvm) GrantRole(role string, addr common.Address) {
 func (b *BridgeEvm) AdminSetResource(resourceId string, assetsType uint8, tokenAddress common.Address, fee *big.Int) {
 	var res *types.Transaction
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
-	sigNonce, err := b.Contract.SigNonce(nil)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	chainId, err := b.Contract.ChainId(nil)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	signature, _ := abi.BridgeAdminSetResourceSignature(
-		sigNonce,
-		chainId,
-		[32]byte(resourceIdBytes),
-		assetsType, //uint8(2),
-		common.HexToAddress(ChainConfig.UsdtAddress),
-		tokenAddress,
-		fee,
-		false,
-	)
+
 	for {
+		sigNonce, err := b.Contract.SigNonce(nil)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		chainId, err := b.Contract.ChainId(nil)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println(
+			sigNonce,
+			chainId,
+			"~~~~~",
+		)
+		signature, _ := abi.BridgeAdminSetResourceSignature(
+			sigNonce,
+			chainId,
+			[32]byte(resourceIdBytes),
+			assetsType,
+			common.HexToAddress(ChainConfig.UsdtAddress),
+			tokenAddress,
+			fee,
+			false,
+		)
 		err, txOpts := GetAuth(b.Cli)
 		if err != nil {
 			log.Println(err)
