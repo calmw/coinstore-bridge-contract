@@ -64,7 +64,10 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     function adminPauseTransfers(
         bytes memory signature
     ) external onlyRole(ADMIN_ROLE) {
-        require(checkAdminPauseTransfers(signature), "signature error");
+        require(
+            checkAdminPauseTransfersSignature(signature),
+            "signature error"
+        );
         _pause();
     }
 
@@ -75,7 +78,10 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     function adminUnpauseTransfers(
         bytes memory signature
     ) external onlyRole(ADMIN_ROLE) {
-        require(checkAdminUnpauseTransfers(signature), "signature error");
+        require(
+            checkAdminUnpauseTransfersSignature(signature),
+            "signature error"
+        );
         _unpause();
     }
 
@@ -108,7 +114,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         bytes memory signature
     ) external onlyRole(ADMIN_ROLE) {
         require(
-            checkAdminSetResource(
+            checkAdminSetResourceSignature(
                 signature,
                 resourceID,
                 assetsType,
@@ -197,13 +203,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         uint256 chainType_
     ) private returns (bool) {
         bytes32 messageHash = keccak256(
-            abi.encodePacked(
-                voteAddress_,
-                chainId_,
-                chainType_,
-                sigNonce,
-                chainId
-            )
+            abi.encode(voteAddress_, chainId_, chainType_, sigNonce, chainId)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature_
@@ -216,10 +216,10 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     }
 
     // 验证adminPauseTransfers签名
-    function checkAdminPauseTransfers(
+    function checkAdminPauseTransfersSignature(
         bytes memory signature
     ) private returns (bool) {
-        bytes32 messageHash = keccak256(abi.encodePacked(sigNonce, chainId));
+        bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId));
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
         );
@@ -231,10 +231,10 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     }
 
     // 验证adminUnpauseTransfers签名
-    function checkAdminUnpauseTransfers(
+    function checkAdminUnpauseTransfersSignature(
         bytes memory signature
     ) private returns (bool) {
-        bytes32 messageHash = keccak256(abi.encodePacked(sigNonce, chainId));
+        bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId));
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
         );
@@ -246,7 +246,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     }
 
     // 验证adminSetResource签名
-    function checkAdminSetResource(
+    function checkAdminSetResourceSignature(
         bytes memory signature,
         bytes32 resourceID,
         AssetsType assetsType,
@@ -256,7 +256,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         address tantinAddress
     ) private returns (bool) {
         bytes32 messageHash = keccak256(
-            abi.encodePacked(
+            abi.encode(
                 resourceID,
                 assetsType,
                 tokenAddress,

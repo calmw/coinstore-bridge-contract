@@ -22,6 +22,33 @@
   },
   {
     "inputs": [],
+    "name": "ECDSAInvalidSignature",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "length",
+        "type": "uint256"
+      }
+    ],
+    "name": "ECDSAInvalidSignatureLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "s",
+        "type": "bytes32"
+      }
+    ],
+    "name": "ECDSAInvalidSignatureS",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "InvalidInitialization",
     "type": "error"
   },
@@ -291,11 +318,29 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "TantinBridge",
+    "outputs": [
+      {
+        "internalType": "contract ITantinBridge",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
         "name": "relayerAddress",
         "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
       }
     ],
     "name": "adminAddRelayer",
@@ -309,6 +354,11 @@
         "internalType": "uint256",
         "name": "newThreshold",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
       }
     ],
     "name": "adminChangeRelayerThreshold",
@@ -322,6 +372,11 @@
         "internalType": "address",
         "name": "relayerAddress",
         "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
       }
     ],
     "name": "adminRemoveRelayer",
@@ -333,7 +388,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "bridgeAddress_",
+        "name": "tantinBridgeAddress_",
         "type": "address"
       },
       {
@@ -345,6 +400,11 @@
         "internalType": "uint256",
         "name": "relayerThreshold_",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "signature_",
+        "type": "bytes"
       }
     ],
     "name": "adminSetEnv",
@@ -391,11 +451,6 @@
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "resourceId",
-        "type": "bytes32"
       }
     ],
     "name": "executeProposal",
@@ -660,6 +715,19 @@
     "name": "revokeRole",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "sigNonce",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
