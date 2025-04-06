@@ -279,11 +279,18 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         @notice 提取跨链桥资产
         @param tokenAddress 币种地址，coin为0地址
         @param amount 提取数量
+        @param signature 签名
      */
     function adminWithdraw(
         address tokenAddress,
-        uint256 amount
+        uint256 amount,
+        bytes memory signature
     ) public onlyRole(ADMIN_ROLE) {
+        // 验证签名
+        require(
+            checkAdminWithdrawSignature(signature, tokenAddress, amount),
+            "signature error"
+        );
         if (tokenAddress == address(0)) {
             Address.sendValue(payable(msg.sender), amount);
         } else {
@@ -391,6 +398,27 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
                 sigNonce,
                 chainId
             )
+        );
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature
+        );
+
+        bool res = recoverAddress == superAdminAddress;
+        if (res) {
+            sigNonce++;
+        }
+        return res;
+    }
+
+    // 验证adminWithdrawSignature签名
+    function checkAdminWithdrawSignature(
+        bytes memory signature,
+        address tokenAddress,
+        uint256 amount
+    ) private returns (bool) {
+        uint256 chainId = Bridge.chainId();
+        bytes32 messageHash = keccak256(
+            abi.encodePacked(tokenAddress, amount, sigNonce, chainId)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
