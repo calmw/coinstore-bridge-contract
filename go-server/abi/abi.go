@@ -156,31 +156,189 @@ var TantinSig = `[
 ]`
 
 var BridgeSig = `[
-	{
-		"inputs": [{
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "resourceID",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "enum IBridge.AssetsType",
+        "name": "assetsType",
+        "type": "uint8"
+      },
+      {
         "internalType": "address",
-        "name": "recipient",
+        "name": "tokenAddress",
         "type": "address"
-      }],
-		"name": "recipientSignature",
-		"outputs": [],
-		"stateMutability": "view",
-		"type": "function"
-	}
+      },
+      {
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "pause",
+        "type": "bool"
+      },
+      {
+        "internalType": "address",
+        "name": "tantinAddress",
+        "type": "address"
+      }
+    ],
+    "name": "checkAdminSetResourceSignature",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "voteAddress_",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "chainId_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "chainType_",
+        "type": "uint256"
+      }
+    ],
+    "name": "checkAdminSetEnvSignature",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
 ]`
 
 var VoteSig = `[
-	{
-		"inputs": [{
+      {
         "internalType": "address",
-        "name": "recipient",
+        "name": "relayerAddress",
         "type": "address"
-      }],
-		"name": "recipientSignature",
-		"outputs": [],
-		"stateMutability": "view",
-		"type": "function"
-	}
+      }
+    ],
+    "name": "checkAdminRemoveRelayerSignature",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "originChainID",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "originDepositNonce",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "dataHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "cancelProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "relayerAddress",
+        "type": "address"
+      }
+    ],
+    "name": "checkAdminAddRelayerSignature",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "newThreshold",
+        "type": "uint256"
+      }
+    ],
+    "name": "checkAdminChangeRelayerThresholdSignature",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "tantinBridgeAddress_",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "expiry_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "relayerThreshold_",
+        "type": "uint256"
+      }
+    ],
+    "name": "checkAdminSetEnvSignature",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
 ]`
 
 func GenerateSignature(parameter []byte) ([]byte, error) {

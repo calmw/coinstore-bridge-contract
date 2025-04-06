@@ -6,10 +6,10 @@ import (
 	"strings"
 )
 
-func TantinDepositSignature(recipient string) ([]byte, error) {
+func TantinDepositSignature(recipient common.Address) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(TantinSig))
 	parameterBytes, _ := contractAbi.Pack("checkDepositSignature",
-		common.HexToAddress(recipient),
+		recipient,
 	)
 	return GenerateSignature(parameterBytes[4:])
 }

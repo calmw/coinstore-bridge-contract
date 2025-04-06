@@ -1,6 +1,7 @@
 package contract
 
 import (
+	"coinstore/abi"
 	"coinstore/binding"
 	"context"
 	"fmt"
@@ -47,6 +48,7 @@ func (c TanTinEvm) Init() {
 
 func (c TanTinEvm) AdminSetEnv() {
 	var res *types.Transaction
+	signature, _ := abi.TantinAdminSetEnvSignature(common.HexToAddress(ChainConfig.BridgeContractAddress))
 
 	for {
 		err, txOpts := GetAuth(c.Cli)
@@ -54,7 +56,7 @@ func (c TanTinEvm) AdminSetEnv() {
 			log.Println(err)
 			return
 		}
-		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.BridgeContractAddress), AdminSetEnvSig())
+		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.BridgeContractAddress), signature)
 		if err == nil {
 			break
 		}
@@ -105,6 +107,12 @@ func (c TanTinEvm) GrantBridgeRole(addr common.Address) {
 
 func (c TanTinEvm) AdminSetToken() {
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(ResourceIdUsdt, "0x"))
+	signature, _ := abi.TantinAdminSetTokenSignature([32]byte(resourceIdBytes),
+		uint8(2),
+		common.HexToAddress(ChainConfig.UsdtAddress),
+		false,
+		false,
+		false)
 	var res *types.Transaction
 	for {
 		err, txOpts := GetAuth(c.Cli)
@@ -120,7 +128,7 @@ func (c TanTinEvm) AdminSetToken() {
 			false,
 			false,
 			false,
-			AdminSetTokenSig(),
+			signature,
 		)
 		if err == nil {
 			break
@@ -139,6 +147,14 @@ func (c TanTinEvm) AdminSetToken() {
 	log.Println(fmt.Sprintf("AdminSetToken 确认成功"))
 
 	resourceIdBytes = hexutils.HexToBytes(strings.TrimPrefix(ResourceIdCoin, "0x"))
+	signature, _ = abi.TantinAdminSetTokenSignature(
+		[32]byte(resourceIdBytes),
+		uint8(1),
+		common.HexToAddress("0x0000000000000000000000000000000000000000"),
+		false,
+		false,
+		false,
+	)
 	for {
 		err, txOpts := GetAuth(c.Cli)
 		if err != nil {
@@ -153,7 +169,7 @@ func (c TanTinEvm) AdminSetToken() {
 			false,
 			false,
 			false,
-			AdminSetTokenSig(),
+			signature,
 		)
 		if err == nil {
 			break
@@ -172,8 +188,8 @@ func (c TanTinEvm) AdminSetToken() {
 	log.Println(fmt.Sprintf("AdminSetToken 确认成功"))
 }
 
-func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount *big.Int, signature []byte) {
-
+func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount *big.Int) {
+	signature, _ := abi.TantinDepositSignature(receiver)
 	token, err := NewErc20(common.HexToAddress(ChainConfig.UsdtAddress))
 	if err != nil {
 		fmt.Println(err)
@@ -216,11 +232,4 @@ func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destina
 	}
 
 	log.Println(fmt.Sprintf("Deposit 确认成功 %s", res.Hash()))
-}
-
-func AdminSetEnvSig() []byte {
-
-}
-func AdminSetTokenSig() []byte {
-
 }
