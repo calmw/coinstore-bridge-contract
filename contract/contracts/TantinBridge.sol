@@ -319,9 +319,8 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes memory signature,
         address bridgeAddress
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, bridgeAddress, sigNonce, chainId)
+            abi.encode(sigNonce, bridgeAddress)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
@@ -342,7 +341,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     ) private returns (bool) {
         uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, user, sigNonce, chainId)
+            abi.encode(sigNonce, chainId, user, sigNonce)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
@@ -363,7 +362,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     ) private returns (bool) {
         uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, user, sigNonce, chainId)
+            abi.encode(sigNonce, chainId, user)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
@@ -391,14 +390,13 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes32 messageHash = keccak256(
             abi.encode(
                 sigNonce,
+        chainId,
                 resourceID,
                 assetsType,
                 tokenAddress,
                 burnable,
                 mintable,
-                pause,
-                sigNonce,
-                chainId
+                pause
             )
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
@@ -420,7 +418,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     ) private returns (bool) {
         uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, tokenAddress, amount, sigNonce, chainId)
+            abi.encode(sigNonce, chainId, tokenAddress, amount)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature

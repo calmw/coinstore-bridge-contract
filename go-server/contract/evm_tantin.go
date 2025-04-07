@@ -37,8 +37,9 @@ func NewTanTin() (*TanTinEvm, error) {
 }
 
 func (c TanTinEvm) Init() {
+	c.GrantRole(AdminRole, common.HexToAddress(AdminAccount))
+	c.GrantRole(BridgeRole, common.HexToAddress(ChainConfig.BridgeContractAddress))
 	c.AdminSetEnv()
-	c.GrantBridgeRole(common.HexToAddress(ChainConfig.BridgeContractAddress))
 }
 
 func (c TanTinEvm) AdminSetEnv() {
@@ -75,9 +76,8 @@ func (c TanTinEvm) AdminSetEnv() {
 	fmt.Println(fmt.Sprintf("AdminSetEnv 确认成功"))
 }
 
-func (c TanTinEvm) GrantBridgeRole(addr common.Address) {
-	BridgeRole := "52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f"
-	BridgeRoleBytes := hexutils.HexToBytes(BridgeRole)
+func (c TanTinEvm) GrantRole(role string, addr common.Address) {
+	AdminRoleBytes := hexutils.HexToBytes(role)
 
 	var res *types.Transaction
 
@@ -87,13 +87,14 @@ func (c TanTinEvm) GrantBridgeRole(addr common.Address) {
 			log.Println(err)
 			return
 		}
-		res, err = c.Contract.GrantRole(txOpts, [32]byte(BridgeRoleBytes), addr)
+		res, err = c.Contract.GrantRole(txOpts, [32]byte(AdminRoleBytes), addr)
 		if err == nil {
 			break
 		}
+		fmt.Println(err)
 		time.Sleep(3 * time.Second)
 	}
-	log.Println(fmt.Sprintf("GrantBridgeRole 成功"))
+	log.Println(fmt.Sprintf("GrantRole 成功"))
 	for {
 		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
 		if err == nil && receipt.Status == 1 {
@@ -102,7 +103,7 @@ func (c TanTinEvm) GrantBridgeRole(addr common.Address) {
 		time.Sleep(time.Second * 2)
 	}
 
-	log.Println(fmt.Sprintf("GrantBridgeRole 确认成功"))
+	log.Println(fmt.Sprintf("GrantRole 确认成功"))
 }
 
 func (c TanTinEvm) AdminSetToken(resourceId string) {

@@ -20,21 +20,21 @@ func main() {
 	//	common.HexToAddress(contract.ChainConfig.UsdtAddress),
 	//	big.NewInt(100),
 	//)
-
-	vote, err := contract.NewVote()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	vote.Init()
-
-	//tantin, err := contract.NewTanTin()
+	//
+	//vote, err := contract.NewVote()
 	//if err != nil {
 	//	fmt.Println(err)
 	//	return
 	//}
-	////tantin.Init()
-	////tantin.AdminSetToken()
+	//vote.Init()
+
+	tantin, err := contract.NewTanTin()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	tantin.Init()
+	tantin.AdminSetToken()
 	//
 	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
 	////resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdCoin, "0x"))
