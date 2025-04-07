@@ -1,9 +1,12 @@
 package contract
 
 import (
+	"coinstore/abi"
+	"coinstore/bridge/tron"
 	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"fmt"
+	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/client"
 	"github.com/fbsobreira/gotron-sdk/pkg/client/transaction"
 	"github.com/fbsobreira/gotron-sdk/pkg/common"
@@ -59,22 +62,29 @@ func (b *BridgeTron) Init() {
 }
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {
+	sigNonce, err := tron.GetSigNonce(b.ContractAddress, OwnerAccount)
+	if err != nil {
+		return "", err
+	}
 
-	//sigNonce, err := b.Contract.SigNonce(nil)
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//signature, _ := abi.BridgeAdminSetEnvSignature(
-	//	sigNonce,
-	//	common.HexToAddress(ChainConfig.VoteContractAddress),
-	//	big.NewInt(ChainConfig.BridgeId),
-	//	big.NewInt(ChainConfig.ChainTypeId),
-	//)
+	voteEth, _ := utils.TronToEth(ChainConfig.VoteContractAddress)
+	signature, _ := abi.BridgeAdminSetEnvSignature(
+		sigNonce,
+		ethCommon.HexToAddress(voteEth),
+		big.NewInt(ChainConfig.BridgeId),
+		big.NewInt(ChainConfig.ChainTypeId),
+	)
 
 	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
 	defer b.Ks.Lock(b.Ka.Address)
-	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%d\"},{\"uint256\":\"%d\"},{\"bytes\":\"%s\"}]", ChainConfig.VoteContractAddress, ChainConfig.BridgeId, ChainConfig.ChainTypeId)
+	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%d\"},{\"uint256\":\"%d\"},{\"bytes\":\"%s\"}]",
+		ChainConfig.VoteContractAddress,
+		ChainConfig.BridgeId,
+		ChainConfig.ChainTypeId,
+		fmt.Sprintf("0x%x", signature),
+	)
+	fmt.Println("~~~~~~")
+	fmt.Println(triggerData)
 	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetEnv(address,uint256,uint256)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
