@@ -59,9 +59,22 @@ func (b *BridgeTron) Init() {
 }
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {
+
+	//sigNonce, err := b.Contract.SigNonce(nil)
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//signature, _ := abi.BridgeAdminSetEnvSignature(
+	//	sigNonce,
+	//	common.HexToAddress(ChainConfig.VoteContractAddress),
+	//	big.NewInt(ChainConfig.BridgeId),
+	//	big.NewInt(ChainConfig.ChainTypeId),
+	//)
+
 	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
 	defer b.Ks.Lock(b.Ka.Address)
-	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%d\"},{\"uint256\":\"%d\"}]", ChainConfig.VoteContractAddress, ChainConfig.BridgeId, ChainConfig.ChainTypeId)
+	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%d\"},{\"uint256\":\"%d\"},{\"bytes\":\"%s\"}]", ChainConfig.VoteContractAddress, ChainConfig.BridgeId, ChainConfig.ChainTypeId)
 	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetEnv(address,uint256,uint256)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err

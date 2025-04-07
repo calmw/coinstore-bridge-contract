@@ -19,7 +19,6 @@ import (
 	"io"
 	"math/big"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -222,17 +221,17 @@ func ExecuteProposal(cli *client.GrpcClient, from, contractAddress string, ks *k
 		originChainId.String(), originDepositNonce.String(), hexutils.BytesToHex(data[:]), hexutils.BytesToHex(resourceId[:]),
 	)
 
-	privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
-	_, _, err := getKeyFromPrivateKey(privateKey, AccountName, Passphrase)
-	//if strings.Contains(err.Error(),"already exists")
-	if err != nil && !strings.Contains(err.Error(), "already exists") {
-		return "", err
-	}
-	// 获得keystore与account
-	ks, ka, err = unlockedKeystore(from, Passphrase)
-	if err != nil {
-		return "", err
-	}
+	//privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
+	//_, _, err := getKeyFromPrivateKey(privateKey, AccountName, Passphrase)
+	////if strings.Contains(err.Error(),"already exists")
+	//if err != nil && !strings.Contains(err.Error(), "already exists") {
+	//	return "", err
+	//}
+	//// 获得keystore与account
+	//ks, ka, err = unlockedKeystore(from, Passphrase)
+	//if err != nil {
+	//	return "", err
+	//}
 
 	tx, err := cli.TriggerContract(from, contractAddress, "executeProposal(uint256,uint256,bytes,bytes32)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
@@ -286,4 +285,41 @@ func unlockedKeystore(from, passphrase string) (*keystore.KeyStore, *keystore.Ac
 		return nil, nil, errors.Unwrap(unlockError)
 	}
 	return ks, &account, nil
+}
+
+func GetSigNonce(contractAddress, from string) (*big.Int, error) {
+	from, _ = utils.TronToEth(from)
+	contractAddress, _ = utils.TronToEth(contractAddress)
+	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
+	data, err := GenerateSigNonce()
+	if err != nil {
+		return nil, err
+	}
+	ethCallBody := fmt.Sprintf(`{
+	"jsonrpc": "2.0",
+	"method": "eth_call",
+	"params": [{
+		"from": "%s",
+		"to": "%s",
+		"gas": "0x0",
+		"gasPrice": "0x0",
+		"value": "0x0",
+		"data": "%s"
+	}, "latest"],
+	"id": %d
+}`, from, contractAddress, data, utils.RandInt(100, 10000))
+	fmt.Println(ethCallBody)
+	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
+	req.Header.Add("accept", "application/json")
+	res, _ := http.DefaultClient.Do(req)
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
+	fmt.Println(string(body))
+	var jsonRpcResponse JsonRpcResponse
+	err = json.Unmarshal(body, &jsonRpcResponse)
+	if err != nil {
+		return nil, errors.New("eth call failed")
+	}
+
+	return ParseSigNonce(hexutils.HexToBytes("cd868c9c" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }

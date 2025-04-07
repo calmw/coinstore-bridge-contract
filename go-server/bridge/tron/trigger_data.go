@@ -635,3 +635,83 @@ func ParseVoteHasVotedOnProposal(inputData []byte) (bool, error) {
 	}
 	return hashVote, err
 }
+
+func GenerateSigNonce() (string, error) {
+	contractABI := `[
+{
+    "inputs": [],
+    "name": "sigNonce",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+  ]`
+
+	// 解析合约的ABI
+	parsedABI, err := abi.JSON(strings.NewReader(contractABI))
+	if err != nil {
+		return "", err
+	}
+
+	// 创建一个方法对象，指向我们想要调用的合约函数
+	AbiPacked, err := parsedABI.Pack("sigNonce")
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("0x%x", AbiPacked), nil
+}
+
+func ParseSigNonce(inputData []byte) (*big.Int, error) {
+	contractABI := `[
+{
+    "inputs": [],
+    "name": "sigNonce",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+  ]`
+
+	// 解析合约的ABI
+	parsedABI, err := abi.JSON(strings.NewReader(contractABI))
+	if err != nil {
+		panic(err)
+	}
+	// 解析输入数据
+	method, err := parsedABI.MethodById(inputData)
+	if err != nil {
+		fmt.Println("Error parsing input data:", err)
+		return nil, err
+	}
+
+	// 获取函数参数
+	outputs := make([]interface{}, len(method.Outputs))
+	if outputs, err = method.Outputs.Unpack(inputData[4:]); err != nil {
+		fmt.Println("Error unpacking parameters:", err)
+		return nil, err
+	}
+	type As struct {
+		ResourceId    [32]uint8        `json:"resourceId"`
+		DataHash      [32]uint8        `json:"dataHash"`
+		YesVotes      []common.Address `json:"yesVotes"`
+		NoVotes       []common.Address `json:"noVotes"`
+		Status        uint8            `json:"status"`
+		ProposedBlock *big.Int         `json:"proposedBlock"`
+	}
+	// 打印参数
+	output := outputs[0]
+	result := output.(*big.Int)
+	return result, err
+}

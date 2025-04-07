@@ -13,12 +13,12 @@ import (
 func main() {
 	contract.InitTantinEnv()
 
-	//bridge, err := contract.NewBridge()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//bridge.Init()
+	bridge, err := contract.NewBridge()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	bridge.Init()
 	//bridge.AdminSetResource(
 	//	contract.ResourceIdUsdt,
 	//	2,
