@@ -53,30 +53,35 @@ func NewBridgeTron() (*BridgeTron, error) {
 }
 
 func (b *BridgeTron) Init() {
+	//txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
+	//fmt.Println(txHash2, err2)
+	//txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
+	//fmt.Println(txHash3, err3)
 	txHash, err := b.AdminSetEnv()
 	fmt.Println(txHash, err)
-	txHash2, err2 := b.GrantVoteRole("c65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7", ChainConfig.VoteContractAddress)
-	fmt.Println(txHash2, err2)
-	txHash3, err3 := b.AdminSetResource(big.NewInt(1))
-	fmt.Println(txHash3, err3)
+	txHash4, err4 := b.AdminSetResource(big.NewInt(1))
+	fmt.Println(txHash4, err4)
 }
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {
+
+	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
+	defer b.Ks.Lock(b.Ka.Address)
 	sigNonce, err := tron.GetSigNonce(b.ContractAddress, OwnerAccount)
 	if err != nil {
 		return "", err
 	}
 
 	voteEth, _ := utils.TronToEth(ChainConfig.VoteContractAddress)
-	signature, _ := abi.BridgeAdminSetEnvSignature(
+	signature, _ := abi.BridgeAdminSetEnvSignatureTron(
+		b.Ks,
+		b.Ka,
 		sigNonce,
 		ethCommon.HexToAddress(voteEth),
 		big.NewInt(ChainConfig.BridgeId),
 		big.NewInt(ChainConfig.ChainTypeId),
 	)
 
-	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
-	defer b.Ks.Lock(b.Ka.Address)
 	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%d\"},{\"uint256\":\"%d\"},{\"bytes\":\"%s\"}]",
 		ChainConfig.VoteContractAddress,
 		ChainConfig.BridgeId,
@@ -112,7 +117,7 @@ func (b *BridgeTron) GrantAdminRole(role, addr string) (string, error) {
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
-func (b *BridgeTron) GrantVoteRole(role, addr string) (string, error) {
+func (b *BridgeTron) GrantRole(role, addr string) (string, error) {
 	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
 	defer b.Ks.Lock(b.Ka.Address)
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)

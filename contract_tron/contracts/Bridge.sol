@@ -216,6 +216,21 @@ contract Bridge is IBridge, Pausable, AccessControl {
         }
         return res;
     }
+    function checkAdminSetEnvSignatureTest(
+        bytes memory signature_,
+        address voteAddress_,
+        uint256 chainId_,
+        uint256 chainType_
+    ) public view returns (address) {
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
+        );
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature_
+        );
+
+        return recoverAddress;
+    }
 
     // 验证adminPauseTransfers签名
     function checkAdminPauseTransfersSignature(
