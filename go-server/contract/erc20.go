@@ -61,5 +61,5 @@ func (c Erc20) Approve(amount *big.Int) {
 		time.Sleep(time.Second * 2)
 	}
 
-	log.Println(fmt.Sprintf("Approve 确认成功"))
+	log.Println(fmt.Sprintf("Approve 确认成功 %s", res.Hash()))
 }

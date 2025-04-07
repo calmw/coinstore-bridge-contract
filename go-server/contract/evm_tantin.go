@@ -159,12 +159,7 @@ func (c TanTinEvm) AdminSetToken(resourceId string, assetsType uint8, tokenAddre
 }
 
 func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount *big.Int) {
-	sigNonce, err := c.Contract.SigNonce(nil)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	signature, _ := abi.TantinDepositSignature(sigNonce, receiver)
+	signature, _ := abi.TantinDepositSignature(receiver)
 	token, err := NewErc20(common.HexToAddress(ChainConfig.UsdtAddress))
 	if err != nil {
 		fmt.Println(err)

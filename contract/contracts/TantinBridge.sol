@@ -186,35 +186,35 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         } else {
             revert ErrAssetsType(tokenInfo.assetsType);
         }
-        uint256 destId = destinationChainId;
-
-        localNonce++;
-        depositRecord[msg.sender][localNonce] = DepositRecord(
-            tokenAddress,
-            msg.sender,
-            recipient,
-            amount,
-            fee,
-            destId
-        );
-        // data
-        bytes memory data = abi.encode(
-            resourceId,
-            chainId,
-            msg.sender,
-            recipient,
-            receiveAmount,
-            localNonce
-        );
-        Bridge.deposit(destId, resourceId, data);
-        emit DepositEvent(
-            msg.sender,
-            recipient,
-            amount,
-            tokenAddress,
-            localNonce,
-            destId
-        );
+//        uint256 destId = destinationChainId;
+//
+//        localNonce++;
+//        depositRecord[msg.sender][localNonce] = DepositRecord(
+//            tokenAddress,
+//            msg.sender,
+//            recipient,
+//            amount,
+//            fee,
+//            destId
+//        );
+//        // data
+//        bytes memory data = abi.encode(
+//            resourceId,
+//            chainId,
+//            msg.sender,
+//            recipient,
+//            receiveAmount,
+//            localNonce
+//        );
+//        Bridge.deposit(destId, resourceId, data);
+//        emit DepositEvent(
+//            msg.sender,
+//            recipient,
+//            amount,
+//            tokenAddress,
+//            localNonce,
+//            destId
+//        );
     }
 
     /**
