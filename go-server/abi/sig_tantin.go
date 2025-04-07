@@ -16,10 +16,11 @@ func TantinDepositSignature(sigNonce *big.Int, recipient common.Address) ([]byte
 	return GenerateSignature(parameterBytes[4:])
 }
 
-func TantinAdminSetTokenSignature(sigNonce *big.Int, resourceID [32]byte, assetsType uint8, tokenAddress common.Address, burnable, mintable, pause bool) ([]byte, error) {
+func TantinAdminSetTokenSignature(sigNonce, chainId *big.Int, resourceID [32]byte, assetsType uint8, tokenAddress common.Address, burnable, mintable, pause bool) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(TantinSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminSetTokenSignature",
 		sigNonce,
+		chainId,
 		resourceID,
 		assetsType,
 		tokenAddress,

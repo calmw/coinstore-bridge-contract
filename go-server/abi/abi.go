@@ -35,6 +35,10 @@ var TantinSig = `[{
 		"name": "sigNonce",
 		"type": "uint256"
 	}, {
+		"internalType": "uint256",
+		"name": "chainId",
+		"type": "uint256"
+	}, {
 		"internalType": "bytes32",
 		"name": "resourceID",
 		"type": "bytes32"

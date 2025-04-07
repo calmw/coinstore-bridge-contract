@@ -115,6 +115,7 @@ func (c TanTinEvm) AdminSetToken(resourceId string, assetsType uint8, tokenAddre
 	}
 	signature, _ := abi.TantinAdminSetTokenSignature(
 		sigNonce,
+		big.NewInt(ChainConfig.BridgeId),
 		[32]byte(resourceIdBytes),
 		assetsType,
 		tokenAddress,
