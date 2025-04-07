@@ -6,7 +6,6 @@ import {IBridge} from "./interface/IBridge.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ITantinBridge} from "./interface/ITantinBridge.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
@@ -14,8 +13,6 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 contract TantinBridge is AccessControl, ITantinBridge {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
-
-    using SafeERC20 for IERC20;
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
@@ -173,14 +170,14 @@ contract TantinBridge is AccessControl, ITantinBridge {
             tokenAddress = tokenInfo.tokenAddress;
             IERC20 erc20 = IERC20(tokenAddress);
             if (tokenInfo.burnable) {
-                erc20.safeTransferFrom(
+                erc20.transferFrom(
                     msg.sender,
                     address(this),
                     amount - receiveAmount
                 );
-                erc20.safeTransferFrom(msg.sender, address(0), receiveAmount);
+                erc20.transferFrom(msg.sender, address(0), receiveAmount);
             } else {
-                erc20.safeTransferFrom(msg.sender, address(this), amount);
+                erc20.transferFrom(msg.sender, address(this), amount);
             }
         } else {
             revert ErrAssetsType(tokenInfo.assetsType);
@@ -251,7 +248,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
                 erc20.mint(recipient, receiveAmount);
             } else {
                 IERC20 erc20 = IERC20(tokenAddress);
-                erc20.safeTransfer(recipient, receiveAmount);
+                erc20.transfer(recipient, receiveAmount);
             }
         } else {
             revert ErrAssetsType(tokenInfo.assetsType);
@@ -295,7 +292,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
             Address.sendValue(payable(msg.sender), amount);
         } else {
             IERC20 erc20 = IERC20(tokenAddress);
-            erc20.safeTransfer(msg.sender, amount);
+            erc20.transfer(msg.sender, amount);
         }
     }
 
