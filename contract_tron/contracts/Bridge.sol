@@ -1,17 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.22;
 
-import "./interface/IBridge.sol";
-import "./interface/IERC20MintAble.sol";
-import "./interface/ITantinBridge.sol";
 import "./utils/Pausable.sol";
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {IVote} from "./interface/IVote.sol";
+import {IBridge} from "./interface/IBridge.sol";
+import {ITantinBridge} from "./interface/ITantinBridge.sol";
+import {IERC20MintAble} from "./interface/IERC20MintAble.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Bridge is IBridge, Pausable, AccessControl {
+    using ECDSA for bytes32;
+    using MessageHashUtils for bytes32;
+
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant VOTE_ROLE = keccak256("VOTE_ROLE");
 
+    uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
+    address private superAdminAddress;
     IVote public Vote; // vote 合约
     uint256 public chainId; // 自定义链ID
     uint256 public chainType; // 自定义链类型， 1 EVM 2 Tron
@@ -19,20 +26,34 @@ contract Bridge is IBridge, Pausable, AccessControl {
     mapping(bytes32 => address) public resourceIdToContractAddress; // resourceID => 业务合约地址(tantin address)
     mapping(address => bytes32) public contractAddressToResourceID; // 业务合约地址(tantin address) => resourceID
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
-    mapping(uint256 => mapping(uint256 => DepositRecord)) public depositRecords; // destinationChainId  => ( depositNonce => Deposit Record)
+    mapping(uint256 => mapping(uint256 => DepositRecord)) public depositRecords; // depositNonce => (destinationChainId => Deposit Record)
 
-    constructor() {}
+    constructor() {
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        superAdminAddress = 0xa47142f08f859aCeb2127C6Ab66eC8c8bc4FFBA9;
+    }
 
     /**
         @notice 设置
         @param voteAddress_ 投票合约地址
         @param chainId_ 链ID
+        @param signature_ 签名
      */
     function adminSetEnv(
         address voteAddress_,
         uint256 chainId_,
-        uint256 chainType_
+        uint256 chainType_,
+        bytes memory signature_
     ) external onlyRole(ADMIN_ROLE) {
+        require(
+            checkAdminSetEnvSignature(
+                signature_,
+                voteAddress_,
+                chainId_,
+                chainType_
+            ),
+            "signature error"
+        );
         Vote = IVote(voteAddress_);
         chainId = chainId_;
         chainType = chainType_;
@@ -40,15 +61,29 @@ contract Bridge is IBridge, Pausable, AccessControl {
 
     /**
         @notice 暂停跨链、提案的的创建与投票和目标链执行操作
+        @param signature 签名
      */
-    function adminPauseTransfers() external onlyRole(ADMIN_ROLE) {
+    function adminPauseTransfers(
+        bytes memory signature
+    ) external onlyRole(ADMIN_ROLE) {
+        require(
+            checkAdminPauseTransfersSignature(signature),
+            "signature error"
+        );
         _pause();
     }
 
     /**
         @notice 开启跨链、提案的的创建与投票和目标链执行操作
+        @param signature 签名
      */
-    function adminUnpauseTransfers() external onlyRole(ADMIN_ROLE) {
+    function adminUnpauseTransfers(
+        bytes memory signature
+    ) external onlyRole(ADMIN_ROLE) {
+        require(
+            checkAdminUnpauseTransfersSignature(signature),
+            "signature error"
+        );
         _unpause();
     }
 
@@ -57,10 +92,10 @@ contract Bridge is IBridge, Pausable, AccessControl {
         @param recipient 资产接受者地址
         @param amount 提取数量,单位wei
      */
-    function adminWithdraw(
-        address recipient,
-        uint256 amount
-    ) external onlyRole(ADMIN_ROLE) {}
+    //    function adminWithdraw(
+    //        address recipient,
+    //        uint256 amount
+    //    ) external onlyRole(ADMIN_ROLE) {}
 
     /**
         @notice resource设置
@@ -77,8 +112,21 @@ contract Bridge is IBridge, Pausable, AccessControl {
         address tokenAddress,
         uint256 fee,
         bool pause,
-        address tantinAddress
+        address tantinAddress,
+        bytes memory signature
     ) external onlyRole(ADMIN_ROLE) {
+        require(
+            checkAdminSetResourceSignature(
+                signature,
+                resourceID,
+                assetsType,
+                tokenAddress,
+                fee,
+                pause,
+                tantinAddress
+            ),
+            "signature error"
+        );
         resourceIdToTokenInfo[resourceID] = TokenInfo(
             assetsType,
             tokenAddress,
@@ -142,21 +190,92 @@ contract Bridge is IBridge, Pausable, AccessControl {
         return tokenInfo.fee;
     }
 
-    // 由resourceId获取token信息
-    function getTokenInfoByResourceId(
-        bytes32 resourceID
-    ) public view returns (uint256, address, bool) {
-        return (
-            uint256(resourceIdToTokenInfo[resourceID].assetsType),
-            resourceIdToTokenInfo[resourceID].tokenAddress,
-            resourceIdToTokenInfo[resourceID].pause
-        );
-    }
-
     // 由resourceId获取tantin address信息
     function getContractAddressByResourceId(
         bytes32 resourceId
     ) public view returns (address) {
         return resourceIdToContractAddress[resourceId];
+    }
+
+    // 验证adminSetEnv签名
+    function checkAdminSetEnvSignature(
+        bytes memory signature_,
+        address voteAddress_,
+        uint256 chainId_,
+        uint256 chainType_
+    ) private returns (bool) {
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
+        );
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature_
+        );
+        bool res = recoverAddress == superAdminAddress;
+        if (res) {
+            sigNonce++;
+        }
+        return res;
+    }
+
+    // 验证adminPauseTransfers签名
+    function checkAdminPauseTransfersSignature(
+        bytes memory signature
+    ) private returns (bool) {
+        bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId));
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature
+        );
+        bool res = recoverAddress == superAdminAddress;
+        if (res) {
+            sigNonce++;
+        }
+        return res;
+    }
+
+    // 验证adminUnpauseTransfers签名
+    function checkAdminUnpauseTransfersSignature(
+        bytes memory signature
+    ) private returns (bool) {
+        bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId));
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature
+        );
+        bool res = recoverAddress == superAdminAddress;
+        if (res) {
+            sigNonce++;
+        }
+        return res;
+    }
+
+    // 验证adminSetResource签名
+    function checkAdminSetResourceSignature(
+        bytes memory signature,
+        bytes32 resourceID,
+        AssetsType assetsType,
+        address tokenAddress,
+        uint256 fee,
+        bool pause,
+        address tantinAddress
+    ) private returns (bool) {
+        bytes32 messageHash = keccak256(
+            abi.encode(
+                sigNonce,
+                chainId,
+                resourceID,
+                assetsType,
+                tokenAddress,
+                fee,
+                pause,
+                tantinAddress
+            )
+        );
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature
+        );
+        bool res = recoverAddress == superAdminAddress;
+        if (res) {
+            sigNonce++;
+        }
+        return res;
     }
 }

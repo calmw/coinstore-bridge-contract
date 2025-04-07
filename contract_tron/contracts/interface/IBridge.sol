@@ -49,10 +49,6 @@ interface IBridge {
 
     function chainId() external view returns (uint256);
 
-    function getTokenInfoByResourceId(
-        bytes32 resourceID
-    ) external view returns (uint256, address, bool);
-
     function getFeeByResourceId(
         bytes32 resourceId
     ) external view returns (uint256);

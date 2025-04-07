@@ -3,14 +3,23 @@ pragma solidity ^0.8.22;
 
 import "./interface/IBridge.sol";
 import "./interface/IVote.sol";
+import {ITantinBridge} from "./interface/ITantinBridge.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Vote is IVote, AccessControl {
+    using ECDSA for bytes32;
+    using MessageHashUtils for bytes32;
+
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
     bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
 
+    uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
+    address private superAdminAddress;
     IBridge public Bridge; // bridge 合约
+    ITantinBridge public TantinBridge; // bridge 合约
     uint256 public totalProposal; // 提案数量，每个天加1
     uint256 public totalRelayer; // 总的relayer账户数量
     uint256 public relayerThreshold; // 提案可以通过的最少投票数量
@@ -19,31 +28,55 @@ contract Vote is IVote, AccessControl {
     mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
         public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
-    constructor() {}
+    constructor() {
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        superAdminAddress = 0xa47142f08f859aCeb2127C6Ab66eC8c8bc4FFBA9;
+    }
 
     /**
         @notice 设置
-        @param bridgeAddress_ bridge合约地址
+        @param bridgeAddress_ Bridge合约地址
+        @param tantinAddress_ Tantin合约地址
         @param expiry_ 提案过期的块高差
         @param relayerThreshold_ 提案通过的投票数量
+        @param signature_ 签名
      */
     function adminSetEnv(
         address bridgeAddress_,
+        address tantinAddress_,
         uint256 expiry_,
-        uint256 relayerThreshold_
+        uint256 relayerThreshold_,
+        bytes memory signature_
     ) external onlyRole(ADMIN_ROLE) {
+        require(
+            checkAdminSetEnvSignature(
+                signature_,
+                bridgeAddress_,
+                tantinAddress_,
+                expiry_,
+                relayerThreshold_
+            ),
+            "signature error"
+        );
         expiry = expiry_;
         Bridge = IBridge(bridgeAddress_);
+        TantinBridge = ITantinBridge(tantinAddress_);
         relayerThreshold = relayerThreshold_;
     }
 
     /**
         @notice 设置投票可通过时的最小投票数量
         @param newThreshold 投票可通过时的最小投票数量
+        @param signature 签名
      */
     function adminChangeRelayerThreshold(
-        uint newThreshold
+        uint256 newThreshold,
+        bytes memory signature
     ) external onlyRole(ADMIN_ROLE) {
+        require(
+            checkAdminChangeRelayerThresholdSignature(signature, newThreshold),
+            "signature error"
+        );
         relayerThreshold = newThreshold;
         emit RelayerThresholdChanged(newThreshold);
     }
@@ -53,10 +86,16 @@ contract Vote is IVote, AccessControl {
         @notice Only callable by an address that currently has the admin role.
         @param relayerAddress Address of relayer to be added.
         @notice Emits {RelayerAdded} event.
+        @param signature 签名
      */
     function adminAddRelayer(
-        address relayerAddress
+        address relayerAddress,
+        bytes memory signature
     ) external onlyRole(ADMIN_ROLE) {
+        require(
+            checkAdminAddRelayerSignature(signature, relayerAddress),
+            "signature error"
+        );
         require(
             !hasRole(RELAYER_ROLE, relayerAddress),
             "addr already has relayer role!"
@@ -71,10 +110,16 @@ contract Vote is IVote, AccessControl {
         @notice Only callable by an address that currently has the admin role.
         @param relayerAddress Address of relayer to be removed.
         @notice Emits {RelayerRemoved} event.
+        @param signature 签名
      */
     function adminRemoveRelayer(
-        address relayerAddress
+        address relayerAddress,
+        bytes memory signature
     ) external onlyRole(ADMIN_ROLE) {
+        require(
+            checkAdminRemoveRelayerSignature(signature, relayerAddress),
+            "signature error"
+        );
         require(
             hasRole(RELAYER_ROLE, relayerAddress),
             "addr doesn't have relayer role!"
@@ -212,14 +257,12 @@ contract Vote is IVote, AccessControl {
         @notice relayer执行投票通过后的到帐操作
         @param originChainId 源链ID
         @param originDepositNonce 源链nonce
-        @param resourceId 跨链的resourceID
         @param data 跨链data
      */
     function executeProposal(
         uint256 originChainId,
         uint256 originDepositNonce,
-        bytes calldata data,
-        bytes32 resourceId
+        bytes calldata data
     ) external onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
             uint72(originChainId);
@@ -237,7 +280,7 @@ contract Vote is IVote, AccessControl {
         require(dataHash == proposal.dataHash, "data doesn't match datahash");
 
         proposal.status = ProposalStatus.Executed;
-        Bridge.execute(resourceId, data);
+        TantinBridge.execute(data);
 
         emit ProposalEvent(
             originChainId,
@@ -248,17 +291,6 @@ contract Vote is IVote, AccessControl {
         );
     }
 
-    function TestdataHash(
-        uint256 originChainID,
-        uint256 originDepositNonce,
-        bytes memory data
-    ) public view returns (uint72, bytes32) {
-        uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-            uint72(originChainID);
-        bytes32 dataHash = keccak256(abi.encodePacked(Bridge, data));
-        return (nonceAndID, dataHash);
-    }
-
     // 获取投票信息
     function getProposal(
         uint256 originChainID,
@@ -267,5 +299,97 @@ contract Vote is IVote, AccessControl {
     ) external view returns (Proposal memory) {
         uint72 nonceAndID = (uint72(depositNonce) << 8) | uint72(originChainID);
         return proposals[nonceAndID][dataHash];
+    }
+
+    // 验证adminSetEnv签名
+    function checkAdminSetEnvSignature(
+        bytes memory signature_,
+        address bridgeAddress_,
+        address tantinAddress_,
+        uint256 expiry_,
+        uint256 relayerThreshold_
+    ) private returns (bool) {
+        bytes32 messageHash = keccak256(
+            abi.encode(
+                sigNonce,
+                bridgeAddress_,
+                tantinAddress_,
+                expiry_,
+                relayerThreshold_
+            )
+        );
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature_
+        );
+
+        bool res = recoverAddress == superAdminAddress;
+        if (res) {
+            sigNonce++;
+        }
+
+        return res;
+    }
+
+    // 验证adminChangeRelayerThreshold签名
+    function checkAdminChangeRelayerThresholdSignature(
+        bytes memory signature_,
+        uint256 newThreshold
+    ) private returns (bool) {
+        uint256 chainId = Bridge.chainId();
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, newThreshold, chainId)
+        );
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature_
+        );
+
+        bool res = recoverAddress == superAdminAddress;
+        if (res) {
+            sigNonce++;
+        }
+
+        return res;
+    }
+
+    // 验证adminAddRelayer签名
+    function checkAdminAddRelayerSignature(
+        bytes memory signature_,
+        address relayerAddress
+    ) private returns (bool) {
+        uint256 chainId = Bridge.chainId();
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, relayerAddress, chainId)
+        );
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature_
+        );
+
+        bool res = recoverAddress == superAdminAddress;
+        if (res) {
+            sigNonce++;
+        }
+
+        return res;
+    }
+
+    // 验证adminRemoveRelayer签名
+    function checkAdminRemoveRelayerSignature(
+        bytes memory signature_,
+        address relayerAddress
+    ) private returns (bool) {
+        uint256 chainId = Bridge.chainId();
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, relayerAddress, chainId)
+        );
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature_
+        );
+
+        bool res = recoverAddress == superAdminAddress;
+        if (res) {
+            sigNonce++;
+        }
+
+        return res;
     }
 }

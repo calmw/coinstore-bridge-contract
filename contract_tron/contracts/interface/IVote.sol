@@ -59,8 +59,7 @@ interface IVote {
     function executeProposal(
         uint256 originChainID,
         uint256 originDepositNonce,
-        bytes calldata data,
-        bytes32 resourceID
+        bytes calldata data
     ) external;
 
     function getProposal(
