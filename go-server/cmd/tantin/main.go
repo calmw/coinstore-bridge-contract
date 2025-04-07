@@ -3,6 +3,7 @@ package main
 import (
 	"coinstore/contract"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 func main() {
@@ -34,7 +35,7 @@ func main() {
 		return
 	}
 	tantin.Init()
-	tantin.AdminSetToken()
+	tantin.AdminSetToken(contract.ResourceIdUsdt, 2, common.HexToAddress(contract.ChainConfig.UsdtAddress), false, false, false)
 	//
 	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
 	////resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdCoin, "0x"))

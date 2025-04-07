@@ -106,7 +106,7 @@ func (c TanTinEvm) GrantRole(role string, addr common.Address) {
 	log.Println(fmt.Sprintf("GrantRole 确认成功"))
 }
 
-func (c TanTinEvm) AdminSetToken(resourceId string) {
+func (c TanTinEvm) AdminSetToken(resourceId string, assetsType uint8, tokenAddress common.Address, burnable, mintable, pause bool) {
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
 	sigNonce, err := c.Contract.SigNonce(nil)
 	if err != nil {
@@ -116,11 +116,12 @@ func (c TanTinEvm) AdminSetToken(resourceId string) {
 	signature, _ := abi.TantinAdminSetTokenSignature(
 		sigNonce,
 		[32]byte(resourceIdBytes),
-		uint8(2),
-		common.HexToAddress(ChainConfig.UsdtAddress),
-		false,
-		false,
-		false)
+		assetsType,
+		tokenAddress,
+		burnable,
+		mintable,
+		pause,
+	)
 	var res *types.Transaction
 	for {
 		err, txOpts := GetAuth(c.Cli)
@@ -131,16 +132,17 @@ func (c TanTinEvm) AdminSetToken(resourceId string) {
 		res, err = c.Contract.AdminSetToken(
 			txOpts,
 			[32]byte(resourceIdBytes),
-			uint8(2),
-			common.HexToAddress(ChainConfig.UsdtAddress),
-			false,
-			false,
-			false,
+			assetsType,
+			tokenAddress,
+			burnable,
+			mintable,
+			pause,
 			signature,
 		)
 		if err == nil {
 			break
 		}
+		fmt.Println(err)
 		time.Sleep(3 * time.Second)
 	}
 	log.Println(fmt.Sprintf("AdminSetToken 成功"))
