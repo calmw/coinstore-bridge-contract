@@ -10,6 +10,7 @@ type ChainInfo struct {
 	gorm.Model
 	ChainName          string          `gorm:"chain_name;comment:'链名称'" json:"chain_name"`
 	Logo               string          `gorm:"chain_name;type:longtext;comment:'链logo'" json:"logo"`
+	Explorer           string          `gorm:"chain_name;type:longtext;comment:'浏览器地址'" json:"explorer"`
 	ChainId            int             `gorm:"chain_id;comment:'自定义链ID'" json:"chain_id"`
 	ChainType          int             `gorm:"chain_id;comment:'自定义链类型ID,1 EVM 2 TRON'" json:"-"`
 	Endpoint           string          `gorm:"endpoint;comment:'RPC'" json:"-"`

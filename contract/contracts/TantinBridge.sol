@@ -186,35 +186,35 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         } else {
             revert ErrAssetsType(tokenInfo.assetsType);
         }
-//        uint256 destId = destinationChainId;
-//
-//        localNonce++;
-//        depositRecord[msg.sender][localNonce] = DepositRecord(
-//            tokenAddress,
-//            msg.sender,
-//            recipient,
-//            amount,
-//            fee,
-//            destId
-//        );
-//        // data
-//        bytes memory data = abi.encode(
-//            resourceId,
-//            chainId,
-//            msg.sender,
-//            recipient,
-//            receiveAmount,
-//            localNonce
-//        );
-//        Bridge.deposit(destId, resourceId, data);
-//        emit DepositEvent(
-//            msg.sender,
-//            recipient,
-//            amount,
-//            tokenAddress,
-//            localNonce,
-//            destId
-//        );
+        uint256 destId = destinationChainId;
+
+        localNonce++;
+        depositRecord[msg.sender][localNonce] = DepositRecord(
+            tokenAddress,
+            msg.sender,
+            recipient,
+            amount,
+            fee,
+            destId
+        );
+        // data
+        bytes memory data = abi.encode(
+            resourceId,
+            chainId,
+            msg.sender,
+            recipient,
+            receiveAmount,
+            localNonce
+        );
+        Bridge.deposit(destId, resourceId, data);
+        emit DepositEvent(
+            msg.sender,
+            recipient,
+            amount,
+            tokenAddress,
+            localNonce,
+            destId
+        );
     }
 
     /**
@@ -319,9 +319,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes memory signature,
         address bridgeAddress
     ) private returns (bool) {
-        bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, bridgeAddress)
-        );
+        bytes32 messageHash = keccak256(abi.encode(sigNonce, bridgeAddress));
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
         );
@@ -361,9 +359,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         address user
     ) private returns (bool) {
         uint256 chainId = Bridge.chainId();
-        bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, chainId, user)
-        );
+        bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId, user));
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
         );
@@ -390,7 +386,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes32 messageHash = keccak256(
             abi.encode(
                 sigNonce,
-        chainId,
+                chainId,
                 resourceID,
                 assetsType,
                 tokenAddress,

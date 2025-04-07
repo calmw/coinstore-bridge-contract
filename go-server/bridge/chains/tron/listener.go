@@ -160,7 +160,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			l.log.Error("destination listener not found", "chainId", destinationChainId)
 			return errors.New(fmt.Sprintf("destination listener not found, chainId %d", destinationChainId))
 		}
-		_, t, _, err := dl.BridgeContract.GetTokenInfoByResourceId(nil, msg.ResourceId(hexutils.HexToBytes(logE.ResourceID)))
+		token, err := dl.BridgeContract.ResourceIdToTokenInfo(nil, msg.ResourceId(hexutils.HexToBytes(logE.ResourceID)))
 		if err != nil {
 			l.log.Error("destination token info not found", "chainId", destinationChainId)
 		}
@@ -178,7 +178,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		}
 		caller, _ = utils.EthToTron(caller)
 		//保存到数据库
-		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, tokenAddress, strings.ToLower(t.String()), logE.TxHash, time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"), fee)
+		model.SaveBridgeOrder(l.log, m, amount, fmt.Sprintf("%x", record.ResourceID), caller, receiver, tokenAddress, strings.ToLower(token.TokenAddress.String()), logE.TxHash, time.Unix(record.Ctime.Int64(), 0).Format("2006-01-02 15:04:05"), fee)
 
 		err = l.Router.Send(m)
 		if err != nil {

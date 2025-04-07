@@ -274,7 +274,6 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 				m.Source.Big(),
 				m.DepositNonce.Big(),
 				data,
-				m.ResourceId,
 			)
 			w.conn.UnlockOpts()
 

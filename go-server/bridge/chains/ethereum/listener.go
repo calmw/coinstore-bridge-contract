@@ -158,7 +158,6 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		)
 
 		// 获取目标链的信息
-		var t common.Address
 		var toAddr string
 		destChainType := core.ChainType[int(record.DestinationChainId.Int64())]
 		if destChainType == config.ChainTypeEvm {
@@ -167,11 +166,11 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 				l.log.Error("destination listener not found", "chainId", record.DestinationChainId)
 				return errors.New(fmt.Sprintf("destination listener not found, chainId %d", record.DestinationChainId))
 			}
-			_, t, _, err = dl.BridgeContract.GetTokenInfoByResourceId(nil, record.ResourceID)
+			token, err := dl.BridgeContract.ResourceIdToTokenInfo(nil, record.ResourceID)
 			if err != nil {
 				l.log.Error("destination token info not found", "chainId", record.DestinationChainId)
 			}
-			toAddr = strings.ToLower(t.String())
+			toAddr = strings.ToLower(token.TokenAddress.String())
 		} else if destChainType == config.ChainTypeTron {
 			tCfg := config.TronCfg
 			tokenInfo, err := tron.ResourceIdToTokenInfo(binding.OwnerAccount, tCfg.BridgeContractAddress, record.ResourceID)
