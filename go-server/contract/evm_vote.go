@@ -35,9 +35,12 @@ func NewVote() (*VoteEvm, error) {
 }
 
 func (c VoteEvm) Init() {
+	c.GrantRole(AdminRole, common.HexToAddress(AdminAccount))
+	c.GrantRole(BridgeRole, common.HexToAddress(ChainConfig.BridgeContractAddress))
+	c.GrantRole(RelayerRole, common.HexToAddress(Realyer1Account))
+	c.GrantRole(RelayerRole, common.HexToAddress(Realyer2Account))
+	c.GrantRole(RelayerRole, common.HexToAddress(Realyer3Account))
 	c.AdminSetEnv(big.NewInt(100), big.NewInt(1))
-	c.GrantBridgeRole(common.HexToAddress(ChainConfig.BridgeContractAddress))
-	c.GrantRelayerRole(common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"))
 }
 
 func (c VoteEvm) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) {
@@ -50,6 +53,7 @@ func (c VoteEvm) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) {
 	signature, _ := abi.VoteAdminSetEnvSignature(
 		sigNonce,
 		common.HexToAddress(ChainConfig.BridgeContractAddress),
+		common.HexToAddress(ChainConfig.TantinContractAddress),
 		expiry,
 		relayerThreshold,
 	)
@@ -63,6 +67,7 @@ func (c VoteEvm) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) {
 		res, err = c.Contract.AdminSetEnv(
 			txOpts,
 			common.HexToAddress(ChainConfig.BridgeContractAddress),
+			common.HexToAddress(ChainConfig.TantinContractAddress),
 			expiry,
 			relayerThreshold,
 			signature,
@@ -85,9 +90,8 @@ func (c VoteEvm) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) {
 	fmt.Println(fmt.Sprintf("AdminSetEnv 确认成功"))
 }
 
-func (c VoteEvm) GrantBridgeRole(addr common.Address) {
-	BridgeRole := "52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f"
-	BridgeRoleBytes := hexutils.HexToBytes(BridgeRole)
+func (c VoteEvm) GrantRole(role string, addr common.Address) {
+	AdminRoleBytes := hexutils.HexToBytes(role)
 
 	var res *types.Transaction
 
@@ -97,13 +101,14 @@ func (c VoteEvm) GrantBridgeRole(addr common.Address) {
 			log.Println(err)
 			return
 		}
-		res, err = c.Contract.GrantRole(txOpts, [32]byte(BridgeRoleBytes), addr)
+		res, err = c.Contract.GrantRole(txOpts, [32]byte(AdminRoleBytes), addr)
 		if err == nil {
 			break
 		}
+		fmt.Println(err)
 		time.Sleep(3 * time.Second)
 	}
-	log.Println(fmt.Sprintf("GrantBridgeRole 成功"))
+	log.Println(fmt.Sprintf("GrantRole 成功"))
 	for {
 		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
 		if err == nil && receipt.Status == 1 {
@@ -112,7 +117,7 @@ func (c VoteEvm) GrantBridgeRole(addr common.Address) {
 		time.Sleep(time.Second * 2)
 	}
 
-	log.Println(fmt.Sprintf("GrantBridgeRole 确认成功"))
+	log.Println(fmt.Sprintf("GrantRole 确认成功"))
 }
 
 func (c VoteEvm) GrantRelayerRole(addr common.Address) {

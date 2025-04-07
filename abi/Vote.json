@@ -388,7 +388,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "tantinBridgeAddress_",
+        "name": "bridgeAddress_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "tantinAddress_",
         "type": "address"
       },
       {

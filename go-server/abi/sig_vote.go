@@ -34,11 +34,12 @@ func VoteAdminChangeRelayerThresholdSignature(sigNonce *big.Int, newThreshold *b
 	return GenerateSignature(parameterBytes[4:])
 }
 
-func VoteAdminSetEnvSignature(sigNonce *big.Int, tantinBridgeAddress common.Address, expiry, relayerThreshold *big.Int) ([]byte, error) {
+func VoteAdminSetEnvSignature(sigNonce *big.Int, bridgeAddress, tantinAddress common.Address, expiry, relayerThreshold *big.Int) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(VoteSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminSetEnvSignature",
 		sigNonce,
-		tantinBridgeAddress,
+		bridgeAddress,
+		tantinAddress,
 		expiry,
 		relayerThreshold,
 	)

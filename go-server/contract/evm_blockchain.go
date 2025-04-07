@@ -12,11 +12,16 @@ import (
 )
 
 const (
-	AdminAccount   = "0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"
-	AdminRole      = "a49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775"
-	VoteRole       = "c65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7"
-	ResourceIdUsdt = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
-	ResourceIdCoin = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1c"
+	AdminAccount    = "0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"
+	Realyer1Account = "0xD310068976a666D4279F5AdA577DE075e1F32563"
+	Realyer2Account = "0xa5b109F231D8b36C8d8fD2b25e99F402FA7e03bE"
+	Realyer3Account = "0xC5697941c4fD32391a47db2075802771cBAF34F4"
+	AdminRole       = "a49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775"
+	BridgeRole      = "52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f"
+	RelayerRole     = "e2b7fb3b832174769106daebcfd6d1970523240dda11281102db9363b83b0dc4"
+	VoteRole        = "c65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7"
+	ResourceIdUsdt  = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
+	ResourceIdCoin  = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1c"
 )
 
 type ChainConfigs struct {

@@ -3,32 +3,30 @@ package main
 import (
 	"coinstore/contract"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
-	"math/big"
 )
 
 func main() {
 	contract.InitTantinEnv()
 
-	bridge, err := contract.NewBridge()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	bridge.Init()
-	bridge.AdminSetResource(
-		contract.ResourceIdUsdt,
-		2,
-		common.HexToAddress(contract.ChainConfig.UsdtAddress),
-		big.NewInt(100),
-	)
-
-	//vote, err := contract.NewVote()
+	//bridge, err := contract.NewBridge()
 	//if err != nil {
 	//	fmt.Println(err)
 	//	return
 	//}
-	//vote.Init()
+	//bridge.Init()
+	//bridge.AdminSetResource(
+	//	contract.ResourceIdUsdt,
+	//	2,
+	//	common.HexToAddress(contract.ChainConfig.UsdtAddress),
+	//	big.NewInt(100),
+	//)
+
+	vote, err := contract.NewVote()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	vote.Init()
 
 	//tantin, err := contract.NewTanTin()
 	//if err != nil {

@@ -217,6 +217,10 @@ var VoteSig = `[{
 		"name": "sigNonce",
 		"type": "uint256"
 	}, {
+		"internalType": "uint256",
+		"name": "chainId",
+		"type": "uint256"
+	}, {
 		"internalType": "address",
 		"name": "relayerAddress",
 		"type": "address"
@@ -233,6 +237,10 @@ var VoteSig = `[{
 	"inputs": [{
 		"internalType": "uint256",
 		"name": "sigNonce",
+		"type": "uint256"
+	}, {
+		"internalType": "uint256",
+		"name": "chainId",
 		"type": "uint256"
 	}, {
 		"internalType": "uint256",
@@ -257,6 +265,10 @@ var VoteSig = `[{
 		"name": "sigNonce",
 		"type": "uint256"
 	}, {
+		"internalType": "uint256",
+		"name": "chainId",
+		"type": "uint256"
+	}, {
 		"internalType": "address",
 		"name": "relayerAddress",
 		"type": "address"
@@ -273,6 +285,10 @@ var VoteSig = `[{
 	"inputs": [{
 		"internalType": "uint256",
 		"name": "sigNonce",
+		"type": "uint256"
+	}, {
+		"internalType": "uint256",
+		"name": "chainId",
 		"type": "uint256"
 	}, {
 		"internalType": "uint256",
@@ -294,7 +310,11 @@ var VoteSig = `[{
 		"type": "uint256"
 	}, {
 		"internalType": "address",
-		"name": "tantinBridgeAddress_",
+		"name": "bridgeAddress_",
+		"type": "address"
+	}, {
+		"internalType": "address",
+		"name": "tantinAddress_",
 		"type": "address"
 	}, {
 		"internalType": "uint256",

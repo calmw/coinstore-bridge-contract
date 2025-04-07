@@ -36,13 +36,15 @@ contract Vote is IVote, AccessControl, Initializable {
 
     /**
         @notice 设置
-        @param tantinBridgeAddress_ TantinBridge合约地址
+        @param bridgeAddress_ Bridge合约地址
+        @param tantinAddress_ Tantin合约地址
         @param expiry_ 提案过期的块高差
         @param relayerThreshold_ 提案通过的投票数量
         @param signature_ 签名
      */
     function adminSetEnv(
-        address tantinBridgeAddress_,
+        address bridgeAddress_,
+        address tantinAddress_,
         uint256 expiry_,
         uint256 relayerThreshold_,
         bytes memory signature_
@@ -50,14 +52,16 @@ contract Vote is IVote, AccessControl, Initializable {
         require(
             checkAdminSetEnvSignature(
                 signature_,
-                tantinBridgeAddress_,
+                bridgeAddress_,
+                tantinAddress_,
                 expiry_,
                 relayerThreshold_
             ),
             "signature error"
         );
         expiry = expiry_;
-        TantinBridge = ITantinBridge(tantinBridgeAddress_);
+        Bridge = IBridge(bridgeAddress_);
+        TantinBridge = ITantinBridge(tantinAddress_);
         relayerThreshold = relayerThreshold_;
     }
 
@@ -301,19 +305,18 @@ contract Vote is IVote, AccessControl, Initializable {
     // 验证adminSetEnv签名
     function checkAdminSetEnvSignature(
         bytes memory signature_,
-        address tantinBridgeAddress_,
+        address bridgeAddress_,
+        address tantinAddress_,
         uint256 expiry_,
         uint256 relayerThreshold_
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
             abi.encode(
                 sigNonce,
-                tantinBridgeAddress_,
+                bridgeAddress_,
+                tantinAddress_,
                 expiry_,
-                relayerThreshold_,
-                sigNonce,
-                chainId
+                relayerThreshold_
             )
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
