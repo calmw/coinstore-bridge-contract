@@ -14,12 +14,12 @@ import (
 
 func main() {
 	services.InitOpenBnbEnv()
-	//bridge, err := contract.NewBridge()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//bridge.Init()
+	bridge, err := contract.NewBridge()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	bridge.Init()
 	//bridge.AdminSetResource(big.NewInt(1))
 	//
 	//vote, err := contract.NewVote()
