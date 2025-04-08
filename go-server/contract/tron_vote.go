@@ -44,8 +44,8 @@ func NewVoteTron() (*VoteTron, error) {
 }
 
 func (v *VoteTron) Init() {
-	//txHash4, err4 := v.GrantRole(AdminRole, OwnerAccount)
-	//fmt.Println(txHash4, err4)
+	txHash4, err4 := v.GrantRole(AdminRole, OwnerAccount)
+	fmt.Println(txHash4, err4)
 	txHash, err := v.AdminSetEnv(ChainConfig.BridgeContractAddress, ChainConfig.TantinContractAddress, big.NewInt(100000), big.NewInt(1))
 	fmt.Println(txHash, err)
 	//txHash2, err2 := v.GrantRole(BridgeRole, ChainConfig.BridgeContractAddress)
