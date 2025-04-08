@@ -16,7 +16,6 @@ func GenerateSignatureTron(parameter []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("~~~~~~~~~ 4 ")
 	fmt.Printf("0x%x\n", sign)
 	return sign, err
 }

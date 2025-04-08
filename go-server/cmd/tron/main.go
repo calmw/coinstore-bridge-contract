@@ -3,7 +3,6 @@ package main
 import (
 	"coinstore/contract"
 	"fmt"
-	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"math/big"
 	"time"
 )
@@ -32,12 +31,9 @@ func main() {
 	//tantin.Init()
 
 	for {
-		toAddress, err := address.Base58ToAddress("TFBymbm7LrbRreGtByMPRD2HUyneKabsqb")
-		fmt.Println(toAddress.String())
 		txHash, err := tantin.Deposit(big.NewInt(1), big.NewInt(1), contract.ResourceIdUsdt, "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb")
-
 		fmt.Println(txHash, err)
-		time.Sleep(time.Second * 30)
+		time.Sleep(time.Second * 60)
 	}
 
 }

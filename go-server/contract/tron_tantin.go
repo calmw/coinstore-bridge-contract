@@ -130,7 +130,6 @@ func (t *TanTinTron) AdminSetToken(resourceId string, assetsType uint8, tokenAdd
 		fmt.Sprintf("%x", signature),
 	)
 	fmt.Println(triggerData)
-	fmt.Println("~~~~~~~~~~")
 	tx, err := t.Cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetToken(bytes32,uint8,address,bool,bool,bool,bytes)", triggerData, 6000000000, 0, "", 0)
 	if err != nil {
 		return "", err
