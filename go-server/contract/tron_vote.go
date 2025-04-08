@@ -48,7 +48,7 @@ func (v *VoteTron) Init() {
 	fmt.Println(txHash4, err4)
 	txHash2, err2 := v.GrantRole(BridgeRole, ChainConfig.BridgeContractAddress)
 	fmt.Println(txHash2, err2)
-	txHash3, err3 := v.GrantRole(BridgeRole, OwnerAccount)
+	txHash3, err3 := v.GrantRole(RelayerRole, OwnerAccount) // TODO 线上更改
 	fmt.Println(txHash3, err3)
 	txHash, err := v.AdminSetEnv(ChainConfig.BridgeContractAddress, ChainConfig.TantinContractAddress, big.NewInt(100000), big.NewInt(1))
 	fmt.Println(txHash, err)

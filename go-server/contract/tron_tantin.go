@@ -48,7 +48,7 @@ func NewTanTinTron() (*TanTinTron, error) {
 func (t *TanTinTron) Init() {
 	txHash1, err1 := t.GrantRole(AdminRole, OwnerAccount)
 	fmt.Println(txHash1, err1)
-	txHash2, err2 := t.GrantRole(BridgeRole, ChainConfig.BridgeContractAddress)
+	txHash2, err2 := t.GrantRole(BridgeRole, ChainConfig.VoteContractAddress)
 	fmt.Println(txHash2, err2)
 	txHash, err := t.AdminSetEnv(ChainConfig.BridgeContractAddress)
 	fmt.Println(txHash, err)

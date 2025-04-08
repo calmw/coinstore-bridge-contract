@@ -31,7 +31,7 @@ func main() {
 	//tantin.Init()
 
 	for {
-		txHash, err := tantin.Deposit(big.NewInt(1), big.NewInt(1), contract.ResourceIdUsdt, "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb")
+		txHash, err := tantin.Deposit(big.NewInt(2), big.NewInt(1), contract.ResourceIdUsdt, "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb")
 		fmt.Println(txHash, err)
 		time.Sleep(time.Second * 60)
 	}

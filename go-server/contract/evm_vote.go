@@ -37,9 +37,10 @@ func NewVote() (*VoteEvm, error) {
 func (c VoteEvm) Init() {
 	c.GrantRole(AdminRole, common.HexToAddress(AdminAccount))
 	c.GrantRole(BridgeRole, common.HexToAddress(ChainConfig.BridgeContractAddress))
-	c.GrantRole(RelayerRole, common.HexToAddress(Realyer1Account))
-	c.GrantRole(RelayerRole, common.HexToAddress(Realyer2Account))
-	c.GrantRole(RelayerRole, common.HexToAddress(Realyer3Account))
+	//c.GrantRole(RelayerRole, common.HexToAddress(Realyer1Account))
+	//c.GrantRole(RelayerRole, common.HexToAddress(Realyer2Account))
+	//c.GrantRole(RelayerRole, common.HexToAddress(Realyer3Account))
+	c.GrantRole(RelayerRole, common.HexToAddress(AdminAccount)) // TODO 线上更改
 	c.AdminSetEnv(big.NewInt(100), big.NewInt(1))
 }
 
