@@ -74,8 +74,6 @@ func (b *BridgeTron) AdminSetEnv() (string, error) {
 
 	voteEth, _ := utils.TronToEth(ChainConfig.VoteContractAddress)
 	signature, _ := abi.BridgeAdminSetEnvSignatureTron(
-		b.Ks,
-		b.Ka,
 		sigNonce,
 		ethCommon.HexToAddress(voteEth),
 		big.NewInt(ChainConfig.BridgeId),

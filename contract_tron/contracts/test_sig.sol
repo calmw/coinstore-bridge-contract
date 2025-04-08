@@ -17,7 +17,7 @@ contract test_sig {
         address voteAddress_,
         uint256 chainId_,
         uint256 chainType_
-    ) public view returns (address) {
+    ) public view returns (address, address, address, address, address) {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
         );
@@ -25,45 +25,53 @@ contract test_sig {
             toEthSignedMessageHash(messageHash),
             signature_
         );
-
-        return recoverAddress;
-    }
-    function checkAdminSetEnvSignatureTest2(
-        bytes memory signature_,
-        address voteAddress_,
-        uint256 chainId_,
-        uint256 chainType_
-    ) public view returns (address) {
-        bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
-        );
-        address recoverAddress = recoverSigner(
+        address recoverAddress2 = recoverSigner(
             toEthSignedMessageHash2(messageHash),
             signature_
         );
-
-        return recoverAddress;
-    }
-    function checkAdminSetEnvSignatureTest3(
-        bytes memory signature_,
-        address voteAddress_,
-        uint256 chainId_,
-        uint256 chainType_
-    ) public view returns (address) {
-        bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
+        address recoverAddress3 = messageHash.recover(signature_);
+        bytes memory signature2_ = signature_;
+        address recoverAddress4 = recoverSigner(
+            toEthSignedMessageHash3(messageHash),
+            signature2_
         );
-        address recoverAddress = messageHash.recover(signature_);
-        return recoverAddress;
+        address recoverAddress5 = recoverSigner(
+            toEthSignedMessageHash4(messageHash),
+            signature2_
+        );
+
+        return (
+            recoverAddress,
+            recoverAddress2,
+            recoverAddress3,
+            recoverAddress4,
+            recoverAddress5
+        );
     }
 
     function toEthSignedMessageHash(
         bytes32 hash
     ) public pure returns (bytes32) {
-        return keccak256(abi.encode("\x19TRON Signed Message:\n32", hash));
+        return
+            keccak256(abi.encodePacked("\x19TRON Signed Message:\n32", hash));
     }
 
     function toEthSignedMessageHash2(
+        bytes32 hash
+    ) public pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
+            );
+    }
+
+    function toEthSignedMessageHash3(
+        bytes32 hash
+    ) public pure returns (bytes32) {
+        return keccak256(abi.encode("\x19TRON Signed Message:\n32", hash));
+    }
+
+    function toEthSignedMessageHash4(
         bytes32 hash
     ) public pure returns (bytes32) {
         return keccak256(abi.encode("\x19Ethereum Signed Message:\n32", hash));

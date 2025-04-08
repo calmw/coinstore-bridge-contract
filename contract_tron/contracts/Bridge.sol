@@ -203,6 +203,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
         }
         return res;
     }
+
     function checkAdminSetEnvSignatureTest(
         bytes memory signature_,
         address voteAddress_,
