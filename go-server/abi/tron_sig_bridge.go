@@ -69,3 +69,11 @@ func TantinAdminSetTokenSignatureTron(sigNonce, chainId *big.Int, resourceID [32
 	)
 	return GenerateSignatureTron(parameterBytes[4:])
 }
+
+func TantinDepositSignatureTron(recipientAddress common.Address) ([]byte, error) {
+	contractAbi, _ := abi.JSON(strings.NewReader(TantinSig))
+	parameterBytes, _ := contractAbi.Pack("checkDepositSignature",
+		recipientAddress,
+	)
+	return GenerateSignatureTron(parameterBytes[4:])
+}

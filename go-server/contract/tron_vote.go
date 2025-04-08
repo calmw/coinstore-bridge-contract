@@ -44,12 +44,12 @@ func NewVoteTron() (*VoteTron, error) {
 }
 
 func (v *VoteTron) Init() {
-	//txHash4, err4 := v.GrantRole(AdminRole, OwnerAccount)
-	//fmt.Println(txHash4, err4)
-	//txHash2, err2 := v.GrantRole(BridgeRole, ChainConfig.BridgeContractAddress)
-	//fmt.Println(txHash2, err2)
-	//txHash3, err3 := v.GrantRole(BridgeRole, OwnerAccount)
-	//fmt.Println(txHash3, err3)
+	txHash4, err4 := v.GrantRole(AdminRole, OwnerAccount)
+	fmt.Println(txHash4, err4)
+	txHash2, err2 := v.GrantRole(BridgeRole, ChainConfig.BridgeContractAddress)
+	fmt.Println(txHash2, err2)
+	txHash3, err3 := v.GrantRole(BridgeRole, OwnerAccount)
+	fmt.Println(txHash3, err3)
 	txHash, err := v.AdminSetEnv(ChainConfig.BridgeContractAddress, ChainConfig.TantinContractAddress, big.NewInt(100000), big.NewInt(1))
 	fmt.Println(txHash, err)
 }
@@ -78,7 +78,7 @@ func (v *VoteTron) AdminSetEnv(bridgeAddress, tantinAddress string, expiry *big.
 		fmt.Sprintf("%x", signature),
 	)
 	fmt.Println(triggerData)
-	tx, err := v.Cli.TriggerContract(ChainConfig.BridgeContractAddress, ChainConfig.TantinContractAddress, "adminSetEnv(address,address,uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
+	tx, err := v.Cli.TriggerContract(OwnerAccount, ChainConfig.VoteContractAddress, "adminSetEnv(address,address,uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
 	fmt.Println("!!!!", err)
 	if err != nil {
 		return "", err

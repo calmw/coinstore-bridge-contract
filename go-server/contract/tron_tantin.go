@@ -52,8 +52,8 @@ func (t *TanTinTron) Init() {
 	fmt.Println(txHash2, err2)
 	txHash, err := t.AdminSetEnv(ChainConfig.BridgeContractAddress)
 	fmt.Println(txHash, err)
-	txHash3, err3 := t.AdminSetToken(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, false, false, false)
-	fmt.Println(txHash3, err3)
+	//txHash3, err3 := t.AdminSetToken(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, false, false, false)
+	//fmt.Println(txHash3, err3)
 }
 
 func (t *TanTinTron) AdminSetEnv(bridgeAddress string) (string, error) {
@@ -143,9 +143,15 @@ func (t *TanTinTron) AdminSetToken(resourceId string, assetsType uint8, tokenAdd
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
-func (t *TanTinTron) Deposit(destinationChainId, resourceId, recipient, signature string, amount *big.Int) (string, error) {
+func (t *TanTinTron) Deposit(destinationChainId, amount *big.Int, resourceId, recipient string) (string, error) {
+	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
+	defer t.Ks.Lock(t.Ka.Address)
+	recipientEth, _ := utils.TronToEth(recipient)
+	signature, _ := abi.TantinDepositSignatureTron(
+		ethCommon.HexToAddress(recipientEth),
+	)
 	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"bytes32\":\"%s\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"}]",
-		destinationChainId, resourceId, recipient, amount.String(), signature,
+		destinationChainId.String(), strings.TrimPrefix(resourceId, "0x"), recipient, amount.String(), fmt.Sprintf("%x", signature),
 	)
 	tx, err := t.Cli.TriggerContract(OwnerAccount, t.ContractAddress, "deposit(uint256,bytes32,address,uint256,bytes)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
