@@ -12,7 +12,6 @@ func GenerateSignatureTron(parameter []byte) ([]byte, error) {
 	privateKey, err := crypto.HexToECDSA(privateKeyStr)
 	singer := beeCrypto.NewDefaultSigner(privateKey)
 	hash := crypto.Keccak256Hash(parameter)
-	// 私钥签名hash
 	sign, err := singer.Sign(hash.Bytes())
 	if err != nil {
 		return nil, err
