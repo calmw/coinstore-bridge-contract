@@ -41,13 +41,13 @@ func NewTanTinTron() (*TanTinTron, error) {
 		Ks:              ks,
 		Ka:              ka,
 		Cli:             cli,
-		ContractAddress: ChainConfig.VoteContractAddress,
+		ContractAddress: ChainConfig.TantinContractAddress,
 	}, nil
 }
 
 func (t *TanTinTron) Init() {
-	//txHash1, err1 := t.GrantRole(AdminRole, OwnerAccount)
-	//fmt.Println(txHash1, err1)
+	txHash1, err1 := t.GrantRole(AdminRole, OwnerAccount)
+	fmt.Println(txHash1, err1)
 	//// 手工
 	//txHash, err := t.AdminSetEnv(ChainConfig.BridgeContractAddress)
 	//fmt.Println(txHash, err)
@@ -123,7 +123,7 @@ func (t *TanTinTron) AdminSetToken(resourceId string, assetsType uint8, tokenAdd
 		mintable,
 		pause,
 	)
-	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"bool\":%v},{\"bool\":%v},{\"bool\":%v},{\"bytes\":%s}]",
+	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"bool\":%v},{\"bool\":%v},{\"bool\":%v},{\"bytes\":\"%s\"}]",
 		fmt.Sprintf("%x", [32]byte(resourceIdBytes)),
 		assetsType,
 		tokenAddress,
@@ -134,7 +134,7 @@ func (t *TanTinTron) AdminSetToken(resourceId string, assetsType uint8, tokenAdd
 	)
 	fmt.Println(triggerData)
 	fmt.Println("~~~~~~~~~~")
-	tx, err := t.Cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetToken(bytes32,uint8,address,bool,bool,bool,bytes)", triggerData, 5000000000, 0, "", 0)
+	tx, err := t.Cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetToken(bytes32,uint8,address,bool,bool,bool,bytes)", triggerData, 6000000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}

@@ -113,22 +113,22 @@ contract TantinBridge is AccessControl, ITantinBridge {
             ),
             "signature error"
         );
-        resourceIdToTokenInfo[resourceID] = TokenInfo(
-            assetsType,
-            tokenAddress,
-            burnable,
-            mintable,
-            pause
-        );
-
-        emit SetTokenEvent(
-            resourceID,
-            assetsType,
-            tokenAddress,
-            burnable,
-            mintable,
-            pause
-        );
+//        resourceIdToTokenInfo[resourceID] = TokenInfo(
+//            assetsType,
+//            tokenAddress,
+//            burnable,
+//            mintable,
+//            pause
+//        );
+//
+//        emit SetTokenEvent(
+//            resourceID,
+//            assetsType,
+//            tokenAddress,
+//            burnable,
+//            mintable,
+//            pause
+//        );
     }
 
     /**
