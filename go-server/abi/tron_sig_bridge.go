@@ -33,3 +33,15 @@ func BridgeAdminSetEnvSignatureTron(sigNonce *big.Int, voteAddress common.Addres
 	)
 	return GenerateSignatureTron(parameterBytes[4:])
 }
+
+func VoteAdminSetEnvSignatureTron(sigNonce *big.Int, bridgeAddress, voteAddress common.Address, expiry, relayerThreshold *big.Int) ([]byte, error) {
+	contractAbi, _ := abi.JSON(strings.NewReader(VoteSig))
+	parameterBytes, _ := contractAbi.Pack("checkAdminSetEnvSignature",
+		sigNonce,
+		bridgeAddress,
+		voteAddress,
+		expiry,
+		relayerThreshold,
+	)
+	return GenerateSignatureTron(parameterBytes[4:])
+}

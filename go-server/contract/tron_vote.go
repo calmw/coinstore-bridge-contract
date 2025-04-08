@@ -1,9 +1,12 @@
 package contract
 
 import (
+	"coinstore/abi"
+	"coinstore/bridge/tron"
 	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"fmt"
+	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/client"
 	"github.com/fbsobreira/gotron-sdk/pkg/client/transaction"
 	"github.com/fbsobreira/gotron-sdk/pkg/common"
@@ -41,30 +44,46 @@ func NewVoteTron() (*VoteTron, error) {
 }
 
 func (v *VoteTron) Init() {
-	txHash, err := v.AdminSetEnv(big.NewInt(100000), big.NewInt(1))
+	txHash4, err4 := v.GrantRole(AdminRole, OwnerAccount)
+	fmt.Println(txHash4, err4)
+	txHash, err := v.AdminSetEnv(ChainConfig.BridgeContractAddress, ChainConfig.TantinContractAddress, big.NewInt(100000), big.NewInt(1))
 	fmt.Println(txHash, err)
-	txHash2, err2 := v.GrantBridgeRole("52ba824bfabc2bcfcdf7f0edbb486ebb05e1836c90e78047efeb949990f72e5f", ChainConfig.BridgeContractAddress)
+	txHash2, err2 := v.GrantRole(BridgeRole, ChainConfig.BridgeContractAddress)
 	fmt.Println(txHash2, err2)
-	txHash3, err3 := v.GrantBridgeRole("e2b7fb3b832174769106daebcfd6d1970523240dda11281102db9363b83b0dc4", OwnerAccount)
+	txHash3, err3 := v.GrantRole(BridgeRole, OwnerAccount)
 	fmt.Println(txHash3, err3)
 }
 
-func (v *VoteTron) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) (string, error) {
+func (v *VoteTron) AdminSetEnv(bridgeAddress, tantinAddress string, expiry *big.Int, relayerThreshold *big.Int) (string, error) {
 
 	_ = v.Ks.Unlock(*v.Ka, tron_keystore.KeyStorePassphrase)
 	defer v.Ks.Lock(v.Ka.Address)
-
-	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"uint256\":\"%s\"}]", ChainConfig.BridgeContractAddress, expiry.String(), relayerThreshold.String())
-	cli := client.NewGrpcClient(NileGrpc)
-	err := cli.Start(grpc.WithInsecure())
+	sigNonce, err := tron.GetSigNonce(v.ContractAddress, OwnerAccount)
 	if err != nil {
 		return "", err
 	}
-	tx, err := cli.TriggerContract(OwnerAccount, v.ContractAddress, "adminSetEnv(address,uint256,uint256)", triggerData, 300000000, 0, "", 0)
+	bridgeEth, _ := utils.TronToEth(bridgeAddress)
+	tantinEth, _ := utils.TronToEth(tantinAddress)
+	signature, _ := abi.VoteAdminSetEnvSignatureTron(
+		sigNonce,
+		ethCommon.HexToAddress(bridgeEth),
+		ethCommon.HexToAddress(tantinEth),
+		expiry,
+		relayerThreshold,
+	)
+	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"}]",
+		ChainConfig.BridgeContractAddress,
+		ChainConfig.TantinContractAddress,
+		expiry.String(),
+		relayerThreshold.String(),
+		fmt.Sprintf("%x", signature),
+	)
+	fmt.Println(triggerData)
+	tx, err := v.Cli.TriggerContract(OwnerAccount, v.ContractAddress, "adminSetEnv(address,uint256,uint256)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
-	ctrlr := transaction.NewController(cli, v.Ks, v.Ka, tx.Transaction)
+	ctrlr := transaction.NewController(v.Cli, v.Ks, v.Ka, tx.Transaction)
 	if err = ctrlr.ExecuteTransaction(); err != nil {
 		return "", err
 	}
@@ -72,20 +91,15 @@ func (v *VoteTron) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) (stri
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
-func (v *VoteTron) GrantBridgeRole(role, addr string) (string, error) {
+func (v *VoteTron) GrantRole(role, addr string) (string, error) {
 	_ = v.Ks.Unlock(*v.Ka, tron_keystore.KeyStorePassphrase)
 	defer v.Ks.Lock(v.Ka.Address)
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
-	cli := client.NewGrpcClient(NileGrpc)
-	err := cli.Start(grpc.WithInsecure())
+	tx, err := v.Cli.TriggerContract(OwnerAccount, v.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
-	tx, err := cli.TriggerContract(OwnerAccount, v.ContractAddress, "grantRole(bytes32,address)", triggerData, 300000000, 0, "", 0)
-	if err != nil {
-		return "", err
-	}
-	ctrlr := transaction.NewController(cli, v.Ks, v.Ka, tx.Transaction)
+	ctrlr := transaction.NewController(v.Cli, v.Ks, v.Ka, tx.Transaction)
 	if err = ctrlr.ExecuteTransaction(); err != nil {
 		return "", err
 	}
