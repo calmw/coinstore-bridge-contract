@@ -9,7 +9,6 @@ import {IERC20MintAble} from "./interface/IERC20MintAble.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Bridge is IBridge, Pausable, AccessControl {
-
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant VOTE_ROLE = keccak256("VOTE_ROLE");
 
@@ -194,7 +193,10 @@ contract Bridge is IBridge, Pausable, AccessControl {
             abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
         );
 
-        address recoverAddress = recoverSigner(toEthSignedMessageHash(messageHash),signature_);
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
+            signature_
+        );
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -211,7 +213,10 @@ contract Bridge is IBridge, Pausable, AccessControl {
             abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
         );
 
-        address recoverAddress = recoverSigner(toEthSignedMessageHash(messageHash),signature_);
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
+            signature_
+        );
 
         return recoverAddress;
     }
@@ -222,7 +227,10 @@ contract Bridge is IBridge, Pausable, AccessControl {
     ) private returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId));
 
-        address recoverAddress = recoverSigner(toEthSignedMessageHash(messageHash),signature);
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
+            signature
+        );
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -236,7 +244,10 @@ contract Bridge is IBridge, Pausable, AccessControl {
     ) private returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId));
 
-        address recoverAddress = recoverSigner(toEthSignedMessageHash(messageHash),signature);
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
+            signature
+        );
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -266,7 +277,10 @@ contract Bridge is IBridge, Pausable, AccessControl {
                 tantinAddress
             )
         );
-        address recoverAddress = recoverSigner(toEthSignedMessageHash(messageHash),signature);
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
+            signature
+        );
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -274,11 +288,19 @@ contract Bridge is IBridge, Pausable, AccessControl {
         return res;
     }
 
-    function toEthSignedMessageHash(bytes32 hash) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
+    function toEthSignedMessageHash(
+        bytes32 hash
+    ) public pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
+            );
     }
 
-    function recoverSigner(bytes32 _msgHash, bytes memory _signature) public pure returns (address){
+    function recoverSigner(
+        bytes32 _msgHash,
+        bytes memory _signature
+    ) public pure returns (address) {
         require(_signature.length == 65, "invalid signature length");
         bytes32 r;
         bytes32 s;

@@ -8,9 +8,7 @@ contract test_sig {
     uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
     address public superAdminAddress;
     uint256 public chainId; // 自定义链ID
-    function adminSetEnv(
-        address addr
-    ) external {
+    function adminSetEnv(address addr) external {
         superAdminAddress = addr;
     }
 
@@ -23,7 +21,10 @@ contract test_sig {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
         );
-        address recoverAddress = recoverSigner(toEthSignedMessageHash(messageHash), signature_);
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
+            signature_
+        );
 
         return recoverAddress;
     }
@@ -36,20 +37,42 @@ contract test_sig {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
         );
-        address recoverAddress = recoverSigner(toEthSignedMessageHash2(messageHash), signature_);
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash2(messageHash),
+            signature_
+        );
 
         return recoverAddress;
     }
-
-    function toEthSignedMessageHash(bytes32 hash) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked("\x19TRON Signed Message:\n32", hash));
+    function checkAdminSetEnvSignatureTest3(
+        bytes memory signature_,
+        address voteAddress_,
+        uint256 chainId_,
+        uint256 chainType_
+    ) public view returns (address) {
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
+        );
+        address recoverAddress = messageHash.recover(signature_);
+        return recoverAddress;
     }
 
-    function toEthSignedMessageHash2(bytes32 hash) public pure returns (bytes32) {
-        return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
+    function toEthSignedMessageHash(
+        bytes32 hash
+    ) public pure returns (bytes32) {
+        return keccak256(abi.encode("\x19TRON Signed Message:\n32", hash));
     }
 
-    function recoverSigner(bytes32 _msgHash, bytes memory _signature) public pure returns (address){
+    function toEthSignedMessageHash2(
+        bytes32 hash
+    ) public pure returns (bytes32) {
+        return keccak256(abi.encode("\x19Ethereum Signed Message:\n32", hash));
+    }
+
+    function recoverSigner(
+        bytes32 _msgHash,
+        bytes memory _signature
+    ) public pure returns (address) {
         require(_signature.length == 65, "invalid signature length");
         bytes32 r;
         bytes32 s;
@@ -61,5 +84,4 @@ contract test_sig {
         }
         return ecrecover(_msgHash, v, r, s);
     }
-
 }
