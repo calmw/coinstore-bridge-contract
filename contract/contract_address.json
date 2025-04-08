@@ -1,10 +1,10 @@
 {
-  "Tantin_Bridge": "0x2395DDA69077620d44C9b974d028421Eaf802037",
-  "Tantin_Vote": "0xbe1e484aBC7bd4e7F2e81eFAd784271790885e1B",
-  "Tantin_TantinBridge": "0x6944B2479f745C03c8796D4DCd90c15b5155819F",
-  "Openbnb_Bridge": "0x72bc6Da159300cb727Ec9695b343aA121EcB25b2",
-  "Openbnb_Vote": "0xC161b9af843d9f2bd9689d26c0936F646a73D951",
-  "Openbnb_TantinBridge": "0x1dE3656fBD649898C219DE17a5819ad223F9eB62",
+  "Tantin_Bridge": "0x8Ab9A3A7E1EC53102575007CB5c5151CBCE56343",
+  "Tantin_Vote": "0x68139868a62eFb8531b3b1D0aAb72fCa9a7aa172",
+  "Tantin_TantinBridge": "0x517abB5DACfc08Db2b9174de7Ee29A36CCD5a51F",
+  "Openbnb_Bridge": "0x5DbBF032a3ce42D8B6e16c262664Cd98D07802B1",
+  "Openbnb_Vote": "0xC89b85a50b50f3dD461dbc892e04002d4cd73C54",
+  "Openbnb_TantinBridge": "0x1Ba94cfbe6851309debb6a7C8d3467c214Ada00f",
   "sepolia_Bridge": "0xC0E8a9C9872A6A7E7F5F2999731dec5d798D82B7",
   "sepolia_Vote": "0x6b66eBFA87AaC1dB355B0ec49ECab7F4b32b1b30",
   "sepolia_TantinBridge": "0x77bcb682e01D8763F6757c0D0Beaf577Afcfdf43"
