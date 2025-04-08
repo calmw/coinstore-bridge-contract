@@ -308,7 +308,6 @@ func GetSigNonce(contractAddress, from string) (*big.Int, error) {
 	}, "latest"],
 	"id": %d
 }`, from, contractAddress, data, utils.RandInt(100, 10000))
-	fmt.Println(ethCallBody)
 	req, _ := http.NewRequest("POST", url, strings.NewReader(ethCallBody))
 	req.Header.Add("accept", "application/json")
 	res, _ := http.DefaultClient.Do(req)

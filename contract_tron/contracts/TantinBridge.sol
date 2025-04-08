@@ -303,7 +303,8 @@ contract TantinBridge is AccessControl, ITantinBridge {
         address sender
     ) private pure returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(recipient));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature
         );
 
@@ -316,7 +317,8 @@ contract TantinBridge is AccessControl, ITantinBridge {
         address bridgeAddress
     ) private returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(sigNonce, bridgeAddress));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature
         );
 
@@ -337,7 +339,8 @@ contract TantinBridge is AccessControl, ITantinBridge {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, chainId, user, sigNonce)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature
         );
 
@@ -356,7 +359,8 @@ contract TantinBridge is AccessControl, ITantinBridge {
     ) private returns (bool) {
         uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId, user));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature
         );
 
@@ -391,7 +395,8 @@ contract TantinBridge is AccessControl, ITantinBridge {
                 pause
             )
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature
         );
 
@@ -412,7 +417,8 @@ contract TantinBridge is AccessControl, ITantinBridge {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, chainId, tokenAddress, amount)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature
         );
 
@@ -421,5 +427,30 @@ contract TantinBridge is AccessControl, ITantinBridge {
             sigNonce++;
         }
         return res;
+    }
+
+    function toEthSignedMessageHash(
+        bytes32 hash
+    ) public pure returns (bytes32) {
+        return
+            keccak256(
+            abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
+        );
+    }
+
+    function recoverSigner(
+        bytes32 _msgHash,
+        bytes memory _signature
+    ) public pure returns (address) {
+        require(_signature.length == 65, "invalid signature length");
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
+        assembly {
+            r := mload(add(_signature, 0x20))
+            s := mload(add(_signature, 0x40))
+            v := byte(0, mload(add(_signature, 0x60)))
+        }
+        return ecrecover(_msgHash, v, r, s);
     }
 }

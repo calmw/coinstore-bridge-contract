@@ -44,8 +44,8 @@ func NewVoteTron() (*VoteTron, error) {
 }
 
 func (v *VoteTron) Init() {
-	txHash4, err4 := v.GrantRole(AdminRole, OwnerAccount)
-	fmt.Println(txHash4, err4)
+	//txHash4, err4 := v.GrantRole(AdminRole, OwnerAccount)
+	//fmt.Println(txHash4, err4)
 	txHash, err := v.AdminSetEnv(ChainConfig.BridgeContractAddress, ChainConfig.TantinContractAddress, big.NewInt(100000), big.NewInt(1))
 	fmt.Println(txHash, err)
 	//txHash2, err2 := v.GrantRole(BridgeRole, ChainConfig.BridgeContractAddress)
@@ -78,12 +78,14 @@ func (v *VoteTron) AdminSetEnv(bridgeAddress, tantinAddress string, expiry *big.
 		fmt.Sprintf("%x", signature),
 	)
 	fmt.Println(triggerData)
-	tx, err := v.Cli.TriggerContract(OwnerAccount, v.ContractAddress, "adminSetEnv(address,uint256,uint256)", triggerData, 300000000, 0, "", 0)
+	tx, err := v.Cli.TriggerContract(ChainConfig.BridgeContractAddress, ChainConfig.TantinContractAddress, "adminSetEnv(address,address,uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
+	fmt.Println("!!!!", err)
 	if err != nil {
 		return "", err
 	}
 	ctrlr := transaction.NewController(v.Cli, v.Ks, v.Ka, tx.Transaction)
 	if err = ctrlr.ExecuteTransaction(); err != nil {
+		fmt.Println("!!!! 2 ", err)
 		return "", err
 	}
 	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))

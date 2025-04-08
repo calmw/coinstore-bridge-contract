@@ -4,14 +4,9 @@ pragma solidity ^0.8.22;
 import "./interface/IBridge.sol";
 import "./interface/IVote.sol";
 import {ITantinBridge} from "./interface/ITantinBridge.sol";
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Vote is IVote, AccessControl {
-    using ECDSA for bytes32;
-    using MessageHashUtils for bytes32;
-
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
     bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
@@ -318,7 +313,8 @@ contract Vote is IVote, AccessControl {
                 relayerThreshold_
             )
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature_
         );
 
@@ -330,6 +326,31 @@ contract Vote is IVote, AccessControl {
         return res;
     }
 
+    // 验证adminSetEnv签名
+    function checkAdminSetEnvSignatureTest(
+        bytes memory signature_,
+        address bridgeAddress_,
+        address tantinAddress_,
+        uint256 expiry_,
+        uint256 relayerThreshold_
+    ) public view returns (address) {
+        bytes32 messageHash = keccak256(
+            abi.encode(
+                sigNonce,
+                bridgeAddress_,
+                tantinAddress_,
+                expiry_,
+                relayerThreshold_
+            )
+        );
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
+            signature_
+        );
+
+        return recoverAddress;
+    }
+
     // 验证adminChangeRelayerThreshold签名
     function checkAdminChangeRelayerThresholdSignature(
         bytes memory signature_,
@@ -339,7 +360,8 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, newThreshold, chainId)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature_
         );
 
@@ -360,10 +382,10 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, relayerAddress, chainId)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature_
         );
-
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -381,7 +403,8 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, relayerAddress, chainId)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature_
         );
 
@@ -391,5 +414,30 @@ contract Vote is IVote, AccessControl {
         }
 
         return res;
+    }
+
+    function toEthSignedMessageHash(
+        bytes32 hash
+    ) public pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
+            );
+    }
+
+    function recoverSigner(
+        bytes32 _msgHash,
+        bytes memory _signature
+    ) public pure returns (address) {
+        require(_signature.length == 65, "invalid signature length");
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
+        assembly {
+            r := mload(add(_signature, 0x20))
+            s := mload(add(_signature, 0x40))
+            v := byte(0, mload(add(_signature, 0x60)))
+        }
+        return ecrecover(_msgHash, v, r, s);
     }
 }
