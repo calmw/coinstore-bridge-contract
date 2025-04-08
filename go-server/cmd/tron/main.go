@@ -14,19 +14,19 @@ func main() {
 	//}
 	//bridge.Init()
 
-	//vote, err := contract.NewVoteTron()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//vote.Init()
-
-	tantin, err := contract.NewTanTinTron()
+	vote, err := contract.NewVoteTron()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	tantin.Init()
+	vote.Init()
+
+	//tantin, err := contract.NewTanTinTron()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//tantin.Init()
 
 	////for {
 	//toAddress, err := address.Base58ToAddress("TFBymbm7LrbRreGtByMPRD2HUyneKabsqb")
