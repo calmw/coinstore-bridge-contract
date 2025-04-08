@@ -89,16 +89,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     }
 
     /**
-        @notice 提取跨链桥coin资产
-        @param recipient 资产接受者地址
-        @param amount 提取数量,单位wei
-     */
-    //    function adminWithdraw(
-    //        address recipient,
-    //        uint256 amount
-    //    ) external onlyRole(ADMIN_ROLE) {}
-
-    /**
         @notice resource设置
         @param resourceID 跨链的resourceID
         @param assetsType 该币的类型
