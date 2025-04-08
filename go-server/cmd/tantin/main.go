@@ -19,19 +19,19 @@ func main() {
 		return
 	}
 	bridge.Init()
-	//bridge.AdminSetResource(
-	//	contract.ResourceIdUsdt,
-	//	2,
-	//	common.HexToAddress(contract.ChainConfig.UsdtAddress),
-	//	big.NewInt(100),
-	//)
-	//
-	//vote, err := contract.NewVote()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//vote.Init()
+	bridge.AdminSetResource(
+		contract.ResourceIdUsdt,
+		2,
+		common.HexToAddress(contract.ChainConfig.UsdtAddress),
+		big.NewInt(100),
+	)
+
+	vote, err := contract.NewVote()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	vote.Init()
 
 	tantin, err := contract.NewTanTin()
 	if err != nil {
