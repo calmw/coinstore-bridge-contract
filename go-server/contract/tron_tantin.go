@@ -48,13 +48,10 @@ func NewTanTinTron() (*TanTinTron, error) {
 func (t *TanTinTron) Init() {
 	txHash1, err1 := t.GrantRole(AdminRole, OwnerAccount)
 	fmt.Println(txHash1, err1)
-	//// 手工
-	//txHash, err := t.AdminSetEnv(ChainConfig.BridgeContractAddress)
-	//fmt.Println(txHash, err)
-	//// 手工
-	//txHash2, err2 := t.GrantRole(BridgeRole, ChainConfig.BridgeContractAddress)
-	//fmt.Println(txHash2, err2)
-	// 手工
+	txHash2, err2 := t.GrantRole(BridgeRole, ChainConfig.BridgeContractAddress)
+	fmt.Println(txHash2, err2)
+	txHash, err := t.AdminSetEnv(ChainConfig.BridgeContractAddress)
+	fmt.Println(txHash, err)
 	txHash3, err3 := t.AdminSetToken(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, false, false, false)
 	fmt.Println(txHash3, err3)
 }
