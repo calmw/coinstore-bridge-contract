@@ -11,6 +11,7 @@ import (
 	"github.com/fbsobreira/gotron-sdk/pkg/client/transaction"
 	"github.com/fbsobreira/gotron-sdk/pkg/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
+	"github.com/status-im/keycard-go/hexutils"
 	"google.golang.org/grpc"
 	"log"
 	"math/big"
@@ -53,13 +54,13 @@ func NewBridgeTron() (*BridgeTron, error) {
 }
 
 func (b *BridgeTron) Init() {
-	//txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
-	//fmt.Println(txHash2, err2)
-	//txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
-	//fmt.Println(txHash3, err3)
+	txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
+	fmt.Println(txHash2, err2)
+	txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
+	fmt.Println(txHash3, err3)
 	txHash, err := b.AdminSetEnv()
 	fmt.Println(txHash, err)
-	txHash4, err4 := b.AdminSetResource(big.NewInt(1))
+	txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, ChainConfig.UsdtAddress, big.NewInt(100), 2)
 	fmt.Println(txHash4, err4)
 }
 
@@ -84,11 +85,10 @@ func (b *BridgeTron) AdminSetEnv() (string, error) {
 		ChainConfig.VoteContractAddress,
 		ChainConfig.BridgeId,
 		ChainConfig.ChainTypeId,
-		fmt.Sprintf("0x%x", signature),
+		fmt.Sprintf("%x", signature),
 	)
-	fmt.Println("~~~~~~")
 	fmt.Println(triggerData)
-	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetEnv(address,uint256,uint256)", triggerData, 300000000, 0, "", 0)
+	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetEnv(address,uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
@@ -96,22 +96,6 @@ func (b *BridgeTron) AdminSetEnv() (string, error) {
 	if err = ctrlr.ExecuteTransaction(); err != nil {
 		return "", err
 	}
-	return common.BytesToHexString(tx.GetTxid()), nil
-}
-
-func (b *BridgeTron) GrantAdminRole(role, addr string) (string, error) {
-	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
-	defer b.Ks.Lock(b.Ka.Address)
-	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
-	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 300000000, 0, "", 0)
-	if err != nil {
-		return "", err
-	}
-	ctrlr := transaction.NewController(b.Cli, b.Ks, b.Ka, tx.Transaction)
-	if err = ctrlr.ExecuteTransaction(); err != nil {
-		return "", err
-	}
-	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
@@ -131,18 +115,36 @@ func (b *BridgeTron) GrantRole(role, addr string) (string, error) {
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
-func (b *BridgeTron) AdminSetResource(fee *big.Int) (string, error) {
+func (b *BridgeTron) AdminSetResource(resourceId, tokenAddress string, fee *big.Int, assetsType uint8) (string, error) {
 	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
 	defer b.Ks.Lock(b.Ka.Address)
-	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bool\":%v},{\"address\":\"%s\"}]",
-		strings.TrimPrefix(ResourceIdUsdt, "0x"),
-		uint8(2),
-		ChainConfig.UsdtAddress,
-		fee.String(),
+	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
+	sigNonce, err := tron.GetSigNonce(b.ContractAddress, OwnerAccount)
+	if err != nil {
+		return "", err
+	}
+	tokenEth, _ := utils.TronToEth(tokenAddress)
+	tantinEth, _ := utils.TronToEth(ChainConfig.TantinContractAddress)
+	signature, _ := abi.BridgeAdminSetResourceSignatureTron(
+		sigNonce,
+		big.NewInt(ChainConfig.BridgeId),
+		[32]byte(resourceIdBytes),
+		assetsType,
+		ethCommon.HexToAddress(tokenEth),
+		ethCommon.HexToAddress(tantinEth),
+		fee,
+		false,
+	)
+	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bool\":%v},{\"address\":\"%s\"},{\"bytes\":\"%s\"}]",
+		strings.TrimPrefix(resourceId, "0x"),
+		assetsType,
+		tokenAddress,
+		fee,
 		false,
 		ChainConfig.TantinContractAddress,
+		fmt.Sprintf("%x", signature),
 	)
-	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetResource(bytes32,uint8,address,uint256,bool,address)", triggerData, 300000000, 0, "", 0)
+	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetResource(bytes32,uint8,address,uint256,bool,address,bytes)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}

@@ -1,13 +1,9 @@
 package abi
 
 import (
-	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	beeCrypto "github.com/ethersphere/bee/v2/pkg/crypto"
 	"math/big"
-	"os"
 	"strings"
 )
 
@@ -35,16 +31,5 @@ func BridgeAdminSetEnvSignatureTron(sigNonce *big.Int, voteAddress common.Addres
 		chainId,
 		chainType,
 	)
-	privateKeyStr := os.Getenv("COINSTORE_BRIDGE_TRON_LOCAL")
-	privateKey, err := crypto.HexToECDSA(privateKeyStr)
-	singer := beeCrypto.NewDefaultSigner(privateKey)
-	hash := crypto.Keccak256Hash(parameterBytes[4:])
-	// 私钥签名hash
-	sign, err := singer.Sign(hash.Bytes())
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println("~~~~~~~~~ 4 ")
-	fmt.Printf("0x%x\n", sign)
-	return sign, err
+	return GenerateSignatureTron(parameterBytes[4:])
 }
