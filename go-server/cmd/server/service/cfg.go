@@ -9,11 +9,15 @@ import (
 
 type ChainInfo struct {
 	ChainId               uint64  `json:"chain_id"`
+	BlockChainId          uint64  `json:"block_chain_id"`
 	BridgeContractAddress string  `json:"bridge_contract_address"`
 	Endpoint              string  `json:"endpoint"`
 	ChainName             string  `json:"chain_name"`
 	Explorer              string  `json:"explorer"`
 	Logo                  string  `json:"logo"`
+	NativeCoinName        string  `json:"native_coin_name"`
+	NativeCoinSymbol      string  `json:"native_coin_symbol"`
+	NativeCoinDecimals    string  `json:"native_coin_decimals"`
 	Tokens                []Token `json:"tokens"`
 }
 
@@ -46,11 +50,15 @@ func GetConfig(c *gin.Context) {
 		}
 		res = append(res, ChainInfo{
 			ChainId:               uint64(chain.ChainId),
+			BlockChainId:          uint64(chain.BlockChainId),
 			BridgeContractAddress: chain.BridgeContract,
 			Endpoint:              chain.Endpoint,
 			ChainName:             chain.ChainName,
 			Explorer:              chain.Explorer,
 			Logo:                  chain.Logo,
+			NativeCoinName:        chain.NativeCoinName,
+			NativeCoinDecimals:    chain.NativeCoinDecimals,
+			NativeCoinSymbol:      chain.NativeCoinSymbol,
 			Tokens:                ts,
 		})
 	}
