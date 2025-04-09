@@ -11,7 +11,7 @@ import (
 
 type TokenInfo struct {
 	Id           uint64  `gorm:"primaryKey" json:"id"`
-	Decimals     int64   `gorm:"primaryKey" json:"decimals"`
+	Decimals     int64   `gorm:"column:decimals;'" json:"decimals"`
 	TokenName    string  `gorm:"column:token_name;type:varchar(100);comment:' token名称'" json:"token_name"`
 	TokenAddress string  `gorm:"column:token_address;type:varchar(100);comment:' token地址，coin为0地址'" json:"token_address"`
 	Icon         string  `gorm:"column:icon;type:longtext;comment:'icon'" json:"icon"`
