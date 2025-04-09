@@ -28,6 +28,7 @@ type Token struct {
 	Decimals        string `json:"decimals"`
 	Logo            string `json:"logo"`
 	ContractAddress string `json:"contract_address"`
+	ResourceId      string `json:"resource_id"`
 }
 
 func GetConfig(c *gin.Context) {
@@ -45,6 +46,7 @@ func GetConfig(c *gin.Context) {
 				Symbol:          token.TokenName,
 				Decimals:        strconv.FormatInt(token.Decimals, 10),
 				Logo:            token.Icon,
+				ResourceId:      token.ResourceId,
 				ContractAddress: token.TokenAddress,
 			})
 		}

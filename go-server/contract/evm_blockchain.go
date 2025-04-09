@@ -34,6 +34,7 @@ type ChainConfigs struct {
 	TantinContractAddress string
 	UsdtAddress           string
 	UsdcAddress           string
+	EthAddress            string
 	PrivateKey            string
 }
 
@@ -137,7 +138,8 @@ func InitTantinEnv() {
 		VoteContractAddress:   "0x68139868a62eFb8531b3b1D0aAb72fCa9a7aa172",
 		TantinContractAddress: "0x517abB5DACfc08Db2b9174de7Ee29A36CCD5a51F",
 		UsdtAddress:           "0x2Bf013133aE838B6934B7F96fd43A10EE3FC3e18",
-		UsdcAddress:           "0xe82F64b73D58C85803D78be00407fD44c6DeBe63",
+		UsdcAddress:           "0xF3f9629Bf5fC6e40e28444aEA4405dD00e5890AE",
+		EthAddress:            "0x99276acEDe57b8dc5632b818DE33B3141DD6FE1d",
 		PrivateKey:            privateKeyStr,
 	}
 }
@@ -147,14 +149,15 @@ func InitBscEnv() {
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
 		BridgeId:              2,
-		ChainId:               5611,
+		ChainId:               56,
 		ChainTypeId:           1,
-		RPC:                   "https://opbnb-testnet-rpc.bnbchain.org",
+		RPC:                   "https://bsc-mainnet.rpcfast.com?api_key=xbhWBI1Wkguk8SNMu1bvvLurPGLXmgwYeC4S6g2H7WdwFigZSmPWVZRxrskEQwIf",
 		BridgeContractAddress: "0x5DbBF032a3ce42D8B6e16c262664Cd98D07802B1",
 		VoteContractAddress:   "0xC89b85a50b50f3dD461dbc892e04002d4cd73C54",
 		TantinContractAddress: "0x1Ba94cfbe6851309debb6a7C8d3467c214Ada00f",
 		UsdtAddress:           "0x671b21826BdFB241aCa2Dd49dD6C0B96A9309455",
 		UsdcAddress:           "0x740b6892bFe90D8b5B926782761e5F9F3eaCC1A1",
+		EthAddress:            "0x0000000000000000000000000000000000000000",
 		PrivateKey:            privateKeyStr,
 	}
 }
@@ -163,11 +166,10 @@ func InitEthEnv() {
 	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
-		BridgeId:    4,
-		ChainId:     11155111,
-		ChainTypeId: 1,
-		//RPC:         "https://sepolia.infura.io/v3/732f6502b35c486fb07e333b32e89c04",
-		RPC:                   "https://sepolia.drpc.org",
+		BridgeId:              4,
+		ChainId:               1,
+		ChainTypeId:           1,
+		RPC:                   "https://go.getblock.io/aefd01aa907c4805ba3c00a9e5b48c6b",
 		BridgeContractAddress: "0xC0E8a9C9872A6A7E7F5F2999731dec5d798D82B7",
 		VoteContractAddress:   "0x6b66eBFA87AaC1dB355B0ec49ECab7F4b32b1b30",
 		TantinContractAddress: "0x77bcb682e01D8763F6757c0D0Beaf577Afcfdf43",
