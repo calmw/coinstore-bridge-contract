@@ -2,7 +2,7 @@
 
 ``` shell
 # build 
-docker buildx build --platform linux/amd64 --tag calmw/tt_bridge:0.0.8 --push .
+docker buildx build --platform linux/amd64 --tag calmw/tt_bridge:0.0.9 --push .
 ```
 
 ``` shell
