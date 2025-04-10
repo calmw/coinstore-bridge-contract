@@ -13,40 +13,40 @@ import (
 func main() {
 	contract.InitTantinEnv()
 
-	bridge, err := contract.NewBridge()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	bridge.Init()
-	bridge.AdminSetResource(
-		contract.ResourceIdEth,
-		2,
-		common.HexToAddress(contract.ChainConfig.WEthAddress),
-		big.NewInt(100),
-	)
-	bridge.AdminSetResource(
-		contract.ResourceIdWeth,
-		2,
-		common.HexToAddress(contract.ChainConfig.WEthAddress),
-		big.NewInt(100),
-	)
-
-	vote, err := contract.NewVote()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	vote.Init()
+	//bridge, err := contract.NewBridge()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//bridge.Init()
+	//bridge.AdminSetResource(
+	//	contract.ResourceIdEth,
+	//	2,
+	//	common.HexToAddress(contract.ChainConfig.WEthAddress),
+	//	big.NewInt(100),
+	//)
+	//bridge.AdminSetResource(
+	//	contract.ResourceIdWeth,
+	//	2,
+	//	common.HexToAddress(contract.ChainConfig.WEthAddress),
+	//	big.NewInt(100),
+	//)
+	//
+	//vote, err := contract.NewVote()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//vote.Init()
 
 	tantin, err := contract.NewTanTin()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	tantin.Init()
-	tantin.AdminSetToken(contract.ResourceIdWeth, 2, common.HexToAddress(contract.ChainConfig.WEthAddress), false, false, false)
-	tantin.AdminSetToken(contract.ResourceIdEth, 2, common.HexToAddress(contract.ChainConfig.WEthAddress), false, false, false)
+	//tantin.Init()
+	//tantin.AdminSetToken(contract.ResourceIdWeth, 2, common.HexToAddress(contract.ChainConfig.WEthAddress), false, false, false)
+	//tantin.AdminSetToken(contract.ResourceIdEth, 2, common.HexToAddress(contract.ChainConfig.WEthAddress), false, false, false)
 
 	amount := big.NewInt(2)
 	Usdt, err := contract.NewErc20(common.HexToAddress(contract.ChainConfig.UsdtAddress))
@@ -54,7 +54,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	Usdt.Approve(amount, contract.ChainConfig.BridgeContractAddress)
+	Usdt.Approve(amount, contract.ChainConfig.TantinContractAddress)
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
 	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdCoin, "0x"))
 
