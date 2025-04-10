@@ -20,7 +20,7 @@ func InitTronEnv() {
 		ChainId:     3448148188,
 		ChainTypeId: 2,
 		//RPC:                   "grpc.nile.trongrid.io:50051",
-		RPC:                   "grpc.nile.trongrid.io:50051",
+		RPC:                   "grpc.trongrid.io:50051",
 		BridgeContractAddress: "TUAPRMUqZYaQgNrvyNbYs4ZzwjHRh8SnS6",
 		VoteContractAddress:   "THy5A71b4EuAddwZJ5voncmCJw4uaWxTqX",
 		TantinContractAddress: "TJUpuoMypxRCyqH2y3qCoWgv7RuPmVB2Uo",
