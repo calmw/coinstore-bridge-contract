@@ -5,7 +5,6 @@ import (
 	"coinstore/binding"
 	"context"
 	"fmt"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -162,18 +161,10 @@ func (c TanTinEvm) AdminSetToken(resourceId string, assetsType uint8, tokenAddre
 
 func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount *big.Int) {
 	signature, _ := abi.TantinDepositSignature(receiver)
-	token, err := NewErc20(common.HexToAddress(ChainConfig.UsdtAddress))
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	token.Approve(amount)
-
 	var res *types.Transaction
-	var txOpts *bind.TransactOpts
 
 	for {
-		err, txOpts = GetAuth(c.Cli)
+		err, txOpts := GetAuth(c.Cli)
 		if err != nil {
 			log.Println(err)
 			return
