@@ -4,10 +4,7 @@ import (
 	"coinstore/contract"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/status-im/keycard-go/hexutils"
 	"math/big"
-	"strings"
-	"time"
 )
 
 func main() {
@@ -37,14 +34,14 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	//tantin.Init()
-	////tantin.AdminSetToken(contract.ResourceIdUsdt, 2, common.HexToAddress(contract.ChainConfig.UsdtAddress), false, false, false)
-	//
-	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
-	////resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdCoin, "0x"))
-	//
-	for {
-		tantin.Deposit(common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"), [32]byte(resourceIdBytes), big.NewInt(3), big.NewInt(1))
-		time.Sleep(time.Second * 60)
-	}
+	tantin.Init()
+	tantin.AdminSetToken(contract.ResourceIdEth, 2, common.HexToAddress(contract.ChainConfig.WEthAddress), false, false, false)
+
+	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
+	//////resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdCoin, "0x"))
+	////
+	//for {
+	//	tantin.Deposit(common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"), [32]byte(resourceIdBytes), big.NewInt(3), big.NewInt(1))
+	//	time.Sleep(time.Second * 60)
+	//}
 }

@@ -32,7 +32,7 @@ func NewErc20(addr common.Address) (*Erc20, error) {
 	}, nil
 }
 
-func (c Erc20) Approve(amount *big.Int) {
+func (c Erc20) Approve(amount *big.Int, address string) {
 	var res *types.Transaction
 	for {
 		err, txOpts := GetAuth(c.Cli)
@@ -42,7 +42,7 @@ func (c Erc20) Approve(amount *big.Int) {
 		}
 		res, err = c.Contract.Approve(
 			txOpts,
-			common.HexToAddress(ChainConfig.TantinContractAddress),
+			common.HexToAddress(address),
 			amount,
 		)
 		if err == nil {
@@ -62,4 +62,36 @@ func (c Erc20) Approve(amount *big.Int) {
 	}
 
 	log.Println(fmt.Sprintf("Approve 确认成功 %s", res.Hash()))
+}
+
+func (c Erc20) Transfer(amount *big.Int, address string) {
+	var res *types.Transaction
+	for {
+		err, txOpts := GetAuth(c.Cli)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		res, err = c.Contract.Transfer(
+			txOpts,
+			common.HexToAddress(address),
+			amount,
+		)
+		if err == nil {
+			break
+		} else {
+			log.Println(fmt.Sprintf("Transfer error: %v", err))
+		}
+		time.Sleep(3 * time.Second)
+	}
+	log.Println(fmt.Sprintf("Transfer 成功"))
+	for {
+		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
+		if err == nil && receipt.Status == 1 {
+			break
+		}
+		time.Sleep(time.Second * 2)
+	}
+
+	log.Println(fmt.Sprintf("Transfer 确认成功 %s", res.Hash()))
 }

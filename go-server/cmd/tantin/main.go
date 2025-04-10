@@ -29,21 +29,22 @@ func main() {
 		big.NewInt(100),
 	)
 
-	//vote, err := contract.NewVote()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//vote.Init()
+	vote, err := contract.NewVote()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	vote.Init()
 
-	//tantin, err := contract.NewTanTin()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	////tantin.Init()
-	////tantin.AdminSetToken(contract.ResourceIdUsdt, 2, common.HexToAddress(contract.ChainConfig.UsdtAddress), false, false, false)
-	//
+	tantin, err := contract.NewTanTin()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	tantin.Init()
+	tantin.AdminSetToken(contract.ResourceIdWeth, 2, common.HexToAddress(contract.ChainConfig.WEthAddress), false, false, false)
+	tantin.AdminSetToken(contract.ResourceIdEth, 2, common.HexToAddress(contract.ChainConfig.WEthAddress), false, false, false)
+
 	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
 	////resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdCoin, "0x"))
 	//
