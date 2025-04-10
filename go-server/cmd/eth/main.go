@@ -17,14 +17,14 @@ func main() {
 	bridge.Init()
 	bridge.AdminSetResource(
 		contract.ResourceIdEth,
-		2,
+		1,
 		common.HexToAddress(contract.ZeroAddress),
 		big.NewInt(100),
 	)
 	bridge.AdminSetResource(
 		contract.ResourceIdWeth,
 		2,
-		common.HexToAddress(contract.ChainConfig.UsdtAddress),
+		common.HexToAddress(contract.ChainConfig.WEthAddress),
 		big.NewInt(100),
 	)
 

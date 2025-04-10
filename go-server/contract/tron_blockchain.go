@@ -23,8 +23,10 @@ func InitTronEnv() {
 		BridgeContractAddress: "TUAPRMUqZYaQgNrvyNbYs4ZzwjHRh8SnS6",
 		VoteContractAddress:   "THy5A71b4EuAddwZJ5voncmCJw4uaWxTqX",
 		TantinContractAddress: "TJUpuoMypxRCyqH2y3qCoWgv7RuPmVB2Uo",
-		UsdtAddress:           "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf",
-		UsdcAddress:           "te1zsjwwtfhsszmajkv45tgg1jqutbhjuz",
+		UsdtAddress:           "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+		UsdcAddress:           "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",
+		EthAddress:            "0x0000000000000000000000000000000000000000",
+		WEthAddress:           "THb4CqiFdwNHsWsQCs4JhzwjMWys4aqCbF",
 		PrivateKey:            privateKeyStr,
 	}
 }
