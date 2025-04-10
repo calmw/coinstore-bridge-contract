@@ -12,7 +12,9 @@ import (
 )
 
 const (
-	AdminAccount    = "0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"
+	ZeroAddress = "0x0000000000000000000000000000000000000000"
+	//AdminAccount    = "0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"
+	AdminAccount    = "0xa47142f08f859aCeb2127C6Ab66eC8c8bc4FFBA9"
 	Realyer1Account = "0xD310068976a666D4279F5AdA577DE075e1F32563"
 	Realyer2Account = "0xa5b109F231D8b36C8d8fD2b25e99F402FA7e03bE"
 	Realyer3Account = "0xC5697941c4fD32391a47db2075802771cBAF34F4"
@@ -21,7 +23,9 @@ const (
 	RelayerRole     = "e2b7fb3b832174769106daebcfd6d1970523240dda11281102db9363b83b0dc4"
 	VoteRole        = "c65b6dc445843af69e7af2fc32667c7d3b98b02602373e2d0a7a047f274806f7"
 	ResourceIdUsdt  = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d"
-	ResourceIdCoin  = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1c"
+	ResourceIdUsdc  = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1e"
+	ResourceIdEth   = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1c"
+	ResourceIdWeth  = "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1b" // 针对以太坊WETH,需要设置在以太坊和Tantin
 )
 
 type ChainConfigs struct {
@@ -128,7 +132,7 @@ func GetAuthWithValue(cli *ethclient.Client, value *big.Int) (error, *bind.Trans
 }
 
 func InitTantinEnv() {
-	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
+	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
 		BridgeId:              1,

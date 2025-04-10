@@ -39,6 +39,18 @@ func (b *BridgeEvm) Init() {
 	b.GrantRole(AdminRole, common.HexToAddress(AdminAccount))
 	b.GrantRole(VoteRole, common.HexToAddress(ChainConfig.VoteContractAddress))
 	b.AdminSetEnv()
+	b.AdminSetResource(
+		ResourceIdUsdt,
+		2,
+		common.HexToAddress(ChainConfig.UsdtAddress),
+		big.NewInt(100),
+	)
+	b.AdminSetResource(
+		ResourceIdUsdc,
+		2,
+		common.HexToAddress(ChainConfig.UsdtAddress),
+		big.NewInt(100),
+	)
 }
 
 func (b *BridgeEvm) AdminSetEnv() {
@@ -121,6 +133,17 @@ func (b *BridgeEvm) GrantRole(role string, addr common.Address) {
 	}
 
 	log.Println(fmt.Sprintf("GrantRole 确认成功"))
+}
+
+// 	bridge.AdminSetResource(
+//		contract.ResourceIdUsdt,
+//		2,
+//		common.HexToAddress(contract.ChainConfig.UsdtAddress),
+//		big.NewInt(100),
+//	)
+
+func AdminSetResource(resourceId string, assetsType uint8, tokenAddress common.Address, fee *big.Int) {
+
 }
 
 // AdminSetResource 0x0000000000000000000000000000000000000000

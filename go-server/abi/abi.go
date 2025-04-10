@@ -341,7 +341,7 @@ var VoteSig = `[{
 }]`
 
 func GenerateSignature(parameter []byte) ([]byte, error) {
-	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
+	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	privateKey, err := crypto.HexToECDSA(privateKeyStr)
 	fmt.Println(privateKeyStr)
