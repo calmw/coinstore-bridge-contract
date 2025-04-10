@@ -35,6 +35,7 @@ type ChainConfigs struct {
 	UsdtAddress           string
 	UsdcAddress           string
 	EthAddress            string
+	WEthAddress           string
 	PrivateKey            string
 }
 
@@ -155,9 +156,10 @@ func InitBscEnv() {
 		BridgeContractAddress: "0x5DbBF032a3ce42D8B6e16c262664Cd98D07802B1",
 		VoteContractAddress:   "0xC89b85a50b50f3dD461dbc892e04002d4cd73C54",
 		TantinContractAddress: "0x1Ba94cfbe6851309debb6a7C8d3467c214Ada00f",
-		UsdtAddress:           "0x671b21826BdFB241aCa2Dd49dD6C0B96A9309455",
-		UsdcAddress:           "0x740b6892bFe90D8b5B926782761e5F9F3eaCC1A1",
+		UsdtAddress:           "0x55d398326f99059ff775485246999027b3197955",
+		UsdcAddress:           "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
 		EthAddress:            "0x0000000000000000000000000000000000000000",
+		WEthAddress:           "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
 		PrivateKey:            privateKeyStr,
 	}
 }
