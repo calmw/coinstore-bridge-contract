@@ -44,12 +44,18 @@ func NewVoteTron() (*VoteTron, error) {
 }
 
 func (v *VoteTron) Init() {
-	txHash4, err4 := v.GrantRole(AdminRole, OwnerAccount)
-	fmt.Println(txHash4, err4)
+	txHash1, err1 := v.GrantRole(AdminRole, OwnerAccount)
+	fmt.Println(txHash1, err1)
 	txHash2, err2 := v.GrantRole(BridgeRole, ChainConfig.BridgeContractAddress)
 	fmt.Println(txHash2, err2)
 	txHash3, err3 := v.GrantRole(RelayerRole, OwnerAccount) // TODO 线上更改
 	fmt.Println(txHash3, err3)
+	txHash4, err4 := v.GrantRole(RelayerRole, Realyer1Account)
+	fmt.Println(txHash4, err4)
+	txHash5, err5 := v.GrantRole(RelayerRole, Realyer2Account)
+	fmt.Println(txHash5, err5)
+	txHash6, err6 := v.GrantRole(RelayerRole, Realyer3Account)
+	fmt.Println(txHash6, err6)
 	txHash, err := v.AdminSetEnv(ChainConfig.BridgeContractAddress, ChainConfig.TantinContractAddress, big.NewInt(100000), big.NewInt(1))
 	fmt.Println(txHash, err)
 }

@@ -54,6 +54,10 @@ func (t *TanTinTron) Init() {
 	fmt.Println(txHash, err)
 	txHash3, err3 := t.AdminSetToken(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, false, false, false)
 	fmt.Println(txHash3, err3)
+	txHash4, err4 := t.AdminSetToken(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, false, false, false)
+	fmt.Println(txHash4, err4)
+	txHash5, err5 := t.AdminSetToken(ResourceIdEth, 2, ChainConfig.WEthAddress, false, false, false)
+	fmt.Println(txHash5, err5)
 }
 
 func (t *TanTinTron) AdminSetEnv(bridgeAddress string) (string, error) {
