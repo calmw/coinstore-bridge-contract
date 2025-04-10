@@ -53,7 +53,7 @@ func GetConfig(c *gin.Context) {
 		res = append(res, ChainInfo{
 			ChainId:               uint64(chain.ChainId),
 			BlockChainId:          uint64(chain.BlockChainId),
-			BridgeContractAddress: chain.BridgeContract,
+			BridgeContractAddress: chain.TantinContract,
 			Endpoint:              chain.Endpoint,
 			ChainName:             chain.ChainName,
 			Explorer:              chain.Explorer,

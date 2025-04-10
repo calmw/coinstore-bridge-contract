@@ -24,6 +24,7 @@ type ChainInfo struct {
 	LatestBlock        bool            `gorm:"latest_block;comment:'启动时，是否从设置的起始块高开始.true 从区块链当前的块高开始'" json:"-"`
 	BridgeContract     string          `gorm:"bridge_contract;comment:'bridge合约地址'" json:"-"`
 	VoteContract       string          `gorm:"vote_contract;comment:'vote合约地址'" json:"-"`
+	TantinContract     string          `gorm:"tantin_contract;comment:'tantin合约地址'" json:"-"`
 	GasLimit           int64           `gorm:"gas_limit;comment:''" json:"-"`
 	MaxGasPrice        int64           `gorm:"max_gas_price;comment:''" json:"-"`
 	MinGasPrice        int64           `gorm:"min_gas_price;comment:''" json:"-"`
