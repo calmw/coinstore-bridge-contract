@@ -9,19 +9,19 @@ import (
 
 func main() {
 	contract.InitTronEnv()
-	//bridge, err := contract.NewBridgeTron()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//bridge.Init()
+	bridge, err := contract.NewBridgeTron()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	bridge.Init()
 
-	//vote, err := contract.NewVoteTron()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//vote.Init()
+	vote, err := contract.NewVoteTron()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	vote.Init()
 
 	tantin, err := contract.NewTanTinTron()
 	if err != nil {

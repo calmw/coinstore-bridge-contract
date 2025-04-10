@@ -62,6 +62,10 @@ func (b *BridgeTron) Init() {
 	fmt.Println(txHash, err)
 	txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, ChainConfig.UsdtAddress, big.NewInt(100), 2)
 	fmt.Println(txHash4, err4)
+	txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, ChainConfig.UsdcAddress, big.NewInt(100), 2)
+	fmt.Println(txHash5, err5)
+	txHash6, err6 := b.AdminSetResource(ResourceIdEth, ChainConfig.WEthAddress, big.NewInt(100), 2)
+	fmt.Println(txHash6, err6)
 }
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {

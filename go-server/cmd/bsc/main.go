@@ -20,7 +20,7 @@ func main() {
 	bridge.Init()
 	bridge.AdminSetResource(
 		contract.ResourceIdEth,
-		1,
+		2,
 		common.HexToAddress(contract.ChainConfig.WEthAddress),
 		big.NewInt(100),
 	)

@@ -16,9 +16,10 @@ func InitTronEnv() {
 	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE_TRON")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
-		BridgeId:              3,
-		ChainId:               3448148188,
-		ChainTypeId:           2,
+		BridgeId:    3,
+		ChainId:     3448148188,
+		ChainTypeId: 2,
+		//RPC:                   "grpc.nile.trongrid.io:50051",
 		RPC:                   "grpc.nile.trongrid.io:50051",
 		BridgeContractAddress: "TUAPRMUqZYaQgNrvyNbYs4ZzwjHRh8SnS6",
 		VoteContractAddress:   "THy5A71b4EuAddwZJ5voncmCJw4uaWxTqX",
