@@ -286,6 +286,58 @@ contract Vote is IVote, AccessControl {
         );
     }
 
+    /**
+        @notice 目标链执行到帐操作
+        @param data 跨链data, encode(originChainId,originDepositNonce,depositer,recipient,amount,resourceId)
+     */
+    function execute(bytes calldata data) private {
+        uint256 dataLength;
+        bytes32 resourceId;
+        uint256 originChainId;
+        address caller;
+        address recipient;
+        uint256 receiveAmount;
+        uint256 originNonce;
+        (
+            dataLength,
+            resourceId,
+            originChainId,
+            caller,
+            recipient,
+            receiveAmount,
+            originNonce
+        ) = abi.decode(
+            data,
+            (uint256, bytes32, uint256, address, address, uint256, uint256)
+        );
+
+        TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
+        address tokenAddress = tokenInfo.tokenAddress;
+        if (tokenInfo.assetsType == AssetsType.Coin) {
+            Address.sendValue(payable(recipient), receiveAmount);
+        } else if (tokenInfo.assetsType == AssetsType.Erc20) {
+            if (tokenInfo.mintable) {
+                IERC20MintAble erc20 = IERC20MintAble(tokenAddress);
+                erc20.mint(recipient, receiveAmount);
+            } else {
+                IERC20 erc20 = IERC20(tokenAddress);
+                erc20.transfer(recipient, receiveAmount);
+            }
+        } else {
+            revert ErrAssetsType(tokenInfo.assetsType);
+        }
+
+        emit ExecuteEvent(
+            caller,
+            recipient,
+            receiveAmount,
+            tokenAddress,
+            originNonce,
+            originChainId
+        );
+    }
+
+
     // 获取投票信息
     function getProposal(
         uint256 originChainID,
