@@ -1,11 +1,9 @@
 package abi
 
 import (
-	"coinstore/utils"
 	"fmt"
 	"github.com/ethereum/go-ethereum/crypto"
 	beeCrypto "github.com/ethersphere/bee/v2/pkg/crypto"
-	"os"
 )
 
 var TantinSig = `[{
@@ -341,8 +339,9 @@ var VoteSig = `[{
 }]`
 
 func GenerateSignature(parameter []byte) ([]byte, error) {
-	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
-	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
+	//coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
+	//privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
+	privateKeyStr := "2fbd746cbb1ad3da7f96b168d6c613928db39f4bd56903863db5ff45278307d4"
 	privateKey, err := crypto.HexToECDSA(privateKeyStr)
 	if err != nil {
 		return nil, err

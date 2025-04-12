@@ -3,7 +3,6 @@ pragma solidity ^0.8.22;
 
 import "./interface/IBridge.sol";
 import "./interface/IVote.sol";
-import {ITantinBridge} from "./interface/ITantinBridge.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -20,14 +19,13 @@ contract Vote is IVote, AccessControl, Initializable {
     uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
     address private superAdminAddress;
     IBridge public Bridge; // bridge 合约
-    ITantinBridge public TantinBridge; // bridge 合约
     uint256 public totalProposal; // 提案数量，每个天加1
     uint256 public totalRelayer; // 总的relayer账户数量
     uint256 public relayerThreshold; // 提案可以通过的最少投票数量
     uint256 public expiry; // 开始投票后经过 expiry 的块数量后投票过期
     mapping(uint72 => mapping(bytes32 => Proposal)) public proposals; // destinationChainID + depositNonce => dataHash => Proposal
     mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
-    public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
+        public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -44,7 +42,6 @@ contract Vote is IVote, AccessControl, Initializable {
      */
     function adminSetEnv(
         address bridgeAddress_,
-        address tantinAddress_,
         uint256 expiry_,
         uint256 relayerThreshold_,
         bytes memory signature_
@@ -53,7 +50,6 @@ contract Vote is IVote, AccessControl, Initializable {
             checkAdminSetEnvSignature(
                 signature_,
                 bridgeAddress_,
-                tantinAddress_,
                 expiry_,
                 relayerThreshold_
             ),
@@ -61,7 +57,6 @@ contract Vote is IVote, AccessControl, Initializable {
         );
         expiry = expiry_;
         Bridge = IBridge(bridgeAddress_);
-        TantinBridge = ITantinBridge(tantinAddress_);
         relayerThreshold = relayerThreshold_;
     }
 
@@ -144,7 +139,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 dataHash
     ) external onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-                            uint72(originChainId);
+            uint72(originChainId);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
         require(
             uint8(proposal.status) <= 1,
@@ -232,7 +227,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 dataHash
     ) public onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-                            uint72(originChainID);
+            uint72(originChainID);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
         require(
@@ -266,7 +261,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes calldata data
     ) external onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-                            uint72(originChainId);
+            uint72(originChainId);
         bytes32 dataHash = keccak256(abi.encodePacked(Bridge, data));
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
@@ -281,7 +276,6 @@ contract Vote is IVote, AccessControl, Initializable {
         require(dataHash == proposal.dataHash, "data doesn't match datahash");
 
         proposal.status = ProposalStatus.Executed;
-//        TantinBridge.execute(data);
         execute(data);
 
         emit ProposalEvent(

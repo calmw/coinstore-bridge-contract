@@ -170,7 +170,9 @@ func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destina
 			return
 		}
 
-		fmt.Println(destinationChainId,
+		fmt.Println("参数")
+		fmt.Println(
+			destinationChainId,
 			fmt.Sprintf("0x%x", resourceId),
 			receiver,
 			amount,
