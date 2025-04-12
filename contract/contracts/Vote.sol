@@ -27,7 +27,7 @@ contract Vote is IVote, AccessControl, Initializable {
     uint256 public expiry; // 开始投票后经过 expiry 的块数量后投票过期
     mapping(uint72 => mapping(bytes32 => Proposal)) public proposals; // destinationChainID + depositNonce => dataHash => Proposal
     mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
-        public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
+    public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -144,7 +144,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 dataHash
     ) external onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-            uint72(originChainId);
+                            uint72(originChainId);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
         require(
             uint8(proposal.status) <= 1,
@@ -232,7 +232,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 dataHash
     ) public onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-            uint72(originChainID);
+                            uint72(originChainID);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
         require(
@@ -266,7 +266,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes calldata data
     ) external onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-            uint72(originChainId);
+                            uint72(originChainId);
         bytes32 dataHash = keccak256(abi.encodePacked(Bridge, data));
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
@@ -281,7 +281,8 @@ contract Vote is IVote, AccessControl, Initializable {
         require(dataHash == proposal.dataHash, "data doesn't match datahash");
 
         proposal.status = ProposalStatus.Executed;
-        TantinBridge.execute(data);
+//        TantinBridge.execute(data);
+        execute(data);
 
         emit ProposalEvent(
             originChainId,
@@ -289,6 +290,57 @@ contract Vote is IVote, AccessControl, Initializable {
             proposal.status,
             proposal.resourceId,
             proposal.dataHash
+        );
+    }
+
+    /**
+        @notice 目标链执行到帐操作
+        @param data 跨链data, encode(originChainId,originDepositNonce,depositer,recipient,amount,resourceId)
+     */
+    function execute(bytes calldata data) private onlyRole(BRIDGE_ROLE) {
+        uint256 dataLength;
+        bytes32 resourceId;
+        uint256 originChainId;
+        address caller;
+        address recipient;
+        uint256 receiveAmount;
+        uint256 originNonce;
+        (
+            dataLength,
+            resourceId,
+            originChainId,
+            caller,
+            recipient,
+            receiveAmount,
+            originNonce
+        ) = abi.decode(
+            data,
+            (uint256, bytes32, uint256, address, address, uint256, uint256)
+        );
+
+        TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
+        address tokenAddress = tokenInfo.tokenAddress;
+        if (tokenInfo.assetsType == AssetsType.Coin) {
+            Address.sendValue(payable(recipient), receiveAmount);
+        } else if (tokenInfo.assetsType == AssetsType.Erc20) {
+            if (tokenInfo.mintable) {
+                IERC20MintAble erc20 = IERC20MintAble(tokenAddress);
+                erc20.mint(recipient, receiveAmount);
+            } else {
+                IERC20 erc20 = IERC20(tokenAddress);
+                erc20.safeTransfer(recipient, receiveAmount);
+            }
+        } else {
+            revert ErrAssetsType(tokenInfo.assetsType);
+        }
+
+        emit ExecuteEvent(
+            caller,
+            recipient,
+            receiveAmount,
+            tokenAddress,
+            originNonce,
+            originChainId
         );
     }
 

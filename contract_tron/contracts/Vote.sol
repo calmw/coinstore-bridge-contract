@@ -275,7 +275,8 @@ contract Vote is IVote, AccessControl {
         require(dataHash == proposal.dataHash, "data doesn't match datahash");
 
         proposal.status = ProposalStatus.Executed;
-        TantinBridge.execute(data);
+//        TantinBridge.execute(data);
+        execute(data);
 
         emit ProposalEvent(
             originChainId,

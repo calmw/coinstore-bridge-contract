@@ -36,6 +36,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
     /**
         @notice 设置
         @param bridgeAddress_ bridge合约地址
+        @param feeAddress_ 跨链费接受地址
         @param signature_ 签名
      */
     function adminSetEnv(

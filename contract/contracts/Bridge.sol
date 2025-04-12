@@ -159,19 +159,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         emit Deposit(destinationChainId, resourceId, depositNonce, data);
     }
 
-    /**
-        @notice relayer执行投票通过后的到帐操作
-        @param resourceId 跨链的resourceID
-        @param data 跨链data
-     */
-    function execute(
-        bytes32 resourceId,
-        bytes calldata data
-    ) external onlyRole(VOTE_ROLE) whenNotPaused {
-        address tantinAddress = resourceIdToContractAddress[resourceId];
-        ITantinBridge(tantinAddress).execute(data);
-    }
-
     // 获取跨链费用
     function getFeeByResourceId(
         bytes32 resourceId
