@@ -344,13 +344,13 @@ func GenerateSignature(parameter []byte) ([]byte, error) {
 	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	privateKey, err := crypto.HexToECDSA(privateKeyStr)
-	fmt.Println(privateKeyStr)
 	if err != nil {
 		return nil, err
 	}
 	singer := beeCrypto.NewDefaultSigner(privateKey)
 
 	hash := crypto.Keccak256Hash(parameter)
+	fmt.Println(fmt.Sprintf("hsah 0x%x", hash))
 	// 私钥签名hash
 	sign, err := singer.Sign(hash.Bytes())
 	if err != nil {
