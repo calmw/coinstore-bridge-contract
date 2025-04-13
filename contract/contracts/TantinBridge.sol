@@ -30,7 +30,6 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     uint256 public localNonce; // 跨链nonce
     mapping(address => mapping(uint256 => DepositRecord)) public depositRecord; // user => (depositNonce=> Deposit Record)
     mapping(address => bool) public blacklist; // 用户地址 => 是否在黑名单
-    //    mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
 
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);

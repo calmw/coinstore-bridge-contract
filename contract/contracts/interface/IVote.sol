@@ -77,5 +77,4 @@ interface IVote {
         bytes32 dataHash
     ) external returns (Proposal memory);
 
-    //    function getRelayerThreshold() external view returns (uint256);
 }
