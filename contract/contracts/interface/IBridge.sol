@@ -22,6 +22,8 @@ interface IBridge {
         address tokenAddress,
         uint256 fee,
         bool pause, // 该resourceID是否被暂停交易
+        bool burnable, // true burn;false lock
+        bool mintable,
         address tantinAddress
     );
 
@@ -31,6 +33,8 @@ interface IBridge {
         address tokenAddress; // 币种地址。coin的话，值为0地址
         bool pause; // 该token是否暂停跨链
         uint256 fee; // 跨链费用,对跨链币种按比例收取，此处为万分比
+        bool burnable; // true burn;false lock
+        bool mintable; // true mint;false release
     }
 
     struct DepositRecord {
@@ -57,5 +61,8 @@ interface IBridge {
         bytes32 resourceId
     ) external view returns (address);
 
-    function execute(bytes32 resourceId, bytes calldata data) external;
+    function getTokenInfoByResourceId(
+        bytes32 resourceId
+    )external view returns (uint8, address, bool, uint256, bool, bool);
+
 }

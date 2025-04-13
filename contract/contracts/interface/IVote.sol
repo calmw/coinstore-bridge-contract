@@ -34,6 +34,15 @@ interface IVote {
         bytes32 resourceID
     );
 
+    event ExecuteEvent(
+        address indexed depositer,
+        address indexed recipient,
+        uint256 indexed amount,
+        address tokenAddress,
+        uint256 originDepositNonce,
+        uint256 originChainId
+    );
+
     struct Proposal {
         bytes32 resourceId;
         bytes32 dataHash;

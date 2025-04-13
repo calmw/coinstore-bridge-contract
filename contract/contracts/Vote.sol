@@ -3,6 +3,10 @@ pragma solidity ^0.8.22;
 
 import "./interface/IBridge.sol";
 import "./interface/IVote.sol";
+import "./interface/IERC20MintAble.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
@@ -11,10 +15,13 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 contract Vote is IVote, AccessControl, Initializable {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
+    using SafeERC20 for IERC20;
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
     bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
+
+    error ErrAssetsType(uint8 assetsType);
 
     uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
     address private superAdminAddress;
@@ -25,7 +32,7 @@ contract Vote is IVote, AccessControl, Initializable {
     uint256 public expiry; // 开始投票后经过 expiry 的块数量后投票过期
     mapping(uint72 => mapping(bytes32 => Proposal)) public proposals; // destinationChainID + depositNonce => dataHash => Proposal
     mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
-        public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
+    public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -35,7 +42,6 @@ contract Vote is IVote, AccessControl, Initializable {
     /**
         @notice 设置
         @param bridgeAddress_ Bridge合约地址
-        @param tantinAddress_ Tantin合约地址
         @param expiry_ 提案过期的块高差
         @param relayerThreshold_ 提案通过的投票数量
         @param signature_ 签名
@@ -139,7 +145,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 dataHash
     ) external onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-            uint72(originChainId);
+                            uint72(originChainId);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
         require(
             uint8(proposal.status) <= 1,
@@ -227,7 +233,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 dataHash
     ) public onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-            uint72(originChainID);
+                            uint72(originChainID);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
         require(
@@ -261,7 +267,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes calldata data
     ) external onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-            uint72(originChainId);
+                            uint72(originChainId);
         bytes32 dataHash = keccak256(abi.encodePacked(Bridge, data));
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
@@ -311,13 +317,12 @@ contract Vote is IVote, AccessControl, Initializable {
             data,
             (uint256, bytes32, uint256, address, address, uint256, uint256)
         );
+        (uint8 assetsType, address tokenAddress, bool pause, uint256 fee, bool burnable, bool mintable) = Bridge.getTokenInfoByResourceId(resourceId);
 
-        TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
-        address tokenAddress = tokenInfo.tokenAddress;
-        if (tokenInfo.assetsType == AssetsType.Coin) {
+        if (assetsType == 1) {
             Address.sendValue(payable(recipient), receiveAmount);
-        } else if (tokenInfo.assetsType == AssetsType.Erc20) {
-            if (tokenInfo.mintable) {
+        } else if (assetsType == 2) {
+            if (mintable) {
                 IERC20MintAble erc20 = IERC20MintAble(tokenAddress);
                 erc20.mint(recipient, receiveAmount);
             } else {
@@ -325,16 +330,16 @@ contract Vote is IVote, AccessControl, Initializable {
                 erc20.safeTransfer(recipient, receiveAmount);
             }
         } else {
-            revert ErrAssetsType(tokenInfo.assetsType);
+            revert ErrAssetsType(assetsType);
         }
-
+uint256 originChainId_=originChainId;
         emit ExecuteEvent(
             caller,
             recipient,
             receiveAmount,
             tokenAddress,
             originNonce,
-            originChainId
+            originChainId_
         );
     }
 
@@ -352,7 +357,6 @@ contract Vote is IVote, AccessControl, Initializable {
     function checkAdminSetEnvSignature(
         bytes memory signature_,
         address bridgeAddress_,
-        address tantinAddress_,
         uint256 expiry_,
         uint256 relayerThreshold_
     ) private returns (bool) {
@@ -360,7 +364,6 @@ contract Vote is IVote, AccessControl, Initializable {
             abi.encode(
                 sigNonce,
                 bridgeAddress_,
-                tantinAddress_,
                 expiry_,
                 relayerThreshold_
             )

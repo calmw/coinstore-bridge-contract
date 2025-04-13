@@ -21,7 +21,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
-    error ErrAssetsType(AssetsType assetsType);
+    error ErrAssetsType(uint8 assetsType);
 
     uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
     address private superAdminAddress;
@@ -30,7 +30,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     uint256 public localNonce; // 跨链nonce
     mapping(address => mapping(uint256 => DepositRecord)) public depositRecord; // user => (depositNonce=> Deposit Record)
     mapping(address => bool) public blacklist; // 用户地址 => 是否在黑名单
-    mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
+    //    mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
 
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -91,55 +91,6 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     }
 
     /**
-        @notice token/coin设置
-        @param resourceID 跨链的resourceID。resourceID和币对关联，不是和币关联的。 resourceID 1 =>(tokenA <=> token B);resourceID 2 =>(tokenA <=> token C)
-        @param assetsType 该币的类型
-        @param tokenAddress 对应的token合约地址，coin为0地址
-        @param burnable true burn;false lock
-        @param mintable  true mint;false release
-        @param pause 是否暂停该币种跨链
-        @param signature 签名
-     */
-    function adminSetToken(
-        bytes32 resourceID,
-        AssetsType assetsType,
-        address tokenAddress,
-        bool burnable,
-        bool mintable,
-        bool pause,
-        bytes memory signature
-    ) external onlyRole(ADMIN_ROLE) {
-        require(
-            checkAdminSetTokenSignature(
-                signature,
-                resourceID,
-                assetsType,
-                tokenAddress,
-                burnable,
-                mintable,
-                pause
-            ),
-            "signature error"
-        );
-        resourceIdToTokenInfo[resourceID] = TokenInfo(
-            assetsType,
-            tokenAddress,
-            burnable,
-            mintable,
-            pause
-        );
-
-        emit SetTokenEvent(
-            resourceID,
-            assetsType,
-            tokenAddress,
-            burnable,
-            mintable,
-            pause
-        );
-    }
-
-    /**
         @notice 发起跨链
         @param destinationChainId 目标链ID
         @param resourceId 跨链桥设置的resourceId
@@ -160,24 +111,19 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             "signature error"
         );
         // 检测resource ID是否设置
-        TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
-        require(uint8(tokenInfo.assetsType) > 0, "resourceId not exist");
+        (uint8 assetsType, address tokenAddress, bool pause, uint256 fee, bool burnable, bool mintable)=Bridge.getTokenInfoByResourceId(resourceId);
+        require(uint8(assetsType) > 0, "resourceId not exist");
         // 检测目标链ID
         uint256 chainId = Bridge.chainId();
         require(destinationChainId != chainId, "destinationChainId error");
-        // 跨链费用比例，万分比
-        uint256 fee = Bridge.getFeeByResourceId(resourceId);
         // 实际到账额度
         uint256 receiveAmount = amount - ((amount * fee) / 10000);
-        // token地址
-        address tokenAddress;
-        if (tokenInfo.assetsType == AssetsType.Coin) {
+        if (assetsType == uint8(AssetsType.Coin)) {
             tokenAddress = address(0);
             require(msg.value == amount, "incorrect value supplied.");
-        } else if (tokenInfo.assetsType == AssetsType.Erc20) {
-            tokenAddress = tokenInfo.tokenAddress;
+        } else if (assetsType ==uint8(AssetsType.Erc20)) {
             IERC20 erc20 = IERC20(tokenAddress);
-            if (tokenInfo.burnable) {
+            if (burnable) {
                 erc20.safeTransferFrom(
                     msg.sender,
                     address(this),
@@ -188,89 +134,40 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
                 erc20.safeTransferFrom(msg.sender, address(this), amount);
             }
         } else {
-            revert ErrAssetsType(tokenInfo.assetsType);
+            revert ErrAssetsType(assetsType);
         }
         uint256 destId = destinationChainId;
+        bytes32 resourceId_ = resourceId;
+        address recipient_ = recipient;
 
         localNonce++;
         depositRecord[msg.sender][localNonce] = DepositRecord(
             tokenAddress,
             msg.sender,
-            recipient,
+            recipient_,
             amount,
             fee,
             destId
         );
         // data
         bytes memory data = abi.encode(
-            resourceId,
+            resourceId_,
             chainId,
             msg.sender,
-            recipient,
+            recipient_,
             receiveAmount,
             localNonce
         );
-        Bridge.deposit(destId, resourceId, data);
+        Bridge.deposit(destId, resourceId_, data);
         emit DepositEvent(
             msg.sender,
-            recipient,
+            recipient_,
             amount,
             tokenAddress,
             localNonce,
             destId
         );
     }
-
-    //    /**
-    //        @notice 目标链执行到帐操作
-    //        @param data 跨链data, encode(originChainId,originDepositNonce,depositer,recipient,amount,resourceId)
-    //     */
-    //    function execute(bytes calldata data) public onlyRole(BRIDGE_ROLE) {
-    //        uint256 dataLength;
-    //        bytes32 resourceId;
-    //        uint256 originChainId;
-    //        address caller;
-    //        address recipient;
-    //        uint256 receiveAmount;
-    //        uint256 originNonce;
-    //        (
-    //            dataLength,
-    //            resourceId,
-    //            originChainId,
-    //            caller,
-    //            recipient,
-    //            receiveAmount,
-    //            originNonce
-    //        ) = abi.decode(
-    //            data,
-    //            (uint256, bytes32, uint256, address, address, uint256, uint256)
-    //        );
-    //
-    //        TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
-    //        address tokenAddress = tokenInfo.tokenAddress;
-    //        if (tokenInfo.assetsType == AssetsType.Coin) {
-    //            Address.sendValue(payable(recipient), receiveAmount);
-    //        } else if (tokenInfo.assetsType == AssetsType.Erc20) {
-    //            if (tokenInfo.mintable) {
-    //                IERC20MintAble erc20 = IERC20MintAble(tokenAddress);
-    //                erc20.mint(recipient, receiveAmount);
-    //            } else {
-    //                IERC20 erc20 = IERC20(tokenAddress);
-    //                erc20.safeTransfer(recipient, receiveAmount);
-    //            }
-    //        } else {
-    //            revert ErrAssetsType(tokenInfo.assetsType);
-    //        }
-    //
-    //        emit ExecuteEvent(
-    //            caller,
-    //            recipient,
-    //            receiveAmount,
-    //            tokenAddress,
-    //            originNonce,
-    //            originChainId
-    //        );
-    //    }
 
     /**
         @notice 查询跨链费用
