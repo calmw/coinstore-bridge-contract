@@ -132,7 +132,15 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         );
         resourceIdToContractAddress[resourceID] = tantinAddress;
 
-        emit SetResource(resourceID, tokenAddress, fee, pause, burnable, mintable, tantinAddress);
+        emit SetResource(
+            resourceID,
+            tokenAddress,
+            fee,
+            pause,
+            burnable,
+            mintable,
+            tantinAddress
+        );
     }
 
     /**
@@ -192,7 +200,14 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         bytes32 resourceId
     ) public view returns (uint8, address, bool, uint256, bool, bool) {
         TokenInfo memory token = resourceIdToTokenInfo[resourceId];
-        return (uint8(token.assetsType), token.tokenAddress, token.pause, token.fee, token.burnable, token.mintable);
+        return (
+            uint8(token.assetsType),
+            token.tokenAddress,
+            token.pause,
+            token.fee,
+            token.burnable,
+            token.mintable
+        );
     }
 
     // 验证adminSetEnv签名

@@ -32,7 +32,7 @@ contract Vote is IVote, AccessControl, Initializable {
     uint256 public expiry; // 开始投票后经过 expiry 的块数量后投票过期
     mapping(uint72 => mapping(bytes32 => Proposal)) public proposals; // destinationChainID + depositNonce => dataHash => Proposal
     mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
-    public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
+        public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -145,7 +145,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 dataHash
     ) external onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-                            uint72(originChainId);
+            uint72(originChainId);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
         require(
             uint8(proposal.status) <= 1,
@@ -233,7 +233,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 dataHash
     ) public onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-                            uint72(originChainID);
+            uint72(originChainID);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
         require(
@@ -267,7 +267,7 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes calldata data
     ) external onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-                            uint72(originChainId);
+            uint72(originChainId);
         bytes32 dataHash = keccak256(abi.encodePacked(Bridge, data));
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
@@ -317,7 +317,14 @@ contract Vote is IVote, AccessControl, Initializable {
             data,
             (uint256, bytes32, uint256, address, address, uint256, uint256)
         );
-        (uint8 assetsType, address tokenAddress, bool pause, uint256 fee, bool burnable, bool mintable) = Bridge.getTokenInfoByResourceId(resourceId);
+        (
+            uint8 assetsType,
+            address tokenAddress,
+            bool pause,
+            uint256 fee,
+            bool burnable,
+            bool mintable
+        ) = Bridge.getTokenInfoByResourceId(resourceId);
 
         if (assetsType == 1) {
             Address.sendValue(payable(recipient), receiveAmount);
@@ -332,7 +339,7 @@ contract Vote is IVote, AccessControl, Initializable {
         } else {
             revert ErrAssetsType(assetsType);
         }
-uint256 originChainId_=originChainId;
+        uint256 originChainId_ = originChainId;
         emit ExecuteEvent(
             caller,
             recipient,
@@ -361,12 +368,7 @@ uint256 originChainId_=originChainId;
         uint256 relayerThreshold_
     ) private returns (bool) {
         bytes32 messageHash = keccak256(
-            abi.encode(
-                sigNonce,
-                bridgeAddress_,
-                expiry_,
-                relayerThreshold_
-            )
+            abi.encode(sigNonce, bridgeAddress_, expiry_, relayerThreshold_)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature_

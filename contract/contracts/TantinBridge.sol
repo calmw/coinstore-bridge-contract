@@ -111,7 +111,14 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             "signature error"
         );
         // 检测resource ID是否设置
-        (uint8 assetsType, address tokenAddress, bool pause, uint256 fee, bool burnable, bool mintable)=Bridge.getTokenInfoByResourceId(resourceId);
+        (
+            uint8 assetsType,
+            address tokenAddress,
+            bool pause,
+            uint256 fee,
+            bool burnable,
+            bool mintable
+        ) = Bridge.getTokenInfoByResourceId(resourceId);
         require(uint8(assetsType) > 0, "resourceId not exist");
         // 检测目标链ID
         uint256 chainId = Bridge.chainId();
@@ -121,7 +128,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         if (assetsType == uint8(AssetsType.Coin)) {
             tokenAddress = address(0);
             require(msg.value == amount, "incorrect value supplied.");
-        } else if (assetsType ==uint8(AssetsType.Erc20)) {
+        } else if (assetsType == uint8(AssetsType.Erc20)) {
             IERC20 erc20 = IERC20(tokenAddress);
             if (burnable) {
                 erc20.safeTransferFrom(
