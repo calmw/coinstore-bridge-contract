@@ -13,6 +13,8 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 contract Vote is IVote, AccessControl {
     using ECDSA for bytes32;
 
+    using Address for address;
+
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
     bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
@@ -330,7 +332,7 @@ contract Vote is IVote, AccessControl {
                 erc20.mint(recipient, receiveAmount);
             } else {
                 IERC20 erc20 = IERC20(tokenAddress);
-                erc20.safeTransfer(recipient, receiveAmount);
+                erc20.transfer(recipient, receiveAmount);
             }
         } else {
             revert ErrAssetsType(assetsType);

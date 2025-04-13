@@ -201,7 +201,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
             Address.sendValue(payable(msg.sender), amount);
         } else {
             IERC20 erc20 = IERC20(tokenAddress);
-            erc20.safeTransfer(msg.sender, amount);
+            erc20.transfer(msg.sender, amount);
         }
     }
 
