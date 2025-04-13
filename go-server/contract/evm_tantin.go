@@ -11,7 +11,6 @@ import (
 	"github.com/status-im/keycard-go/hexutils"
 	"log"
 	"math/big"
-	"strings"
 	"time"
 )
 
@@ -38,12 +37,12 @@ func NewTanTin() (*TanTinEvm, error) {
 func (c TanTinEvm) Init() {
 	c.GrantRole(AdminRole, common.HexToAddress(AdminAccount))
 	c.GrantRole(BridgeRole, common.HexToAddress(ChainConfig.VoteContractAddress))
-	c.AdminSetEnv()
-	c.AdminSetToken(ResourceIdUsdt, 2, common.HexToAddress(ChainConfig.UsdtAddress), false, false, false)
-	c.AdminSetToken(ResourceIdUsdc, 2, common.HexToAddress(ChainConfig.UsdcAddress), false, false, false)
+	c.AdminSetEnv(AdminAccount)
+	//c.AdminSetToken(ResourceIdUsdt, 2, common.HexToAddress(ChainConfig.UsdtAddress), false, false, false)
+	//c.AdminSetToken(ResourceIdUsdc, 2, common.HexToAddress(ChainConfig.UsdcAddress), false, false, false)
 }
 
-func (c TanTinEvm) AdminSetEnv() {
+func (c TanTinEvm) AdminSetEnv(feeAddress string) {
 	var res *types.Transaction
 	sigNonce, err := c.Contract.SigNonce(nil)
 	if err != nil {
@@ -58,7 +57,7 @@ func (c TanTinEvm) AdminSetEnv() {
 			log.Println(err)
 			return
 		}
-		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(ChainConfig.BridgeContractAddress), signature)
+		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(feeAddress), common.HexToAddress(ChainConfig.BridgeContractAddress), signature)
 		if err == nil {
 			break
 		}
@@ -105,58 +104,6 @@ func (c TanTinEvm) GrantRole(role string, addr common.Address) {
 	}
 
 	log.Println(fmt.Sprintf("GrantRole 确认成功"))
-}
-
-func (c TanTinEvm) AdminSetToken(resourceId string, assetsType uint8, tokenAddress common.Address, burnable, mintable, pause bool) {
-	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
-	sigNonce, err := c.Contract.SigNonce(nil)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	signature, _ := abi.TantinAdminSetTokenSignature(
-		sigNonce,
-		big.NewInt(ChainConfig.BridgeId),
-		[32]byte(resourceIdBytes),
-		assetsType,
-		tokenAddress,
-		burnable,
-		mintable,
-		pause,
-	)
-	var res *types.Transaction
-	for {
-		err, txOpts := GetAuth(c.Cli)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		res, err = c.Contract.AdminSetToken(
-			txOpts,
-			[32]byte(resourceIdBytes),
-			assetsType,
-			tokenAddress,
-			burnable,
-			mintable,
-			pause,
-			signature,
-		)
-		if err == nil {
-			break
-		}
-		fmt.Println(err)
-		time.Sleep(3 * time.Second)
-	}
-	log.Println(fmt.Sprintf("AdminSetToken 成功"))
-	for {
-		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
-		if err == nil && receipt.Status == 1 {
-			break
-		}
-		time.Sleep(time.Second * 2)
-	}
-
-	log.Println(fmt.Sprintf("AdminSetToken 确认成功"))
 }
 
 func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount *big.Int) {

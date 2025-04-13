@@ -68,7 +68,6 @@ func (c VoteEvm) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) {
 		res, err = c.Contract.AdminSetEnv(
 			txOpts,
 			common.HexToAddress(ChainConfig.BridgeContractAddress),
-			common.HexToAddress(ChainConfig.TantinContractAddress),
 			expiry,
 			relayerThreshold,
 			signature,

@@ -44,12 +44,18 @@ func (b *BridgeEvm) Init() {
 		2,
 		common.HexToAddress(ChainConfig.UsdtAddress),
 		big.NewInt(100),
+		false,
+		false,
+		false,
 	)
 	b.AdminSetResource(
 		ResourceIdUsdc,
 		2,
 		common.HexToAddress(ChainConfig.UsdtAddress),
 		big.NewInt(100),
+		false,
+		false,
+		false,
 	)
 }
 
@@ -147,7 +153,7 @@ func AdminSetResource(resourceId string, assetsType uint8, tokenAddress common.A
 }
 
 // AdminSetResource 0x0000000000000000000000000000000000000000
-func (b *BridgeEvm) AdminSetResource(resourceId string, assetsType uint8, tokenAddress common.Address, fee *big.Int) {
+func (b *BridgeEvm) AdminSetResource(resourceId string, assetsType uint8, tokenAddress common.Address, fee *big.Int, pause bool, burnable bool, mintable bool) {
 	var res *types.Transaction
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
 
@@ -183,7 +189,9 @@ func (b *BridgeEvm) AdminSetResource(resourceId string, assetsType uint8, tokenA
 			assetsType, //uint8(2),
 			tokenAddress,
 			fee,
-			false,
+			pause,
+			burnable,
+			mintable,
 			common.HexToAddress(ChainConfig.TantinContractAddress),
 			signature,
 		)

@@ -190,12 +190,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     }
 
     // 由resourceId获取token信息
-    // AssetsType assetsType; // 跨链币种
-    //        address tokenAddress; // 币种地址。coin的话，值为0地址
-    //        bool pause; // 该token是否暂停跨链
-    //        uint256 fee; // 跨链费用,对跨链币种按比例收取，此处为万分比
-    //        bool burnable; // true burn;false lock
-    //        bool mintable; // true mint;false release
     function getTokenInfoByResourceId(
         bytes32 resourceId
     ) public view returns (uint8, address, bool, uint256, bool, bool) {
