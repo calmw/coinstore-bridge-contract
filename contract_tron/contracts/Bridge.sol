@@ -211,9 +211,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature_
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature_);
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -226,9 +226,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
         bytes memory signature
     ) private returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature);
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -241,9 +241,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
         bytes memory signature
     ) private returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature);
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -277,9 +277,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
                 tantinAddress
             )
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature);
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {

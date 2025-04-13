@@ -16,6 +16,8 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
 
+    using Address for address;
+
     using SafeERC20 for IERC20;
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -127,18 +129,24 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         if (assetsType == uint8(AssetsType.Coin)) {
             tokenAddress = address(0);
             require(msg.value == amount, "incorrect value supplied.");
+            Address.sendValue(payable(feeAddress), amount - receiveAmount);
+            Address.sendValue(payable(address(this)), receiveAmount);
         } else if (assetsType == uint8(AssetsType.Erc20)) {
             IERC20 erc20 = IERC20(tokenAddress);
             if (burnable) {
+                erc20.safeTransferFrom(msg.sender, address(0), receiveAmount);
+            } else {
                 erc20.safeTransferFrom(
                     msg.sender,
                     address(this),
-                    amount - receiveAmount
+                    receiveAmount
                 );
-                erc20.safeTransferFrom(msg.sender, address(0), receiveAmount);
-            } else {
-                erc20.safeTransferFrom(msg.sender, address(this), amount);
             }
+            erc20.safeTransferFrom(
+                msg.sender,
+                feeAddress,
+                amount - receiveAmount
+            );
         } else {
             revert ErrAssetsType(assetsType);
         }

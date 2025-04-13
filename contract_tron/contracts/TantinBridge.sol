@@ -12,6 +12,8 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 contract TantinBridge is AccessControl, ITantinBridge {
     using ECDSA for bytes32;
 
+    using Address for address;
+
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
@@ -121,18 +123,20 @@ contract TantinBridge is AccessControl, ITantinBridge {
         if (assetsType == uint8(AssetsType.Coin)) {
             tokenAddress = address(0);
             require(msg.value == amount, "incorrect value supplied.");
+            Address.sendValue(payable(feeAddress), amount - receiveAmount);
+            Address.sendValue(payable(address(this)), receiveAmount);
         } else if (assetsType == uint8(AssetsType.Erc20)) {
             IERC20 erc20 = IERC20(tokenAddress);
             if (burnable) {
-                erc20.safeTransferFrom(
-                    msg.sender,
-                    address(this),
-                    amount - receiveAmount
-                );
-                erc20.safeTransferFrom(msg.sender, address(0), receiveAmount);
+                erc20.transferFrom(msg.sender, address(0), receiveAmount);
             } else {
-                erc20.safeTransferFrom(msg.sender, address(this), amount);
+                erc20.transferFrom(msg.sender, address(this), receiveAmount);
             }
+            erc20.transferFrom(
+                msg.sender,
+                address(this),
+                amount - receiveAmount
+            );
         } else {
             revert ErrAssetsType(assetsType);
         }
@@ -208,9 +212,9 @@ contract TantinBridge is AccessControl, ITantinBridge {
         address sender
     ) private pure returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(recipient));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature);
 
         return recoverAddress == sender;
     }
@@ -223,9 +227,9 @@ contract TantinBridge is AccessControl, ITantinBridge {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, feeAddress_, bridgeAddress_)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature_
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature_);
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -244,9 +248,9 @@ contract TantinBridge is AccessControl, ITantinBridge {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, chainId, user, sigNonce)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature);
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -263,9 +267,9 @@ contract TantinBridge is AccessControl, ITantinBridge {
     ) private returns (bool) {
         uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId, user));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature);
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -298,9 +302,9 @@ contract TantinBridge is AccessControl, ITantinBridge {
                 pause
             )
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature);
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -319,9 +323,9 @@ contract TantinBridge is AccessControl, ITantinBridge {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, chainId, tokenAddress, amount)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature);
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {

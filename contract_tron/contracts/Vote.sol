@@ -366,9 +366,9 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, bridgeAddress_, expiry_, relayerThreshold_)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature_
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature_);
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -387,9 +387,9 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, newThreshold, chainId)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature_
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature_);
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -408,9 +408,9 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, relayerAddress, chainId)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature_
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature_);
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -429,9 +429,9 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, relayerAddress, chainId)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature_
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature_);
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
