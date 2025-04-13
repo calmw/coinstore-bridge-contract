@@ -2,7 +2,6 @@
 pragma solidity ^0.8.22;
 
 import "./utils/Pausable.sol";
-import {ECDSA} from "./lib/ECDSA.sol";
 import {IVote} from "./interface/IVote.sol";
 import {IBridge} from "./interface/IBridge.sol";
 import {ITantinBridge} from "./interface/ITantinBridge.sol";
@@ -10,8 +9,6 @@ import {IERC20MintAble} from "./interface/IERC20MintAble.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Bridge is IBridge, Pausable, AccessControl {
-    using ECDSA for bytes32;
-
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant VOTE_ROLE = keccak256("VOTE_ROLE");
 
@@ -100,8 +97,6 @@ contract Bridge is IBridge, Pausable, AccessControl {
         address tokenAddress,
         uint256 fee,
         bool pause,
-        bool burnable, // true burn;false lock
-        bool mintable,
         address tantinAddress,
         bytes memory signature
     ) external onlyRole(ADMIN_ROLE) {
@@ -113,8 +108,6 @@ contract Bridge is IBridge, Pausable, AccessControl {
                 tokenAddress,
                 fee,
                 pause,
-                pause,
-                mintable,
                 tantinAddress
             ),
             "signature error"
@@ -123,21 +116,11 @@ contract Bridge is IBridge, Pausable, AccessControl {
             assetsType,
             tokenAddress,
             pause,
-            fee,
-            burnable,
-            mintable
+            fee
         );
         resourceIdToContractAddress[resourceID] = tantinAddress;
 
-        emit SetResource(
-            resourceID,
-            tokenAddress,
-            fee,
-            pause,
-            burnable,
-            mintable,
-            tantinAddress
-        );
+        emit SetResource(resourceID, tokenAddress, fee, pause, tantinAddress);
     }
 
     /**
@@ -170,6 +153,19 @@ contract Bridge is IBridge, Pausable, AccessControl {
         emit Deposit(destinationChainId, resourceId, depositNonce, data);
     }
 
+    /**
+        @notice relayer执行投票通过后的到帐操作
+        @param resourceId 跨链的resourceID
+        @param data 跨链data
+     */
+    function execute(
+        bytes32 resourceId,
+        bytes calldata data
+    ) external onlyRole(VOTE_ROLE) whenNotPaused {
+        address tantinAddress = resourceIdToContractAddress[resourceId];
+        ITantinBridge(tantinAddress).execute(data);
+    }
+
     // 获取跨链费用
     function getFeeByResourceId(
         bytes32 resourceId
@@ -186,21 +182,6 @@ contract Bridge is IBridge, Pausable, AccessControl {
         return resourceIdToContractAddress[resourceId];
     }
 
-    // 由resourceId获取token信息
-    function getTokenInfoByResourceId(
-        bytes32 resourceId
-    ) public view returns (uint8, address, bool, uint256, bool, bool) {
-        TokenInfo memory token = resourceIdToTokenInfo[resourceId];
-        return (
-            uint8(token.assetsType),
-            token.tokenAddress,
-            token.pause,
-            token.fee,
-            token.burnable,
-            token.mintable
-        );
-    }
-
     // 验证adminSetEnv签名
     function checkAdminSetEnvSignature(
         bytes memory signature_,
@@ -211,7 +192,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
+
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature_
         );
         bool res = recoverAddress == superAdminAddress;
@@ -221,12 +204,32 @@ contract Bridge is IBridge, Pausable, AccessControl {
         return res;
     }
 
+    function checkAdminSetEnvSignatureTest(
+        bytes memory signature_,
+        address voteAddress_,
+        uint256 chainId_,
+        uint256 chainType_
+    ) public view returns (address) {
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
+        );
+
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
+            signature_
+        );
+
+        return recoverAddress;
+    }
+
     // 验证adminPauseTransfers签名
     function checkAdminPauseTransfersSignature(
         bytes memory signature
     ) private returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
+
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature
         );
         bool res = recoverAddress == superAdminAddress;
@@ -241,7 +244,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
         bytes memory signature
     ) private returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
+
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature
         );
         bool res = recoverAddress == superAdminAddress;
@@ -259,8 +264,6 @@ contract Bridge is IBridge, Pausable, AccessControl {
         address tokenAddress,
         uint256 fee,
         bool pause,
-        bool burnable,
-        bool mintable,
         address tantinAddress
     ) private returns (bool) {
         bytes32 messageHash = keccak256(
@@ -272,19 +275,42 @@ contract Bridge is IBridge, Pausable, AccessControl {
                 tokenAddress,
                 fee,
                 pause,
-                burnable,
-                mintable,
                 tantinAddress
             )
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature
         );
-
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
         }
         return res;
+    }
+
+    function toEthSignedMessageHash(
+        bytes32 hash
+    ) public pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
+            );
+    }
+
+    function recoverSigner(
+        bytes32 _msgHash,
+        bytes memory _signature
+    ) public pure returns (address) {
+        require(_signature.length == 65, "invalid signature length");
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
+        assembly {
+            r := mload(add(_signature, 0x20))
+            s := mload(add(_signature, 0x40))
+            v := byte(0, mload(add(_signature, 0x60)))
+        }
+        return ecrecover(_msgHash, v, r, s);
     }
 }

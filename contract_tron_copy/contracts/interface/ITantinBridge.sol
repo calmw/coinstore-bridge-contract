@@ -33,6 +33,15 @@ interface ITantinBridge {
         uint256 destinationChainId
     );
 
+    event ExecuteEvent(
+        address indexed depositer,
+        address indexed recipient,
+        uint256 indexed amount,
+        address tokenAddress,
+        uint256 originDepositNonce,
+        uint256 originChainId
+    );
+
     event ExecuteNftEvent(
         address indexed depositer,
         address indexed recipient,
@@ -52,6 +61,14 @@ interface ITantinBridge {
         bool pause // 该token是否暂停跨链
     );
 
+    struct TokenInfo {
+        AssetsType assetsType; // 跨链币种
+        address tokenAddress; // 币种地址。coin的话，值为0地址
+        bool burnable; // true burn;false lock
+        bool mintable; // true mint;false release
+        bool pause; // 该token是否暂停跨链
+    }
+
     struct DepositRecord {
         address tokenAddress;
         address sender;
@@ -60,4 +77,6 @@ interface ITantinBridge {
         uint256 fee;
         uint256 destinationChainId;
     }
+
+    function execute(bytes calldata data) external;
 }

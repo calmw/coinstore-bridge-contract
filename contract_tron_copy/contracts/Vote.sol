@@ -2,26 +2,19 @@
 pragma solidity ^0.8.22;
 
 import "./interface/IBridge.sol";
-import {ECDSA} from "./lib/ECDSA.sol";
 import "./interface/IVote.sol";
-import "./interface/IERC20MintAble.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
+import {ITantinBridge} from "./interface/ITantinBridge.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract Vote is IVote, AccessControl {
-    using ECDSA for bytes32;
-
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
     bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
 
-    error ErrAssetsType(uint8 assetsType);
-
     uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
     address private superAdminAddress;
     IBridge public Bridge; // bridge 合约
+    ITantinBridge public TantinBridge; // bridge 合约
     uint256 public totalProposal; // 提案数量，每个天加1
     uint256 public totalRelayer; // 总的relayer账户数量
     uint256 public relayerThreshold; // 提案可以通过的最少投票数量
@@ -38,12 +31,14 @@ contract Vote is IVote, AccessControl {
     /**
         @notice 设置
         @param bridgeAddress_ Bridge合约地址
+        @param tantinAddress_ Tantin合约地址
         @param expiry_ 提案过期的块高差
         @param relayerThreshold_ 提案通过的投票数量
         @param signature_ 签名
      */
     function adminSetEnv(
         address bridgeAddress_,
+        address tantinAddress_,
         uint256 expiry_,
         uint256 relayerThreshold_,
         bytes memory signature_
@@ -52,6 +47,7 @@ contract Vote is IVote, AccessControl {
             checkAdminSetEnvSignature(
                 signature_,
                 bridgeAddress_,
+                tantinAddress_,
                 expiry_,
                 relayerThreshold_
             ),
@@ -59,6 +55,7 @@ contract Vote is IVote, AccessControl {
         );
         expiry = expiry_;
         Bridge = IBridge(bridgeAddress_);
+        TantinBridge = ITantinBridge(tantinAddress_);
         relayerThreshold = relayerThreshold_;
     }
 
@@ -278,6 +275,7 @@ contract Vote is IVote, AccessControl {
         require(dataHash == proposal.dataHash, "data doesn't match datahash");
 
         proposal.status = ProposalStatus.Executed;
+//        TantinBridge.execute(data);
         execute(data);
 
         emit ProposalEvent(
@@ -313,38 +311,33 @@ contract Vote is IVote, AccessControl {
             data,
             (uint256, bytes32, uint256, address, address, uint256, uint256)
         );
-        (
-            uint8 assetsType,
-            address tokenAddress,
-            bool pause,
-            uint256 fee,
-            bool burnable,
-            bool mintable
-        ) = Bridge.getTokenInfoByResourceId(resourceId);
 
-        if (assetsType == 1) {
+        TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
+        address tokenAddress = tokenInfo.tokenAddress;
+        if (tokenInfo.assetsType == AssetsType.Coin) {
             Address.sendValue(payable(recipient), receiveAmount);
-        } else if (assetsType == 2) {
-            if (mintable) {
+        } else if (tokenInfo.assetsType == AssetsType.Erc20) {
+            if (tokenInfo.mintable) {
                 IERC20MintAble erc20 = IERC20MintAble(tokenAddress);
                 erc20.mint(recipient, receiveAmount);
             } else {
                 IERC20 erc20 = IERC20(tokenAddress);
-                erc20.safeTransfer(recipient, receiveAmount);
+                erc20.transfer(recipient, receiveAmount);
             }
         } else {
-            revert ErrAssetsType(assetsType);
+            revert ErrAssetsType(tokenInfo.assetsType);
         }
-        uint256 originChainId_ = originChainId;
+
         emit ExecuteEvent(
             caller,
             recipient,
             receiveAmount,
             tokenAddress,
             originNonce,
-            originChainId_
+            originChainId
         );
     }
+
 
     // 获取投票信息
     function getProposal(
@@ -360,13 +353,21 @@ contract Vote is IVote, AccessControl {
     function checkAdminSetEnvSignature(
         bytes memory signature_,
         address bridgeAddress_,
+        address tantinAddress_,
         uint256 expiry_,
         uint256 relayerThreshold_
     ) private returns (bool) {
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, bridgeAddress_, expiry_, relayerThreshold_)
+            abi.encode(
+                sigNonce,
+                bridgeAddress_,
+                tantinAddress_,
+                expiry_,
+                relayerThreshold_
+            )
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature_
         );
 
@@ -378,6 +379,31 @@ contract Vote is IVote, AccessControl {
         return res;
     }
 
+    // 验证adminSetEnv签名
+    function checkAdminSetEnvSignatureTest(
+        bytes memory signature_,
+        address bridgeAddress_,
+        address tantinAddress_,
+        uint256 expiry_,
+        uint256 relayerThreshold_
+    ) public view returns (address) {
+        bytes32 messageHash = keccak256(
+            abi.encode(
+                sigNonce,
+                bridgeAddress_,
+                tantinAddress_,
+                expiry_,
+                relayerThreshold_
+            )
+        );
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
+            signature_
+        );
+
+        return recoverAddress;
+    }
+
     // 验证adminChangeRelayerThreshold签名
     function checkAdminChangeRelayerThresholdSignature(
         bytes memory signature_,
@@ -387,7 +413,8 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, newThreshold, chainId)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature_
         );
 
@@ -408,10 +435,10 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, relayerAddress, chainId)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature_
         );
-
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -429,7 +456,8 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, relayerAddress, chainId)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
+        address recoverAddress = recoverSigner(
+            toEthSignedMessageHash(messageHash),
             signature_
         );
 
@@ -439,5 +467,30 @@ contract Vote is IVote, AccessControl {
         }
 
         return res;
+    }
+
+    function toEthSignedMessageHash(
+        bytes32 hash
+    ) public pure returns (bytes32) {
+        return
+            keccak256(
+                abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
+            );
+    }
+
+    function recoverSigner(
+        bytes32 _msgHash,
+        bytes memory _signature
+    ) public pure returns (address) {
+        require(_signature.length == 65, "invalid signature length");
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
+        assembly {
+            r := mload(add(_signature, 0x20))
+            s := mload(add(_signature, 0x40))
+            v := byte(0, mload(add(_signature, 0x60)))
+        }
+        return ecrecover(_msgHash, v, r, s);
     }
 }
