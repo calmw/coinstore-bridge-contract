@@ -76,5 +76,4 @@ interface IVote {
         uint256 depositNonce,
         bytes32 dataHash
     ) external returns (Proposal memory);
-
 }
