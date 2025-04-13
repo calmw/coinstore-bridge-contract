@@ -1,6 +1,7 @@
 package abi
 
 import (
+	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
@@ -34,14 +35,14 @@ func VoteAdminChangeRelayerThresholdSignature(sigNonce *big.Int, newThreshold *b
 	return GenerateSignature(parameterBytes[4:])
 }
 
-func VoteAdminSetEnvSignature(sigNonce *big.Int, bridgeAddress, tantinAddress common.Address, expiry, relayerThreshold *big.Int) ([]byte, error) {
+func VoteAdminSetEnvSignature(sigNonce *big.Int, bridgeAddress common.Address, expiry, relayerThreshold *big.Int) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(VoteSig))
-	parameterBytes, _ := contractAbi.Pack("checkAdminSetEnvSignature",
+	parameterBytes, err := contractAbi.Pack("checkAdminSetEnvSignature",
 		sigNonce,
 		bridgeAddress,
-		tantinAddress,
 		expiry,
 		relayerThreshold,
 	)
+	fmt.Println(err)
 	return GenerateSignature(parameterBytes[4:])
 }

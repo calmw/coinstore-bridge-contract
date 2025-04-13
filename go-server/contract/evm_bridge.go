@@ -176,7 +176,9 @@ func (b *BridgeEvm) AdminSetResource(resourceId string, assetsType uint8, tokenA
 			tokenAddress,
 			common.HexToAddress(ChainConfig.TantinContractAddress),
 			fee,
-			false,
+			pause,
+			burnable,
+			mintable,
 		)
 		err, txOpts := GetAuth(b.Cli)
 		if err != nil {

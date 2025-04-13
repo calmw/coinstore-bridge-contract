@@ -54,7 +54,6 @@ func (c VoteEvm) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) {
 	signature, _ := abi.VoteAdminSetEnvSignature(
 		sigNonce,
 		common.HexToAddress(ChainConfig.BridgeContractAddress),
-		common.HexToAddress(ChainConfig.TantinContractAddress),
 		expiry,
 		relayerThreshold,
 	)

@@ -1,6 +1,7 @@
 package abi
 
 import (
+	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
@@ -30,11 +31,14 @@ func TantinAdminSetTokenSignature(sigNonce, chainId *big.Int, resourceID [32]byt
 	return GenerateSignature(parameterBytes[4:])
 }
 
-func TantinAdminSetEnvSignature(sigNonce *big.Int, bridgeAddress common.Address) ([]byte, error) {
+func TantinAdminSetEnvSignature(sigNonce *big.Int, feeAddress, bridgeAddress common.Address) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(TantinSig))
-	parameterBytes, _ := contractAbi.Pack("checkAdminSetEnvSignature",
+	parameterBytes, err := contractAbi.Pack("checkAdminSetEnvSignature",
 		sigNonce,
+		feeAddress,
 		bridgeAddress,
 	)
+	fmt.Println("~~~~~~~~~~~")
+	fmt.Println(err)
 	return GenerateSignature(parameterBytes[4:])
 }

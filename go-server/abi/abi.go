@@ -115,6 +115,10 @@ var TantinSig = `[{
 		"type": "uint256"
 	}, {
 		"internalType": "address",
+		"name": "feeAddress",
+		"type": "address"
+	}, {
+		"internalType": "address",
 		"name": "bridgeAddress",
 		"type": "address"
 	}],
@@ -170,6 +174,14 @@ var BridgeSig = `[{
 	}, {
 		"internalType": "bool",
 		"name": "pause",
+		"type": "bool"
+	}, {
+		"internalType": "bool",
+		"name": "burnable",
+		"type": "bool"
+	}, {
+		"internalType": "bool",
+		"name": "mintable",
 		"type": "bool"
 	}, {
 		"internalType": "address",
@@ -316,10 +328,6 @@ var VoteSig = `[{
 	}, {
 		"internalType": "address",
 		"name": "bridgeAddress_",
-		"type": "address"
-	}, {
-		"internalType": "address",
-		"name": "tantinAddress_",
 		"type": "address"
 	}, {
 		"internalType": "uint256",

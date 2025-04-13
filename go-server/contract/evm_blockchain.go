@@ -132,9 +132,8 @@ func GetAuthWithValue(cli *ethclient.Client, value *big.Int) (error, *bind.Trans
 }
 
 func InitTantinEnv() {
-	//coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
-	//privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
-	privateKeyStr := "2fbd746cbb1ad3da7f96b168d6c613928db39f4bd56903863db5ff45278307d4"
+	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
+	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
 		BridgeId:              1,
 		ChainId:               202502,
