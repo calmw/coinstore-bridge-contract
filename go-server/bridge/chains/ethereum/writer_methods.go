@@ -278,7 +278,7 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 			w.conn.UnlockOpts()
 
 			if err == nil {
-				txHash = "0x" + tx.Hash().String()
+				txHash = tx.Hash().String()
 				w.log.Info("Submitted proposal execution", "tx", tx.Hash(), "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce, "gasPrice", tx.GasPrice().String())
 				///
 				for j := 0; j < 5; j++ {
