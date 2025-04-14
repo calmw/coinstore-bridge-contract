@@ -17,6 +17,7 @@ import (
 	"math/big"
 	"os"
 	"strings"
+	"time"
 )
 
 const (
@@ -54,19 +55,23 @@ func NewBridgeTron() (*BridgeTron, error) {
 }
 
 func (b *BridgeTron) Init() {
-	//txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
-	//fmt.Println(txHash2, err2)
-	//txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
-	//fmt.Println(txHash3, err3)
-	//txHash, err := b.AdminSetEnv()
-	//fmt.Println(txHash, err)
-	// resourceId string, assetsType uint8, tokenAddress common.Address, fee *big.Int, pause bool, burnable bool, mintable bool
+	txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
+	fmt.Println(txHash2, err2)
+	time.Sleep(time.Second)
+	txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
+	fmt.Println(txHash3, err3)
+	time.Sleep(time.Second)
+	txHash, err := b.AdminSetEnv()
+	fmt.Println(txHash, err)
+	time.Sleep(time.Second)
 	txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), false, false, false)
 	fmt.Println(txHash4, err4)
-	//txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, ChainConfig.UsdcAddress, big.NewInt(100), 2)
-	//fmt.Println(txHash5, err5)
-	//txHash6, err6 := b.AdminSetResource(ResourceIdEth, ChainConfig.WEthAddress, big.NewInt(100), 2)
-	//fmt.Println(txHash6, err6)
+	time.Sleep(time.Second)
+	txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, big.NewInt(100), false, false, false)
+	fmt.Println(txHash5, err5)
+	time.Sleep(time.Second)
+	txHash6, err6 := b.AdminSetResource(ResourceIdEth, 2, ChainConfig.WEthAddress, big.NewInt(100), false, false, false)
+	fmt.Println(txHash6, err6)
 }
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {
@@ -142,16 +147,18 @@ func (b *BridgeTron) AdminSetResource(resourceId string, assetsType uint8, token
 		burnable,
 		mintable,
 	)
-	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bool\":%v},{\"address\":\"%s\"},{\"bytes\":\"%s\"}]",
+	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bool\":%v},{\"bool\":%v},{\"bool\":%v},{\"address\":\"%s\"},{\"bytes\":\"%s\"}]",
 		strings.TrimPrefix(resourceId, "0x"),
 		assetsType,
 		tokenAddress,
 		fee,
 		false,
+		false,
+		false,
 		ChainConfig.TantinContractAddress,
 		fmt.Sprintf("%x", signature),
 	)
-	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetResource(bytes32,uint8,address,uint256,bool,address,bytes)", triggerData, 300000000, 0, "", 0)
+	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetResource(bytes32,uint8,address,uint256,bool,bool,bool,address,bytes)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
