@@ -9,11 +9,6 @@ import (
 	"time"
 )
 
-type QueryTime struct {
-	SourceChainId      string `form:"source_chain_id"`
-	DestinationChainId string `form:"destination_chain_id"`
-}
-
 func BridgeTime(c *gin.Context) {
 	var q Query
 	if c.ShouldBindQuery(&q) != nil {
