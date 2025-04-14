@@ -7,6 +7,7 @@ import (
 	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"errors"
+	"fmt"
 	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
@@ -244,6 +245,9 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 				data,
 				m.ResourceId,
 			)
+
+			fmt.Println("~~~~~~~~~~~~~~~~")
+			fmt.Println(fmt.Sprintf("0x%x", data))
 
 			if err == nil {
 				w.log.Info("Submitted proposal execution", "tx", txHash, "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
