@@ -129,6 +129,7 @@ contract Vote is IVote, AccessControl {
         totalRelayer--;
     }
 
+    event NonceId(uint72 no);
     /**
         @notice relayer执行投票通过后的到帐操作
         @param originChainId 源链ID
@@ -217,6 +218,8 @@ contract Vote is IVote, AccessControl {
                 );
             }
         }
+
+        emit NonceId(nonceAndID);
     }
 
     /**

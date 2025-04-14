@@ -12,7 +12,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"math/big"
-	"strings"
 	"time"
 )
 
@@ -100,12 +99,8 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 
 	metadata := m.Payload[0].([]byte)
 	data := chains.ConstructGenericProposalData(metadata)
-	bridgeAddress, err := address.Base58ToAddress(w.Cfg.BridgeContractAddress)
-	if err != nil {
-		return false
-	}
-	bridgeEthAddress := "0x" + strings.TrimPrefix(bridgeAddress.Hex(), "0x41")
-	//toHash := append(common.HexToAddress("0xE0667eE3AA3C5ADBf1034aD6CA42DD67258FaF27").Bytes(), data...) // 正常
+	bridgeEthAddress, _ := utils.TronToEth(w.Cfg.BridgeContractAddress)
+	fmt.Println("~~~~~", bridgeEthAddress)
 	toHash := append(common.HexToAddress(bridgeEthAddress).Bytes(), data...)
 	dataHash := utils.Hash(toHash)
 	if !w.shouldVote(m, dataHash) {
@@ -186,6 +181,8 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 				dataHash,
 			)
 
+			fmt.Println("~~~~~~~~~~~~~~~~ dataHash ")
+			fmt.Println(fmt.Sprintf("0x%x", dataHash))
 			if err == nil {
 				w.log.Info("Submitted proposal vote", "tx", txHash, "src", m.Source, "depositNonce", m.DepositNonce)
 				for i := 0; i < 25; i++ {
@@ -213,6 +210,8 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) {
 	w.muExec.Lock()
 	defer w.muExec.Unlock()
+	_ = w.conn.keyStore.Unlock(*w.conn.keyAccount, tron_keystore.KeyStorePassphrase)
+	defer w.conn.keyStore.Lock(w.conn.keyAccount.Address)
 
 	//var err error
 	var status bool
@@ -225,9 +224,6 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 			model.UpdateExecuteStatus(m, 1, txHashRes, receiveAt)
 		}
 	}()
-
-	_ = w.conn.keyStore.Unlock(*w.conn.keyAccount, tron_keystore.KeyStorePassphrase)
-	defer w.conn.keyStore.Lock(w.conn.keyAccount.Address)
 
 	for i := 0; i < TxRetryLimit; i++ {
 		select {
@@ -246,7 +242,7 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 				m.ResourceId,
 			)
 
-			fmt.Println("~~~~~~~~~~~~~~~~")
+			fmt.Println("~~~~~~~~~~~~~~~~", m.Source.Big(), "~", m.DepositNonce.Big())
 			fmt.Println(fmt.Sprintf("0x%x", data))
 
 			if err == nil {

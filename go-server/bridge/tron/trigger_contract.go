@@ -221,8 +221,8 @@ const (
 )
 
 func ExecuteProposal(cli *client.GrpcClient, from, contractAddress string, ks *keystore.KeyStore, ka *keystore.Account, originChainId *big.Int, originDepositNonce *big.Int, data []byte, resourceId [32]byte) (string, error) {
-	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"},{\"bytes32\":\"%s\"}]",
-		originChainId.String(), originDepositNonce.String(), hexutils.BytesToHex(data[:]), hexutils.BytesToHex(resourceId[:]),
+	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"}]",
+		originChainId.String(), originDepositNonce.String(), hexutils.BytesToHex(data[:]),
 	)
 
 	//privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
@@ -237,7 +237,9 @@ func ExecuteProposal(cli *client.GrpcClient, from, contractAddress string, ks *k
 	//	return "", err
 	//}
 
-	tx, err := cli.TriggerContract(from, contractAddress, "executeProposal(uint256,uint256,bytes,bytes32)", triggerData, 300000000, 0, "", 0)
+	fmt.Println("~~~~~~~~~~~~~~~~ = ", triggerData)
+
+	tx, err := cli.TriggerContract(from, contractAddress, "executeProposal(uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}

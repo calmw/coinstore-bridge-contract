@@ -20,12 +20,12 @@ func main() {
 	//}
 	//bridge.Init()
 	//
-	//vote, err := contract.NewVoteTron()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//vote.Init()
+	vote, err := contract.NewVoteTron()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	vote.Init()
 
 	tantin, err := contract.NewTanTinTron()
 	if err != nil {
