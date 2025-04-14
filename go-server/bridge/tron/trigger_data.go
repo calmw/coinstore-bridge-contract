@@ -204,39 +204,49 @@ func ParseBridgeDepositRecordData(inputData []byte) (DepositRecord, error) {
 func GenerateBridgeGetTokenInfoByResourceId(resourceID [32]byte) (string, error) {
 	contractABI := `[
    {
-   "inputs": [
-     {
-       "internalType": "bytes32",
-       "name": "",
-       "type": "bytes32"
-     }
-   ],
-   "name": "resourceIdToTokenInfo",
-   "outputs": [
-     {
-       "internalType": "enum IBridge.AssetsType",
-       "name": "assetsType",
-       "type": "uint8"
-     },
-     {
-       "internalType": "address",
-       "name": "tokenAddress",
-       "type": "address"
-     },
-     {
-       "internalType": "bool",
-       "name": "pause",
-       "type": "bool"
-     },
-     {
-       "internalType": "uint256",
-       "name": "fee",
-       "type": "uint256"
-     }
-   ],
-   "stateMutability": "view",
-   "type": "function"
- }
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "resourceIdToTokenInfo",
+    "outputs": [
+      {
+        "internalType": "enum IBridge.AssetsType",
+        "name": "assetsType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "pause",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "burnable",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "mintable",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
  ]`
 
 	// 解析合约的ABI

@@ -106,6 +106,8 @@ func ResourceIdToTokenInfo(from, to string, requestId [32]byte) (TokenInfo, erro
 	res, _ := http.DefaultClient.Do(req)
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
+	fmt.Println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+	fmt.Println(string(body))
 	var jsonRpcResponse JsonRpcResponse
 	err = json.Unmarshal(body, &jsonRpcResponse)
 	if err != nil {

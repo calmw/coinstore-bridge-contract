@@ -134,7 +134,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
             }
             erc20.transferFrom(
                 msg.sender,
-                address(this),
+                feeAddress,
                 amount - receiveAmount
             );
         } else {

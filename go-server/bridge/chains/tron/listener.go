@@ -101,6 +101,7 @@ func (l *Listener) pollBlocks() error {
 				continue
 			}
 
+			fmt.Println(l.Cfg.BridgeContractAddress, "~~~~~~")
 			// Parse out events
 			err = l.getDepositEventsForBlock(currentBlock)
 			if err != nil {

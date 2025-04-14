@@ -18,7 +18,8 @@ const (
 	DefaultGasPrice                     = 20000000000
 	DefaultMinGasPrice                  = 0
 	DefaultBlockConfirmations           = 5
-	TronApiHost                         = "https://nile.trongrid.io"
+	//TronApiHost                         = "https://nile.trongrid.io"
+	TronApiHost = "https://api.trongrid.io"
 )
 
 var TronCfg Config
@@ -44,7 +45,7 @@ type Config struct {
 }
 
 func NewConfig(cfg model.ChainInfo) Config {
-	key := os.Getenv("COIN_STORE_BRIDGE")
+	key := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
 	if ChainType(cfg.ChainType) == ChainTypeTron {
 		key = os.Getenv("COIN_STORE_BRIDGE_TRON")
 	}
