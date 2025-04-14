@@ -144,6 +144,9 @@ func GetEventData(contractAddress string, number int64) ([]EvtData, error) {
 	}
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
+	fmt.Println("---------")
+	fmt.Println(url)
+	fmt.Println(string(body))
 	var eventLog EvtLog
 	err = json.Unmarshal(body, &eventLog)
 	if err != nil || !eventLog.Success {

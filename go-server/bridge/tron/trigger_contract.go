@@ -27,6 +27,9 @@ func GetDepositRecord(from, to string, destinationChainId, depositNonce *big.Int
 	if err != nil {
 		return DepositRecord{}, fmt.Errorf("generateBridgeDepositRecordsData error %v", err)
 	}
+	fmt.Println("~~~~~~~~")
+	fmt.Println(requestData)
+
 	url := fmt.Sprintf("%s/jsonrpc", config.TronApiHost)
 	if !strings.HasPrefix(from, "0x") {
 		fromAddress, err := address.Base58ToAddress(from)
@@ -60,6 +63,7 @@ func GetDepositRecord(from, to string, destinationChainId, depositNonce *big.Int
 	res, _ := http.DefaultClient.Do(req)
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
+	fmt.Println("11111111", string(body))
 	var jsonRpcResponse JsonRpcResponse
 	err = json.Unmarshal(body, &jsonRpcResponse)
 	if err != nil {
