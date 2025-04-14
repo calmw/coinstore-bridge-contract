@@ -5,6 +5,10 @@ import (
 	"fmt"
 )
 
+// https://api.trongrid.io
+// https://api.trongrid.io/jsonrpc
+// https://api.shasta.trongrid.io/jsonrpc
+
 func main() {
 	contract.InitTronEnv()
 	bridge, err := contract.NewBridgeTron()

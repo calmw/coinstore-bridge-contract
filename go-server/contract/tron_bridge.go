@@ -55,6 +55,7 @@ func NewBridgeTron() (*BridgeTron, error) {
 }
 
 func (b *BridgeTron) Init() {
+	fmt.Println(111)
 	txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
 	fmt.Println(txHash2, err2)
 	time.Sleep(time.Second)
@@ -114,6 +115,8 @@ func (b *BridgeTron) GrantRole(role, addr string) (string, error) {
 	defer b.Ks.Lock(b.Ka.Address)
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
 	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
+
+	fmt.Println(111, b.ContractAddress, err)
 	if err != nil {
 		return "", err
 	}
