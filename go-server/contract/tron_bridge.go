@@ -2,7 +2,6 @@ package contract
 
 import (
 	"coinstore/abi"
-	"coinstore/bridge/tron"
 	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"fmt"
@@ -55,16 +54,16 @@ func NewBridgeTron() (*BridgeTron, error) {
 }
 
 func (b *BridgeTron) Init() {
-	fmt.Println(111)
-	txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
-	fmt.Println(txHash2, err2)
-	time.Sleep(time.Second)
-	txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
-	fmt.Println(txHash3, err3)
-	time.Sleep(time.Second)
-	txHash, err := b.AdminSetEnv()
-	fmt.Println(txHash, err)
-	time.Sleep(time.Second)
+	//fmt.Println(111)
+	//txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
+	//fmt.Println(txHash2, err2)
+	//time.Sleep(time.Second)
+	//txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
+	//fmt.Println(txHash3, err3)
+	//time.Sleep(time.Second)
+	//txHash, err := b.AdminSetEnv()
+	//fmt.Println(txHash, err)
+	//time.Sleep(time.Second)
 	txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), false, false, false)
 	fmt.Println(txHash4, err4)
 	time.Sleep(time.Second)
@@ -79,10 +78,11 @@ func (b *BridgeTron) AdminSetEnv() (string, error) {
 
 	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
 	defer b.Ks.Lock(b.Ka.Address)
-	sigNonce, err := tron.GetSigNonce(b.ContractAddress, OwnerAccount)
-	if err != nil {
-		return "", err
-	}
+	//sigNonce, err := tron.GetSigNonce(b.ContractAddress, OwnerAccount)
+	//if err != nil {
+	//	return "", err
+	//}
+	sigNonce := big.NewInt(0)
 
 	voteEth, _ := utils.TronToEth(ChainConfig.VoteContractAddress)
 	signature, _ := abi.BridgeAdminSetEnvSignatureTron(
@@ -132,10 +132,11 @@ func (b *BridgeTron) AdminSetResource(resourceId string, assetsType uint8, token
 	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
 	defer b.Ks.Lock(b.Ka.Address)
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
-	sigNonce, err := tron.GetSigNonce(b.ContractAddress, OwnerAccount)
-	if err != nil {
-		return "", err
-	}
+	//sigNonce, err := tron.GetSigNonce(b.ContractAddress, OwnerAccount)
+	//if err != nil {
+	//	return "", err
+	//}
+	sigNonce := big.NewInt(1)
 	tokenEth, _ := utils.TronToEth(tokenAddress)
 	tantinEth, _ := utils.TronToEth(ChainConfig.TantinContractAddress)
 	signature, _ := abi.BridgeAdminSetResourceSignatureTron(
@@ -161,6 +162,7 @@ func (b *BridgeTron) AdminSetResource(resourceId string, assetsType uint8, token
 		ChainConfig.TantinContractAddress,
 		fmt.Sprintf("%x", signature),
 	)
+	fmt.Println(triggerData)
 	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetResource(bytes32,uint8,address,uint256,bool,bool,bool,address,bytes)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err

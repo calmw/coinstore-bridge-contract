@@ -2,7 +2,6 @@ package contract
 
 import (
 	"coinstore/abi"
-	"coinstore/bridge/tron"
 	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"fmt"
@@ -50,23 +49,24 @@ func (t *TanTinTron) Init() {
 	//fmt.Println(txHash1, err1)
 	//txHash2, err2 := t.GrantRole(BridgeRole, ChainConfig.VoteContractAddress)
 	//fmt.Println(txHash2, err2)
-	txHash, err := t.AdminSetEnv(OwnerAccount, ChainConfig.BridgeContractAddress)
-	fmt.Println(txHash, err)
-	//txHash3, err3 := t.AdminSetToken(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, false, false, false)
-	//fmt.Println(txHash3, err3)
-	//txHash4, err4 := t.AdminSetToken(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, false, false, false)
-	//fmt.Println(txHash4, err4)
-	//txHash5, err5 := t.AdminSetToken(ResourceIdEth, 2, ChainConfig.WEthAddress, false, false, false)
-	//fmt.Println(txHash5, err5)
+	//txHash, err := t.AdminSetEnv(OwnerAccount, ChainConfig.BridgeContractAddress)
+	//fmt.Println(txHash, err)
+	txHash3, err3 := t.AdminSetToken(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, false, false, false)
+	fmt.Println(txHash3, err3)
+	txHash4, err4 := t.AdminSetToken(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, false, false, false)
+	fmt.Println(txHash4, err4)
+	txHash5, err5 := t.AdminSetToken(ResourceIdEth, 2, ChainConfig.WEthAddress, false, false, false)
+	fmt.Println(txHash5, err5)
 }
 
 func (t *TanTinTron) AdminSetEnv(feeAddress, bridgeAddress string) (string, error) {
 	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
 	defer t.Ks.Lock(t.Ka.Address)
-	sigNonce, err := tron.GetSigNonce(t.ContractAddress, OwnerAccount)
-	if err != nil {
-		return "", err
-	}
+	//sigNonce, err := tron.GetSigNonce(t.ContractAddress, OwnerAccount)
+	//if err != nil {
+	//	return "", err
+	//}
+	sigNonce := big.NewInt(0)
 	bridgeEth, _ := utils.TronToEth(bridgeAddress)
 	feeEth, _ := utils.TronToEth(feeAddress)
 	signature, _ := abi.TantinAdminSetEnvSignatureTron(
@@ -112,10 +112,11 @@ func (t *TanTinTron) AdminSetToken(resourceId string, assetsType uint8, tokenAdd
 	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
 	defer t.Ks.Lock(t.Ka.Address)
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
-	sigNonce, err := tron.GetSigNonce(t.ContractAddress, OwnerAccount)
-	if err != nil {
-		return "", err
-	}
+	//sigNonce, err := tron.GetSigNonce(t.ContractAddress, OwnerAccount)
+	//if err != nil {
+	//	return "", err
+	//}
+	sigNonce := big.NewInt(1)
 	tokenEth, _ := utils.TronToEth(tokenAddress)
 	signature, _ := abi.TantinAdminSetTokenSignatureTron(
 		sigNonce,
