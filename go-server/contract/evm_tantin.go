@@ -110,6 +110,7 @@ func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destina
 	signature, _ := abi.TantinDepositSignature(receiver)
 	var res *types.Transaction
 
+	fmt.Println("参数11")
 	for {
 		err, txOpts := GetAuth(c.Cli)
 		if err != nil {
@@ -140,7 +141,7 @@ func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destina
 		}
 		time.Sleep(3 * time.Second)
 	}
-	log.Println(fmt.Sprintf("Deposit 成功"))
+	log.Println(fmt.Sprintf("Deposit 成功 %s", res.Hash().String()))
 	for {
 		receipt, err := c.Cli.TransactionReceipt(context.Background(), res.Hash())
 		if err == nil && receipt.Status == 1 {

@@ -58,6 +58,7 @@ func (c Erc20) Approve(amount *big.Int, address string) {
 		if err == nil && receipt.Status == 1 {
 			break
 		}
+		log.Println(fmt.Sprintf("Approve 失败"), err)
 		time.Sleep(time.Second * 2)
 	}
 

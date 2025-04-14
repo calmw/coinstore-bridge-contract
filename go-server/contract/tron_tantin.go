@@ -16,6 +16,7 @@ import (
 	"math/big"
 	"os"
 	"strings"
+	"time"
 )
 
 type TanTinTron struct {
@@ -45,16 +46,21 @@ func NewTanTinTron() (*TanTinTron, error) {
 }
 
 func (t *TanTinTron) Init() {
-	//txHash1, err1 := t.GrantRole(AdminRole, OwnerAccount)
-	//fmt.Println(txHash1, err1)
-	//txHash2, err2 := t.GrantRole(BridgeRole, ChainConfig.VoteContractAddress)
-	//fmt.Println(txHash2, err2)
-	//txHash, err := t.AdminSetEnv(OwnerAccount, ChainConfig.BridgeContractAddress)
-	//fmt.Println(txHash, err)
+	txHash1, err1 := t.GrantRole(AdminRole, OwnerAccount)
+	fmt.Println(txHash1, err1)
+	time.Sleep(time.Second)
+	txHash2, err2 := t.GrantRole(BridgeRole, ChainConfig.VoteContractAddress)
+	fmt.Println(txHash2, err2)
+	time.Sleep(time.Second)
+	txHash, err := t.AdminSetEnv(OwnerAccount, ChainConfig.BridgeContractAddress)
+	fmt.Println(txHash, err)
+	time.Sleep(time.Second)
 	txHash3, err3 := t.AdminSetToken(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, false, false, false)
 	fmt.Println(txHash3, err3)
+	time.Sleep(time.Second)
 	txHash4, err4 := t.AdminSetToken(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, false, false, false)
 	fmt.Println(txHash4, err4)
+	time.Sleep(time.Second)
 	txHash5, err5 := t.AdminSetToken(ResourceIdEth, 2, ChainConfig.WEthAddress, false, false, false)
 	fmt.Println(txHash5, err5)
 }
