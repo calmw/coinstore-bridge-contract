@@ -32,7 +32,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	tantin.Init()
+	//tantin.Init()
 
 	for {
 		txHash, err := tantin.Deposit(big.NewInt(1), big.NewInt(1), contract.ResourceIdUsdt, "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb")
