@@ -3,8 +3,6 @@ package main
 import (
 	"coinstore/contract"
 	"fmt"
-	"math/big"
-	"time"
 )
 
 func main() {
@@ -16,24 +14,24 @@ func main() {
 	}
 	bridge.Init()
 
-	vote, err := contract.NewVoteTron()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	vote.Init()
+	//vote, err := contract.NewVoteTron()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//vote.Init()
 
-	tantin, err := contract.NewTanTinTron()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	tantin.Init()
-
-	for {
-		txHash, err := tantin.Deposit(big.NewInt(2), big.NewInt(1), contract.ResourceIdUsdt, "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb")
-		fmt.Println(txHash, err)
-		time.Sleep(time.Second * 60)
-	}
+	//tantin, err := contract.NewTanTinTron()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//tantin.Init()
+	//
+	//for {
+	//	txHash, err := tantin.Deposit(big.NewInt(2), big.NewInt(1), contract.ResourceIdUsdt, "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb")
+	//	fmt.Println(txHash, err)
+	//	time.Sleep(time.Second * 60)
+	//}
 
 }

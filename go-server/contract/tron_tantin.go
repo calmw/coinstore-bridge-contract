@@ -46,21 +46,21 @@ func NewTanTinTron() (*TanTinTron, error) {
 }
 
 func (t *TanTinTron) Init() {
-	txHash1, err1 := t.GrantRole(AdminRole, OwnerAccount)
-	fmt.Println(txHash1, err1)
-	txHash2, err2 := t.GrantRole(BridgeRole, ChainConfig.VoteContractAddress)
-	fmt.Println(txHash2, err2)
-	txHash, err := t.AdminSetEnv(ChainConfig.BridgeContractAddress)
+	//txHash1, err1 := t.GrantRole(AdminRole, OwnerAccount)
+	//fmt.Println(txHash1, err1)
+	//txHash2, err2 := t.GrantRole(BridgeRole, ChainConfig.VoteContractAddress)
+	//fmt.Println(txHash2, err2)
+	txHash, err := t.AdminSetEnv(OwnerAccount, ChainConfig.BridgeContractAddress)
 	fmt.Println(txHash, err)
-	txHash3, err3 := t.AdminSetToken(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, false, false, false)
-	fmt.Println(txHash3, err3)
-	txHash4, err4 := t.AdminSetToken(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, false, false, false)
-	fmt.Println(txHash4, err4)
-	txHash5, err5 := t.AdminSetToken(ResourceIdEth, 2, ChainConfig.WEthAddress, false, false, false)
-	fmt.Println(txHash5, err5)
+	//txHash3, err3 := t.AdminSetToken(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, false, false, false)
+	//fmt.Println(txHash3, err3)
+	//txHash4, err4 := t.AdminSetToken(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, false, false, false)
+	//fmt.Println(txHash4, err4)
+	//txHash5, err5 := t.AdminSetToken(ResourceIdEth, 2, ChainConfig.WEthAddress, false, false, false)
+	//fmt.Println(txHash5, err5)
 }
 
-func (t *TanTinTron) AdminSetEnv(bridgeAddress string) (string, error) {
+func (t *TanTinTron) AdminSetEnv(feeAddress, bridgeAddress string) (string, error) {
 	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
 	defer t.Ks.Lock(t.Ka.Address)
 	sigNonce, err := tron.GetSigNonce(t.ContractAddress, OwnerAccount)
@@ -68,16 +68,19 @@ func (t *TanTinTron) AdminSetEnv(bridgeAddress string) (string, error) {
 		return "", err
 	}
 	bridgeEth, _ := utils.TronToEth(bridgeAddress)
+	feeEth, _ := utils.TronToEth(feeAddress)
 	signature, _ := abi.TantinAdminSetEnvSignatureTron(
 		sigNonce,
+		ethCommon.HexToAddress(feeEth),
 		ethCommon.HexToAddress(bridgeEth),
 	)
-	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"bytes\":\"%s\"}]",
+	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"address\":\"%s\"},{\"bytes\":\"%s\"}]",
+		feeAddress,
 		ChainConfig.BridgeContractAddress,
 		fmt.Sprintf("%x", signature),
 	)
 	fmt.Println(triggerData)
-	tx, err := t.Cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetEnv(address,bytes)", triggerData, 1500000000, 0, "", 0)
+	tx, err := t.Cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetEnv(address,address,bytes)", triggerData, 1500000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
