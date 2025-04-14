@@ -8,12 +8,12 @@ networks:
 services:
 
   tt_bridge_one:
-    image: calmw/tt_bridge:0.0.6
+    image: calmw/tt_bridge:0.0.11
     container_name: tt_bridge_one
     restart: always
     environment:
       - COIN_STORE_BRIDGE_TRON=lUfPFEirkoXVyH9nI4vNQiXdMjSFKzIvKqegCHpqeEWkYGx2yGpuQJZhV8+1hKuAWQB11FEWMWxsj/zWD6gFgKflWLqfgVBr
-      - COIN_STORE_BRIDGE=0Y1oZhCtcLNBIgvbr+Rsz733fBuLPp34iml9YrQudRx73UwLmadVfcNHVRft8QaO2hOf4GB+DkQAbqdXE1G4CaflWLqfgVBr
+      - TT_BRIDGE_MAINNET_TEST_DEPLOYER=C7qPtISdECO4zz61ZknkzFK1Auey/B5fuDK1J21701PCkF+RlFfNwUuPb4ryxGNwSzHCozX+MB2Q35SRyOxbwKflWLqfgVBr
       - KEY_STORE_PASSPHRASE=your_strong_password
       - FAILED_JOB_INTERVAL=300
       - MYSQL_DATABASE=bridge
@@ -37,12 +37,12 @@ services:
           memory: 2G
 
   tt_bridge_two:
-    image: calmw/tt_bridge:0.0.6
+    image: calmw/tt_bridge:0.0.11
     container_name: tt_bridge_two
     restart: always
     environment:
       - COIN_STORE_BRIDGE_TRON=lUfPFEirkoXVyH9nI4vNQiXdMjSFKzIvKqegCHpqeEWkYGx2yGpuQJZhV8+1hKuAWQB11FEWMWxsj/zWD6gFgKflWLqfgVBr
-      - COIN_STORE_BRIDGE=0Y1oZhCtcLNBIgvbr+Rsz733fBuLPp34iml9YrQudRx73UwLmadVfcNHVRft8QaO2hOf4GB+DkQAbqdXE1G4CaflWLqfgVBr
+      - TT_BRIDGE_MAINNET_TEST_DEPLOYER=C7qPtISdECO4zz61ZknkzFK1Auey/B5fuDK1J21701PCkF+RlFfNwUuPb4ryxGNwSzHCozX+MB2Q35SRyOxbwKflWLqfgVBr
       - KEY_STORE_PASSPHRASE=your_strong_password
       - FAILED_JOB_INTERVAL=300
       - MYSQL_DATABASE=bridge
@@ -66,12 +66,12 @@ services:
           memory: 2G
 
   tt_bridge_three:
-    image: calmw/tt_bridge:0.0.6
+    image: calmw/tt_bridge:0.0.11
     container_name: tt_bridge_three
     restart: always
     environment:
       - COIN_STORE_BRIDGE_TRON=lUfPFEirkoXVyH9nI4vNQiXdMjSFKzIvKqegCHpqeEWkYGx2yGpuQJZhV8+1hKuAWQB11FEWMWxsj/zWD6gFgKflWLqfgVBr
-      - COIN_STORE_BRIDGE=0Y1oZhCtcLNBIgvbr+Rsz733fBuLPp34iml9YrQudRx73UwLmadVfcNHVRft8QaO2hOf4GB+DkQAbqdXE1G4CaflWLqfgVBr
+      - TT_BRIDGE_MAINNET_TEST_DEPLOYER=C7qPtISdECO4zz61ZknkzFK1Auey/B5fuDK1J21701PCkF+RlFfNwUuPb4ryxGNwSzHCozX+MB2Q35SRyOxbwKflWLqfgVBr
       - KEY_STORE_PASSPHRASE=your_strong_password
       - FAILED_JOB_INTERVAL=300
       - MYSQL_DATABASE=bridge
@@ -120,7 +120,7 @@ services:
           memory: 2G
 
   tt_bridge_api:
-    image: calmw/tt_bridge_api:0.0.3
+    image: calmw/tt_bridge_api:0.0.17
     container_name: tt_bridge_api
     restart: always
     ports:

@@ -27,6 +27,7 @@ func main() {
 	limiter := tollbooth.NewLimiter(5, nil)
 	// 使用限速中间件
 	router.GET("/history", tollbooth_gin.LimitHandler(limiter), service.BridgeTx)
+	router.GET("/bridge_time", tollbooth_gin.LimitHandler(limiter), service.BridgeTime)
 	router.GET("/check_address", tollbooth_gin.LimitHandler(limiter), service.CheckAddress)
 	router.GET("/bridge_latest_time", tollbooth_gin.LimitHandler(limiter), service.BridgeLatestTime)
 	router.GET("/convert_address", tollbooth_gin.LimitHandler(limiter), service.ConvertAddress)
