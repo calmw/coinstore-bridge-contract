@@ -38,7 +38,6 @@ func TantinAdminSetEnvSignature(sigNonce *big.Int, feeAddress, bridgeAddress com
 		feeAddress,
 		bridgeAddress,
 	)
-	fmt.Println("~~~~~~~~~~~")
 	fmt.Println(err)
 	return GenerateSignature(parameterBytes[4:])
 }
