@@ -18,8 +18,8 @@ const (
 	DefaultGasPrice                     = 20000000000
 	DefaultMinGasPrice                  = 0
 	DefaultBlockConfirmations           = 5
-	//TronApiHost                         = "https://nile.trongrid.io"
-	TronApiHost = "https://api.trongrid.io"
+	TronApiHost                         = "https://nile.trongrid.io"
+	//TronApiHost = "https://api.trongrid.io"
 )
 
 var TronCfg Config

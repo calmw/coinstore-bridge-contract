@@ -2,6 +2,7 @@ package contract
 
 import (
 	"coinstore/abi"
+	"coinstore/bridge/tron"
 	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"fmt"
@@ -53,15 +54,15 @@ func (v *VoteTron) Init() {
 	txHash3, err3 := v.GrantRole(RelayerRole, OwnerAccount) // TODO 线上更改
 	fmt.Println(txHash3, err3)
 	time.Sleep(time.Second)
-	txHash4, err4 := v.GrantRole(RelayerRole, Realyer1Account)
-	fmt.Println(txHash4, err4)
-	time.Sleep(time.Second)
-	txHash5, err5 := v.GrantRole(RelayerRole, Realyer2Account)
-	fmt.Println(txHash5, err5)
-	time.Sleep(time.Second)
-	txHash6, err6 := v.GrantRole(RelayerRole, Realyer3Account)
-	fmt.Println(txHash6, err6)
-	time.Sleep(time.Second)
+	//txHash4, err4 := v.GrantRole(RelayerRole, Realyer1Account)
+	//fmt.Println(txHash4, err4)
+	//time.Sleep(time.Second)
+	//txHash5, err5 := v.GrantRole(RelayerRole, Realyer2Account)
+	//fmt.Println(txHash5, err5)
+	//time.Sleep(time.Second)
+	//txHash6, err6 := v.GrantRole(RelayerRole, Realyer3Account)
+	//fmt.Println(txHash6, err6)
+	//time.Sleep(time.Second)
 	txHash, err := v.AdminSetEnv(ChainConfig.BridgeContractAddress, big.NewInt(100000), big.NewInt(1))
 	fmt.Println(txHash, err)
 }
@@ -69,11 +70,11 @@ func (v *VoteTron) Init() {
 func (v *VoteTron) AdminSetEnv(bridgeAddress string, expiry *big.Int, relayerThreshold *big.Int) (string, error) {
 	_ = v.Ks.Unlock(*v.Ka, tron_keystore.KeyStorePassphrase)
 	defer v.Ks.Lock(v.Ka.Address)
-	//sigNonce, err := tron.GetSigNonce(v.ContractAddress, OwnerAccount)
-	//if err != nil {
-	//	return "", err
-	//}
-	sigNonce := big.NewInt(0)
+	sigNonce, err := tron.GetSigNonce(v.ContractAddress, OwnerAccount)
+	if err != nil {
+		return "", err
+	}
+	//sigNonce := big.NewInt(0)
 	bridgeEth, _ := utils.TronToEth(bridgeAddress)
 	//tantinEth, _ := utils.TronToEth(tantinAddress)
 	signature, _ := abi.VoteAdminSetEnvSignatureTron(

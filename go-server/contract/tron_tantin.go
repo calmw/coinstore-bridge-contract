@@ -2,6 +2,7 @@ package contract
 
 import (
 	"coinstore/abi"
+	"coinstore/bridge/tron"
 	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"fmt"
@@ -68,11 +69,11 @@ func (t *TanTinTron) Init() {
 func (t *TanTinTron) AdminSetEnv(feeAddress, bridgeAddress string) (string, error) {
 	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
 	defer t.Ks.Lock(t.Ka.Address)
-	//sigNonce, err := tron.GetSigNonce(t.ContractAddress, OwnerAccount)
-	//if err != nil {
-	//	return "", err
-	//}
-	sigNonce := big.NewInt(0)
+	sigNonce, err := tron.GetSigNonce(t.ContractAddress, OwnerAccount)
+	if err != nil {
+		return "", err
+	}
+	//sigNonce := big.NewInt(0)
 	bridgeEth, _ := utils.TronToEth(bridgeAddress)
 	feeEth, _ := utils.TronToEth(feeAddress)
 	signature, _ := abi.TantinAdminSetEnvSignatureTron(
@@ -118,11 +119,11 @@ func (t *TanTinTron) AdminSetToken(resourceId string, assetsType uint8, tokenAdd
 	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
 	defer t.Ks.Lock(t.Ka.Address)
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
-	//sigNonce, err := tron.GetSigNonce(t.ContractAddress, OwnerAccount)
-	//if err != nil {
-	//	return "", err
-	//}
-	sigNonce := big.NewInt(1)
+	sigNonce, err := tron.GetSigNonce(t.ContractAddress, OwnerAccount)
+	if err != nil {
+		return "", err
+	}
+	//sigNonce := big.NewInt(1)
 	tokenEth, _ := utils.TronToEth(tokenAddress)
 	signature, _ := abi.TantinAdminSetTokenSignatureTron(
 		sigNonce,
