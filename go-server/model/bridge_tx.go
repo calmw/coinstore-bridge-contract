@@ -11,6 +11,7 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/status-im/keycard-go/hexutils"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type BridgeTx struct {
@@ -90,6 +91,9 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 			log.Debug("🐧 SaveBridgeOrder", "error", err.Error())
 			return
 		}
+		if !strings.HasPrefix(depositTxHash, "0x") {
+			depositTxHash = "0x" + depositTxHash
+		}
 		bridgeOrder = BridgeTx{
 			BridgeData:              fmt.Sprintf("%x", m.Payload[0].([]byte)),
 			BridgeMsg:               orderData,
@@ -104,7 +108,7 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 			DestinationChainId:      ChainId(m.Destination),
 			DestinationTokenAddress: destinationTokenAddress,
 			DepositAt:               dateTime,
-			DepositHash:             "0x" + depositTxHash,
+			DepositHash:             depositTxHash,
 		}
 		log.Debug("🐧 插入订单数据", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 		err = db.DB.Model(BridgeTx{}).Create(&bridgeOrder).Error
