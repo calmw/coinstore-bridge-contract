@@ -75,7 +75,7 @@ func (m *Monitor) RetryFailedOrder(order model.BridgeTx) {
 			metadata := bridgeData.Payload[0].([]byte)
 			data := chains.ConstructGenericProposalData(metadata)
 			toHash := append(common.HexToAddress(writer.Cfg.BridgeContractAddress).Bytes(), data...)
-			dataHash := utils.Hash(toHash)
+			dataHash := utils.Keccak256(toHash)
 			writer.ExecuteProposal(bridgeData, data, dataHash)
 		} else {
 			writer := tron.WritersTron
@@ -89,7 +89,7 @@ func (m *Monitor) RetryFailedOrder(order model.BridgeTx) {
 			}
 			bridgeEthAddress := "0x" + strings.TrimPrefix(bridgeAddress.Hex(), "0x41")
 			toHash := append(common.HexToAddress(bridgeEthAddress).Bytes(), data...)
-			dataHash := utils.Hash(toHash)
+			dataHash := utils.Keccak256(toHash)
 			writer.ExecuteProposal(bridgeData, data, dataHash)
 		}
 	} else { // 投票未成功，vote + execute

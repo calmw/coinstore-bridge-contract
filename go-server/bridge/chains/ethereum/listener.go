@@ -189,7 +189,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		if err != nil {
 			l.log.Error("source token info not found", "chainId", record.DestinationChainId)
 		}
-		amount, caller, receiver, err := utils.ParseBridgeData(record.Data)
+		amount, caller, receiver, err := chains.ParseBridgeData(record.Data)
 		if destChainType == config.ChainTypeTron {
 			receiver, _ = utils.EthToTron(receiver)
 		}

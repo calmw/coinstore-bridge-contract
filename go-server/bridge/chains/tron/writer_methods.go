@@ -102,7 +102,7 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 	bridgeEthAddress, _ := utils.TronToEth(w.Cfg.BridgeContractAddress)
 	fmt.Println("~~~~~", bridgeEthAddress)
 	toHash := append(common.HexToAddress(bridgeEthAddress).Bytes(), data...)
-	dataHash := utils.Hash(toHash)
+	dataHash := utils.Keccak256(toHash)
 	if !w.shouldVote(m, dataHash) {
 		if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
 			w.ExecuteProposal(m, data, dataHash)

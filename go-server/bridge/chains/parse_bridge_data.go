@@ -1,18 +1,13 @@
-package utils
+package chains
 
 import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/shopspring/decimal"
 	"github.com/status-im/keycard-go/hexutils"
 	"math/big"
 	"strings"
 )
-
-func Hash(data []byte) [32]byte {
-	return crypto.Keccak256Hash(data)
-}
 
 func ParseBridgeData(depositData []byte) (decimal.Decimal, string, string, error) {
 	abiStr := `[

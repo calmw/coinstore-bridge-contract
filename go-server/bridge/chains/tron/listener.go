@@ -172,7 +172,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		tokenAddress = address.HexToAddress(tokenAddress).String()
 		fee := decimal.NewFromBigInt(tokenInfo.Fee, 0)
 
-		amount, caller, receiver, err := utils.ParseBridgeData(record.Data)
+		amount, caller, receiver, err := chains.ParseBridgeData(record.Data)
 		if err != nil {
 			return err
 		}
