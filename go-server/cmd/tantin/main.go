@@ -54,7 +54,7 @@ func main() {
 	//tantin.AdminSetToken(contract.ResourceIdWeth, 2, common.HexToAddress(contract.ChainConfig.WEthAddress), false, false, false)
 	//tantin.AdminSetToken(contract.ResourceIdEth, 2, common.HexToAddress(contract.ChainConfig.WEthAddress), false, false, false)
 
-	amount := big.NewInt(200000)
+	amount := big.NewInt(250000)
 	Usdt, err := contract.NewErc20(common.HexToAddress(contract.ChainConfig.UsdtAddress))
 	if err != nil {
 		fmt.Println(err)
@@ -66,7 +66,7 @@ func main() {
 	time.Sleep(time.Second * 5)
 	for {
 		//tantin.Deposit(common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"), [32]byte(resourceIdBytes), big.NewInt(3), amount)
-		tantin.Deposit(common.HexToAddress("0x347DA2911fF3893Ef5935d2E7c6e00043D8F52AD"), [32]byte(resourceIdBytes), big.NewInt(2), amount)
+		tantin.Deposit(common.HexToAddress("0xa47142f08f859aCeb2127C6Ab66eC8c8bc4FFBA9"), [32]byte(resourceIdBytes), big.NewInt(2), amount)
 		time.Sleep(time.Second * 30)
 	}
 }

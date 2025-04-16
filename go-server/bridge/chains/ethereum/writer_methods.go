@@ -275,6 +275,8 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 				m.DepositNonce.Big(),
 				data,
 			)
+			fmt.Println("~~~~~~~~ data ")
+			fmt.Println(fmt.Sprintf("%x", data))
 			w.conn.UnlockOpts()
 
 			if err == nil {
