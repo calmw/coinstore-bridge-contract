@@ -54,13 +54,13 @@ func main() {
 	//tantin.AdminSetToken(contract.ResourceIdWeth, 2, common.HexToAddress(contract.ChainConfig.WEthAddress), false, false, false)
 	//tantin.AdminSetToken(contract.ResourceIdEth, 2, common.HexToAddress(contract.ChainConfig.WEthAddress), false, false, false)
 
-	amount := big.NewInt(2)
+	amount := big.NewInt(200000)
 	Usdt, err := contract.NewErc20(common.HexToAddress(contract.ChainConfig.UsdtAddress))
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	Usdt.Approve(big.NewInt(1000), contract.ChainConfig.TantinContractAddress)
+	Usdt.Approve(amount, contract.ChainConfig.TantinContractAddress)
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
 	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdCoin, "0x"))
 
