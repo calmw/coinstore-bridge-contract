@@ -112,18 +112,33 @@ func BridgeTx(c *gin.Context) {
 	deciW := decimal.NewFromInt(10000)
 
 	for _, record := range records {
+		// source_status int 跨链状态          1 源链pending    	2 源链success   				3 源链failed
+		// destination_status int 跨链状态     1 目标链pending  	2 目标链success  			3 目标链failed
+		// status int 跨链状态                 1 源链pending    	2 源链success/目标链pending  	3 目标链success
 		sourceStatus := 1
 		destinationStatus := 1
-		status := 1
-		if record.VoteStatus == 1 {
-			if record.ExecuteStatus == 0 {
-				status = 2
+		bridgeStatus := 1
+		switch record.VoteStatus {
+		case 0:
+			switch record.ExecuteStatus {
+			case 0:
+				sourceStatus = 1
+				destinationStatus = 1
+				bridgeStatus = 1
+			case 1:
 				sourceStatus = 2
-			} else if record.ExecuteStatus == 1 {
-				status = 3
-				destinationStatus = 3
+				destinationStatus = 1
+				bridgeStatus = 2
+			}
+		case 1:
+			switch record.ExecuteStatus {
+			case 1:
+				sourceStatus = 2
+				destinationStatus = 2
+				bridgeStatus = 3
 			}
 		}
+
 		sourceToken := ""
 		info, err := model.GetTokenInfo(record.SourceChainId, record.SourceTokenAddress)
 		if err == nil {
@@ -153,7 +168,7 @@ func BridgeTx(c *gin.Context) {
 			DestinationToken:        destinationToken,
 			DestinationTokenAddress: record.DestinationTokenAddress,
 			DestinationTxHash:       record.ExecuteHash,
-			BridgeStatus:            status,
+			BridgeStatus:            bridgeStatus,
 			SourceStatus:            sourceStatus,
 			DestinationStatus:       destinationStatus,
 			DepositAt:               record.DepositAt,
