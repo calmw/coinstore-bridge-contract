@@ -69,7 +69,7 @@ func main() {
 	Usdc.Approve(amount, contract.ChainConfig.TantinContractAddress)
 	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
 	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdc, "0x"))
-	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdEth, "0x"))
+	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdEth, "0x"))
 	time.Sleep(time.Second * 5)
 	for {
 		// 0x3942fda93c573e2ce9e85b0bb00ba98a144f27f6
