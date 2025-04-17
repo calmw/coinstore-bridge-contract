@@ -68,12 +68,13 @@ func main() {
 	}
 	Usdc.Approve(amount, contract.ChainConfig.TantinContractAddress)
 	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
-	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdc, "0x"))
-	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdCoin, "0x"))
+	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdc, "0x"))
+	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdEth, "0x"))
 	time.Sleep(time.Second * 5)
 	for {
+		// 0x3942fda93c573e2ce9e85b0bb00ba98a144f27f6
 		//tantin.Deposit(common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"), [32]byte(resourceIdBytes), big.NewInt(3), amount)
-		tantin.Deposit(common.HexToAddress("0xa47142f08f859aCeb2127C6Ab66eC8c8bc4FFBA9"), [32]byte(resourceIdBytes), big.NewInt(3), amount)
+		tantin.Deposit(common.HexToAddress("0x3942fda93c573e2ce9e85b0bb00ba98a144f27f6"), [32]byte(resourceIdBytes), big.NewInt(3), amount)
 		time.Sleep(time.Second * 30)
 	}
 }
