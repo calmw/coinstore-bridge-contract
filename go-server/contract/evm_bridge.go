@@ -51,7 +51,7 @@ func (b *BridgeEvm) Init() {
 	b.AdminSetResource(
 		ResourceIdUsdc,
 		2,
-		common.HexToAddress(ChainConfig.UsdtAddress),
+		common.HexToAddress(ChainConfig.UsdcAddress),
 		big.NewInt(100),
 		false,
 		false,

@@ -29,6 +29,7 @@ func main() {
 		false,
 	)
 
+	fmt.Println("~~~~~~~~~~")
 	vote, err := contract.NewVote()
 	if err != nil {
 		fmt.Println(err)

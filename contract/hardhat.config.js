@@ -1,7 +1,7 @@
 require('@openzeppelin/hardhat-upgrades')
 require("@nomiclabs/hardhat-waffle");
-// const PRIVATE_KEY = process.env.COINSTORE_BRIDGE_LOCAL
-const PRIVATE_KEY = process.env.TT_BRIDGE_SIGN
+const PRIVATE_KEY = process.env.COINSTORE_BRIDGE_LOCAL
+// const PRIVATE_KEY = process.env.TT_BRIDGE_SIGN
 module.exports = {
     solidity: "0.8.22",
     settings: {
