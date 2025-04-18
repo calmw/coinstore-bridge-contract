@@ -34,6 +34,7 @@ func NewTanTinTron() (*TanTinTron, error) {
 		return nil, err
 	}
 	prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
+	//prvKey := "3f9f4b92d709f167b8ba98b9f89a5ec5272973aeb8f1affd11d5d2c67c5acf62"
 	ks, ka, err := tron_keystore.InitKeyStore(prvKey)
 	if err != nil {
 		panic(fmt.Sprintf("private key conversion failed %v", err))
@@ -162,6 +163,7 @@ func (t *TanTinTron) Deposit(destinationChainId, amount *big.Int, resourceId, re
 	)
 	fmt.Println(triggerData)
 	tx, err := t.Cli.TriggerContract(OwnerAccount, t.ContractAddress, "deposit(uint256,bytes32,address,uint256,bytes)", triggerData, 300000000, 0, "", 0)
+	//tx, err := t.Cli.TriggerContract("TMHchRW4UtexrrTdZn3y4LPtCnJ4bGkxmP", t.ContractAddress, "deposit(uint256,bytes32,address,uint256,bytes)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
