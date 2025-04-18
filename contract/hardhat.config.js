@@ -17,12 +17,12 @@ module.exports = {
             accounts: [`${PRIVATE_KEY}`]
             // gasPrice: 10000000000
         },
-        ethereum: {
-            // url: "https://mainnet.infura.io/v3/59ec080dc74d4af893ea04bfe2b168b5",
-            url: "https://mainnet.infura.io/v3/59ec080dc74d4af893ea04bfe2b168b5",
-            accounts: [`${PRIVATE_KEY}`]
-            // gasPrice: 10000000000
-        },
+        // ethereum: {
+        //     // url: "https://mainnet.infura.io/v3/59ec080dc74d4af893ea04bfe2b168b5",
+        //     url: "https://mainnet.infura.io/v3/59ec080dc74d4af893ea04bfe2b168b5",
+        //     accounts: [`${PRIVATE_KEY}`]
+        //     // gasPrice: 10000000000
+        // },
         tantin: {
             url: "https://rpc.tantin.com",
             accounts: [`${PRIVATE_KEY}`],
