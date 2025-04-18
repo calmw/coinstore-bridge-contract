@@ -30,6 +30,7 @@ func ApproveSigTest() {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
 
+	fmt.Println(123)
 	//设置交易参数
 	fromAddress := common.HexToAddress("0x1933ccd14cafe561d862e5f35d0de75322a55412") // Owner
 	toAddress := common.HexToAddress("0x2Bf013133aE838B6934B7F96fd43A10EE3FC3e18")   // USDT
@@ -43,6 +44,7 @@ func ApproveSigTest() {
 	if err != nil {
 		log.Fatalf("Failed to suggest gas price: %v", err)
 	}
+	fmt.Println(123)
 	data, err := InputData(common.HexToAddress("0x982D3ef9Db6c2cb4AaDfD609EB69264F382e5c5d"), big.NewInt(1))
 	if err != nil {
 		fmt.Println(11, err)
@@ -57,18 +59,25 @@ func ApproveSigTest() {
 		GasPrice: gasPrice,
 		Data:     data,
 	})
-	taskID := RandInt(100, 10000)
+	//taskID := RandInt(100, 10000)
+	taskID := 6687
+	//txData:=fmt.Sprintf("%x", tx.Data())
+	txData := "095ea7b3000000000000000000000000982d3ef9db6c2cb4aadfd609eb69264f382e5c5d0000000000000000000000000000000000000000000000000000000000000001"
 	apiSecret := "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"
 	sigStr := fmt.Sprintf("%d%s%d%s%s",
 		202502,
-		fromAddress.String(),
+		strings.ToLower(fromAddress.String()),
 		taskID,
-		fmt.Sprintf("%x", tx.Data()),
+		txData,
 		apiSecret,
 	)
+
+	fmt.Println(sigStr)
 	fingerprint := Keccak256([]byte(sigStr))
 	fingerprint = Keccak256(fingerprint[:])
 
+	fmt.Println(fmt.Sprintf("%x", fingerprint))
+	return
 	sigData, err := RequestWithPem("https://10.234.99.69:8088/signature/sign", SigDataPost{
 		FromAddress: fromAddress.String(),
 		TxData:      fmt.Sprintf("%x", tx.Data()),
