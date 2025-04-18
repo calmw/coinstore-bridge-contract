@@ -1,66 +1,68 @@
 package main
 
+import (
+	"context"
+	"crypto/ecdsa"
+	"encoding/hex"
+	"fmt"
+	"log"
+	"math/big"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
+)
+
+// https://goethereumbook.org/zh/transaction-raw-send/
+
 func main() {
+	client, err := ethclient.Dial("https://rinkeby.infura.io")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-}
+	privateKey, err := crypto.HexToECDSA("fad9c8855b740a0b7ed4c221dbad0f33a83a49cad6b3fe8d5817ac83d38b6a19")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-func ApproveSigTest() {
-	// 连接到以太坊节点（例如Infura）
-	//client, err := ethclient.Dial("https://rpc.tantin.com")
-	//if err != nil {
-	//	log.Fatalf("Failed to connect to the Ethereum client: %v", err)
-	//}
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		log.Fatal("cannot assert type: publicKey is not of type *ecdsa.PublicKey")
+	}
 
-	// 私钥和地址（确保使用你的私钥和地址）
-	//privateKey, err := crypto.HexToECDSA("your-private-key-here") // 请替换为你的私钥
-	//if err != nil {
-	//	log.Fatalf("Invalid private key: %v", err)
-	//}
-	//publicKey := privateKey.Public()
-	//publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
-	//if !ok {
-	//	log.Fatal("Error recovering public key")
-	//}
-	//fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA) // 计算公钥对应的地址
+	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// 设置交易参数
-	//fromAddress := common.HexToAddress("to-address-here")                  // 请替换为接收地址
-	//toAddress := common.HexToAddress("to-address-here")                    // 请替换为接收地址
-	//value := big.NewInt(1000000000000000000)                               // 发送1 ETH（以Wei为单位）
-	//gasLimit := uint64(21000)                                              // 设置Gas限制，根据你的需要进行调整
-	//nonce, err := client.PendingNonceAt(context.Background(), fromAddress) // 获取nonce值
-	//if err != nil {
-	//	log.Fatalf("Failed to get nonce: %v", err)
-	//}
-	//gasPrice, err := client.SuggestGasPrice(context.Background()) // 获取当前Gas价格建议
-	//if err != nil {
-	//	log.Fatalf("Failed to suggest gas price: %v", err)
-	//}
-	//data, err := c.abi.Pack(method, params...)
-	//tx := types.NewTx(&types.LegacyTx{
-	//	Nonce:    nonce,
-	//	To:       &toAddress,
-	//	Value:    amount,
-	//	Gas:      gasLimit,
-	//	GasPrice: gasPrice,
-	//	Data:     data,
-	//})
-	//
-	//// 签名机返回的数据 sData
-	//sData := "0xab...."
-	//sData = strings.TrimPrefix(sData, "0x")
-	//sDataByte := hexutils.HexToBytes(sData)
-	//newTx := types.Transaction{}
-	//
-	//err := newTx.UnmarshalJSON(sDataByte)
-	//if err != nil {
-	//	return
-	//}
-	//// 发送交易到链上
-	//err = client.SendTransaction(context.Background(), &newTx)
-	//if err != nil {
-	//	log.Fatalf("Failed to send transaction: %v", err)
-	//}
-	//fmt.Println("Transaction sent:", signedTx.Hash().Hex()) // 打印交易哈希
+	value := big.NewInt(1000000000000000000) // in wei (1 eth)
+	gasLimit := uint64(21000)                // in units
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	toAddress := common.HexToAddress("0x4592d8f8d7b001e72cb26a73e4fa1806a51ac79d")
+	var data []byte
+	tx := types.NewTransaction(nonce, toAddress, value, gasLimit, gasPrice, data)
+
+	chainID, err := client.NetworkID(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), privateKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ts := types.Transactions{signedTx}
+	rawTxBytes := ts.GetRlp(0)
+	rawTxHex := hex.EncodeToString(rawTxBytes)
+
+	fmt.Printf(rawTxHex) // f86...772
 }
