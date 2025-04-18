@@ -1,19 +1,21 @@
 package contract
 
 import (
+	"coinstore/utils"
 	"encoding/hex"
 	"fmt"
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/fbsobreira/gotron-sdk/pkg/common"
 	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
 	"github.com/fbsobreira/gotron-sdk/pkg/store"
+	"os"
 	"strings"
 )
 
 func InitTronEnv() {
-	//coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE_TRON")
-	//privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
-	privateKeyStr := "3f9f4b92d709f167b8ba98b9f89a5ec5272973aeb8f1affd11d5d2c67c5acf62"
+	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE_TRON")
+	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
+	//privateKeyStr := "3f9f4b92d709f167b8ba98b9f89a5ec5272973aeb8f1affd11d5d2c67c5acf62"
 	ChainConfig = ChainConfigs{
 		BridgeId:    3,
 		ChainId:     3448148188,
