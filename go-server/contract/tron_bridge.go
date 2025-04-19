@@ -120,7 +120,7 @@ func (b *BridgeTron) Init() {
 //}
 
 func (b *BridgeTron) GrantRoleTest(role, addr string) (string, error) {
-	account := "TTgY73yj5vzGM2HGHhVt7AR7avMW4jUx6n"
+	account := "TEz4CMzy3mgtVECcYxu5ui9nJfgv3oXhyx"
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
 	tx, err := b.Cli.TriggerContract(account, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
 
