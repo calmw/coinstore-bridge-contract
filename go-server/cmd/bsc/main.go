@@ -13,36 +13,36 @@ import (
 func main() {
 	contract.InitBscEnv()
 	//contract.InitBscProdEnv()
-	bridge, err := contract.NewBridge()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	bridge.Init()
-
-	bridge.AdminSetResource(
-		contract.ResourceIdEth,
-		2,
-		common.HexToAddress(contract.ChainConfig.WEthAddress),
-		big.NewInt(100),
-		false,
-		false,
-		false,
-	)
-
-	vote, err := contract.NewVote()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	vote.Init()
+	//bridge, err := contract.NewBridge()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//bridge.Init()
+	//
+	//bridge.AdminSetResource(
+	//	contract.ResourceIdEth,
+	//	2,
+	//	common.HexToAddress(contract.ChainConfig.WEthAddress),
+	//	big.NewInt(100),
+	//	false,
+	//	false,
+	//	false,
+	//)
+	//
+	//vote, err := contract.NewVote()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//vote.Init()
 
 	tantin, err := contract.NewTanTin()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	tantin.Init()
+	//tantin.Init()
 
 	amount := big.NewInt(2)
 	Usdt, err := contract.NewErc20(common.HexToAddress(contract.ChainConfig.UsdtAddress))

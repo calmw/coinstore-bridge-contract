@@ -5,14 +5,16 @@ import (
 	"context"
 	"crypto/sha256"
 	"crypto/tls"
-	"encoding/hex"
+	"encoding/json"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/status-im/keycard-go/hexutils"
 	"io"
 	"log"
 	"math/big"
@@ -35,29 +37,44 @@ type SigDataPost struct {
 	Fingerprint string `json:"fingerprint"`
 }
 
-func ApproveSigTest() {
-	client, err := ethclient.Dial("https://rpc.tantin.com")
+type MachineResp struct {
+	Code    int    `json:"code"`
+	Data    string `json:"data"`
+	Message string `json:"message"`
+}
+
+func ApproveSigTest() error {
+	//client, err := ethclient.Dial("https://rpc.tantin.com")
+	//chainId:=202502
+	chainId := 97
+	client, err := ethclient.Dial("https://data-seed-prebsc-2-s3.bnbchain.org:8545")
 	if err != nil {
 		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
 	}
 	//设置交易参数
 	fromAddress := common.HexToAddress("0x1933ccd14cafe561d862e5f35d0de75322a55412") // Owner
-	toAddress := common.HexToAddress("0x2Bf013133aE838B6934B7F96fd43A10EE3FC3e18")   // USDT
+	//toAddress := common.HexToAddress("0x2Bf013133aE838B6934B7F96fd43A10EE3FC3e18")   // USDT
+	toAddress := common.HexToAddress("0x4b62Da623b5aAfE4BAEe909e1fBB321b96887B3D") // USDT
 	value := big.NewInt(0)
-	gasLimit := uint64(21000)
-	nonce, err := client.PendingNonceAt(context.Background(), fromAddress) // 获取nonce值
+	//gasLimit := uint64(21000)
+	gasLimit := uint64(50000)
+	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {
 		log.Fatalf("Failed to get nonce: %v", err)
+		return err
 	}
-	gasPrice, err := client.SuggestGasPrice(context.Background()) // 获取当前Gas价格建议
+	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
 		log.Fatalf("Failed to suggest gas price: %v", err)
+		return err
 	}
+
 	data, err := InputData(common.HexToAddress("0x982D3ef9Db6c2cb4AaDfD609EB69264F382e5c5d"), big.NewInt(1))
 	if err != nil {
 		log.Fatalf("Failed to suggest gas price2 : %v", err)
-		return
+		return err
 	}
+	//gasPrice = gasPrice.Mul(gasPrice, big.NewInt(2))
 	tx := types.NewTx(&types.LegacyTx{
 		Nonce:    nonce,
 		To:       &toAddress,
@@ -66,9 +83,12 @@ func ApproveSigTest() {
 		GasPrice: gasPrice,
 		Data:     data,
 	})
-	fmt.Println("txData")
-	json, err := tx.MarshalJSON()
-	fmt.Println(string(json))
+	marshalJSON, err := tx.MarshalJSON()
+	if err != nil {
+		return err
+	}
+	fmt.Println("txDataJson")
+	fmt.Println(string(marshalJSON))
 	taskID := RandInt(100, 10000)
 	// 编码数据
 	var buf bytes.Buffer
@@ -78,7 +98,7 @@ func ApproveSigTest() {
 	fmt.Println(txDataRlp)
 	apiSecret := "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"
 	sigStr := fmt.Sprintf("%d%s%d%s%s",
-		202502,
+		chainId,
 		strings.ToLower(fromAddress.String()),
 		taskID,
 		txDataRlp,
@@ -91,25 +111,36 @@ func ApproveSigTest() {
 		FromAddress: fromAddress.String(),
 		TxData:      txDataRlp,
 		TaskID:      taskID,
-		ChainID:     202502,
+		ChainID:     chainId,
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
 	}
-	rlpData, err := RequestWithPem("https://10.234.99.69:8088/signature/sign", postData)
+	res, err := RequestWithPem("https://10.234.99.69:8088/signature/sign", postData)
 	fmt.Println("RequestWithPem error:", err)
+	var machineResp MachineResp
+	err = json.Unmarshal(res, &machineResp)
+	if err != nil {
+		return err
+	}
+	if machineResp.Code != 200 {
+		return errors.New("signature machine error")
+	}
 	// 发送交易
-	txHash, err := SendTransactionFromRlpData(client, fmt.Sprintf("%x", rlpData))
+	txHash, err := SendTransactionFromRlpData(client, machineResp.Data)
 	fmt.Println("SendTransactionFromRlpData:")
 	fmt.Println(err, txHash)
+	return err
 }
 
 // SendTransactionFromRlpData rawTx rlpDataHex
 func SendTransactionFromRlpData(cli *ethclient.Client, rlpDataHex string) (string, error) {
-	rawTxBytes, err := hex.DecodeString(rlpDataHex)
-	if err != nil {
-		return "", err
-	}
+	fmt.Println(rlpDataHex)
+	fmt.Println(strings.TrimPrefix(rlpDataHex, "0x"))
+	rawTxBytes := hexutils.HexToBytes(strings.TrimPrefix(rlpDataHex, "0x"))
+
+	//bb := hexutils.HexToBytes("f8ac808504a817c8008261a8942bf013133ae838b6934b7f96fd43a10ee3fc3e1880b844095ea7b3000000000000000000000000982d3ef9db6c2cb4aadfd609eb69264f382e5c5d000000000000000000000000000000000000000000000000000000000000000183062e2fa00a41d1514e447d8a71590f824b27dcf4aabd8387eb5975e540e84f163ccef1a2a04b2e16da5994099e1c82043109f6c608cc03ee76595b55c2e042301f49655003")
 	tx := new(types.Transaction)
-	err = rlp.DecodeBytes(rawTxBytes, &tx)
+	//err := rlp.DecodeBytes(bb, &tx)
+	err := rlp.DecodeBytes(rawTxBytes, &tx)
 	if err != nil {
 		return "", err
 	}
@@ -209,7 +240,8 @@ func RequestWithPem(url string, data SigDataPost) ([]byte, error) {
 	fmt.Println("post data:")
 	fmt.Println(postData)
 	strings.NewReader(postData)
-	request, _ := http.NewRequest("POST", url, nil)
+	d := strings.NewReader(postData)
+	request, _ := http.NewRequest("POST", url, d)
 	request.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(request)
 	if err != nil {
