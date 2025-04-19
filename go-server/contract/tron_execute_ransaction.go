@@ -11,7 +11,11 @@ func ExecuteTronTransaction(c *transaction.Controller, chainId int, fromAddress,
 	fmt.Println(c.Behavior.SigningImpl, "~~~~~~~~~")
 	switch c.Behavior.SigningImpl {
 	case transaction.Software:
-		c.SignTxForSending()
+		//c.SignTxForSending()
+		err := SignTxForSending(c, chainId, fromAddress, apiSecret)
+		if err != nil {
+			return err
+		}
 	case transaction.Ledger:
 		c.HardwareSignTxForSending()
 	}
