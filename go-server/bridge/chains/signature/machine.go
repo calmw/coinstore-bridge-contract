@@ -69,7 +69,7 @@ func SignAndSendTxTron(chainId int, fromAddress string, UnsignedRawData []byte, 
 	taskID := RandInt(100, 10000)
 	// 编码数据
 	txDataRlp := fmt.Sprintf("%x", UnsignedRawData)
-	fmt.Println("txDataRlp")
+	fmt.Println("rawData")
 	fmt.Println(txDataRlp)
 	sigStr := fmt.Sprintf("%d%s%d%s%s",
 		chainId,

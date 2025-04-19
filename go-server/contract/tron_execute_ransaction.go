@@ -35,7 +35,7 @@ func ExecuteTronTransaction(c *transaction.Controller, chainId int, fromAddress,
 
 func SignTxForSending(c *transaction.Controller, chainId int, fromAddress, apiSecret string) error {
 	rawData, err := proto.Marshal(c.Tx.GetRawData())
-	fmt.Println("rawData !! 1", fmt.Sprintf("%x", rawData))
+	//fmt.Println("rawData !! 1", fmt.Sprintf("%x", rawData))
 	if err != nil {
 		return err
 	}
