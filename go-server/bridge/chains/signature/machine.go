@@ -106,7 +106,7 @@ func SignAndSendTxTron(chainId int, fromAddress string, UnsignedRawData []byte, 
 		return nil, err
 	}
 	if machineResp.Code != 200 {
-		return nil, errors.New("signature machine error")
+		return nil, fmt.Errorf("signature machine error: %v", machineResp.Message)
 	}
 
 	return hexutils.HexToBytes(machineResp.Data), nil
