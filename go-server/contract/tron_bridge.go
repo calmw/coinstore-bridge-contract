@@ -1,22 +1,12 @@
 package contract
 
 import (
-	"coinstore/abi"
-	"coinstore/bridge/tron"
-	"coinstore/tron_keystore"
-	"coinstore/utils"
 	"fmt"
 	"github.com/calmw/tron-sdk/pkg/client"
 	"github.com/calmw/tron-sdk/pkg/client/transaction"
 	"github.com/calmw/tron-sdk/pkg/common"
-	"github.com/calmw/tron-sdk/pkg/keystore"
-	ethCommon "github.com/ethereum/go-ethereum/common"
-	"github.com/status-im/keycard-go/hexutils"
 	"google.golang.org/grpc"
 	"log"
-	"math/big"
-	"os"
-	"strings"
 )
 
 const (
@@ -29,9 +19,9 @@ const (
 
 type BridgeTron struct {
 	ContractAddress string
-	Ka              *keystore.Account
-	Ks              *keystore.KeyStore
-	Cli             *client.GrpcClient
+	//Ka              *keystore.Account
+	//Ks              *keystore.KeyStore
+	Cli *client.GrpcClient
 }
 
 func NewBridgeTron() (*BridgeTron, error) {
@@ -40,14 +30,14 @@ func NewBridgeTron() (*BridgeTron, error) {
 	if err != nil {
 		return nil, err
 	}
-	prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
-	ks, ka, err := tron_keystore.InitKeyStore(prvKey)
-	if err != nil {
-		panic(fmt.Sprintf("private key conversion failed %v", err))
-	}
+	//prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
+	//ks, ka, err := tron_keystore.InitKeyStore(prvKey)
+	//if err != nil {
+	//	panic(fmt.Sprintf("private key conversion failed %v", err))
+	//}
 	return &BridgeTron{
-		Ks:              ks,
-		Ka:              ka,
+		//Ks:              ks,
+		//Ka:              ka,
 		Cli:             cli,
 		ContractAddress: ChainConfig.BridgeContractAddress,
 	}, nil
@@ -75,63 +65,61 @@ func (b *BridgeTron) Init() {
 	//fmt.Println(txHash6, err6)
 }
 
-func (b *BridgeTron) AdminSetEnv() (string, error) {
+//func (b *BridgeTron) AdminSetEnv() (string, error) {
+//
+//	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
+//	defer b.Ks.Lock(b.Ka.Address)
+//	sigNonce, err := tron.GetSigNonce(b.ContractAddress, OwnerAccount)
+//	if err != nil {
+//		return "", err
+//	}
+//	//sigNonce := big.NewInt(0)
+//
+//	voteEth, _ := utils.TronToEth(ChainConfig.VoteContractAddress)
+//	signature, _ := abi.BridgeAdminSetEnvSignatureTron(
+//		sigNonce,
+//		ethCommon.HexToAddress(voteEth),
+//		big.NewInt(ChainConfig.BridgeId),
+//		big.NewInt(ChainConfig.ChainTypeId),
+//	)
+//
+//	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%d\"},{\"uint256\":\"%d\"},{\"bytes\":\"%s\"}]",
+//		ChainConfig.VoteContractAddress,
+//		ChainConfig.BridgeId,
+//		ChainConfig.ChainTypeId,
+//		fmt.Sprintf("%x", signature),
+//	)
+//	fmt.Println(triggerData)
+//	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetEnv(address,uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
+//	if err != nil {
+//		return "", err
+//	}
+//	ctrlr := transaction.NewController(b.Cli, b.Ks, b.Ka, tx.Transaction)
+//	if err = ctrlr.ExecuteTransaction(); err != nil {
+//		return "", err
+//	}
+//	return common.BytesToHexString(tx.GetTxid()), nil
+//}
 
-	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
-	defer b.Ks.Lock(b.Ka.Address)
-	sigNonce, err := tron.GetSigNonce(b.ContractAddress, OwnerAccount)
-	if err != nil {
-		return "", err
-	}
-	//sigNonce := big.NewInt(0)
-
-	voteEth, _ := utils.TronToEth(ChainConfig.VoteContractAddress)
-	signature, _ := abi.BridgeAdminSetEnvSignatureTron(
-		sigNonce,
-		ethCommon.HexToAddress(voteEth),
-		big.NewInt(ChainConfig.BridgeId),
-		big.NewInt(ChainConfig.ChainTypeId),
-	)
-
-	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%d\"},{\"uint256\":\"%d\"},{\"bytes\":\"%s\"}]",
-		ChainConfig.VoteContractAddress,
-		ChainConfig.BridgeId,
-		ChainConfig.ChainTypeId,
-		fmt.Sprintf("%x", signature),
-	)
-	fmt.Println(triggerData)
-	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetEnv(address,uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
-	if err != nil {
-		return "", err
-	}
-	ctrlr := transaction.NewController(b.Cli, b.Ks, b.Ka, tx.Transaction)
-	if err = ctrlr.ExecuteTransaction(); err != nil {
-		return "", err
-	}
-	return common.BytesToHexString(tx.GetTxid()), nil
-}
-
-func (b *BridgeTron) GrantRole(role, addr string) (string, error) {
-	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
-	defer b.Ks.Lock(b.Ka.Address)
-	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
-	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
-
-	fmt.Println(111, b.ContractAddress, err)
-	if err != nil {
-		return "", err
-	}
-	ctrlr := transaction.NewController(b.Cli, b.Ks, b.Ka, tx.Transaction)
-	if err = ctrlr.ExecuteTransaction(); err != nil {
-		return "", err
-	}
-	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
-	return common.BytesToHexString(tx.GetTxid()), nil
-}
+//func (b *BridgeTron) GrantRole(role, addr string) (string, error) {
+//	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
+//	defer b.Ks.Lock(b.Ka.Address)
+//	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
+//	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
+//
+//	fmt.Println(111, b.ContractAddress, err)
+//	if err != nil {
+//		return "", err
+//	}
+//	ctrlr := transaction.NewController(b.Cli, b.Ks, b.Ka, tx.Transaction)
+//	if err = ctrlr.ExecuteTransaction(); err != nil {
+//		return "", err
+//	}
+//	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
+//	return common.BytesToHexString(tx.GetTxid()), nil
+//}
 
 func (b *BridgeTron) GrantRoleTest(role, addr string) (string, error) {
-	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
-	defer b.Ks.Lock(b.Ka.Address)
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
 	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
 
@@ -139,7 +127,7 @@ func (b *BridgeTron) GrantRoleTest(role, addr string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	ctrlr := transaction.NewController(b.Cli, b.Ks, b.Ka, tx.Transaction)
+	ctrlr := transaction.NewController(b.Cli, nil, nil, tx.Transaction)
 	if err = ExecuteTronTransaction(ctrlr, 728126428, OwnerAccount, "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"); err != nil {
 		return "", err
 	}
@@ -147,49 +135,49 @@ func (b *BridgeTron) GrantRoleTest(role, addr string) (string, error) {
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
-func (b *BridgeTron) AdminSetResource(resourceId string, assetsType uint8, tokenAddress string, fee *big.Int, pause bool, burnable bool, mintable bool) (string, error) {
-	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
-	defer b.Ks.Lock(b.Ka.Address)
-	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
-	sigNonce, err := tron.GetSigNonce(b.ContractAddress, OwnerAccount)
-	if err != nil {
-		return "", err
-	}
-	//sigNonce := big.NewInt(1)
-	tokenEth, _ := utils.TronToEth(tokenAddress)
-	tantinEth, _ := utils.TronToEth(ChainConfig.TantinContractAddress)
-	signature, _ := abi.BridgeAdminSetResourceSignatureTron(
-		sigNonce,
-		big.NewInt(ChainConfig.BridgeId),
-		[32]byte(resourceIdBytes),
-		assetsType,
-		ethCommon.HexToAddress(tokenEth),
-		ethCommon.HexToAddress(tantinEth),
-		fee,
-		pause,
-		burnable,
-		mintable,
-	)
-	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bool\":%v},{\"bool\":%v},{\"bool\":%v},{\"address\":\"%s\"},{\"bytes\":\"%s\"}]",
-		strings.TrimPrefix(resourceId, "0x"),
-		assetsType,
-		tokenAddress,
-		fee,
-		false,
-		false,
-		false,
-		ChainConfig.TantinContractAddress,
-		fmt.Sprintf("%x", signature),
-	)
-	fmt.Println(triggerData)
-	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetResource(bytes32,uint8,address,uint256,bool,bool,bool,address,bytes)", triggerData, 300000000, 0, "", 0)
-	if err != nil {
-		return "", err
-	}
-	ctrlr := transaction.NewController(b.Cli, b.Ks, b.Ka, tx.Transaction)
-	if err = ctrlr.ExecuteTransaction(); err != nil {
-		return "", err
-	}
-	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
-	return common.BytesToHexString(tx.GetTxid()), nil
-}
+//func (b *BridgeTron) AdminSetResource(resourceId string, assetsType uint8, tokenAddress string, fee *big.Int, pause bool, burnable bool, mintable bool) (string, error) {
+//	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
+//	defer b.Ks.Lock(b.Ka.Address)
+//	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
+//	sigNonce, err := tron.GetSigNonce(b.ContractAddress, OwnerAccount)
+//	if err != nil {
+//		return "", err
+//	}
+//	//sigNonce := big.NewInt(1)
+//	tokenEth, _ := utils.TronToEth(tokenAddress)
+//	tantinEth, _ := utils.TronToEth(ChainConfig.TantinContractAddress)
+//	signature, _ := abi.BridgeAdminSetResourceSignatureTron(
+//		sigNonce,
+//		big.NewInt(ChainConfig.BridgeId),
+//		[32]byte(resourceIdBytes),
+//		assetsType,
+//		ethCommon.HexToAddress(tokenEth),
+//		ethCommon.HexToAddress(tantinEth),
+//		fee,
+//		pause,
+//		burnable,
+//		mintable,
+//	)
+//	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bool\":%v},{\"bool\":%v},{\"bool\":%v},{\"address\":\"%s\"},{\"bytes\":\"%s\"}]",
+//		strings.TrimPrefix(resourceId, "0x"),
+//		assetsType,
+//		tokenAddress,
+//		fee,
+//		false,
+//		false,
+//		false,
+//		ChainConfig.TantinContractAddress,
+//		fmt.Sprintf("%x", signature),
+//	)
+//	fmt.Println(triggerData)
+//	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetResource(bytes32,uint8,address,uint256,bool,bool,bool,address,bytes)", triggerData, 300000000, 0, "", 0)
+//	if err != nil {
+//		return "", err
+//	}
+//	ctrlr := transaction.NewController(b.Cli, b.Ks, b.Ka, tx.Transaction)
+//	if err = ctrlr.ExecuteTransaction(); err != nil {
+//		return "", err
+//	}
+//	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
+//	return common.BytesToHexString(tx.GetTxid()), nil
+//}
