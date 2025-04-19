@@ -120,15 +120,16 @@ func (b *BridgeTron) Init() {
 //}
 
 func (b *BridgeTron) GrantRoleTest(role, addr string) (string, error) {
+	account := "TTgY73yj5vzGM2HGHhVt7AR7avMW4jUx6n"
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
-	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
+	tx, err := b.Cli.TriggerContract(account, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
 
 	fmt.Println(111, b.ContractAddress, err)
 	if err != nil {
 		return "", err
 	}
 	ctrlr := transaction.NewController(b.Cli, nil, nil, tx.Transaction)
-	if err = ExecuteTronTransaction(ctrlr, 728126428, OwnerAccount, "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"); err != nil {
+	if err = ExecuteTronTransaction(ctrlr, 728126428, account, "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"); err != nil {
 		return "", err
 	}
 	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
