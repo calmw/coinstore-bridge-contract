@@ -3,6 +3,8 @@ package main
 import (
 	"coinstore/contract"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
+	"math/big"
 )
 
 func main() {
@@ -13,39 +15,39 @@ func main() {
 		return
 	}
 	bridge.Init()
-	//
-	//bridge.AdminSetResource(
-	//	contract.ResourceIdEth,
-	//	1,
-	//	common.HexToAddress(contract.ChainConfig.WEthAddress),
-	//	big.NewInt(100),
-	//	false,
-	//	false,
-	//	false,
-	//)
-	//bridge.AdminSetResource(
-	//	contract.ResourceIdWeth,
-	//	2,
-	//	common.HexToAddress(contract.ChainConfig.WEthAddress),
-	//	big.NewInt(100),
-	//	false,
-	//	false,
-	//	false,
-	//)
-	//
-	//vote, err := contract.NewVote()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//vote.Init()
 
-	//tantin, err := contract.NewTanTin()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	////tantin.Init()
+	bridge.AdminSetResource(
+		contract.ResourceIdEth,
+		1,
+		common.HexToAddress(contract.ChainConfig.WEthAddress),
+		big.NewInt(100),
+		false,
+		false,
+		false,
+	)
+	bridge.AdminSetResource(
+		contract.ResourceIdWeth,
+		2,
+		common.HexToAddress(contract.ChainConfig.WEthAddress),
+		big.NewInt(100),
+		false,
+		false,
+		false,
+	)
+
+	vote, err := contract.NewVote()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	vote.Init()
+
+	tantin, err := contract.NewTanTin()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	tantin.Init()
 	//amount := big.NewInt(2)
 	////Usdt, err := contract.NewErc20(common.HexToAddress(contract.ChainConfig.UsdtAddress))
 	////if err != nil {

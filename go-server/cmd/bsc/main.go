@@ -29,7 +29,6 @@ func main() {
 		false,
 	)
 
-	fmt.Println("~~~~~~~~~~")
 	vote, err := contract.NewVote()
 	if err != nil {
 		fmt.Println(err)
@@ -43,7 +42,6 @@ func main() {
 		return
 	}
 	tantin.Init()
-	//tantin.AdminSetToken(contract.ResourceIdEth, 2, common.HexToAddress(contract.ChainConfig.WEthAddress), false, false, false)
 
 	amount := big.NewInt(2)
 	Usdt, err := contract.NewErc20(common.HexToAddress(contract.ChainConfig.UsdtAddress))
