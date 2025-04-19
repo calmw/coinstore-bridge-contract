@@ -1,20 +1,15 @@
 package ethereum
 
 import (
-	"coinstore/bridge/chains/ethereum/egs"
 	"coinstore/bridge/config"
-	"coinstore/utils"
 	"context"
-	"crypto/ecdsa"
 	"errors"
 	"fmt"
 	log "github.com/calmw/clog"
 	"github.com/calmw/tron-sdk/pkg/client"
-	"github.com/calmw/tron-sdk/pkg/keystore"
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 	"math/big"
@@ -26,7 +21,7 @@ type Connection struct {
 	chainType     config.ChainType
 	endpoint      string
 	http          bool
-	prvKey        *ecdsa.PrivateKey
+	from          string
 	gasLimit      *big.Int
 	maxGasPrice   *big.Int
 	minGasPrice   *big.Int
@@ -40,23 +35,18 @@ type Connection struct {
 	optsLock      *sync.Mutex
 	log           log.Logger
 	stop          chan int // All routines should exit when this channel is closed
-	// tron
-	keyStore   *keystore.KeyStore
-	keyAccount *keystore.Account
-	connTron   *client.GrpcClient
+	/// tron
+	//keyStore   *keystore.KeyStore
+	//keyAccount *keystore.Account
+	connTron *client.GrpcClient
 }
 
-func NewConnection(chainType config.ChainType, endpoint string, http bool, prvKey string, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
-	prvKey = utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", prvKey)
-	privateKey, err := crypto.HexToECDSA(prvKey)
-	if err != nil {
-		panic("private key conversion failed")
-	}
+func NewConnection(chainType config.ChainType, endpoint, from string, http bool, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
 	return &Connection{
 		chainType:   chainType,
 		endpoint:    endpoint,
 		http:        http,
-		prvKey:      privateKey,
+		from:        from,
 		gasLimit:    gasLimit,
 		maxGasPrice: maxGasPrice,
 		minGasPrice: minGasPrice,
@@ -81,49 +71,35 @@ func (c *Connection) Connect() error {
 	}
 	c.connEvm = ethclient.NewClient(rpcClient)
 
-	opts, _, err := c.newTransactOpts(big.NewInt(0), c.gasLimit, c.maxGasPrice)
-	if err != nil {
-		return err
-	}
-	c.opts = opts
-	c.nonce = 0
-	c.callOpts = &bind.CallOpts{From: crypto.PubkeyToAddress(c.prvKey.PublicKey)}
+	c.callOpts = &bind.CallOpts{From: ethcommon.HexToAddress(c.from)}
 
 	return nil
 }
 
 // newTransactOpts builds the TransactOpts for the connection's keypair.
-func (c *Connection) newTransactOpts(value, gasLimit, gasPrice *big.Int) (*bind.TransactOpts, uint64, error) {
-	privateKey := c.prvKey
-	address := ethcrypto.PubkeyToAddress(privateKey.PublicKey)
-
-	nonce, err := c.connEvm.PendingNonceAt(context.Background(), address)
+func (c *Connection) newTransactOpts() error {
+	nonce, err := c.connEvm.PendingNonceAt(context.Background(), ethcommon.HexToAddress(c.from))
 	if err != nil {
-		return nil, 0, err
+		return err
 	}
-
-	id, err := c.connEvm.ChainID(context.Background())
+	gasPrice, err := c.connEvm.SuggestGasPrice(context.Background())
 	if err != nil {
-		return nil, 0, err
+		return err
 	}
-
-	auth, err := bind.NewKeyedTransactorWithChainID(privateKey, id)
+	gasLimit, err := c.connEvm.EstimateGas(context.Background(), ethereum.CallMsg{})
 	if err != nil {
-		return nil, 0, err
+		return err
 	}
-	//gasPrice, err := c.conn.SuggestGasPrice(context.Background())
-	//if err != nil {
-	//	return nil, 0, err
-	//}
-	auth.Nonce = big.NewInt(int64(nonce))
-	auth.Value = value
-	auth.GasLimit = uint64(gasLimit.Int64())
-	//auth.GasLimit = 0
-	auth.GasPrice = gasPrice
-	//auth.GasPrice = nil
-	auth.Context = context.Background()
+	gasTipCap, err := c.connEvm.SuggestGasTipCap(context.Background())
+	if err != nil {
+		return err
+	}
+	c.opts.Nonce = big.NewInt(int64(nonce))
+	c.opts.GasPrice = gasPrice
+	c.opts.GasLimit = gasLimit
+	c.opts.GasTipCap = gasTipCap
 
-	return auth, nonce, nil
+	return nil
 }
 
 func (c *Connection) ClientEvm() *ethclient.Client {
@@ -142,29 +118,15 @@ func (c *Connection) CallOpts() *bind.CallOpts {
 	return c.callOpts
 }
 
-func (c *Connection) KeyPrv() *ecdsa.PrivateKey {
-	return c.prvKey
-}
-
-func (c *Connection) SafeEstimateGas(ctx context.Context) (*big.Int, error) {
+func (c *Connection) SafeEstimateGas() (*big.Int, error) {
 	var suggestedGasPrice *big.Int
-	if c.egsApiKey != "" {
-		price, err := egs.FetchGasPrice(c.egsApiKey, c.egsSpeed)
-		if err != nil {
-			c.log.Error("Couldn't fetch gasPrice from GSN", "err", err)
-		} else {
-			suggestedGasPrice = price
-		}
+	nodePriceEstimate, err := c.connEvm.SuggestGasPrice(context.TODO())
+	if err != nil {
+		return nil, err
+	} else {
+		suggestedGasPrice = nodePriceEstimate
 	}
-	if suggestedGasPrice == nil {
-		c.log.Debug("Fetching gasPrice from node")
-		nodePriceEstimate, err := c.connEvm.SuggestGasPrice(context.TODO())
-		if err != nil {
-			return nil, err
-		} else {
-			suggestedGasPrice = nodePriceEstimate
-		}
-	}
+
 	gasPrice := multiplyGasPrice(suggestedGasPrice, c.gasMultiplier)
 	if gasPrice.Cmp(c.minGasPrice) == -1 {
 		return c.minGasPrice, nil
@@ -175,7 +137,7 @@ func (c *Connection) SafeEstimateGas(ctx context.Context) (*big.Int, error) {
 	}
 }
 
-func (c *Connection) EstimateGasLondon(ctx context.Context, baseFee *big.Int) (*big.Int, *big.Int, error) {
+func (c *Connection) EstimateGasLondon(baseFee *big.Int) (*big.Int, *big.Int, error) {
 	var maxPriorityFeePerGas *big.Int
 	var maxFeePerGas *big.Int
 
@@ -230,17 +192,15 @@ func (c *Connection) LockAndUpdateOpts() error {
 	}
 
 	if head.BaseFee != nil {
-		c.opts.GasTipCap, c.opts.GasFeeCap, err = c.EstimateGasLondon(context.TODO(), head.BaseFee)
+		c.opts.GasTipCap, c.opts.GasFeeCap, err = c.EstimateGasLondon(head.BaseFee)
 		if err != nil {
 			c.UnlockOpts()
 			return err
 		}
-
-		// Both gasPrice and (maxFeePerGas or maxPriorityFeePerGas) cannot be specified: https://github.com/ethereum/go-ethereum/blob/95bbd46eabc5d95d9fb2108ec232dd62df2f44ab/accounts/abi/bind/base.go#L254
 		c.opts.GasPrice = nil
 	} else {
 		var gasPrice *big.Int
-		gasPrice, err = c.SafeEstimateGas(context.TODO())
+		gasPrice, err = c.SafeEstimateGas()
 		if err != nil {
 			c.UnlockOpts()
 			return err

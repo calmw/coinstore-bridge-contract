@@ -6,7 +6,6 @@ import (
 	"github.com/calmw/tron-sdk/pkg/address"
 	"github.com/shopspring/decimal"
 	"math/big"
-	"os"
 )
 
 type ChainType int
@@ -31,7 +30,6 @@ type Config struct {
 	Endpoint              string
 	From                  string
 	FromTron              address.Address
-	PrivateKey            string
 	BridgeContractAddress string
 	VoteContractAddress   string
 	GasLimit              *big.Int
@@ -45,10 +43,6 @@ type Config struct {
 }
 
 func NewConfig(cfg model.ChainInfo) Config {
-	key := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
-	if ChainType(cfg.ChainType) == ChainTypeTron {
-		key = os.Getenv("COIN_STORE_BRIDGE_TRON")
-	}
 	var err error
 	gasLimit := big.NewInt(DefaultGasLimit)
 	if cfg.GasLimit > 0 {
@@ -92,7 +86,6 @@ func NewConfig(cfg model.ChainInfo) Config {
 		Endpoint:              cfg.Endpoint,
 		From:                  cfg.From,
 		FromTron:              fromAddress,
-		PrivateKey:            key,
 		BridgeContractAddress: cfg.BridgeContract,
 		VoteContractAddress:   cfg.VoteContract,
 		GasLimit:              gasLimit,

@@ -2,7 +2,6 @@ package chains
 
 import (
 	"coinstore/bridge/msg"
-	"crypto/ecdsa"
 	"github.com/calmw/tron-sdk/pkg/client"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
@@ -12,7 +11,6 @@ import (
 
 type Connection interface {
 	Connect() error
-	KeyPrv() *ecdsa.PrivateKey
 	Opts() *bind.TransactOpts
 	CallOpts() *bind.CallOpts
 	LockAndUpdateOpts() error

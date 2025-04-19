@@ -11,19 +11,10 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/status-im/keycard-go/hexutils"
-	"math/big"
 	"strings"
 )
 
-func SignAndSendTxEth(cli *ethclient.Client, fromAddress, toAddress common.Address, nonce, gasLimit, chainId uint64, gasPrice, value *big.Int, inputData []byte, apiSecret string) error {
-	tx := types.NewTx(&types.LegacyTx{
-		Nonce:    nonce,
-		To:       &toAddress,
-		Value:    value,
-		Gas:      gasLimit,
-		GasPrice: gasPrice,
-		Data:     inputData,
-	})
+func SignAndSendTxEth(cli *ethclient.Client, fromAddress common.Address, chainId uint64, tx *types.Transaction, apiSecret string) error {
 	marshalJSON, err := tx.MarshalJSON()
 	if err != nil {
 		return err
@@ -91,7 +82,7 @@ func SignAndSendTxTron(chainId int, fromAddress string, UnsignedRawData []byte, 
 	fingerprint := sha256.Sum256([]byte(sigStr))
 	fingerprint = sha256.Sum256(fingerprint[:])
 	postData := SigDataPost{
-		FromAddress: strings.ToLower(fromAddress),
+		FromAddress: fromAddress,
 		TxData:      txDataRlp,
 		TaskID:      taskID,
 		ChainID:     chainId,
