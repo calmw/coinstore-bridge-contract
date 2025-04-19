@@ -27,6 +27,7 @@ func ExecuteTronTransaction(c *transaction.Controller, chainId int, fromAddress,
 	}
 	c.SendSignedTx()
 	c.TxConfirmation()
+	fmt.Println("!!!!!!!!!!!!~~###", c.ExecutionError)
 	return c.ExecutionError
 }
 
