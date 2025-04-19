@@ -28,7 +28,7 @@ type MachineResp struct {
 }
 
 func GetSignedRlpData(url string, data SigDataPost) ([]byte, error) {
-	b, err := os.ReadFile("../sig1.pem")
+	b, err := os.ReadFile("/tmp/sig1.pem")
 	if err != nil {
 		log.Fatal(err)
 	}
