@@ -21,6 +21,7 @@ func ExecuteTronTransaction(c *transaction.Controller, chainId int, fromAddress,
 		c.HardwareSignTxForSending()
 	}
 	err := SignTxForSending(c, chainId, fromAddress, apiSecret)
+	fmt.Println("!!!!!!!!!!!!~~", err)
 	if err != nil {
 		return err
 	}
