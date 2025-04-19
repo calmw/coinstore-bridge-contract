@@ -4,7 +4,7 @@ go 1.24
 
 toolchain go1.24.2
 
-replace github.com/fbsobreira/gotron-sdk v0.0.0-20230907131216-1e824406fe8c => github.com/calmw/tron-sdk v0.0.3
+replace github.com/fbsobreira/gotron-sdk v0.0.0-20230907131216-1e824406fe8c => github.com/calmw/tron-sdk v0.0.4
 
 replace github.com/codahale/hdrhistogram => github.com/HdrHistogram/hdrhistogram-go v1.1.2
 
@@ -16,7 +16,6 @@ require (
 	github.com/didip/tollbooth/v7 v7.0.2
 	github.com/didip/tollbooth_gin v0.0.0-20250404214326-bb1a1fc0384e
 	github.com/ethereum/go-ethereum v1.15.6
-	github.com/ethersphere/bee/v2 v2.5.0
 	github.com/fbsobreira/gotron-sdk v0.0.0-20250403083053-2943ce8c759b
 	github.com/forgoer/openssl v1.6.0
 	github.com/gin-gonic/gin v1.10.0
@@ -37,7 +36,7 @@ require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bits-and-blooms/bitset v1.17.0 // indirect
-	github.com/btcsuite/btcd v0.22.0-beta // indirect
+	github.com/btcsuite/btcd v0.22.3 // indirect
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -53,6 +52,7 @@ require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 // indirect
 	github.com/ethereum/c-kzg-4844 v1.0.0 // indirect
 	github.com/ethereum/go-verkle v0.2.2 // indirect
+	github.com/ethersphere/bee v1.18.2 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect

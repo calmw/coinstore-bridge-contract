@@ -3,7 +3,7 @@ package abi
 import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/crypto"
-	beeCrypto "github.com/ethersphere/bee/v2/pkg/crypto"
+	beeCrypto "github.com/ethersphere/bee/pkg/crypto"
 	"os"
 )
 
