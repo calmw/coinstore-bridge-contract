@@ -3,7 +3,7 @@ package config
 import (
 	"coinstore/db"
 	"coinstore/model"
-	"github.com/fbsobreira/gotron-sdk/pkg/address"
+	"github.com/calmw/tron-sdk/pkg/address"
 	"github.com/shopspring/decimal"
 	"math/big"
 	"os"

@@ -3,7 +3,7 @@ package tron
 import "C"
 import (
 	"fmt"
-	"github.com/fbsobreira/gotron-sdk/pkg/client/transaction"
+	"github.com/calmw/tron-sdk/pkg/client/transaction"
 )
 
 func ExecuteTransaction(c *transaction.Controller) error {

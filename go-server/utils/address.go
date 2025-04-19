@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/fbsobreira/gotron-sdk/pkg/address"
+	"github.com/calmw/tron-sdk/pkg/address"
 	"strings"
 )
 

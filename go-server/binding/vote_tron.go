@@ -3,9 +3,9 @@ package binding
 import (
 	"coinstore/bridge/tron"
 	"coinstore/utils"
+	"github.com/calmw/tron-sdk/pkg/client"
+	"github.com/calmw/tron-sdk/pkg/keystore"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/fbsobreira/gotron-sdk/pkg/client"
-	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
 	"math/big"
 )
 

@@ -1,7 +1,7 @@
 package binding
 
 import (
-	"github.com/fbsobreira/gotron-sdk/pkg/address"
+	"github.com/calmw/tron-sdk/pkg/address"
 	"github.com/pkg/errors"
 )
 

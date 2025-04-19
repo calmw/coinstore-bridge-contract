@@ -6,11 +6,11 @@ import (
 	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"fmt"
+	"github.com/calmw/tron-sdk/pkg/client"
+	"github.com/calmw/tron-sdk/pkg/client/transaction"
+	"github.com/calmw/tron-sdk/pkg/common"
+	"github.com/calmw/tron-sdk/pkg/keystore"
 	ethCommon "github.com/ethereum/go-ethereum/common"
-	"github.com/fbsobreira/gotron-sdk/pkg/client"
-	"github.com/fbsobreira/gotron-sdk/pkg/client/transaction"
-	"github.com/fbsobreira/gotron-sdk/pkg/common"
-	"github.com/fbsobreira/gotron-sdk/pkg/keystore"
 	"github.com/status-im/keycard-go/hexutils"
 	"google.golang.org/grpc"
 	"log"
@@ -54,10 +54,10 @@ func NewBridgeTron() (*BridgeTron, error) {
 }
 
 func (b *BridgeTron) Init() {
-	//txHash20, err20 := b.GrantRoleTest(AdminRole, OwnerAccount)
-	//fmt.Println(txHash20, err20)
-	txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
-	fmt.Println(txHash2, err2)
+	txHash20, err20 := b.GrantRoleTest(AdminRole, OwnerAccount)
+	fmt.Println(txHash20, err20)
+	//txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
+	//fmt.Println(txHash2, err2)
 	//time.Sleep(time.Second)
 	//txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
 	//fmt.Println(txHash3, err3)

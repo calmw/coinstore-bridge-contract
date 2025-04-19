@@ -15,7 +15,7 @@ import (
 	"errors"
 	"fmt"
 	log "github.com/calmw/clog"
-	"github.com/fbsobreira/gotron-sdk/pkg/address"
+	"github.com/calmw/tron-sdk/pkg/address"
 	"github.com/shopspring/decimal"
 	"github.com/status-im/keycard-go/hexutils"
 	"math/big"

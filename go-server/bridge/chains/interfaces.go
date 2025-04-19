@@ -3,10 +3,10 @@ package chains
 import (
 	"coinstore/bridge/msg"
 	"crypto/ecdsa"
+	"github.com/calmw/tron-sdk/pkg/client"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/fbsobreira/gotron-sdk/pkg/client"
 	"math/big"
 )
 

@@ -1,7 +1,7 @@
 package service
 
 import (
-	tronAddress "github.com/fbsobreira/gotron-sdk/pkg/address"
+	tronAddress "github.com/calmw/tron-sdk/pkg/address"
 	"github.com/gin-gonic/gin"
 	"strings"
 )

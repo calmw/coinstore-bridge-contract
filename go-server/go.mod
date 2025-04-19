@@ -4,19 +4,18 @@ go 1.24
 
 toolchain go1.24.2
 
-replace github.com/fbsobreira/gotron-sdk v0.0.0-20230907131216-1e824406fe8c => github.com/calmw/tron-sdk v0.0.4
-
 replace github.com/codahale/hdrhistogram => github.com/HdrHistogram/hdrhistogram-go v1.1.2
 
-//replace github.com/karalabe/hid v1.0.1-0.20240306101548-573246063e52 => github.com/karalabe/hid v1.0.0
+//replace github.com/calmw/tron-sdk v0.0.10 => github.com/sunbankio/gotron-sdk v0.0.0-20231003155243-a269b0d040c3
 
 require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.4
 	github.com/calmw/clog v0.0.3
+	github.com/calmw/tron-sdk v0.0.14
 	github.com/didip/tollbooth/v7 v7.0.2
 	github.com/didip/tollbooth_gin v0.0.0-20250404214326-bb1a1fc0384e
-	github.com/ethereum/go-ethereum v1.15.6
-	github.com/fbsobreira/gotron-sdk v0.0.0-20250403083053-2943ce8c759b
+	github.com/ethereum/go-ethereum v1.15.8
+	github.com/ethersphere/bee v1.18.2
 	github.com/forgoer/openssl v1.6.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/jasonlvhit/gocron v0.0.1
@@ -52,7 +51,6 @@ require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 // indirect
 	github.com/ethereum/c-kzg-4844 v1.0.0 // indirect
 	github.com/ethereum/go-verkle v0.2.2 // indirect
-	github.com/ethersphere/bee v1.18.2 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
@@ -73,6 +71,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
+	github.com/karalabe/hid v1.0.1-0.20240306101548-573246063e52 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
@@ -97,7 +96,6 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
-	github.com/zondax/hid v0.9.2 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/arch v0.8.0 // indirect
