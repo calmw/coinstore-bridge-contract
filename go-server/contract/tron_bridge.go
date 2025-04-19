@@ -17,7 +17,6 @@ import (
 	"math/big"
 	"os"
 	"strings"
-	"time"
 )
 
 const (
@@ -55,23 +54,25 @@ func NewBridgeTron() (*BridgeTron, error) {
 }
 
 func (b *BridgeTron) Init() {
-	txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
-	fmt.Println(txHash2, err2)
-	time.Sleep(time.Second)
-	txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
-	fmt.Println(txHash3, err3)
-	time.Sleep(time.Second)
-	txHash, err := b.AdminSetEnv()
-	fmt.Println(txHash, err)
-	time.Sleep(time.Second)
-	txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), false, false, false)
-	fmt.Println(txHash4, err4)
-	time.Sleep(time.Second)
-	txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, big.NewInt(100), false, false, false)
-	fmt.Println(txHash5, err5)
-	time.Sleep(time.Second)
-	txHash6, err6 := b.AdminSetResource(ResourceIdEth, 2, ChainConfig.WEthAddress, big.NewInt(100), false, false, false)
-	fmt.Println(txHash6, err6)
+	txHash20, err20 := b.GrantRoleTest(AdminRole, OwnerAccount)
+	fmt.Println(txHash20, err20)
+	//txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
+	//fmt.Println(txHash2, err2)
+	//time.Sleep(time.Second)
+	//txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
+	//fmt.Println(txHash3, err3)
+	//time.Sleep(time.Second)
+	//txHash, err := b.AdminSetEnv()
+	//fmt.Println(txHash, err)
+	//time.Sleep(time.Second)
+	//txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), false, false, false)
+	//fmt.Println(txHash4, err4)
+	//time.Sleep(time.Second)
+	//txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, big.NewInt(100), false, false, false)
+	//fmt.Println(txHash5, err5)
+	//time.Sleep(time.Second)
+	//txHash6, err6 := b.AdminSetResource(ResourceIdEth, 2, ChainConfig.WEthAddress, big.NewInt(100), false, false, false)
+	//fmt.Println(txHash6, err6)
 }
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {
@@ -122,6 +123,24 @@ func (b *BridgeTron) GrantRole(role, addr string) (string, error) {
 	}
 	ctrlr := transaction.NewController(b.Cli, b.Ks, b.Ka, tx.Transaction)
 	if err = ctrlr.ExecuteTransaction(); err != nil {
+		return "", err
+	}
+	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
+	return common.BytesToHexString(tx.GetTxid()), nil
+}
+
+func (b *BridgeTron) GrantRoleTest(role, addr string) (string, error) {
+	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
+	defer b.Ks.Lock(b.Ka.Address)
+	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
+	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
+
+	fmt.Println(111, b.ContractAddress, err)
+	if err != nil {
+		return "", err
+	}
+	ctrlr := transaction.NewController(b.Cli, b.Ks, b.Ka, tx.Transaction)
+	if err = ExecuteTronTransaction(ctrlr); err != nil {
 		return "", err
 	}
 	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
