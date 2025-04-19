@@ -66,6 +66,9 @@ func ApproveSigTest() {
 		GasPrice: gasPrice,
 		Data:     data,
 	})
+	fmt.Println("txData")
+	json, err := tx.MarshalJSON()
+	fmt.Println(string(json))
 	taskID := RandInt(100, 10000)
 	// 编码数据
 	var buf bytes.Buffer
