@@ -1,12 +1,13 @@
 package contract
 
 import (
+	"coinstore/bridge/chains/signature"
 	"fmt"
 	"github.com/calmw/tron-sdk/pkg/client/transaction"
 	"google.golang.org/protobuf/proto"
 )
 
-func ExecuteTronTransaction(c *transaction.Controller) error {
+func ExecuteTronTransaction(c *transaction.Controller, chainId int, fromAddress, apiSecret string) error {
 	fmt.Println(c.Behavior.SigningImpl, "~~~~~~~~~")
 	switch c.Behavior.SigningImpl {
 	case transaction.Software:
@@ -14,30 +15,39 @@ func ExecuteTronTransaction(c *transaction.Controller) error {
 	case transaction.Ledger:
 		c.HardwareSignTxForSending()
 	}
+	err := SignTxForSending(c, chainId, fromAddress, apiSecret)
+	if err != nil {
+		return err
+	}
 	c.SendSignedTx()
 	c.TxConfirmation()
 	return c.ExecutionError
-	return nil
 }
 
-func SignTxForSending(c *transaction.Controller) error {
+func SignTxForSending(c *transaction.Controller, chainId int, fromAddress, apiSecret string) error {
 
 	///
 	rawData, err := proto.Marshal(c.Tx.GetRawData())
 	if err != nil {
 		return err
 	}
-	// 请求 让我打他
-
-	///
-	if c.ExecutionError != nil {
-		return
-	}
-	signedTransaction, err :=
-		c.Sender.Ks.SignTx(*c.Sender.Account, c.Tx)
+	sig, err := signature.SignAndSendTxTron(chainId, fromAddress, rawData, apiSecret)
 	if err != nil {
-		c.ExecutionError = err
-		return
+		return err
 	}
-	c.Tx = signedTransaction
+
+	c.Tx.Signature = append(c.Tx.Signature, sig)
+
+	return nil
+	///
+	//if c.ExecutionError != nil {
+	//	return
+	//}
+	//signedTransaction, err :=
+	//	c.Sender.Ks.SignTx(*c.Sender.Account, c.Tx)
+	//if err != nil {
+	//	c.ExecutionError = err
+	//	return
+	//}
+	//c.Tx = signedTransaction
 }
