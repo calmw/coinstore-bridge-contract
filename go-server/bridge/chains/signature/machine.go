@@ -1,5 +1,6 @@
 package signature
 
+/// 通过签名机签名
 import (
 	"bytes"
 	"crypto/sha256"
