@@ -140,7 +140,7 @@ func (b *BridgeTron) GrantRoleTest(role, addr string) (string, error) {
 		return "", err
 	}
 	ctrlr := transaction.NewController(b.Cli, b.Ks, b.Ka, tx.Transaction)
-	if err = ExecuteTronTransaction(ctrlr); err != nil {
+	if err = ExecuteTronTransaction(ctrlr, 728126428, OwnerAccount, "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"); err != nil {
 		return "", err
 	}
 	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
