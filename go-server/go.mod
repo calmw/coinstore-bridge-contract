@@ -6,7 +6,7 @@ toolchain go1.24.2
 
 replace github.com/codahale/hdrhistogram => github.com/HdrHistogram/hdrhistogram-go v1.1.2
 
-//replace github.com/calmw/tron-sdk v0.0.10 => github.com/sunbankio/gotron-sdk v0.0.0-20231003155243-a269b0d040c3
+//replace github.com/calmw/trigger-sdk v0.0.10 => github.com/sunbankio/gotron-sdk v0.0.0-20231003155243-a269b0d040c3
 
 require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.4

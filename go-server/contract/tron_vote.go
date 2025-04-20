@@ -2,7 +2,7 @@ package contract
 
 import (
 	"coinstore/abi"
-	"coinstore/bridge/tron"
+	"coinstore/bridge/chains/tron/trigger"
 	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"fmt"
@@ -70,7 +70,7 @@ func (v *VoteTron) Init() {
 func (v *VoteTron) AdminSetEnv(bridgeAddress string, expiry *big.Int, relayerThreshold *big.Int) (string, error) {
 	_ = v.Ks.Unlock(*v.Ka, tron_keystore.KeyStorePassphrase)
 	defer v.Ks.Lock(v.Ka.Address)
-	sigNonce, err := tron.GetSigNonce(v.ContractAddress, OwnerAccount)
+	sigNonce, err := trigger.GetSigNonce(v.ContractAddress, OwnerAccount)
 	if err != nil {
 		return "", err
 	}

@@ -4,7 +4,6 @@ import (
 	"coinstore/bridge/chains"
 	"coinstore/bridge/msg"
 	"coinstore/model"
-	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"errors"
 	"fmt"
@@ -161,9 +160,6 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 	w.muVote.Lock()
 	defer w.muVote.Unlock()
 
-	_ = w.conn.keyStore.Unlock(*w.conn.keyAccount, tron_keystore.KeyStorePassphrase)
-	defer w.conn.keyStore.Lock(w.conn.keyAccount.Address)
-
 	for i := 0; i < TxRetryLimit; i++ {
 		select {
 		case <-w.stop:
@@ -174,12 +170,14 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 				w.log.Info("voteProposal", "skip,src", m.Source, "depositNonce", m.DepositNonce)
 				return
 			}
-			txHash, err := w.voteContract.VoteProposal(
-				m.Source.Big(),
-				m.DepositNonce.Big(),
-				m.ResourceId,
-				dataHash,
-			)
+			//txHash, err := w.voteContract.VoteProposal(
+			//	m.Source.Big(),
+			//	m.DepositNonce.Big(),
+			//	m.ResourceId,
+			//	dataHash,
+			//)
+
+			w.VoteProposalBySigMachine()
 
 			fmt.Println("~~~~~~~~~~~~~~~~ dataHash ")
 			fmt.Println(fmt.Sprintf("0x%x", dataHash))
@@ -210,8 +208,6 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) {
 	w.muExec.Lock()
 	defer w.muExec.Unlock()
-	_ = w.conn.keyStore.Unlock(*w.conn.keyAccount, tron_keystore.KeyStorePassphrase)
-	defer w.conn.keyStore.Lock(w.conn.keyAccount.Address)
 
 	//var err error
 	var status bool
@@ -273,4 +269,12 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 	}
 	w.log.Error("Submission of Execute transaction failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce)
 	w.sysErr <- ErrFatalTx
+}
+
+func (w *Writer) VoteProposalBySigMachine(m msg.Message, dataHash [32]byte) {
+
+}
+
+func (w *Writer) ExecuteProposalBySigMachine(m msg.Message, data []byte, dataHash [32]byte) {
+	//ExecuteTronTransaction()
 }

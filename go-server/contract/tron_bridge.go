@@ -69,7 +69,7 @@ func (b *BridgeTron) Init() {
 //
 //	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
 //	defer b.Ks.Lock(b.Ka.Address)
-//	sigNonce, err := tron.GetSigNonce(b.ContractAddress, OwnerAccount)
+//	sigNonce, err := trigger.GetSigNonce(b.ContractAddress, OwnerAccount)
 //	if err != nil {
 //		return "", err
 //	}
@@ -140,7 +140,7 @@ func (b *BridgeTron) GrantRoleTest(role, addr string) (string, error) {
 //	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
 //	defer b.Ks.Lock(b.Ka.Address)
 //	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
-//	sigNonce, err := tron.GetSigNonce(b.ContractAddress, OwnerAccount)
+//	sigNonce, err := trigger.GetSigNonce(b.ContractAddress, OwnerAccount)
 //	if err != nil {
 //		return "", err
 //	}

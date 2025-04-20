@@ -25,7 +25,7 @@ type Writer struct {
 }
 
 func NewWriter(conn *Connection, cfg *config.Config, log log.Logger, stop <-chan int, sysErr chan<- error) *Writer {
-	voteContract, err := binding.NewVoteTron(cfg.From, cfg.VoteContractAddress, conn.keyStore, conn.keyAccount, conn.connTron)
+	voteContract, err := binding.NewVoteTron(cfg.From, cfg.VoteContractAddress, conn.connTron)
 	if err != nil {
 		panic("new vote contract failed")
 	}

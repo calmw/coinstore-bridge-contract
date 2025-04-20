@@ -1,17 +1,13 @@
 package tron
 
 import (
-	"coinstore/bridge/chains/ethereum/egs"
 	"coinstore/bridge/config"
-	"coinstore/tron_keystore"
-	"coinstore/utils"
 	"context"
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
 	log "github.com/calmw/clog"
 	"github.com/calmw/tron-sdk/pkg/client"
-	"github.com/calmw/tron-sdk/pkg/keystore"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
@@ -26,7 +22,7 @@ type Connection struct {
 	chainType     config.ChainType
 	endpoint      string
 	http          bool
-	prvKey        *ecdsa.PrivateKey
+	from          string
 	gasLimit      *big.Int
 	maxGasPrice   *big.Int
 	minGasPrice   *big.Int
@@ -40,30 +36,23 @@ type Connection struct {
 	optsLock      *sync.Mutex
 	log           log.Logger
 	stop          chan int // All routines should exit when this channel is closed
-	// tron
-	keyStore   *keystore.KeyStore
-	keyAccount *keystore.Account
-	connTron   *client.GrpcClient
+	// trigger
+	//keyStore   *keystore.KeyStore
+	//keyAccount *keystore.Account
+	connTron *client.GrpcClient
 }
 
-func NewConnection(chainType config.ChainType, endpoint string, http bool, prvKey string, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
-	prvKey = utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", prvKey)
-	ks, ka, err := tron_keystore.InitKeyStore(prvKey)
-	if err != nil {
-		panic(fmt.Sprintf("private key conversion failed %v", err))
-	}
+func NewConnection(chainType config.ChainType, endpoint string, http bool, from string, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
 	return &Connection{
 		chainType:   chainType,
 		endpoint:    endpoint,
 		http:        http,
-		prvKey:      nil,
+		from:        from,
 		gasLimit:    gasLimit,
 		maxGasPrice: maxGasPrice,
 		minGasPrice: minGasPrice,
 		log:         log,
 		stop:        make(chan int),
-		keyStore:    ks,
-		keyAccount:  ka,
 		optsLock:    &sync.Mutex{},
 	}
 }
@@ -139,25 +128,12 @@ func (c *Connection) SafeEstimateGas(ctx context.Context) (*big.Int, error) {
 
 	var suggestedGasPrice *big.Int
 
-	// First attempt to use EGS for the gas price if the api key is supplied
-	if c.egsApiKey != "" {
-		price, err := egs.FetchGasPrice(c.egsApiKey, c.egsSpeed)
-		if err != nil {
-			c.log.Error("Couldn't fetch gasPrice from GSN", "err", err)
-		} else {
-			suggestedGasPrice = price
-		}
-	}
-
-	// Fallback to the node rpc method for the gas price if GSN did not provide a price
-	if suggestedGasPrice == nil {
-		c.log.Debug("Fetching gasPrice from node")
-		nodePriceEstimate, err := c.connEvm.SuggestGasPrice(context.TODO())
-		if err != nil {
-			return nil, err
-		} else {
-			suggestedGasPrice = nodePriceEstimate
-		}
+	c.log.Debug("Fetching gasPrice from node")
+	nodePriceEstimate, err := c.connEvm.SuggestGasPrice(context.TODO())
+	if err != nil {
+		return nil, err
+	} else {
+		suggestedGasPrice = nodePriceEstimate
 	}
 
 	gasPrice := multiplyGasPrice(suggestedGasPrice, c.gasMultiplier)

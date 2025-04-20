@@ -35,7 +35,7 @@ type Connection struct {
 	optsLock      *sync.Mutex
 	log           log.Logger
 	stop          chan int // All routines should exit when this channel is closed
-	/// tron
+	/// trigger
 	//keyStore   *keystore.KeyStore
 	//keyAccount *keystore.Account
 	connTron *client.GrpcClient

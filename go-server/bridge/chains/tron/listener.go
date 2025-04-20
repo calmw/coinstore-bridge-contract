@@ -4,11 +4,11 @@ import (
 	"coinstore/binding"
 	"coinstore/bridge/chains"
 	"coinstore/bridge/chains/ethereum"
+	"coinstore/bridge/chains/tron/trigger"
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
 	"coinstore/bridge/event"
 	"coinstore/bridge/msg"
-	"coinstore/bridge/tron"
 	"coinstore/db"
 	"coinstore/model"
 	"coinstore/utils"
@@ -142,7 +142,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		if !success || depositNonce == nil {
 			return errors.New("转换失败")
 		}
-		record, err := tron.GetDepositRecord(binding.OwnerAccount, l.Cfg.BridgeContractAddress, destinationChainId, depositNonce)
+		record, err := trigger.GetDepositRecord(binding.OwnerAccount, l.Cfg.BridgeContractAddress, destinationChainId, depositNonce)
 		if err != nil {
 			return fmt.Errorf("getDepositRecord error %v", err)
 		}
@@ -164,7 +164,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		if err != nil {
 			l.log.Error("destination token info not found", "chainId", destinationChainId)
 		}
-		tokenInfo, err := tron.ResourceIdToTokenInfo(binding.OwnerAccount, l.Cfg.BridgeContractAddress, record.ResourceID)
+		tokenInfo, err := trigger.ResourceIdToTokenInfo(binding.OwnerAccount, l.Cfg.BridgeContractAddress, record.ResourceID)
 		if err != nil {
 			return err
 		}

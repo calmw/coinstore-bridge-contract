@@ -2,7 +2,7 @@ package contract
 
 import (
 	"coinstore/abi"
-	"coinstore/bridge/tron"
+	"coinstore/bridge/chains/tron/trigger"
 	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"fmt"
@@ -60,7 +60,7 @@ func (t *TanTinTron) Init() {
 func (t *TanTinTron) AdminSetEnv(feeAddress, bridgeAddress string) (string, error) {
 	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
 	defer t.Ks.Lock(t.Ka.Address)
-	sigNonce, err := tron.GetSigNonce(t.ContractAddress, OwnerAccount)
+	sigNonce, err := trigger.GetSigNonce(t.ContractAddress, OwnerAccount)
 	if err != nil {
 		return "", err
 	}
@@ -110,7 +110,7 @@ func (t *TanTinTron) AdminSetToken(resourceId string, assetsType uint8, tokenAdd
 	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
 	defer t.Ks.Lock(t.Ka.Address)
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
-	sigNonce, err := tron.GetSigNonce(t.ContractAddress, OwnerAccount)
+	sigNonce, err := trigger.GetSigNonce(t.ContractAddress, OwnerAccount)
 	if err != nil {
 		return "", err
 	}

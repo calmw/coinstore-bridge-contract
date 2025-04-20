@@ -55,7 +55,7 @@ func NewTrc20(address string) (*Trc20, error) {
 //		return "", err
 //	}
 //	privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
-//	_, _, err = utils.GetKeyFromPrivateKey(privateKey, tron_keystore.AccountName, tron.Passphrase)
+//	_, _, err = utils.GetKeyFromPrivateKey(privateKey, tron_keystore.AccountName, trigger.Passphrase)
 //	if err != nil && !strings.Contains(err.Error(), "already exists") {
 //		return "", err
 //	}

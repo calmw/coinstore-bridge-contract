@@ -31,5 +31,5 @@ func (tronAddress *TronAddress) GetAddress() address.Address {
 }
 
 func (tronAddress TronAddress) Type() string {
-	return "tron-address"
+	return "trigger-address"
 }

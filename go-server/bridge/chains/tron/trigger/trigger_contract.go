@@ -1,4 +1,4 @@
-package tron
+package trigger
 
 import (
 	"coinstore/bridge/config"
@@ -199,7 +199,7 @@ func HasVotedOnProposal(from, to string, arg0 *big.Int, arg1 [32]byte, arg2 comm
 	return ParseVoteHasVotedOnProposal(hexutils.HexToBytes("c70bf0b5" + strings.TrimPrefix(jsonRpcResponse.Result, "0x")))
 }
 
-func VoteProposal(cli *client.GrpcClient, from, contractAddress string, ks *keystore.KeyStore, ka *keystore.Account, originChainId *big.Int, originDepositNonce *big.Int, resourceId [32]byte, dataHash [32]byte) (string, error) {
+func VoteProposal(cli *client.GrpcClient, from, contractAddress string, originChainId *big.Int, originDepositNonce *big.Int, resourceId [32]byte, dataHash [32]byte) (string, error) {
 	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes32\":\"%s\"},{\"bytes32\":\"%s\"}]",
 		originChainId.String(), originDepositNonce.String(), hexutils.BytesToHex(resourceId[:]), hexutils.BytesToHex(dataHash[:]),
 	)
@@ -207,10 +207,13 @@ func VoteProposal(cli *client.GrpcClient, from, contractAddress string, ks *keys
 	if err != nil {
 		return "", err
 	}
-	ctrlr := transaction.NewController(cli, ks, ka, tx.Transaction)
+	ctrlr := transaction.NewController(cli, nil, nil, tx.Transaction)
 	if err = ctrlr.ExecuteTransaction(); err != nil {
 		return "", err
 	}
+	//if err = tron.ExecuteTronTransaction(); err != nil {
+	//	return "", err
+	//}
 	tx.GetLogs()
 	return hexutils.BytesToHex(tx.GetTxid()), nil
 }
@@ -220,7 +223,7 @@ const (
 	Passphrase  = "account_pwd"
 )
 
-func ExecuteProposal(cli *client.GrpcClient, from, contractAddress string, ks *keystore.KeyStore, ka *keystore.Account, originChainId *big.Int, originDepositNonce *big.Int, data []byte, resourceId [32]byte) (string, error) {
+func ExecuteProposal(cli *client.GrpcClient, from, contractAddress string, originChainId *big.Int, originDepositNonce *big.Int, data []byte, resourceId [32]byte) (string, error) {
 	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"}]",
 		originChainId.String(), originDepositNonce.String(), hexutils.BytesToHex(data[:]),
 	)
@@ -243,7 +246,7 @@ func ExecuteProposal(cli *client.GrpcClient, from, contractAddress string, ks *k
 	if err != nil {
 		return "", err
 	}
-	ctrlr := transaction.NewController(cli, ks, ka, tx.Transaction)
+	ctrlr := transaction.NewController(cli, nil, nil, tx.Transaction)
 	if err = ctrlr.ExecuteTransaction(); err != nil {
 		return "", err
 	}
