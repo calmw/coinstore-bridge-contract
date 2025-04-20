@@ -1,6 +1,7 @@
 package contract
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"github.com/calmw/tron-sdk/pkg/client"
 	"github.com/calmw/tron-sdk/pkg/client/transaction"
@@ -138,15 +139,15 @@ func (b *BridgeTron) GrantRoleTest(role, addr string) (string, error) {
 	fmt.Println("err111:", err)
 	fmt.Println("rawData:")
 	fmt.Println(fmt.Sprintf("%x", rawData))
-	//h256h := sha256.New()
-	//h256h.Write(rawData)
-	//hash := h256h.Sum(nil)
+	h256h := sha256.New()
+	h256h.Write(rawData)
+	hash := h256h.Sum(nil)
 
 	fmt.Println("hash:")
-	//fmt.Println(fmt.Sprintf("%x", hash))
-	//err = TestTx(b.Cli, tx, hash)
-	//fmt.Println("err222:", err)
-	//return "", nil
+	fmt.Println(fmt.Sprintf("%x", hash))
+	err = TestTx(b.Cli, tx, hash)
+	fmt.Println("err222:", err)
+	return "", nil
 	//////
 	if err = ExecuteTronTransaction(ctrlr, 728126428, account, "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"); err != nil {
 		return "", err
