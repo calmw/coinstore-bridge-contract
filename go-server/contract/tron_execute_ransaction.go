@@ -2,6 +2,7 @@ package contract
 
 import (
 	"coinstore/bridge/chains/signature"
+	"coinstore/utils"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
@@ -68,9 +69,11 @@ func SignTxForSending(c *transaction.Controller, chainId int, fromAddress, apiSe
 }
 
 func TestTx(c *client.GrpcClient, tx *api.TransactionExtention, hash []byte) error {
-	pk := os.Getenv("COINSTORE_BRIDGE_TRON_LOCAL")
+	pk := os.Getenv("COINSTORE_BRIDGE_TRON")
 
-	privateKeyBytes, _ := hex.DecodeString(pk)
+	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", pk)
+
+	privateKeyBytes, _ := hex.DecodeString(privateKeyStr)
 	sk, _ := btcec.PrivKeyFromBytes(privateKeyBytes)
 	sig, err := crypto.Sign(hash, sk.ToECDSA())
 	if err != nil {
