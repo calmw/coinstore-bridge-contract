@@ -19,19 +19,19 @@ func main() {
 	}
 	bridge.Init()
 
-	//vote, err := contract.NewVoteTron()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//vote.Init()
-	//
-	//tantin, err := contract.NewTanTinTron()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//tantin.Init()
+	vote, err := contract.NewVoteTron()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	vote.Init()
+
+	tantin, err := contract.NewTanTinTron()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	tantin.Init()
 	//
 	//for {
 	//	//txHash, err := tantin.Deposit(big.NewInt(1), big.NewInt(3), contract.ResourceIdUsdt, "TQxhW4iv7BvT63qdnmx76GZK5FViy4qMfh")

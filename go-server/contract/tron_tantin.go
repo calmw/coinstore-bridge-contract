@@ -27,7 +27,8 @@ type TanTinTron struct {
 }
 
 func NewTanTinTron() (*TanTinTron, error) {
-	cli := client.NewGrpcClient(NileGrpc)
+	endpoint := ChainConfig.RPC
+	cli := client.NewGrpcClient(endpoint)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
 		return nil, err

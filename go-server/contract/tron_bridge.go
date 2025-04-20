@@ -24,6 +24,7 @@ const (
 	Passphrase   = "account_pwd"
 	ShastaGrpc   = "grpc.shasta.trongrid.io:50051"
 	NileGrpc     = "grpc.nile.trongrid.io:50051"
+	TronGrpc     = "grpc.trongrid.io:50051"
 	OwnerAccount = "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
 )
 
@@ -35,7 +36,8 @@ type BridgeTron struct {
 }
 
 func NewBridgeTron() (*BridgeTron, error) {
-	cli := client.NewGrpcClient(NileGrpc)
+	endpoint := ChainConfig.RPC
+	cli := client.NewGrpcClient(endpoint)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
 		return nil, err

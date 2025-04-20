@@ -26,7 +26,8 @@ type VoteTron struct {
 }
 
 func NewVoteTron() (*VoteTron, error) {
-	cli := client.NewGrpcClient(NileGrpc)
+	endpoint := ChainConfig.RPC
+	cli := client.NewGrpcClient(endpoint)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
 		return nil, err
