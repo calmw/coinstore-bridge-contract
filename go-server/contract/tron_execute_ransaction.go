@@ -78,7 +78,9 @@ func TestTx(c *client.GrpcClient, tx *api.TransactionExtention, hash []byte) err
 	if err != nil {
 		return err
 	}
+	fmt.Println(fmt.Sprintf("sssss1:%x", tx.Transaction.Signature))
 	tx.Transaction.Signature = append(tx.Transaction.Signature, sig)
+	fmt.Println(fmt.Sprintf("sssss2:%x", tx.Transaction.Signature))
 	res, err := c.Broadcast(tx.Transaction)
 	if err != nil || !res.Result {
 		return fmt.Errorf("broadcast error %v", err)
