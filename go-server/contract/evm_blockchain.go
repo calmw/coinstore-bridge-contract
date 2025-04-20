@@ -176,17 +176,18 @@ func InitBscProdEnv() {
 	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
-		BridgeId:              2,
-		ChainId:               56,
-		ChainTypeId:           1,
-		RPC:                   "https://bsc-mainnet.infura.io/v3/59ec080dc74d4af893ea04bfe2b168b5",
+		BridgeId:    2,
+		ChainId:     56,
+		ChainTypeId: 1,
+		RPC:         "https://bsc-mainnet.infura.io/v3/59ec080dc74d4af893ea04bfe2b168b5",
+		//RPC:                   "https://late-crimson-seed.bsc.quiknode.pro/a4fc048c9a2202531c24cb466332b6072d63c590",
 		BridgeContractAddress: "0x27B56c6A1C66A78e41A20141e79F8559C33af9b5",
 		VoteContractAddress:   "0x62B166B387E0EA79Fa52Ae3A623dbF9F8Db3893b",
-		TantinContractAddress: "0x94Bbc0cc03245Ec1f9B5d7134fB3A9D579ADc3c9",
-		UsdtAddress:           "0x4b62Da623b5aAfE4BAEe909e1fBB321b96887B3D",
-		UsdcAddress:           "0xA94706880640B461E25034277E3f8d625B730Bc6",
+		TantinContractAddress: "0xAeEa0c86d993D047e935333B3484f335c5dF61ad",
+		UsdtAddress:           "0x55d398326f99059ff775485246999027b3197955",
+		UsdcAddress:           "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
 		EthAddress:            "0x0000000000000000000000000000000000000000",
-		WEthAddress:           "0x43f66dB67821e38BF935924c999B94dBD24Bd35f",
+		WEthAddress:           "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
 		PrivateKey:            privateKeyStr,
 	}
 }
