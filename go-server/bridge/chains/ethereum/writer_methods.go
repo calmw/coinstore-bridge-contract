@@ -2,6 +2,7 @@ package ethereum
 
 import (
 	"coinstore/bridge/chains"
+	"coinstore/bridge/chains/signature"
 	"coinstore/bridge/event"
 	"coinstore/bridge/msg"
 	"coinstore/model"
@@ -11,7 +12,9 @@ import (
 	"fmt"
 	log "github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"math/big"
+	"os"
 	"time"
 )
 
@@ -183,32 +186,37 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 		default:
 			vStatus, _, err := model.GetBridgeTxStatus(m)
 			if err == nil && vStatus > 0 {
-				w.log.Info("voteProposal", "skip,src", m.Source, "depositNonce", m.DepositNonce)
+				w.log.Info("voteProposal", "skip, src", m.Source, "depositNonce", m.DepositNonce)
 				return
 			}
-			err = w.conn.LockAndUpdateOpts()
+			//err = w.conn.LockAndUpdateOpts()
+			//if err != nil {
+			//	w.log.Error("Failed to update tx opts", "err", err)
+			//	continue
+			//}
+			//
+			//gasLimit := w.conn.Opts().GasLimit
+			//gasPrice := w.conn.Opts().GasPrice
+			//
+			//w.log.Debug("voteProposal", "dataHash", fmt.Sprintf("%x", dataHash))
+			//w.log.Debug("voteProposal", "DepositNonce", fmt.Sprintf("%d", m.DepositNonce.Big().Int64()))
+			//w.log.Debug("voteProposal", "ResourceId", fmt.Sprintf("%x", m.ResourceId))
+			//tx, err := w.voteContract.VoteProposalBySigMachine(
+			//	w.conn.Opts(),
+			//	m.Source.Big(),
+			//	m.DepositNonce.Big(),
+			//	m.ResourceId,
+			//	dataHash,
+			//)
+			txHash, err := w.VoteProposalBySigMachine(m, dataHash)
 			if err != nil {
-				w.log.Error("Failed to update tx opts", "err", err)
-				continue
+				w.log.Info("voteProposal", "error", err)
+				return
 			}
-
-			gasLimit := w.conn.Opts().GasLimit
-			gasPrice := w.conn.Opts().GasPrice
-
-			w.log.Debug("voteProposal", "dataHash", fmt.Sprintf("%x", dataHash))
-			w.log.Debug("voteProposal", "DepositNonce", fmt.Sprintf("%d", m.DepositNonce.Big().Int64()))
-			w.log.Debug("voteProposal", "ResourceId", fmt.Sprintf("%x", m.ResourceId))
-			tx, err := w.voteContract.VoteProposal(
-				w.conn.Opts(),
-				m.Source.Big(),
-				m.DepositNonce.Big(),
-				m.ResourceId,
-				dataHash,
-			)
 			w.conn.UnlockOpts()
 
 			if err == nil {
-				w.log.Info("Submitted proposal vote", "tx", tx.Hash(), "src", m.Source, "depositNonce", m.DepositNonce, "gasPrice", tx.GasPrice().String())
+				w.log.Info("Submitted proposal vote", "tx", txHash, "src", m.Source, "depositNonce", m.DepositNonce)
 				for i := 0; i < 25; i++ {
 					if w.proposalIsComplete(m, dataHash) {
 						w.log.Info("Proposal voting complete on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
@@ -221,7 +229,7 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 				w.log.Debug("Nonce too low, will retry")
 				time.Sleep(TxRetryInterval)
 			} else {
-				w.log.Warn("Voting failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce, "gasLimit", gasLimit, "gasPrice", gasPrice, "err", err)
+				w.log.Warn("Voting failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce, "err", err)
 				time.Sleep(TxRetryInterval)
 			}
 
@@ -260,34 +268,38 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 				w.log.Info("ExecuteProposal", "skip,src", m.Source, "depositNonce", m.DepositNonce)
 				return
 			}
-			err = w.conn.LockAndUpdateOpts()
+			//err = w.conn.LockAndUpdateOpts()
+			//if err != nil {
+			//	w.log.Error("Failed to update nonce", "err", err)
+			//	return
+			//}
+			//
+			//gasLimit := w.conn.Opts().GasLimit
+			//gasPrice := w.conn.Opts().GasPrice
+			//
+			//tx, err := w.voteContract.ExecuteProposal(
+			//	w.conn.Opts(),
+			//	m.Source.Big(),
+			//	m.DepositNonce.Big(),
+			//	data,
+			//)
+			//fmt.Println("~~~~~~~~ data ")
+			//fmt.Println(fmt.Sprintf("%x", data))
+			//w.conn.UnlockOpts()
+			txHashExec, txTime, err := w.ExecuteProposalBySigMachine(m, data)
 			if err != nil {
-				w.log.Error("Failed to update nonce", "err", err)
 				return
 			}
 
-			gasLimit := w.conn.Opts().GasLimit
-			gasPrice := w.conn.Opts().GasPrice
-
-			tx, err := w.voteContract.ExecuteProposal(
-				w.conn.Opts(),
-				m.Source.Big(),
-				m.DepositNonce.Big(),
-				data,
-			)
-			fmt.Println("~~~~~~~~ data ")
-			fmt.Println(fmt.Sprintf("%x", data))
-			w.conn.UnlockOpts()
-
 			if err == nil {
-				txHash = tx.Hash().String()
-				w.log.Info("Submitted proposal execution", "tx", tx.Hash(), "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce, "gasPrice", tx.GasPrice().String())
+				txHash = txHashExec
+				w.log.Info("Submitted proposal execution", "tx", txHash, "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
 				///
 				for j := 0; j < 5; j++ {
 					if w.proposalIsFinalized(m.Source, m.DepositNonce, dataHash) {
 						status = true
 						txHashRes = txHash
-						receiveAt = tx.Time().Format("2006-01-02 15:04:05")
+						receiveAt = txTime.Format("2006-01-02 15:04:05")
 						w.log.Info("Proposal finalized on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
 						break
 					}
@@ -299,7 +311,7 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 				w.log.Error("Nonce too low, will retry")
 				time.Sleep(TxRetryInterval)
 			} else {
-				w.log.Warn("Execution failed, proposal may already be complete", "gasLimit", gasLimit, "gasPrice", gasPrice, "err", err)
+				w.log.Warn("Execution failed, proposal may already be complete", "err", err)
 				time.Sleep(TxRetryInterval)
 			}
 
@@ -313,4 +325,81 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 	}
 	w.log.Error("Submission of Execute transaction failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce)
 	w.sysErr <- ErrFatalTx
+}
+
+func (w *Writer) VoteProposalBySigMachine(m msg.Message, dataHash [32]byte) (string, error) {
+
+	err := w.conn.LockAndUpdateOpts()
+	if err != nil {
+		return "", fmt.Errorf("failed to update tx opts err %v", err)
+	}
+
+	nonce := w.conn.Opts().Nonce
+	gasLimit := w.conn.Opts().GasLimit
+	gasPrice := w.conn.Opts().GasPrice
+	inputData, err := signature.GenerateVoteProposalInputData(big.NewInt(int64(m.Source)), big.NewInt(int64(m.DepositNonce)), m.ResourceId, dataHash)
+	if err != nil {
+		return "", err
+	}
+	to := common.HexToAddress(w.Cfg.VoteContractAddress)
+	tx := types.NewTx(&types.LegacyTx{
+		Nonce:    nonce.Uint64(),
+		To:       &to,
+		Value:    nil,
+		Gas:      gasLimit,
+		GasPrice: gasPrice,
+		Data:     inputData,
+	})
+
+	apiSecret := os.Getenv("API_SECRET_SIG_MACHINE")
+	chainId, err := w.conn.connEvm.ChainID(context.Background())
+	if err != nil {
+		return "", fmt.Errorf("get chain id err %v", err)
+	}
+	err = signature.SignAndSendTxEth(w.conn.connEvm, common.HexToAddress(w.Cfg.From), chainId.Uint64(), tx, apiSecret)
+	if err != nil {
+		return "", fmt.Errorf("vote propose err %v", err)
+	}
+
+	return tx.Hash().String(), nil
+
+}
+
+func (w *Writer) ExecuteProposalBySigMachine(m msg.Message, data []byte) (string, *time.Time, error) {
+
+	err := w.conn.LockAndUpdateOpts()
+	if err != nil {
+		return "", nil, fmt.Errorf("failed to update tx opts err %v", err)
+	}
+
+	nonce := w.conn.Opts().Nonce
+	gasLimit := w.conn.Opts().GasLimit
+	gasPrice := w.conn.Opts().GasPrice
+	inputData, err := signature.GenerateExecuteProposalInputData(big.NewInt(int64(m.Source)), big.NewInt(int64(m.DepositNonce)), data)
+	if err != nil {
+		return "", nil, err
+	}
+	to := common.HexToAddress(w.Cfg.VoteContractAddress)
+	tx := types.NewTx(&types.LegacyTx{
+		Nonce:    nonce.Uint64(),
+		To:       &to,
+		Value:    nil,
+		Gas:      gasLimit,
+		GasPrice: gasPrice,
+		Data:     inputData,
+	})
+	tx.Time()
+
+	apiSecret := os.Getenv("API_SECRET_SIG_MACHINE")
+	chainId, err := w.conn.connEvm.ChainID(context.Background())
+	if err != nil {
+		return "", nil, fmt.Errorf("get chain id err %v", err)
+	}
+	err = signature.SignAndSendTxEth(w.conn.connEvm, common.HexToAddress(w.Cfg.From), chainId.Uint64(), tx, apiSecret)
+	if err != nil {
+		return "", nil, fmt.Errorf("vote propose err %v", err)
+	}
+	txTime := tx.Time()
+	return tx.Hash().String(), &txTime, nil
+
 }
