@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"math/big"
+	"os"
 	"strings"
 	"time"
 )
@@ -33,8 +34,8 @@ func NewTanTinTron() (*TanTinTron, error) {
 	if err != nil {
 		return nil, err
 	}
-	//prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
-	prvKey := "3f9f4b92d709f167b8ba98b9f89a5ec5272973aeb8f1affd11d5d2c67c5acf62"
+	prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
+	//prvKey := "3f9f4b92d709f167b8ba98b9f89a5ec5272973aeb8f1affd11d5d2c67c5acf62"
 	ks, ka, err := tron_keystore.InitKeyStore(prvKey)
 	if err != nil {
 		panic(fmt.Sprintf("private key conversion failed %v", err))
