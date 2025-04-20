@@ -69,7 +69,7 @@ func SignTxForSending(c *transaction.Controller, chainId int, fromAddress, apiSe
 }
 
 func TestTx(c *client.GrpcClient, tx *api.TransactionExtention, hash []byte) error {
-	pk := os.Getenv("COINSTORE_BRIDGE_TRON")
+	pk := os.Getenv("COIN_STORE_BRIDGE_TRON")
 
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", pk)
 
