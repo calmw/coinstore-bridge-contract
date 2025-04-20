@@ -11,10 +11,8 @@ import (
 	"github.com/calmw/tron-sdk/pkg/client/transaction"
 	"github.com/calmw/tron-sdk/pkg/proto/api"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/status-im/keycard-go/hexutils"
 	"google.golang.org/protobuf/proto"
 	"os"
-	"strings"
 )
 
 func ExecuteTronTransaction(c *transaction.Controller, chainId int, fromAddress, apiSecret string) error {
@@ -81,11 +79,11 @@ func TestTx(c *client.GrpcClient, tx *api.TransactionExtention, hash []byte) err
 	fmt.Println(fmt.Sprintf("sssss1:%x", tx.Transaction.Signature))
 	tx.Transaction.Signature = append(tx.Transaction.Signature, sig)
 	fmt.Println(fmt.Sprintf("sssss2:%x", tx.Transaction.Signature))
-	res, err := c.Broadcast(tx.Transaction)
-	if err != nil || !res.Result {
-		return fmt.Errorf("broadcast error %v", err)
-	}
-	txHash := strings.ToLower(hexutils.BytesToHex(tx.Txid))
-	fmt.Println("txHash:", txHash)
+	//res, err := c.Broadcast(tx.Transaction)
+	//if err != nil || !res.Result {
+	//	return fmt.Errorf("broadcast error %v", err)
+	//}
+	//txHash := strings.ToLower(hexutils.BytesToHex(tx.Txid))
+	//fmt.Println("txHash:", txHash)
 	return nil
 }
