@@ -122,6 +122,7 @@ func SignAndSendTxTron(chainId int, fromAddress string, UnsignedRawData []byte, 
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(len(sigBytes), "~~~~~~~~~~~~")
 
 	return sigBytes, nil
 }
