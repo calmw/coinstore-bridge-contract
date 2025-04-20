@@ -166,13 +166,17 @@ func DerToRawSignature(derSignature string) (string, error) {
 	copy(rawSignature[:32], r32)
 	copy(rawSignature[32:], s32)
 
+	var V []byte
 	if sig.R.Uint64()%2 == 0 {
-		bb := big.NewInt(27).Bytes()
-		fmt.Println(len(bb), "&&&&&&&1")
+		V = big.NewInt(27).Bytes()
+		fmt.Println(len(V), "&&&&&&&1")
 	} else {
-		bb := big.NewInt(28).Bytes()
-		fmt.Println(len(bb), "&&&&&&&2")
+		V = big.NewInt(28).Bytes()
+		fmt.Println(len(V), "&&&&&&&2")
 	}
+	var res []byte
+	res = append(res, rawSignature...)
+	res = append(res, V...)
 	// 6. 返回十六进制字符串
 	return hex.EncodeToString(rawSignature), nil
 }
