@@ -4,13 +4,13 @@ package signature
 import (
 	"bytes"
 	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/status-im/keycard-go/hexutils"
 	"strings"
 )
 
@@ -102,5 +102,9 @@ func SignAndSendTxTron(chainId int, fromAddress string, UnsignedRawData []byte, 
 
 	fmt.Println("signature:")
 	fmt.Println(machineResp.Data)
-	return hexutils.HexToBytes(machineResp.Data), nil
+	sigBytes, err := hex.DecodeString(machineResp.Data)
+	if err != nil {
+		return nil, err
+	}
+	return sigBytes, nil
 }

@@ -54,8 +54,8 @@ func SignTxForSending(c *transaction.Controller, chainId int, fromAddress, apiSe
 	//
 	//err := TestTx(c.Client,c.Tx,hash)
 
-	fmt.Println(err)
-	return nil
+	//fmt.Println(err)
+	//return nil
 
 	sig, err := signature.SignAndSendTxTron(chainId, fromAddress, hash, apiSecret)
 	if err != nil {
