@@ -1,4 +1,4 @@
-package tron
+package trigger
 
 import (
 	"coinstore/bridge/chains/signature"

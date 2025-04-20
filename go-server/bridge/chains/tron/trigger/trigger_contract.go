@@ -19,6 +19,7 @@ import (
 	"io"
 	"math/big"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -208,12 +209,13 @@ func VoteProposal(cli *client.GrpcClient, from, contractAddress string, originCh
 		return "", err
 	}
 	ctrlr := transaction.NewController(cli, nil, nil, tx.Transaction)
-	if err = ctrlr.ExecuteTransaction(); err != nil {
-		return "", err
-	}
-	//if err = tron.ExecuteTronTransaction(); err != nil {
+	//if err = ctrlr.ExecuteTransaction(); err != nil {
 	//	return "", err
 	//}
+	apiSecret := os.Getenv("API_SECRET_SIG_MACHINE")
+	if err = ExecuteTronTransaction(ctrlr, 728126428, from, apiSecret); err != nil {
+		return "", err
+	}
 	tx.GetLogs()
 	return hexutils.BytesToHex(tx.GetTxid()), nil
 }
@@ -247,7 +249,11 @@ func ExecuteProposal(cli *client.GrpcClient, from, contractAddress string, origi
 		return "", err
 	}
 	ctrlr := transaction.NewController(cli, nil, nil, tx.Transaction)
-	if err = ctrlr.ExecuteTransaction(); err != nil {
+	//if err = ctrlr.ExecuteTransaction(); err != nil {
+	//	return "", err
+	//}
+	apiSecret := os.Getenv("API_SECRET_SIG_MACHINE")
+	if err = ExecuteTronTransaction(ctrlr, 728126428, from, apiSecret); err != nil {
 		return "", err
 	}
 	return hexutils.BytesToHex(tx.GetTxid()), nil
