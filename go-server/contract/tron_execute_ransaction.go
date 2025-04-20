@@ -80,10 +80,11 @@ func TestTx(c *client.GrpcClient, tx *api.TransactionExtention, hash []byte) err
 	}
 	fmt.Println(fmt.Sprintf("sssss1:%x", tx.Transaction.Signature))
 
+	fmt.Println(tx.Transaction.Signature, "~~~~~~~~~~~~11")
 	fmt.Println(len(tx.Transaction.Signature), "~~~~~~~~~~~~11")
 	tx.Transaction.Signature = append(tx.Transaction.Signature, sig)
 
-	fmt.Println(len(tx.Transaction.Signature), "~~~~~~~~~~~~22")
+	fmt.Println(len(tx.Transaction.Signature[0]), "~~~~~~~~~~~~22")
 	fmt.Println(fmt.Sprintf("sssss2:%x", tx.Transaction.Signature))
 	res, err := c.Broadcast(tx.Transaction)
 	if err != nil || !res.Result {
