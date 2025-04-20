@@ -85,6 +85,6 @@ func TestTx(c *client.GrpcClient, tx *api.TransactionExtention, hash []byte) err
 		return errors.New("broadcast error")
 	}
 	txHash := strings.ToLower(hexutils.BytesToHex(tx.Txid))
-	fmt.Println(txHash)
+	fmt.Println("txHash:", txHash)
 	return nil
 }
