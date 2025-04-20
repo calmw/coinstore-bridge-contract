@@ -145,9 +145,9 @@ func (b *BridgeTron) GrantRoleTest(role, addr string) (string, error) {
 
 	fmt.Println("hash:")
 	fmt.Println(fmt.Sprintf("%x", hash))
-	err = TestTx(b.Cli, tx, hash)
-	fmt.Println("err222:", err)
-	return "", nil
+	//err = TestTx(b.Cli, tx, hash)
+	//fmt.Println("err222:", err)
+	//return "", nil
 	//////
 	if err = ExecuteTronTransaction(ctrlr, 728126428, account, "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"); err != nil {
 		return "", err

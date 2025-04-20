@@ -64,6 +64,8 @@ func SignTxForSending(c *transaction.Controller, chainId int, fromAddress, apiSe
 		return err
 	}
 	c.Tx.Signature = append(c.Tx.Signature, sig)
+
+	fmt.Println(len(c.Tx.Signature[0]), "@@@@@@@@@@~~~~~~~~~~~~")
 	return nil
 }
 
