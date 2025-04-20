@@ -142,7 +142,7 @@ func (b *BridgeTron) GrantRoleTest(role, addr string) (string, error) {
 	h256h.Write(rawData)
 	hash := h256h.Sum(nil)
 
-	err = TestTx(ctrlr.Client, tx, hash)
+	err = TestTx(b.Cli, tx, hash)
 	fmt.Println("err222:", err)
 	return "", nil
 	////
