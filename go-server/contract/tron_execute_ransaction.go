@@ -5,7 +5,6 @@ import (
 	"coinstore/utils"
 	"crypto/sha256"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/calmw/tron-sdk/pkg/client"
@@ -82,7 +81,7 @@ func TestTx(c *client.GrpcClient, tx *api.TransactionExtention, hash []byte) err
 	tx.Transaction.Signature = append(tx.Transaction.Signature, sig)
 	res, err := c.Broadcast(tx.Transaction)
 	if err != nil || !res.Result {
-		return errors.New("broadcast error")
+		return fmt.Errorf("broadcast error %v", err)
 	}
 	txHash := strings.ToLower(hexutils.BytesToHex(tx.Txid))
 	fmt.Println("txHash:", txHash)
