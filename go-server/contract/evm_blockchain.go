@@ -173,13 +173,11 @@ func InitBscEnv() {
 }
 
 func InitBscProdEnv() {
-	//coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
 	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
-		BridgeId: 2,
-		//ChainId:     56,
-		ChainId:               97,
+		BridgeId:              2,
+		ChainId:               56,
 		ChainTypeId:           1,
 		RPC:                   "https://bsc-mainnet.infura.io/v3/59ec080dc74d4af893ea04bfe2b168b5",
 		BridgeContractAddress: "0x27B56c6A1C66A78e41A20141e79F8559C33af9b5",

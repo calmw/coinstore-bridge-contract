@@ -15,7 +15,6 @@ import (
 func InitTronEnv() {
 	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE_TRON")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
-	//privateKeyStr := "3f9f4b92d709f167b8ba98b9f89a5ec5272973aeb8f1affd11d5d2c67c5acf62"
 	ChainConfig = ChainConfigs{
 		BridgeId:    3,
 		ChainId:     3448148188,
@@ -26,6 +25,27 @@ func InitTronEnv() {
 		BridgeContractAddress: "TDv8tQFpajwxuyXasssppC8h9RwwKevXN9",
 		VoteContractAddress:   "TLmg1WBwGJ3sSYbtevHP41n6bD1bvJ4xL6",
 		//VoteContractAddress:   "TDVLRVqGpzAtoDBz16WbZvaa1eWF14ArYa",
+		TantinContractAddress: "TPnLangi2RxS7vBKLa9uTBePELAdbowg5T",
+		UsdtAddress:           "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf",
+		UsdcAddress:           "TFXYQ93J5ptYcWaVFJxnadLZUB459uX2MK",
+		EthAddress:            "0x0000000000000000000000000000000000000000",
+		WEthAddress:           "TCAYwjRpHjFX4hgQqaJPbuNCFqxgqwJBns",
+		PrivateKey:            privateKeyStr,
+	}
+}
+
+func InitTronEnvProd() {
+	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE_TRON")
+	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
+	ChainConfig = ChainConfigs{
+		BridgeId:    3,
+		ChainId:     3448148188,
+		ChainTypeId: 2,
+		//RPC:         "grpc.nile.trongrid.io:50051",
+		RPC: "grpc.trongrid.io:50051",
+		//RPC:                   "3.225.171.164:50051",
+		BridgeContractAddress: "TDv8tQFpajwxuyXasssppC8h9RwwKevXN9",
+		VoteContractAddress:   "TLmg1WBwGJ3sSYbtevHP41n6bD1bvJ4xL6",
 		TantinContractAddress: "TPnLangi2RxS7vBKLa9uTBePELAdbowg5T",
 		UsdtAddress:           "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf",
 		UsdcAddress:           "TFXYQ93J5ptYcWaVFJxnadLZUB459uX2MK",
