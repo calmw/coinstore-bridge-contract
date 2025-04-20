@@ -16,15 +16,12 @@ func InitTronEnv() {
 	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE_TRON")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
-		BridgeId:    3,
-		ChainId:     3448148188,
-		ChainTypeId: 2,
-		RPC:         "grpc.nile.trongrid.io:50051",
-		//RPC: "grpc.trongrid.io:50051",
-		//RPC:                   "3.225.171.164:50051",
+		BridgeId:              3,
+		ChainId:               3448148188,
+		ChainTypeId:           2,
+		RPC:                   "grpc.nile.trongrid.io:50051",
 		BridgeContractAddress: "TDv8tQFpajwxuyXasssppC8h9RwwKevXN9",
 		VoteContractAddress:   "TLmg1WBwGJ3sSYbtevHP41n6bD1bvJ4xL6",
-		//VoteContractAddress:   "TDVLRVqGpzAtoDBz16WbZvaa1eWF14ArYa",
 		TantinContractAddress: "TPnLangi2RxS7vBKLa9uTBePELAdbowg5T",
 		UsdtAddress:           "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf",
 		UsdcAddress:           "TFXYQ93J5ptYcWaVFJxnadLZUB459uX2MK",
@@ -38,19 +35,17 @@ func InitTronEnvProd() {
 	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE_TRON")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
-		BridgeId:    3,
-		ChainId:     3448148188,
-		ChainTypeId: 2,
-		//RPC:         "grpc.nile.trongrid.io:50051",
-		RPC: "grpc.trongrid.io:50051",
-		//RPC:                   "3.225.171.164:50051",
-		BridgeContractAddress: "TDv8tQFpajwxuyXasssppC8h9RwwKevXN9",
-		VoteContractAddress:   "TLmg1WBwGJ3sSYbtevHP41n6bD1bvJ4xL6",
-		TantinContractAddress: "TPnLangi2RxS7vBKLa9uTBePELAdbowg5T",
-		UsdtAddress:           "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf",
-		UsdcAddress:           "TFXYQ93J5ptYcWaVFJxnadLZUB459uX2MK",
+		BridgeId:              3,
+		ChainId:               3448148188,
+		ChainTypeId:           2,
+		RPC:                   "grpc.trongrid.io:50051",
+		BridgeContractAddress: "TPSkYD6TVNUhCxc3GHTNGiDBjGiwjCNCav",
+		VoteContractAddress:   "TXuEGQmfFQkn9yjjV5bqXnTZKXSoYXixU5",
+		TantinContractAddress: "THrFvBAYd6kkrvDjCHJWsv4KSGWMtKUcxz",
+		UsdtAddress:           "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+		UsdcAddress:           "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",
 		EthAddress:            "0x0000000000000000000000000000000000000000",
-		WEthAddress:           "TCAYwjRpHjFX4hgQqaJPbuNCFqxgqwJBns",
+		WEthAddress:           "THb4CqiFdwNHsWsQCs4JhzwjMWys4aqCbF",
 		PrivateKey:            privateKeyStr,
 	}
 }
