@@ -69,6 +69,7 @@ func SignTxForSending(c *transaction.Controller, chainId int, fromAddress, apiSe
 
 func TestTx(c *client.GrpcClient, tx *api.TransactionExtention, hash []byte) error {
 	pk := os.Getenv("COINSTORE_BRIDGE_TRON_LOCAL")
+
 	privateKeyBytes, _ := hex.DecodeString(pk)
 	sk, _ := btcec.PrivKeyFromBytes(privateKeyBytes)
 	sig, err := crypto.Sign(hash, sk.ToECDSA())
