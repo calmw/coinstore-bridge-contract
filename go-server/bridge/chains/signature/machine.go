@@ -4,6 +4,7 @@ package signature
 import (
 	"bytes"
 	"crypto/sha256"
+	"encoding/asn1"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -11,6 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"math/big"
 	"strings"
 )
 
@@ -102,9 +104,65 @@ func SignAndSendTxTron(chainId int, fromAddress string, UnsignedRawData []byte, 
 
 	fmt.Println("signature:")
 	fmt.Println(machineResp.Data)
-	sigBytes, err := hex.DecodeString(machineResp.Data)
+	//sigBytes, err := hex.DecodeString(machineResp.Data)
+	//if err != nil {
+	//	return nil, err
+	//}
+
+	// 示例使用
+	//derSignature := "3046022100b488d449a2a9244c164301455ffc8b6f5cdb5881ac4c96b6df94dc153e06ddb7022100cb0e1a5eedf1db07268dc637f39d04bf0c311625930f01167076b7d0e94b90d3"
+
+	rawSignature, err := DerToRawSignature(machineResp.Data)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return nil, fmt.Errorf("error: %v", err)
+	}
+
+	sigBytes, err := hex.DecodeString(rawSignature)
 	if err != nil {
 		return nil, err
 	}
+
 	return sigBytes, nil
+}
+
+// DER签名结构
+type ECDSASignature struct {
+	R, S *big.Int
+}
+
+// DER转原始签名
+func DerToRawSignature(derSignature string) (string, error) {
+	// 1. 解码十六进制DER签名
+	derBytes, err := hex.DecodeString(derSignature)
+	if err != nil {
+		return "", fmt.Errorf("failed to decode hex: %v", err)
+	}
+
+	// 2. 解析DER序列
+	var sig ECDSASignature
+	_, err = asn1.Unmarshal(derBytes, &sig)
+	if err != nil {
+		return "", fmt.Errorf("failed to unmarshal DER: %v", err)
+	}
+
+	// 3. 将r和s转换为32字节的数组
+	rBytes := sig.R.Bytes()
+	sBytes := sig.S.Bytes()
+
+	// 4. 确保r和s都是32字节
+	r32 := make([]byte, 32)
+	s32 := make([]byte, 32)
+
+	// 从后往前复制，确保对齐
+	copy(r32[32-len(rBytes):], rBytes)
+	copy(s32[32-len(sBytes):], sBytes)
+
+	// 5. 合并r和s
+	rawSignature := make([]byte, 64)
+	copy(rawSignature[:32], r32)
+	copy(rawSignature[32:], s32)
+
+	// 6. 返回十六进制字符串
+	return hex.EncodeToString(rawSignature), nil
 }
