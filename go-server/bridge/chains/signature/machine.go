@@ -67,15 +67,15 @@ func SignAndSendTxEth(cli *ethclient.Client, fromAddress common.Address, chainId
 func SignAndSendTxTron(chainId int, fromAddress string, UnsignedRawData []byte, apiSecret string) ([]byte, error) {
 
 	taskID := RandInt(100, 10000)
-	// 编码数据
-	txDataRlp := fmt.Sprintf("%x", UnsignedRawData)
+	// 签名数据
+	rawData := fmt.Sprintf("%x", UnsignedRawData)
 	fmt.Println("rawData")
-	fmt.Println(txDataRlp)
+	fmt.Println(rawData)
 	sigStr := fmt.Sprintf("%d%s%d%s%s",
 		chainId,
 		strings.ToLower(fromAddress),
 		taskID,
-		txDataRlp,
+		rawData,
 		apiSecret,
 	)
 
@@ -83,7 +83,7 @@ func SignAndSendTxTron(chainId int, fromAddress string, UnsignedRawData []byte, 
 	fingerprint = sha256.Sum256(fingerprint[:])
 	postData := SigDataPost{
 		FromAddress: fromAddress,
-		TxData:      txDataRlp,
+		TxData:      rawData,
 		TaskID:      taskID,
 		ChainID:     chainId,
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
@@ -100,5 +100,7 @@ func SignAndSendTxTron(chainId int, fromAddress string, UnsignedRawData []byte, 
 		return nil, fmt.Errorf("signature machine error: %v", machineResp.Message)
 	}
 
+	fmt.Println("signature:")
+	fmt.Println(machineResp.Data)
 	return hexutils.HexToBytes(machineResp.Data), nil
 }
