@@ -3,9 +3,18 @@ package contract
 import (
 	"coinstore/bridge/chains/signature"
 	"crypto/sha256"
+	"encoding/hex"
+	"errors"
 	"fmt"
+	"github.com/btcsuite/btcd/btcec/v2"
+	"github.com/calmw/tron-sdk/pkg/client"
 	"github.com/calmw/tron-sdk/pkg/client/transaction"
+	"github.com/calmw/tron-sdk/pkg/proto/api"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/status-im/keycard-go/hexutils"
 	"google.golang.org/protobuf/proto"
+	"os"
+	"strings"
 )
 
 func ExecuteTronTransaction(c *transaction.Controller, chainId int, fromAddress, apiSecret string) error {
@@ -32,6 +41,7 @@ func ExecuteTronTransaction(c *transaction.Controller, chainId int, fromAddress,
 }
 
 func SignTxForSending(c *transaction.Controller, chainId int, fromAddress, apiSecret string) error {
+
 	rawData, err := proto.Marshal(c.Tx.GetRawData())
 	if err != nil {
 		return err
@@ -43,10 +53,34 @@ func SignTxForSending(c *transaction.Controller, chainId int, fromAddress, apiSe
 	hash := h256h.Sum(nil)
 	fmt.Println("hash:")
 	fmt.Println(fmt.Sprintf("%x", hash))
+	//
+	//err := TestTx(c.Client,c.Tx,hash)
+
+	fmt.Println(err)
+	return nil
+
 	sig, err := signature.SignAndSendTxTron(chainId, fromAddress, hash, apiSecret)
 	if err != nil {
 		return err
 	}
 	c.Tx.Signature = append(c.Tx.Signature, sig)
+	return nil
+}
+
+func TestTx(c *client.GrpcClient, tx *api.TransactionExtention, hash []byte) error {
+	pk := os.Getenv("COINSTORE_BRIDGE_TRON_LOCAL")
+	privateKeyBytes, _ := hex.DecodeString(pk)
+	sk, _ := btcec.PrivKeyFromBytes(privateKeyBytes)
+	sig, err := crypto.Sign(hash, sk.ToECDSA())
+	if err != nil {
+		return err
+	}
+	tx.Transaction.Signature = append(tx.Transaction.Signature, sig)
+	res, err := c.Broadcast(tx.Transaction)
+	if err != nil || !res.Result {
+		return errors.New("broadcast error")
+	}
+	txHash := strings.ToLower(hexutils.BytesToHex(tx.Txid))
+	fmt.Println(txHash)
 	return nil
 }
