@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-	//contract.InitBscEnv()
-	contract.InitBscProdEnv()
+	contract.InitBscEnv()
+	//contract.InitBscProdEnv()
 	bridge, err := contract.NewBridge()
 	if err != nil {
 		fmt.Println(err)

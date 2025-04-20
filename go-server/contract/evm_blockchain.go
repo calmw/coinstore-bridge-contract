@@ -212,3 +212,22 @@ func InitEthEnv() {
 		PrivateKey:            privateKeyStr,
 	}
 }
+
+func InitEthEnvProd() {
+	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
+	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
+	ChainConfig = ChainConfigs{
+		BridgeId:              4,
+		ChainId:               1,
+		ChainTypeId:           1,
+		RPC:                   "https://late-crimson-seed.quiknode.pro/a4fc048c9a2202531c24cb466332b6072d63c590",
+		BridgeContractAddress: "0x27B56c6A1C66A78e41A20141e79F8559C33af9b5",
+		VoteContractAddress:   "0x62B166B387E0EA79Fa52Ae3A623dbF9F8Db3893b",
+		TantinContractAddress: "0x94Bbc0cc03245Ec1f9B5d7134fB3A9D579ADc3c9",
+		UsdtAddress:           "0xdac17f958d2ee523a2206206994597c13d831ec7", // Tether USD
+		UsdcAddress:           "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USD Coin
+		EthAddress:            "0x0000000000000000000000000000000000000000",
+		WEthAddress:           "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+		PrivateKey:            privateKeyStr,
+	}
+}

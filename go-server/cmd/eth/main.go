@@ -9,6 +9,7 @@ import (
 
 func main() {
 	contract.InitEthEnv()
+	//contract.InitEthEnvProd()
 	bridge, err := contract.NewBridge()
 	if err != nil {
 		fmt.Println(err)
