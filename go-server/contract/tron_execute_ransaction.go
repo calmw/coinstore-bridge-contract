@@ -43,6 +43,7 @@ func SignTxForSending(c *transaction.Controller, chainId int, fromAddress, apiSe
 	if err != nil {
 		return err
 	}
+	c.Tx.Signature = [][]byte{}
 	c.Tx.Signature = append(c.Tx.Signature, sig)
 	return nil
 }
