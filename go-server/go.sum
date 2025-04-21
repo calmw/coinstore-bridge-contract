@@ -22,8 +22,8 @@ github.com/bytedance/sonic v1.11.6 h1:oUp34TzMlL+OY1OUWxHqsdkgC/Zfc85zGqw9siXjrc
 github.com/bytedance/sonic v1.11.6/go.mod h1:LysEHSvpvDySVdC2f87zGWf6CIKJcAvqab1ZaiQtds4=
 github.com/bytedance/sonic/loader v0.1.1 h1:c+e5Pt1k/cy5wMveRDyk2X4B9hF4g7an8N3zCYjJFNM=
 github.com/bytedance/sonic/loader v0.1.1/go.mod h1:ncP89zfokxS5LZrJxl5z0UJcsk4M4yY2JpfqGeCtNLU=
-github.com/calmw/bee-tron v0.0.2 h1:o0ZjNBOSUVhrDzlwP7OemTdmTDokRrKqHdcz7VfbHAA=
-github.com/calmw/bee-tron v0.0.2/go.mod h1:m8cpsZFY6Dfu//1RbXXMgviJ7iFVjLg1VtEeizRJ2/k=
+github.com/calmw/bee-tron v0.0.3 h1:XkORO/G5mtE/ha/0TRynIN3c6Km84DFPr3KwnvXmt4w=
+github.com/calmw/bee-tron v0.0.3/go.mod h1:gYp6Z/0jclAzFpNSQqy7+mHInnvwJhLvrKaq4wqAz6Q=
 github.com/calmw/clog v0.0.3 h1:yzTN+uiKxZ6TcOagprabJbifTXN69BAVDZ3/gj1hP0o=
 github.com/calmw/clog v0.0.3/go.mod h1:Rod3NySlLM8EY+mIdOsW5rYQyi1n/hSRoaS4L+rpiP0=
 github.com/calmw/tron-sdk v0.0.14 h1:tMnOf7AJbldoi1EJ+h/w+reZju3UDIODS2IGW0gbpTs=

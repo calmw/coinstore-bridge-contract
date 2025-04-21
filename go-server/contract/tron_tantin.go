@@ -154,11 +154,9 @@ func (t *TanTinTron) Deposit(destinationChainId, amount *big.Int, resourceId, re
 	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
 	defer t.Ks.Lock(t.Ka.Address)
 	recipientEth, err := utils.TronToEth(recipient)
-	fmt.Println(1, err)
 	signature, err := abi.TantinDepositSignatureTron(
 		ethCommon.HexToAddress(recipientEth),
 	)
-	fmt.Println(2, err)
 	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"bytes32\":\"%s\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"}]",
 		destinationChainId.String(), strings.TrimPrefix(resourceId, "0x"), recipient, amount.String(), fmt.Sprintf("%x", signature),
 	)

@@ -10,7 +10,7 @@ replace github.com/codahale/hdrhistogram => github.com/HdrHistogram/hdrhistogram
 
 require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.4
-	github.com/calmw/bee-tron v0.0.2
+	github.com/calmw/bee-tron v0.0.3
 	github.com/calmw/clog v0.0.3
 	github.com/calmw/tron-sdk v0.0.14
 	github.com/didip/tollbooth/v7 v7.0.2

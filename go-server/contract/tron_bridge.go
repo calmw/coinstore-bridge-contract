@@ -12,11 +12,13 @@ import (
 	"github.com/calmw/tron-sdk/pkg/common"
 	"github.com/calmw/tron-sdk/pkg/keystore"
 	ethCommon "github.com/ethereum/go-ethereum/common"
+	"github.com/status-im/keycard-go/hexutils"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 	"log"
 	"math/big"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -68,14 +70,14 @@ func (b *BridgeTron) Init() {
 	txHash, err := b.AdminSetEnv()
 	fmt.Println(txHash, err)
 	time.Sleep(time.Second)
-	//txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), false, false, false)
-	//fmt.Println(txHash4, err4)
-	//time.Sleep(time.Second)
-	//txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, big.NewInt(100), false, false, false)
-	//fmt.Println(txHash5, err5)
-	//time.Sleep(time.Second)
-	//txHash6, err6 := b.AdminSetResource(ResourceIdEth, 2, ChainConfig.WEthAddress, big.NewInt(100), false, false, false)
-	//fmt.Println(txHash6, err6)
+	txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), false, false, false)
+	fmt.Println(txHash4, err4)
+	time.Sleep(time.Second)
+	txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, big.NewInt(100), false, false, false)
+	fmt.Println(txHash5, err5)
+	time.Sleep(time.Second)
+	txHash6, err6 := b.AdminSetResource(ResourceIdEth, 2, ChainConfig.WEthAddress, big.NewInt(100), false, false, false)
+	fmt.Println(txHash6, err6)
 }
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {
@@ -167,49 +169,49 @@ func (b *BridgeTron) GrantRoleTest(role, addr string) (string, error) {
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
-//func (b *BridgeTron) AdminSetResource(resourceId string, assetsType uint8, tokenAddress string, fee *big.Int, pause bool, burnable bool, mintable bool) (string, error) {
-//	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
-//	defer b.Ks.Lock(b.Ka.Address)
-//	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
-//	sigNonce, err := trigger.GetSigNonce(b.ContractAddress, OwnerAccount)
-//	if err != nil {
-//		return "", err
-//	}
-//	//sigNonce := big.NewInt(1)
-//	tokenEth, _ := utils.TronToEth(tokenAddress)
-//	tantinEth, _ := utils.TronToEth(ChainConfig.TantinContractAddress)
-//	signature, _ := abi.BridgeAdminSetResourceSignatureTron(
-//		sigNonce,
-//		big.NewInt(ChainConfig.BridgeId),
-//		[32]byte(resourceIdBytes),
-//		assetsType,
-//		ethCommon.HexToAddress(tokenEth),
-//		ethCommon.HexToAddress(tantinEth),
-//		fee,
-//		pause,
-//		burnable,
-//		mintable,
-//	)
-//	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bool\":%v},{\"bool\":%v},{\"bool\":%v},{\"address\":\"%s\"},{\"bytes\":\"%s\"}]",
-//		strings.TrimPrefix(resourceId, "0x"),
-//		assetsType,
-//		tokenAddress,
-//		fee,
-//		false,
-//		false,
-//		false,
-//		ChainConfig.TantinContractAddress,
-//		fmt.Sprintf("%x", signature),
-//	)
-//	fmt.Println(triggerData)
-//	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetResource(bytes32,uint8,address,uint256,bool,bool,bool,address,bytes)", triggerData, 300000000, 0, "", 0)
-//	if err != nil {
-//		return "", err
-//	}
-//	ctrlr := transaction.NewController(b.Cli, b.Ks, b.Ka, tx.Transaction)
-//	if err = ctrlr.ExecuteTransaction(); err != nil {
-//		return "", err
-//	}
-//	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
-//	return common.BytesToHexString(tx.GetTxid()), nil
-//}
+func (b *BridgeTron) AdminSetResource(resourceId string, assetsType uint8, tokenAddress string, fee *big.Int, pause bool, burnable bool, mintable bool) (string, error) {
+	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
+	defer b.Ks.Lock(b.Ka.Address)
+	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
+	sigNonce, err := trigger.GetSigNonce(b.ContractAddress, OwnerAccount)
+	if err != nil {
+		return "", err
+	}
+	//sigNonce := big.NewInt(1)
+	tokenEth, _ := utils.TronToEth(tokenAddress)
+	tantinEth, _ := utils.TronToEth(ChainConfig.TantinContractAddress)
+	signature, _ := abi.BridgeAdminSetResourceSignatureTron(
+		sigNonce,
+		big.NewInt(ChainConfig.BridgeId),
+		[32]byte(resourceIdBytes),
+		assetsType,
+		ethCommon.HexToAddress(tokenEth),
+		ethCommon.HexToAddress(tantinEth),
+		fee,
+		pause,
+		burnable,
+		mintable,
+	)
+	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bool\":%v},{\"bool\":%v},{\"bool\":%v},{\"address\":\"%s\"},{\"bytes\":\"%s\"}]",
+		strings.TrimPrefix(resourceId, "0x"),
+		assetsType,
+		tokenAddress,
+		fee,
+		false,
+		false,
+		false,
+		ChainConfig.TantinContractAddress,
+		fmt.Sprintf("%x", signature),
+	)
+	fmt.Println(triggerData)
+	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetResource(bytes32,uint8,address,uint256,bool,bool,bool,address,bytes)", triggerData, 300000000, 0, "", 0)
+	if err != nil {
+		return "", err
+	}
+	ctrlr := transaction.NewController(b.Cli, b.Ks, b.Ka, tx.Transaction)
+	if err = ctrlr.ExecuteTransaction(); err != nil {
+		return "", err
+	}
+	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
+	return common.BytesToHexString(tx.GetTxid()), nil
+}
