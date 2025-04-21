@@ -113,13 +113,14 @@ func SignAndSendTxTron(chainId int, fromAddress string, UnsignedRawData []byte, 
 	// 示例使用
 	//derSignature := "3046022100b488d449a2a9244c164301455ffc8b6f5cdb5881ac4c96b6df94dc153e06ddb7022100cb0e1a5eedf1db07268dc637f39d04bf0c311625930f01167076b7d0e94b90d3"
 
-	rawSignature, err := DerToRawSignature(machineResp.Data)
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		return nil, fmt.Errorf("error: %v", err)
-	}
+	//rawSignature, err := DerToRawSignature(machineResp.Data)
+	//if err != nil {
+	//	fmt.Printf("Error: %v\n", err)
+	//	return nil, fmt.Errorf("error: %v", err)
+	//}
 
-	sigBytes, err := hex.DecodeString(rawSignature)
+	//sigBytes, err := hex.DecodeString(rawSignature)
+	sigBytes, err := hex.DecodeString(machineResp.Data)
 	if err != nil {
 		return nil, err
 	}

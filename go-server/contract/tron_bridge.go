@@ -19,7 +19,6 @@ import (
 	"math/big"
 	"os"
 	"strings"
-	"time"
 )
 
 const (
@@ -59,25 +58,25 @@ func NewBridgeTron() (*BridgeTron, error) {
 }
 
 func (b *BridgeTron) Init() {
-	//txHash20, err20 := b.GrantRoleTest(AdminRole, OwnerAccount)
-	//fmt.Println(txHash20, err20)
-	txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
-	fmt.Println(txHash2, err2)
-	time.Sleep(time.Second)
-	txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
-	fmt.Println(txHash3, err3)
-	time.Sleep(time.Second)
-	txHash, err := b.AdminSetEnv()
-	fmt.Println(txHash, err)
-	time.Sleep(time.Second)
-	txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), false, false, false)
-	fmt.Println(txHash4, err4)
-	time.Sleep(time.Second)
-	txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, big.NewInt(100), false, false, false)
-	fmt.Println(txHash5, err5)
-	time.Sleep(time.Second)
-	txHash6, err6 := b.AdminSetResource(ResourceIdEth, 2, ChainConfig.WEthAddress, big.NewInt(100), false, false, false)
-	fmt.Println(txHash6, err6)
+	txHash20, err20 := b.GrantRoleTest(AdminRole, OwnerAccount)
+	fmt.Println(txHash20, err20)
+	//txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
+	//fmt.Println(txHash2, err2)
+	//time.Sleep(time.Second)
+	//txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
+	//fmt.Println(txHash3, err3)
+	//time.Sleep(time.Second)
+	//txHash, err := b.AdminSetEnv()
+	//fmt.Println(txHash, err)
+	//time.Sleep(time.Second)
+	//txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), false, false, false)
+	//fmt.Println(txHash4, err4)
+	//time.Sleep(time.Second)
+	//txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, big.NewInt(100), false, false, false)
+	//fmt.Println(txHash5, err5)
+	//time.Sleep(time.Second)
+	//txHash6, err6 := b.AdminSetResource(ResourceIdEth, 2, ChainConfig.WEthAddress, big.NewInt(100), false, false, false)
+	//fmt.Println(txHash6, err6)
 }
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {
