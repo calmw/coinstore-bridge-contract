@@ -164,7 +164,7 @@ func (t *TanTinTron) Deposit(destinationChainId, amount *big.Int, resourceId, re
 	)
 	fmt.Println(triggerData)
 	//tx, err := t.Cli.TriggerContract(OwnerAccount, t.ContractAddress, "deposit(uint256,bytes32,address,uint256,bytes)", triggerData, 300000000, 0, "", 0)
-	tx, err := t.Cli.TriggerContract("TMHchRW4UtexrrTdZn3y4LPtCnJ4bGkxmP", t.ContractAddress, "deposit(uint256,bytes32,address,uint256,bytes)", triggerData, 300000000, 0, "", 0)
+	tx, err := t.Cli.TriggerContract("TFBymbm7LrbRreGtByMPRD2HUyneKabsqb", t.ContractAddress, "deposit(uint256,bytes32,address,uint256,bytes)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}

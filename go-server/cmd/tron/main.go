@@ -12,21 +12,21 @@ import (
 // https://api.shasta.trongrid.io/jsonrpc
 
 func main() {
-	//contract.InitTronEnv()
-	contract.InitTronEnvProd()
-	bridge, err := contract.NewBridgeTron()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	bridge.Init()
-
-	vote, err := contract.NewVoteTron()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	vote.Init()
+	contract.InitTronEnv()
+	//contract.InitTronEnvProd()
+	//bridge, err := contract.NewBridgeTron()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//bridge.Init()
+	//
+	//vote, err := contract.NewVoteTron()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//vote.Init()
 
 	tantin, err := contract.NewTanTinTron()
 	if err != nil {
