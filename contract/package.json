@@ -20,12 +20,12 @@
     "deploy-tantin-tantin": "npx hardhat --network tantin run scripts/tantin/tantin.js",
     "upgrade-tantin-tantin": "npx hardhat --network tantin run scripts/tantin/tantin_proxy.js",
 
-    "deploy-bridge-tantin_test": "npx hardhat --network tantin_test run scripts/tantin/bridge.js",
-    "upgrade-bridge-tantin_test": "npx hardhat --network tantin_test run scripts/tantin/bridge_proxy.js",
-    "deploy-vote-tantin_test": "npx hardhat --network tantin_test run scripts/tantin/vote.js",
-    "upgrade-vote-tantin_test": "npx hardhat --network tantin_test run scripts/tantin/vote_proxy.js",
-    "deploy-tantin-tantin_test": "npx hardhat --network tantin_test run scripts/tantin/tantin.js",
-    "upgrade-tantin-tantin_test": "npx hardhat --network tantin_test run scripts/tantin/tantin_proxy.js",
+    "deploy-bridge-tantin_test": "npx hardhat --network tantin_test run scripts/tantin_test/bridge.js",
+    "upgrade-bridge-tantin_test": "npx hardhat --network tantin_test run scripts/tantin_test/bridge_proxy.js",
+    "deploy-vote-tantin_test": "npx hardhat --network tantin_test run scripts/tantin_test/vote.js",
+    "upgrade-vote-tantin_test": "npx hardhat --network tantin_test run scripts/tantin_test/vote_proxy.js",
+    "deploy-tantin-tantin_test": "npx hardhat --network tantin_test run scripts/tantin_test/tantin.js",
+    "upgrade-tantin-tantin_test": "npx hardhat --network tantin_test run scripts/tantin_test/tantin_proxy.js",
 
     "deploy-bridge-sepolia": "npx hardhat --network sepolia run scripts/sepolia/bridge.js",
     "upgrade-bridge-sepolia": "npx hardhat --network sepolia run scripts/sepolia/bridge_proxy.js",
