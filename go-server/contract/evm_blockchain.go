@@ -136,16 +136,16 @@ func InitTantinEnv() {
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
 		BridgeId:              1,
-		ChainId:               2025020502,
+		ChainId:               12302,
 		ChainTypeId:           1,
 		RPC:                   "https://testrpc.tantin.com",
 		BridgeContractAddress: "0x27B56c6A1C66A78e41A20141e79F8559C33af9b5",
 		VoteContractAddress:   "0x62B166B387E0EA79Fa52Ae3A623dbF9F8Db3893b",
 		TantinContractAddress: "0x94Bbc0cc03245Ec1f9B5d7134fB3A9D579ADc3c9",
-		UsdtAddress:           "0x43f66dB67821e38BF935924c999B94dBD24Bd35f",
-		UsdcAddress:           "0x5d8e56C8065c67e53F0293621180c14FFe93e8a8",
+		UsdtAddress:           "0x53F1BAA532710FC1FEE8a66433bE6c6fE823fCE9",
+		UsdcAddress:           "0x87386337645860720009341caD33C6652806aF6f",
 		EthAddress:            "0x0000000000000000000000000000000000000000",
-		WEthAddress:           "0x53F1BAA532710FC1FEE8a66433bE6c6fE823fCE9",
+		WEthAddress:           "0xec9b0A93b01Eb8182f2aB865432C7b11B603aFAc",
 		PrivateKey:            privateKeyStr,
 	}
 }
