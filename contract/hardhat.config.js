@@ -28,6 +28,11 @@ module.exports = {
             accounts: [`${PRIVATE_KEY}`]
             // gasPrice: 10000000000
         },
+        tantin_test: {
+            url: "https://testrpc.tantin.com",
+            accounts: [`${PRIVATE_KEY}`],
+            gasPrice: 1000000000000
+        },
         tantin: {
             url: "https://rpc.tantin.com",
             accounts: [`${PRIVATE_KEY}`],
