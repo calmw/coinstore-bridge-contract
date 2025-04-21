@@ -155,7 +155,6 @@ func DerToRawSignature(derSignature string) (string, error) {
 	// 4. 确保r和s都是32字节
 	r32 := make([]byte, 32)
 	s32 := make([]byte, 32)
-	//v := make([]byte, 1)
 
 	// 从后往前复制，确保对齐
 	copy(r32[32-len(rBytes):], rBytes)
@@ -166,19 +165,15 @@ func DerToRawSignature(derSignature string) (string, error) {
 	copy(rawSignature[:32], r32)
 	copy(rawSignature[32:], s32)
 
-	var V []byte
+	V := make([]byte, 1)
 	if sig.R.Uint64()%2 == 0 {
 		V = big.NewInt(27).Bytes()
-		fmt.Println(len(V), "&&&&&&&1")
 	} else {
 		V = big.NewInt(28).Bytes()
-		fmt.Println(len(V), "&&&&&&&2")
 	}
 	var res []byte
 	res = append(res, rawSignature...)
-	fmt.Println(len(res), "1111")
 	res = append(res, V...)
-	fmt.Println(len(res), "22222")
 	// 6. 返回十六进制字符串
 	return hex.EncodeToString(res), nil
 }
