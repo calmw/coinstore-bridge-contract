@@ -137,7 +137,7 @@ func (b *BridgeTron) TransferUsdtTest() (string, error) {
 	fromAddr := "TEz4CMzy3mgtVECcYxu5ui9nJfgv3oXhyx"
 	//account := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
 	to := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
-	amount := 2
+	amount := 1
 	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%d\"}]", to, amount)
 	tx, err := b.Cli.TriggerContract(fromAddr, "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf", "transfer(address,uint256)", triggerData, 9500000000, 0, "", 0)
 
