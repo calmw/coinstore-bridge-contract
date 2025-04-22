@@ -1,0 +1,140 @@
+# Copyright 2025 calm.wang@hotmail.com
+# SPDX-License-Identifier: LGPL-3.0-only
+version: '3.9'
+
+networks:
+  tt_bridge:
+
+services:
+
+  tt_bridge_one:
+    image: calmw/tt_bridge:0.0.13
+    container_name: tt_bridge_one
+    restart: always
+    environment:
+      - SIG_MACHINE_HOST=https://10.234.99.69:8088
+      - FAILED_JOB_INTERVAL=300
+      - MYSQL_DATABASE=bridge
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
+      - MYSQL_HOST=tt_bridge_mysql
+      - MYSQL_PORT=3306
+    volumes:
+      - ./pem:/src/pem
+    networks:
+      - tt_bridge
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "1"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  tt_bridge_two:
+    image: calmw/tt_bridge:0.0.13
+    container_name: tt_bridge_two
+    restart: always
+    environment:
+      - SIG_MACHINE_HOST=https://10.234.99.69:8088
+      - FAILED_JOB_INTERVAL=300
+      - MYSQL_DATABASE=bridge
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
+      - MYSQL_HOST=tt_bridge_mysql
+      - MYSQL_PORT=3306
+    volumes:
+      - ./pem:/src/pem
+    networks:
+      - tt_bridge
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "1"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  tt_bridge_three:
+    image: calmw/tt_bridge:0.0.13
+    container_name: tt_bridge_three
+    restart: always
+    environment:
+      - SIG_MACHINE_HOST=https://10.234.99.69:8088
+      - FAILED_JOB_INTERVAL=300
+      - MYSQL_DATABASE=bridge
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
+      - MYSQL_HOST=tt_bridge_mysql
+      - MYSQL_PORT=3306
+    volumes:
+      - ./pem:/src/pem
+    networks:
+      - tt_bridge
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "1"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  mysql:
+    image: mysql:latest
+    container_name: tt_bridge_mysql
+    restart: always
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=let_me_in_0x4f7d21e8ed
+      - MYSQL_DATABASE=bridge
+    volumes:
+      - ./mysql_data/data:/var/lib/mysql
+      - ./mysql_data/conf:/etc/mysql/conf.d/
+    networks:
+      - tt_bridge
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "1"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+
+  tt_bridge_api:
+    image: calmw/tt_bridge_api:0.0.18
+    container_name: tt_bridge_api
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - LISTEN_ADDR=0.0.0.0:8080
+      - MYSQL_DATABASE=bridge
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
+      - MYSQL_HOST=tt_bridge_mysql
+      - MYSQL_PORT=3306
+    networks:
+      - tt_bridge
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "1"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
