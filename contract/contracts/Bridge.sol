@@ -212,7 +212,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         uint256 chainType_
     ) private returns (bool) {
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
+            abi.encode(sigNonce, chainId, voteAddress_, chainId_, chainType_)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature_
