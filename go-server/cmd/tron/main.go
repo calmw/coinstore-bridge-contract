@@ -13,7 +13,7 @@ import (
 
 func main() {
 	contract.InitTronEnv()
-	contract.InitTronEnvProd()
+	//contract.InitTronEnvProd()
 	bridge, err := contract.NewBridgeTron()
 	if err != nil {
 		fmt.Println(err)
