@@ -116,7 +116,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
                 tokenAddress,
                 fee,
                 pause,
-                pause,
+                burnable,
                 mintable,
                 tantinAddress
             ),
