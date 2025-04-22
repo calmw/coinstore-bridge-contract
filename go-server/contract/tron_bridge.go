@@ -5,7 +5,6 @@ import (
 	"coinstore/bridge/chains/tron/trigger"
 	"coinstore/tron_keystore"
 	"coinstore/utils"
-	"crypto/sha256"
 	"fmt"
 	"github.com/calmw/tron-sdk/pkg/client"
 	"github.com/calmw/tron-sdk/pkg/client/transaction"
@@ -14,7 +13,6 @@ import (
 	ethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/status-im/keycard-go/hexutils"
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/proto"
 	"log"
 	"math/big"
 	"os"
@@ -140,29 +138,10 @@ func (b *BridgeTron) TransferUsdtTest() (string, error) {
 	amount := 1
 	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%d\"}]", to, amount)
 	tx, err := b.Cli.TriggerContract(fromAddr, "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf", "transfer(address,uint256)", triggerData, 9500000000, 0, "", 0)
-
-	fmt.Println(111, b.ContractAddress, err)
 	if err != nil {
 		return "", err
 	}
 	ctrlr := transaction.NewController(b.Cli, nil, nil, tx.Transaction)
-
-	///
-	rawData, err := proto.Marshal(tx.Transaction.GetRawData())
-
-	fmt.Println("err111:", err)
-	fmt.Println("rawData:")
-	fmt.Println(fmt.Sprintf("%x", rawData))
-	h256h := sha256.New()
-	h256h.Write(rawData)
-	hash := h256h.Sum(nil)
-
-	fmt.Println("hash:")
-	fmt.Println(fmt.Sprintf("%x", hash))
-	//err = TestTx(b.Cli, tx, hash)
-	//fmt.Println("err222:", err)
-	//return "", nil
-	//////
 	if err = ExecuteTronTransaction(ctrlr, 728126428, fromAddr, "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"); err != nil {
 		return "", err
 	}
