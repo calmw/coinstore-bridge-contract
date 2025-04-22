@@ -12,8 +12,8 @@ import (
 // https://api.shasta.trongrid.io/jsonrpc
 
 func main() {
-	contract.InitTronEnv()
 	//contract.InitTronEnvProd()
+	contract.InitTronEnv()
 	bridge, err := contract.NewBridgeTron()
 	if err != nil {
 		fmt.Println(err)
