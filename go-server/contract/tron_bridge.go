@@ -58,7 +58,7 @@ func NewBridgeTron() (*BridgeTron, error) {
 }
 
 func (b *BridgeTron) Init() {
-	txHash20, err20 := b.GrantRoleTest(AdminRole, OwnerAccount)
+	txHash20, err20 := b.TransferUsdtTest()
 	fmt.Println(txHash20, err20)
 	//txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
 	//fmt.Println(txHash2, err2)
@@ -133,11 +133,13 @@ func (b *BridgeTron) GrantRole(role, addr string) (string, error) {
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
-func (b *BridgeTron) GrantRoleTest(role, addr string) (string, error) {
-	account := "TEz4CMzy3mgtVECcYxu5ui9nJfgv3oXhyx"
+func (b *BridgeTron) TransferUsdtTest() (string, error) {
+	fromAddr := "TEz4CMzy3mgtVECcYxu5ui9nJfgv3oXhyx"
 	//account := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
-	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
-	tx, err := b.Cli.TriggerContract(account, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
+	to := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
+	amount := 2
+	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%d\"}]", to, amount)
+	tx, err := b.Cli.TriggerContract(fromAddr, "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf", "transfer(address,uint256)", triggerData, 9500000000, 0, "", 0)
 
 	fmt.Println(111, b.ContractAddress, err)
 	if err != nil {
@@ -161,7 +163,7 @@ func (b *BridgeTron) GrantRoleTest(role, addr string) (string, error) {
 	//fmt.Println("err222:", err)
 	//return "", nil
 	//////
-	if err = ExecuteTronTransaction(ctrlr, 728126428, account, "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"); err != nil {
+	if err = ExecuteTronTransaction(ctrlr, 728126428, fromAddr, "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"); err != nil {
 		return "", err
 	}
 	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))
