@@ -9,6 +9,9 @@ import (
 )
 
 func Start() {
+	task.InitTask()
+	go task.NewMonitor().ProcessFailedOrder()
+
 	intervalStr := os.Getenv("FAILED_JOB_INTERVAL")
 	if len(intervalStr) == 0 {
 		intervalStr = "300"

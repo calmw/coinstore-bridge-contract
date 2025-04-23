@@ -16,7 +16,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     using MessageHashUtils for bytes32;
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant VOTE_ROLE = keccak256("VOTE_ROLE");
+    bytes32 public constant TANTIN_ROLE = keccak256("TANTIN_ROLE");
 
     uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
     address private superAdminAddress;
@@ -103,7 +103,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         address tokenAddress,
         uint256 fee,
         bool pause,
-        bool burnable, // true burn;false lock
+        bool burnable,
         bool mintable,
         address tantinAddress,
         bytes memory signature
@@ -153,7 +153,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         uint256 destinationChainId,
         bytes32 resourceId,
         bytes calldata data
-    ) external payable whenNotPaused {
+    ) external payable whenNotPaused onlyRole(TANTIN_ROLE) {
         // 检测resource ID是否设置
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         require(uint8(tokenInfo.assetsType) > 0, "resourceId not exist");

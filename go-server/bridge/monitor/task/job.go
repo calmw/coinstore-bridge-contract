@@ -16,30 +16,40 @@ import (
 	"time"
 )
 
+var ConcurrencyLimit int
+var ConcurrencyLimitChan chan struct{}
+var FailedOrdersChain chan model.BridgeTx
+
+func InitTask() {
+	ConcurrencyLimit = 5
+	FailedOrdersChain = make(chan model.BridgeTx, 10000)
+	ConcurrencyLimitChan = make(chan struct{}, ConcurrencyLimit)
+}
+
 type Monitor struct {
-	log                  clog.Logger
-	ConcurrencyLimit     int
-	FailedOrdersChain    chan model.BridgeTx
-	ConcurrencyLimitChan chan struct{}
+	log clog.Logger
+	//ConcurrencyLimit     int
+	//FailedOrdersChain    chan model.BridgeTx
+	//ConcurrencyLimitChan chan struct{}
 }
 
 // NewMonitor concurrencyLimit 最多并发数,比如3～5
-func NewMonitor(concurrencyLimit int) *Monitor {
+func NewMonitor() *Monitor {
 	logger := clog.Root().New("module", "monitor")
 	return &Monitor{
-		log:                  logger,
-		ConcurrencyLimit:     concurrencyLimit,
-		FailedOrdersChain:    make(chan model.BridgeTx, 10000),
-		ConcurrencyLimitChan: make(chan struct{}, concurrencyLimit),
+		log: logger,
+		//ConcurrencyLimit:     concurrencyLimit,
+		//FailedOrdersChain:    make(chan model.BridgeTx, 10000),
+		//ConcurrencyLimitChan: make(chan struct{}, concurrencyLimit),
 	}
 }
 
 func (m *Monitor) ProcessFailedOrder() {
-	for order := range m.FailedOrdersChain {
-		m.ConcurrencyLimitChan <- struct{}{}
+	for order := range FailedOrdersChain {
+		ConcurrencyLimitChan <- struct{}{}
 		go func(o model.BridgeTx) {
 			defer func() {
-				<-m.ConcurrencyLimitChan
+				<-ConcurrencyLimitChan
 				m.log.Debug("🍺 处理订单完成", "ID", order.Id)
 			}()
 			m.RetryFailedOrder(o)
@@ -106,21 +116,21 @@ func (m *Monitor) RetryFailedOrder(order model.BridgeTx) {
 }
 
 func FailedTask() {
-	monitor := NewMonitor(4)
+	monitor := NewMonitor()
 	orders, err := monitor.FindFailedOrder()
 	if err != nil {
 		return
 	}
 	monitor.log.Debug("🍺 开始添加失败任务", "当前失败的总任务数量", len(orders))
-	if len(monitor.FailedOrdersChain) > monitor.ConcurrencyLimit*150 {
+	if len(FailedOrdersChain) > ConcurrencyLimit*150 {
 		monitor.log.Error("跳过该轮添加")
 		return
 	}
 	for i, order := range orders {
-		if i >= monitor.ConcurrencyLimit*100 {
+		if i >= ConcurrencyLimit*100 {
 			return
 		}
-		monitor.FailedOrdersChain <- order
+		FailedOrdersChain <- order
 	}
 }
 
