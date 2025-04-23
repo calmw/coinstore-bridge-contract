@@ -112,12 +112,26 @@ func BridgeTx(c *gin.Context) {
 	deciW := decimal.NewFromInt(10000)
 
 	for _, record := range records {
+		sourceToken := ""
+		info, err := model.GetTokenInfo(record.SourceChainId, record.SourceTokenAddress)
+		if err == nil {
+			sourceToken = info.TokenName
+		}
+		destinationToken := ""
+		info, err = model.GetTokenInfo(record.DestinationChainId, record.DestinationTokenAddress)
+		if err == nil {
+			destinationToken = info.TokenName
+		}
+		receiveAt, _ := utils.DatetimeToUnix(record.ReceiveAt)
+		depositAt, _ := utils.DatetimeToUnix(record.DepositAt)
+		totalAmount := record.Amount.Mul(deciW).Div(deciW.Sub(record.Fee))
 		// source_status int 跨链状态          1 源链pending    	2 源链success   				3 源链failed
 		// destination_status int 跨链状态     1 目标链pending  	2 目标链success  			3 目标链failed
 		// status int 跨链状态                 1 源链pending    	2 源链success/目标链pending  	3 目标链success
 		sourceStatus := 1
 		destinationStatus := 1
 		bridgeStatus := 1
+		var elapse int64
 		switch record.VoteStatus {
 		case 0:
 			switch record.ExecuteStatus {
@@ -141,22 +155,10 @@ func BridgeTx(c *gin.Context) {
 				sourceStatus = 2
 				destinationStatus = 2
 				bridgeStatus = 3
+				elapse = receiveAt - depositAt
 			}
 		}
 
-		sourceToken := ""
-		info, err := model.GetTokenInfo(record.SourceChainId, record.SourceTokenAddress)
-		if err == nil {
-			sourceToken = info.TokenName
-		}
-		destinationToken := ""
-		info, err = model.GetTokenInfo(record.DestinationChainId, record.DestinationTokenAddress)
-		if err == nil {
-			destinationToken = info.TokenName
-		}
-		receiveAt, _ := utils.DatetimeToUnix(record.ReceiveAt)
-		depositAt, _ := utils.DatetimeToUnix(record.DepositAt)
-		totalAmount := record.Amount.Mul(deciW).Div(deciW.Sub(record.Fee))
 		data = append(data, Response{
 			Id:                      record.Id,
 			ResourceId:              record.ResourceId,
@@ -177,7 +179,7 @@ func BridgeTx(c *gin.Context) {
 			DestinationStatus:       destinationStatus,
 			DepositAt:               utils.TimestampToDatetime(depositAt),
 			ReceiveAt:               utils.TimestampToDatetime(receiveAt),
-			//Elapse:                  int64(elapse),
+			Elapse:                  int64(elapse),
 		})
 	}
 
