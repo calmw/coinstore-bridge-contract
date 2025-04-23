@@ -19,7 +19,7 @@ type BridgeTx struct {
 	BridgeData              string          `gorm:"column:bridge_data;type:varchar(1000);comment:'跨链数据'" json:"bridge_data"`
 	BridgeMsg               []byte          `gorm:"column:bridge_msg;comment:'跨链nsg'" json:"bridge_msg"`
 	ResourceId              string          `gorm:"column:resource_id;type:varchar(100);comment:'resource ID'" json:"resource_id"`
-	Hash                    string          `gorm:"column:hash;comment:'唯一索引'" json:"hash"`
+	Hash                    string          `gorm:"column:hash;unique;comment:'唯一索引'" json:"hash"`
 	VoteStatus              int             `gorm:"column:vote_status;default:0;comment:'vote 0失败，1成功'" json:"vote_status"`
 	ExecuteStatus           int             `gorm:"column:execute_status;default:0;comment:'execute 0失败，1成功'" json:"execute_status"`
 	Amount                  decimal.Decimal `gorm:"column:amount;type:decimal(20,0);comment:'跨链数额'" json:"amount"`
@@ -36,6 +36,7 @@ type BridgeTx struct {
 	DepositAt               string          `gorm:"column:deposit_at;comment:'跨链发起时间'" json:"deposit_at"`
 	ReceiveAt               string          `gorm:"column:receive_at;comment:'跨链到账时间'" json:"receive_at"`
 	DeletedAt               gorm.DeletedAt  `gorm:"index"`
+	Version                 uint32          `gorm:"not null;default:0;comment:'乐观锁'" json:"version"`
 }
 
 type ChainId int
@@ -97,7 +98,7 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 		bridgeOrder = BridgeTx{
 			BridgeData:              fmt.Sprintf("%x", m.Payload[0].([]byte)),
 			BridgeMsg:               orderData,
-			Hash:                    string(key),
+			Hash:                    key,
 			Amount:                  amount,
 			Fee:                     fee,
 			ResourceId:              resourceId,
@@ -126,7 +127,6 @@ func UpdateExecuteStatus(m msg.Message, status int, executeTxHash, dateTime stri
 
 	log.Debug("更新execute数据", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
-	//key := strings.ToLower(fmt.Sprintf("%s%s%s%s", resourceIdHex, m.Source.Big().String(), m.Destination.Big().String(), m.DepositNonce.Big().String()))
 	key := strings.ToLower(fmt.Sprintf("%s%s%s%s", resourceIdHex, m.Source.Big().String(), m.Destination.Big().String(), m.DepositNonce.Big().String()))
 	// 更新记录
 	var record BridgeTx
