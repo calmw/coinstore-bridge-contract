@@ -156,7 +156,6 @@ func BridgeTx(c *gin.Context) {
 		}
 		receiveAt, _ := utils.DatetimeToUnix(record.ReceiveAt)
 		depositAt, _ := utils.DatetimeToUnix(record.DepositAt)
-		elapse := depositAt - receiveAt
 		totalAmount := record.Amount.Mul(deciW).Div(deciW.Sub(record.Fee))
 		data = append(data, Response{
 			Id:                      record.Id,
@@ -178,7 +177,7 @@ func BridgeTx(c *gin.Context) {
 			DestinationStatus:       destinationStatus,
 			DepositAt:               utils.TimestampToDatetime(depositAt + 3600*8),
 			ReceiveAt:               utils.TimestampToDatetime(receiveAt + 3600*8),
-			Elapse:                  elapse,
+			//Elapse:                  int64(elapse),
 		})
 	}
 
