@@ -255,9 +255,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         address user
     ) private returns (bool) {
         uint256 chainId = Bridge.chainId();
-        bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, chainId, user)
-        );
+        bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId, user));
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
         );
