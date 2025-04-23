@@ -102,7 +102,11 @@ func BridgeTx(c *gin.Context) {
 		tx = tx.Where("deposit_hash=?", q.SourceTxHash)
 	}
 	if len(q.DestinationTxHash) > 0 {
-		tx = tx.Where("execute_hash=?", strings.ToLower(q.DestinationTxHash))
+		q.DestinationTxHash = strings.ToLower(q.DestinationTxHash)
+		if !strings.HasPrefix(q.DestinationTxHash, "0x") {
+			q.DestinationTxHash = "0x" + q.DestinationTxHash
+		}
+		tx = tx.Where("execute_hash=?", q.DestinationTxHash)
 	}
 	tx.Count(&total)
 	err := tx.Offset(offset).Order("deposit_at DESC").Limit(pageSize).Find(&records).Error
