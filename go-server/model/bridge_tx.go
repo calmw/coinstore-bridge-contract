@@ -97,7 +97,7 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 		bridgeOrder = BridgeTx{
 			BridgeData:              fmt.Sprintf("%x", m.Payload[0].([]byte)),
 			BridgeMsg:               orderData,
-			Hash:                    string(key),
+			Hash:                    key,
 			Amount:                  amount,
 			Fee:                     fee,
 			ResourceId:              resourceId,
