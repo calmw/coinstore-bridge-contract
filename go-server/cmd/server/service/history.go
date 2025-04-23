@@ -176,8 +176,8 @@ func BridgeTx(c *gin.Context) {
 			BridgeStatus:            bridgeStatus,
 			SourceStatus:            sourceStatus,
 			DestinationStatus:       destinationStatus,
-			DepositAt:               record.DepositAt,
-			ReceiveAt:               record.ReceiveAt,
+			DepositAt:               utils.TimestampToDatetime(depositAt + 3600*8),
+			ReceiveAt:               utils.TimestampToDatetime(receiveAt + 3600*8),
 			Elapse:                  elapse,
 		})
 	}
