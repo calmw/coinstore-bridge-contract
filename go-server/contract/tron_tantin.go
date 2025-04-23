@@ -116,7 +116,6 @@ func (t *TanTinTron) AdminSetToken(resourceId string, assetsType uint8, tokenAdd
 	if err != nil {
 		return "", err
 	}
-	//sigNonce := big.NewInt(1)
 	tokenEth, _ := utils.TronToEth(tokenAddress)
 	signature, _ := abi.TantinAdminSetTokenSignatureTron(
 		sigNonce,
