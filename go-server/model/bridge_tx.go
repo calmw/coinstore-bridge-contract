@@ -19,7 +19,7 @@ type BridgeTx struct {
 	BridgeData              string          `gorm:"column:bridge_data;type:varchar(1000);comment:'跨链数据'" json:"bridge_data"`
 	BridgeMsg               []byte          `gorm:"column:bridge_msg;comment:'跨链nsg'" json:"bridge_msg"`
 	ResourceId              string          `gorm:"column:resource_id;type:varchar(100);comment:'resource ID'" json:"resource_id"`
-	Hash                    string          `gorm:"column:hash;comment:'唯一索引'" json:"hash"`
+	Hash                    string          `gorm:"column:hash;unique;comment:'唯一索引'" json:"hash"`
 	VoteStatus              int             `gorm:"column:vote_status;default:0;comment:'vote 0失败，1成功'" json:"vote_status"`
 	ExecuteStatus           int             `gorm:"column:execute_status;default:0;comment:'execute 0失败，1成功'" json:"execute_status"`
 	Amount                  decimal.Decimal `gorm:"column:amount;type:decimal(20,0);comment:'跨链数额'" json:"amount"`
