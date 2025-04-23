@@ -36,6 +36,7 @@ type BridgeTx struct {
 	DepositAt               string          `gorm:"column:deposit_at;comment:'跨链发起时间'" json:"deposit_at"`
 	ReceiveAt               string          `gorm:"column:receive_at;comment:'跨链到账时间'" json:"receive_at"`
 	DeletedAt               gorm.DeletedAt  `gorm:"index"`
+	Version                 uint32          `gorm:"not null;default:0;comment:'乐观锁'" json:"version"`
 }
 
 type ChainId int
