@@ -25,6 +25,6 @@ func Start() {
 		interval = 30
 	}
 	s := gocron.NewScheduler()
-	_ = s.Every(uint64(interval)).Minutes().From(gocron.NextTick()).Do(task.FailedTask)
+	_ = s.Every(uint64(interval)).Seconds().From(gocron.NextTick()).Do(task.FailedTask)
 	<-s.Start()
 }
