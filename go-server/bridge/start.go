@@ -5,6 +5,7 @@ import (
 	"coinstore/bridge/chains/tron"
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
+	"coinstore/bridge/monitor"
 	"coinstore/db"
 	"coinstore/model"
 	"errors"
@@ -60,6 +61,7 @@ func Run() error {
 
 	logger.Debug("ChainInfo on initialization... ")
 
+	go monitor.Start()
 	c.Start()
 	return nil
 }

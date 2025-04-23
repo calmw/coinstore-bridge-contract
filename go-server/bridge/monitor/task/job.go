@@ -8,39 +8,48 @@ import (
 	"coinstore/model"
 	"coinstore/utils"
 	"errors"
+	"fmt"
 	"github.com/calmw/clog"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"log"
-	"strings"
 	"time"
 )
 
+var ConcurrencyLimit int
+var ConcurrencyLimitChan chan struct{}
+var FailedOrdersChain chan model.BridgeTx
+
+func InitTask() {
+	ConcurrencyLimit = 5
+	FailedOrdersChain = make(chan model.BridgeTx, 10000)
+	ConcurrencyLimitChan = make(chan struct{}, ConcurrencyLimit)
+}
+
 type Monitor struct {
-	log                  clog.Logger
-	ConcurrencyLimit     int
-	FailedOrdersChain    chan model.BridgeTx
-	ConcurrencyLimitChan chan struct{}
+	log clog.Logger
+	//ConcurrencyLimit     int
+	//FailedOrdersChain    chan model.BridgeTx
+	//ConcurrencyLimitChan chan struct{}
 }
 
 // NewMonitor concurrencyLimit 最多并发数,比如3～5
-func NewMonitor(concurrencyLimit int) *Monitor {
+func NewMonitor() *Monitor {
 	logger := clog.Root().New("module", "monitor")
 	return &Monitor{
-		log:                  logger,
-		ConcurrencyLimit:     concurrencyLimit,
-		FailedOrdersChain:    make(chan model.BridgeTx, 10000),
-		ConcurrencyLimitChan: make(chan struct{}, concurrencyLimit),
+		log: logger,
+		//ConcurrencyLimit:     concurrencyLimit,
+		//FailedOrdersChain:    make(chan model.BridgeTx, 10000),
+		//ConcurrencyLimitChan: make(chan struct{}, concurrencyLimit),
 	}
 }
 
 func (m *Monitor) ProcessFailedOrder() {
-	for order := range m.FailedOrdersChain {
-		m.ConcurrencyLimitChan <- struct{}{}
+	for order := range FailedOrdersChain {
+		ConcurrencyLimitChan <- struct{}{}
 		go func(o model.BridgeTx) {
 			defer func() {
-				<-m.ConcurrencyLimitChan
-				m.log.Debug("🍺 处理订单完成", "ID", order.Id)
+				<-ConcurrencyLimitChan
+				m.log.Debug("处理订单完成", "ID", order.Id)
 			}()
 			m.RetryFailedOrder(o)
 		}(order)
@@ -48,7 +57,7 @@ func (m *Monitor) ProcessFailedOrder() {
 }
 
 func (m *Monitor) RetryFailedOrder(order model.BridgeTx) {
-	m.log.Debug("🍺 处理订单开始", "ID", order.Id)
+	m.log.Debug("处理订单开始", "ID", order.Id)
 	if order.ExecuteStatus > 0 {
 		return
 	}
@@ -68,59 +77,68 @@ func (m *Monitor) RetryFailedOrder(order model.BridgeTx) {
 		m.DelFailedOrder(order.Hash)
 		return
 	}
+
 	if order.VoteStatus > 0 { // 投票已经成功，执行execute
 		if order.DestinationChainId == 3 {
-			writer := ethereum.Writers[int(order.DestinationChainId)]
-			m.log.Debug("🍺 重试execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
+			writer := tron.WritersTron
+			if tron.WritersTron == nil {
+				m.log.Debug("跨链桥状态异常", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
+				return
+			}
+			m.log.Debug("重试execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
 			metadata := bridgeData.Payload[0].([]byte)
 			data := chains.ConstructGenericProposalData(metadata)
-			toHash := append(common.HexToAddress(writer.Cfg.BridgeContractAddress).Bytes(), data...)
+			fmt.Println(writer.Cfg.BridgeContractAddress, "````~")
+			bridgeEthAddress, err := utils.TronToEth(writer.Cfg.BridgeContractAddress)
+			if err != nil {
+				m.log.Debug("重试execute", "地址转转错误", err)
+				return
+			}
+			toHash := append(common.HexToAddress(bridgeEthAddress).Bytes(), data...)
 			dataHash := utils.Keccak256(toHash)
 			writer.ExecuteProposal(bridgeData, data, dataHash)
 		} else {
-			writer := tron.WritersTron
-			m.log.Debug("🍺 重试execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
-			metadata := bridgeData.Payload[0].([]byte)
-			data := chains.ConstructGenericProposalData(metadata)
-			bridgeAddress, err := address.Base58ToAddress(writer.Cfg.BridgeContractAddress)
-			if err != nil {
-				m.log.Debug("🍺 重试execute", "地址转转错误", err)
+			writer := ethereum.Writers[int(order.DestinationChainId)]
+			if writer == nil {
+				m.log.Debug("跨链桥状态异常", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
 				return
 			}
-			bridgeEthAddress := "0x" + strings.TrimPrefix(bridgeAddress.Hex(), "0x41")
-			toHash := append(common.HexToAddress(bridgeEthAddress).Bytes(), data...)
+			m.log.Debug("重试execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
+			metadata := bridgeData.Payload[0].([]byte)
+			data := chains.ConstructGenericProposalData(metadata)
+			toHash := append(common.HexToAddress(writer.Cfg.BridgeContractAddress).Bytes(), data...)
 			dataHash := utils.Keccak256(toHash)
 			writer.ExecuteProposal(bridgeData, data, dataHash)
 		}
 	} else { // 投票未成功，vote + execute
 		if order.DestinationChainId == 3 {
 			writer := tron.WritersTron
-			m.log.Debug("🍺 重试vote+execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
+			m.log.Debug("重试vote+execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
 			writer.CreateProposal(bridgeData)
 		} else {
 			writer := ethereum.Writers[int(bridgeData.Destination)]
-			m.log.Debug("🍺 重试vote+execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
+			m.log.Debug("重试vote+execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
 			writer.CreateProposal(bridgeData)
 		}
 	}
 }
 
 func FailedTask() {
-	monitor := NewMonitor(4)
+	monitor := NewMonitor()
 	orders, err := monitor.FindFailedOrder()
 	if err != nil {
 		return
 	}
-	monitor.log.Debug("🍺 开始添加失败任务", "当前失败的总任务数量", len(orders))
-	if len(monitor.FailedOrdersChain) > monitor.ConcurrencyLimit*150 {
+	monitor.log.Debug("开始添加失败任务", "当前失败的总任务数量", len(orders))
+	if len(FailedOrdersChain) > ConcurrencyLimit*150 {
 		monitor.log.Error("跳过该轮添加")
 		return
 	}
 	for i, order := range orders {
-		if i >= monitor.ConcurrencyLimit*100 {
+		if i >= ConcurrencyLimit*100 {
 			return
 		}
-		monitor.FailedOrdersChain <- order
+		FailedOrdersChain <- order
 	}
 }
 
