@@ -95,7 +95,11 @@ func BridgeTx(c *gin.Context) {
 		tx = tx.Where("deposit_at <=?", time.Unix(q.DepositAtEnd, 0))
 	}
 	if len(q.SourceTxHash) > 0 {
-		tx = tx.Where("deposit_hash=?", strings.ToLower(q.SourceTxHash))
+		q.SourceTxHash = strings.ToLower(q.SourceTxHash)
+		if !strings.HasPrefix(q.SourceTxHash, "0x") {
+			q.SourceTxHash = "0x" + q.SourceTxHash
+		}
+		tx = tx.Where("deposit_hash=?", q.SourceTxHash)
 	}
 	if len(q.DestinationTxHash) > 0 {
 		tx = tx.Where("execute_hash=?", strings.ToLower(q.DestinationTxHash))
