@@ -94,6 +94,8 @@ func (w *Writer) shouldVote(m msg.Message, dataHash [32]byte) bool {
 }
 
 func (w *Writer) CreateProposal(m msg.Message) bool {
+	fmt.Println(m, "~~~")
+	fmt.Println(w, "~~~")
 	w.log.Info("Creating generic proposal", "src", m.Source, "nonce", m.DepositNonce)
 
 	metadata := m.Payload[0].([]byte)

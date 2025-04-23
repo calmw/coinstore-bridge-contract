@@ -8,11 +8,10 @@ import (
 	"coinstore/model"
 	"coinstore/utils"
 	"errors"
+	"fmt"
 	"github.com/calmw/clog"
-	"github.com/calmw/tron-sdk/pkg/address"
 	"github.com/ethereum/go-ethereum/common"
 	"log"
-	"strings"
 	"time"
 )
 
@@ -50,7 +49,7 @@ func (m *Monitor) ProcessFailedOrder() {
 		go func(o model.BridgeTx) {
 			defer func() {
 				<-ConcurrencyLimitChan
-				m.log.Debug("🍺 处理订单完成", "ID", order.Id)
+				m.log.Debug("处理订单完成", "ID", order.Id)
 			}()
 			m.RetryFailedOrder(o)
 		}(order)
@@ -58,7 +57,7 @@ func (m *Monitor) ProcessFailedOrder() {
 }
 
 func (m *Monitor) RetryFailedOrder(order model.BridgeTx) {
-	m.log.Debug("🍺 处理订单开始", "ID", order.Id)
+	m.log.Debug("处理订单开始", "ID", order.Id)
 	if order.ExecuteStatus > 0 {
 		return
 	}
@@ -78,38 +77,47 @@ func (m *Monitor) RetryFailedOrder(order model.BridgeTx) {
 		m.DelFailedOrder(order.Hash)
 		return
 	}
+
 	if order.VoteStatus > 0 { // 投票已经成功，执行execute
 		if order.DestinationChainId == 3 {
-			writer := ethereum.Writers[int(order.DestinationChainId)]
-			m.log.Debug("🍺 重试execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
+			writer := tron.WritersTron
+			if tron.WritersTron == nil {
+				m.log.Debug("跨链桥状态异常", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
+				return
+			}
+			m.log.Debug("重试execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
 			metadata := bridgeData.Payload[0].([]byte)
 			data := chains.ConstructGenericProposalData(metadata)
-			toHash := append(common.HexToAddress(writer.Cfg.BridgeContractAddress).Bytes(), data...)
+			fmt.Println(writer.Cfg.BridgeContractAddress, "````~")
+			bridgeEthAddress, err := utils.TronToEth(writer.Cfg.BridgeContractAddress)
+			if err != nil {
+				m.log.Debug("重试execute", "地址转转错误", err)
+				return
+			}
+			toHash := append(common.HexToAddress(bridgeEthAddress).Bytes(), data...)
 			dataHash := utils.Keccak256(toHash)
 			writer.ExecuteProposal(bridgeData, data, dataHash)
 		} else {
-			writer := tron.WritersTron
-			m.log.Debug("🍺 重试execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
-			metadata := bridgeData.Payload[0].([]byte)
-			data := chains.ConstructGenericProposalData(metadata)
-			bridgeAddress, err := address.Base58ToAddress(writer.Cfg.BridgeContractAddress)
-			if err != nil {
-				m.log.Debug("🍺 重试execute", "地址转转错误", err)
+			writer := ethereum.Writers[int(order.DestinationChainId)]
+			if writer == nil {
+				m.log.Debug("跨链桥状态异常", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
 				return
 			}
-			bridgeEthAddress := "0x" + strings.TrimPrefix(bridgeAddress.Hex(), "0x41")
-			toHash := append(common.HexToAddress(bridgeEthAddress).Bytes(), data...)
+			m.log.Debug("重试execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
+			metadata := bridgeData.Payload[0].([]byte)
+			data := chains.ConstructGenericProposalData(metadata)
+			toHash := append(common.HexToAddress(writer.Cfg.BridgeContractAddress).Bytes(), data...)
 			dataHash := utils.Keccak256(toHash)
 			writer.ExecuteProposal(bridgeData, data, dataHash)
 		}
 	} else { // 投票未成功，vote + execute
 		if order.DestinationChainId == 3 {
 			writer := tron.WritersTron
-			m.log.Debug("🍺 重试vote+execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
+			m.log.Debug("重试vote+execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
 			writer.CreateProposal(bridgeData)
 		} else {
 			writer := ethereum.Writers[int(bridgeData.Destination)]
-			m.log.Debug("🍺 重试vote+execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
+			m.log.Debug("重试vote+execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
 			writer.CreateProposal(bridgeData)
 		}
 	}
@@ -121,7 +129,7 @@ func FailedTask() {
 	if err != nil {
 		return
 	}
-	monitor.log.Debug("🍺 开始添加失败任务", "当前失败的总任务数量", len(orders))
+	monitor.log.Debug("开始添加失败任务", "当前失败的总任务数量", len(orders))
 	if len(FailedOrdersChain) > ConcurrencyLimit*150 {
 		monitor.log.Error("跳过该轮添加")
 		return

@@ -132,6 +132,11 @@ func BridgeTx(c *gin.Context) {
 			}
 		case 1:
 			switch record.ExecuteStatus {
+			case 0:
+				sourceStatus = 2
+				destinationStatus = 1
+				bridgeStatus = 2
+
 			case 1:
 				sourceStatus = 2
 				destinationStatus = 2
