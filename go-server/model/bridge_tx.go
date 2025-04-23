@@ -77,18 +77,18 @@ func BytesToMsg(b []byte) (msg.Message, error) {
 }
 
 func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, resourceId, caller, receiver, sourceTokenAddress, destinationTokenAddress, depositTxHash, dateTime string, fee decimal.Decimal) {
-	log.Debug("🐧 检查订单是否存在", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
+	log.Debug("检查订单是否存在", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 	var bridgeOrder BridgeTx
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
-	key := []byte(fmt.Sprintf("%s%d%d%d", resourceIdHex, m.Source, m.Destination, m.DepositNonce))
+	key := strings.ToLower(fmt.Sprintf("%s%s%s%s", resourceIdHex, m.Source.Big().String(), m.Destination.Big().String(), m.DepositNonce.Big().String()))
 
 	// 记录不存在就插入
-	err := db.DB.Model(BridgeTx{}).Where("hash=?", string(key)).First(&bridgeOrder).Error
+	err := db.DB.Model(BridgeTx{}).Where("hash=?", key).First(&bridgeOrder).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		orderData, err := MsgDataToBytes(m)
 		if err != nil {
 			log.Error(err.Error())
-			log.Debug("🐧 SaveBridgeOrder", "error", err.Error())
+			log.Debug("SaveBridgeOrder", "error", err.Error())
 			return
 		}
 		if !strings.HasPrefix(depositTxHash, "0x") {
@@ -110,74 +110,75 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 			DepositAt:               dateTime,
 			DepositHash:             depositTxHash,
 		}
-		log.Debug("🐧 插入订单数据", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
+		log.Debug("插入订单数据", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 		err = db.DB.Model(BridgeTx{}).Create(&bridgeOrder).Error
 		if err != nil {
-			log.Debug("🐧 SaveBridgeOrder", "error", err.Error())
+			log.Debug("SaveBridgeOrder", "error", err.Error())
 		}
 		return
 	}
 	if err == nil {
-		log.Debug("🐧 订单已存在", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
+		log.Debug("订单已存在", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 	}
 }
 
 func UpdateExecuteStatus(m msg.Message, status int, executeTxHash, dateTime string) {
 
-	log.Debug("🐧 更新execute数据", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
+	log.Debug("更新execute数据", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
-	key := []byte(fmt.Sprintf("%s%d%d%d", resourceIdHex, m.Source, m.Destination, m.DepositNonce))
+	//key := strings.ToLower(fmt.Sprintf("%s%s%s%s", resourceIdHex, m.Source.Big().String(), m.Destination.Big().String(), m.DepositNonce.Big().String()))
+	key := strings.ToLower(fmt.Sprintf("%s%s%s%s", resourceIdHex, m.Source.Big().String(), m.Destination.Big().String(), m.DepositNonce.Big().String()))
 	// 更新记录
 	var record BridgeTx
-	err := db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).First(&record).Error
+	err := db.DB.Model(&BridgeTx{}).Where("hash=?", key).First(&record).Error
 	if err != nil {
-		log.Debug("🐧 更新execute数据", "error", err)
+		log.Debug("更新execute数据", "error", err)
 		return
 	}
 	if record.ExecuteStatus == 1 {
 		return
 	}
-	err = db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).Updates(map[string]interface{}{
+	err = db.DB.Model(&BridgeTx{}).Where("hash=?", key).Updates(map[string]interface{}{
 		"execute_hash":   executeTxHash,
 		"execute_status": status,
 		"bridge_status":  2,
 		"receive_at":     dateTime,
 	}).Error
 	if err != nil {
-		log.Debug("🐧 更新execute数据", "error", err)
+		log.Debug("更新execute数据", "error", err)
 		return
 	}
 }
 
 func UpdateVoteStatus(m msg.Message, voteStatus int) {
-	log.Debug("🐧 更新vote数据", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
+	log.Debug("更新vote数据", "Destination", m.Destination, "DepositNonce", m.DepositNonce)
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
-	key := []byte(fmt.Sprintf("%s%d%d%d", resourceIdHex, m.Source, m.Destination, m.DepositNonce))
+	key := strings.ToLower(fmt.Sprintf("%s%s%s%s", resourceIdHex, m.Source.Big().String(), m.Destination.Big().String(), m.DepositNonce.Big().String()))
 	// 更新记录
 	var record BridgeTx
-	err := db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).First(&record).Error
+	err := db.DB.Model(&BridgeTx{}).Where("hash=?", key).First(&record).Error
 	if err != nil {
-		log.Debug("🐧 更新vote数据", "error", err)
+		log.Debug("更新vote数据", "error", err)
 		return
 	}
 	if record.VoteStatus == 1 {
 		return
 	}
-	err = db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).Updates(map[string]interface{}{
+	err = db.DB.Model(&BridgeTx{}).Where("hash=?", key).Updates(map[string]interface{}{
 		"vote_status": voteStatus,
 	}).Error
 	if err != nil {
-		log.Debug("🐧 更新vote数据", "error", err)
+		log.Debug("更新vote数据", "error", err)
 		return
 	}
 }
 
 func GetBridgeTxStatus(m msg.Message) (int, int, error) {
 	resourceIdHex := "0x" + hexutils.BytesToHex(m.ResourceId[:])
-	key := []byte(fmt.Sprintf("%s%d%d%d", resourceIdHex, m.Source, m.Destination, m.DepositNonce))
+	key := strings.ToLower(fmt.Sprintf("%s%s%s%s", resourceIdHex, m.Source.Big().String(), m.Destination.Big().String(), m.DepositNonce.Big().String()))
 	// 更新记录
 	var record BridgeTx
-	err := db.DB.Model(&BridgeTx{}).Where("hash=?", string(key)).First(&record).Error
+	err := db.DB.Model(&BridgeTx{}).Where("hash=?", key).First(&record).Error
 	if err != nil {
 		return 0, 0, err
 	}
