@@ -18,7 +18,7 @@ tt --chain TT/BSC/TRON/ETH  --key abc123...`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("deploy called")
 		switch ChainName {
-		case "Tantin":
+		case "TT":
 		case "BSC":
 		case "TRON":
 		case "ETH":

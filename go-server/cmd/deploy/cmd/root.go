@@ -28,7 +28,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var ChainName, PrivateKey string
+var (
+	PrivateKey string
+	ChainName  string
+)
 
 var rootCmd = &cobra.Command{
 	Use:   "deploy",
