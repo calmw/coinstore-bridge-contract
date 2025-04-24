@@ -1,11 +1,11 @@
 package main
 
 import (
-	"coinstore/cmd/dfr/logs"
+	"coinstore/log"
 )
 
 /// DFR Daily Financial Report
 
 func main() {
-	logs.InitLog()
+	log.InitLog()
 }
