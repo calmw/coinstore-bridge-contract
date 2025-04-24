@@ -59,7 +59,8 @@ func main() {
 	//	return
 	//}
 	//Usdt.Approve(big.NewInt(1000), contract.ChainConfig.TantinContractAddress)
-	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
+	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
+	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdEth, "0x"))
 	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdCoin, "0x"))
 
 	for {
