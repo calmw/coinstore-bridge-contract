@@ -17,7 +17,7 @@ func main() {
 	db.InitMysql(logger)
 
 	//自动迁移
-	err := db.DB.AutoMigrate(&model.ChainInfo{}, &model.BridgeTx{}, &model.ResourceInfo{}, &model.TokenInfo{})
+	err := db.DB.AutoMigrate(&model.ChainInfo{}, &model.BridgeTx{}, &model.ResourceInfo{}, &model.TokenInfo{}, &model.DailyReport{})
 	if err != nil {
 		logger.Debug("db AutoMigrate err: ", err)
 	}

@@ -18,7 +18,7 @@ type BridgeTx struct {
 	Id                      uint64          `gorm:"primaryKey" json:"id"`
 	BridgeData              string          `gorm:"column:bridge_data;type:varchar(1000);comment:'跨链数据'" json:"bridge_data"`
 	BridgeMsg               []byte          `gorm:"column:bridge_msg;comment:'跨链nsg'" json:"bridge_msg"`
-	ResourceId              string          `gorm:"column:resource_id;type:varchar(100);comment:'resource ID'" json:"resource_id"`
+	ResourceId              ResourceId      `gorm:"column:resource_id;type:varchar(100);comment:'resource ID'" json:"resource_id"`
 	Hash                    string          `gorm:"column:hash;unique;comment:'唯一索引'" json:"hash"`
 	VoteStatus              int             `gorm:"column:vote_status;default:0;comment:'vote 0失败，1成功'" json:"vote_status"`
 	ExecuteStatus           int             `gorm:"column:execute_status;default:0;comment:'execute 0失败，1成功'" json:"execute_status"`
@@ -37,6 +37,7 @@ type BridgeTx struct {
 	ReceiveAt               string          `gorm:"column:receive_at;comment:'跨链到账时间'" json:"receive_at"`
 	DeletedAt               gorm.DeletedAt  `gorm:"index"`
 	Version                 uint32          `gorm:"not null;default:0;comment:'乐观锁'" json:"version"`
+	BridgeGasFee            decimal.Decimal `gorm:"column:amount;type:decimal(20,0);comment:'跨链桥今日累计Gas费用'" json:"bridge_gas_fee"`
 }
 
 type ChainId int
@@ -51,6 +52,23 @@ func (c ChainId) String() string {
 		return "TRON"
 	case 4:
 		return "Ethereum"
+	default:
+		return ""
+	}
+}
+
+type ResourceId string
+
+func (r ResourceId) TokenName() string {
+	switch strings.ToLower(string(r)) {
+	case "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1b":
+		return "ETH"
+	case "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1c":
+		return "ETH"
+	case "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d":
+		return "USDT"
+	case "0xac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1e":
+		return "USDC"
 	default:
 		return ""
 	}
@@ -101,7 +119,7 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 			Hash:                    key,
 			Amount:                  amount,
 			Fee:                     fee,
-			ResourceId:              resourceId,
+			ResourceId:              ResourceId(resourceId),
 			Caller:                  caller,
 			Receiver:                receiver,
 			SourceChainId:           ChainId(m.Source),
