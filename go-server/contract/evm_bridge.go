@@ -129,7 +129,7 @@ func (b *BridgeEvm) GrantRole(role string, addr common.Address) {
 		fmt.Println(err, "~~~~")
 		time.Sleep(3 * time.Second)
 	}
-	log.Println(fmt.Sprintf("GrantRole 成功"))
+	log.Println(fmt.Sprintf("GrantRole 成功"), res.Hash())
 	for {
 		receipt, err := b.Cli.TransactionReceipt(context.Background(), res.Hash())
 		if err == nil && receipt.Status == 1 {
