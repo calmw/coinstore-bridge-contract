@@ -14,30 +14,32 @@ import (
 func main() {
 	//contract.InitTronEnvProd()
 	contract.InitTronEnv()
-	bridge, err := contract.NewBridgeTron()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	bridge.Init()
-
-	vote, err := contract.NewVoteTron()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	vote.Init()
+	//bridge, err := contract.NewBridgeTron()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//bridge.Init()
+	//
+	//vote, err := contract.NewVoteTron()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//vote.Init()
 
 	tantin, err := contract.NewTanTinTron()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	tantin.Init()
+	//tantin.Init()
 
 	for {
 		//txHash, err := tantin.Deposit(big.NewInt(1), big.NewInt(3), contract.ResourceIdUsdt, "TQxhW4iv7BvT63qdnmx76GZK5FViy4qMfh")
-		txHash, err := tantin.Deposit(big.NewInt(1), big.NewInt(3), contract.ResourceIdUsdt, "TEkkeJsMAQD18HqodvYLZ91BJRv1kG1sN7")
+		//txHash, err := tantin.Deposit(big.NewInt(1), big.NewInt(3), contract.ResourceIdUsdc, "TEkkeJsMAQD18HqodvYLZ91BJRv1kG1sN7")
+		//txHash, err := tantin.Deposit(big.NewInt(1), big.NewInt(3), contract.ResourceIdEth, "TEkkeJsMAQD18HqodvYLZ91BJRv1kG1sN7")
+		txHash, err := tantin.Deposit(big.NewInt(1), big.NewInt(3), contract.ResourceIdWeth, "TEkkeJsMAQD18HqodvYLZ91BJRv1kG1sN7")
 		fmt.Println(txHash, err)
 		time.Sleep(time.Second * 60)
 	}

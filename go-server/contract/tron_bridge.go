@@ -56,8 +56,8 @@ func NewBridgeTron() (*BridgeTron, error) {
 }
 
 func (b *BridgeTron) Init() {
-	txHash20, err20 := b.TransferUsdtTest()
-	fmt.Println(txHash20, err20)
+	//txHash20, err20 := b.TransferUsdtTest()
+	//fmt.Println(txHash20, err20)
 	//txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
 	//fmt.Println(txHash2, err2)
 	//time.Sleep(time.Second)
@@ -73,8 +73,8 @@ func (b *BridgeTron) Init() {
 	//txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, big.NewInt(100), false, false, false)
 	//fmt.Println(txHash5, err5)
 	//time.Sleep(time.Second)
-	//txHash6, err6 := b.AdminSetResource(ResourceIdEth, 2, ChainConfig.WEthAddress, big.NewInt(100), false, false, false)
-	//fmt.Println(txHash6, err6)
+	txHash6, err6 := b.AdminSetResource(ResourceIdEth, 2, ChainConfig.WEthAddress, big.NewInt(100), false, false, false)
+	fmt.Println(txHash6, err6)
 }
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {
