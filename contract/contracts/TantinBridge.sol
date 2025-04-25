@@ -27,6 +27,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
 
     uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
     address private superAdminAddress;
+    address private serverAddress;
     address private feeAddress;
     IBridge public Bridge; // bridge 合约
     uint256 public localNonce; // 跨链nonce
@@ -104,11 +105,19 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes32 resourceId,
         address recipient,
         uint256 amount,
-        bytes memory signature
+        uint256 price,
+        uint256 priceTimestamp,
+        bytes memory priceSignature,
+        bytes memory recipientSignature
     ) external payable {
-        // 验证签名
+        // 验证接受地址签名
         require(
-            checkDepositSignature(signature, recipient, msg.sender),
+            checkDepositSignature(recipientSignature, recipient, msg.sender),
+            "signature error"
+        );
+        // 验证价格签名
+        require(
+            checkPriceSignature(recipientSignature, recipient, msg.sender),
             "signature error"
         );
         // 检测resource ID是否设置
@@ -227,6 +236,20 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         );
 
         return recoverAddress == sender;
+    }
+
+    // 验证price签名
+    function checkPriceSignature(
+        bytes memory signature,
+        uint256 price,
+        uint256 priceTimestamp
+    ) private pure returns (bool) {
+        bytes32 messageHash = keccak256(abi.encode(price, priceTimestamp));
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature
+        );
+
+        return recoverAddress == serverAddress;
     }
 
     function checkAdminSetEnvSignature(
