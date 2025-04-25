@@ -18,6 +18,7 @@ type BinancePrice struct {
 var tokens = []string{"ETH", "USDC"}
 
 func GetBinancePrice() {
+	fmt.Println("~")
 	resp := &http.Response{}
 	var res BinancePrice
 	defer resp.Body.Close()

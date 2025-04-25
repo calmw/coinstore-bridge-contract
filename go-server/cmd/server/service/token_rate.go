@@ -1,10 +1,14 @@
 package service
 
 import (
+	"coinstore/abi"
 	"coinstore/cmd/server/task"
 	"coinstore/db"
 	"coinstore/model"
+	"fmt"
+	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 	"strings"
 	"time"
 )
@@ -26,6 +30,7 @@ func GetPrice(c *gin.Context) {
 		tokenName,
 		strings.ToLower(tokenAddress),
 	).First(&tokenInfo).Error
+	fmt.Println(4)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 1,
@@ -34,13 +39,42 @@ func GetPrice(c *gin.Context) {
 		})
 		return
 	}
+	fmt.Println(5)
 
 	price := task.GetPrice(strings.ToUpper(tokenName))
+	fmt.Println(price)
 	timestamp := time.Now().Unix()
+	signature := ""
+
+	chainIdDeci, err := decimal.NewFromString(chainId)
+	if err != nil {
+		return
+	}
+	priceDeci, err := decimal.NewFromString(price)
+	if err != nil {
+		return
+	}
+	if chainId == "3" {
+		priceSignature, err := abi.TronPriceSignature(chainIdDeci.BigInt(), priceDeci.BigInt(), ethcommon.HexToAddress(tokenAddress))
+		if err != nil {
+			return
+		}
+		signature = fmt.Sprintf("%x", priceSignature)
+	} else {
+		priceSignature, err := abi.EvmPriceSignature(chainIdDeci.BigInt(), priceDeci.BigInt(), ethcommon.HexToAddress(tokenAddress))
+		if err != nil {
+			return
+		}
+		signature = fmt.Sprintf("%x", priceSignature)
+	}
 
 	c.JSON(200, gin.H{
 		"code": 0,
 		"msg":  "OK",
-		"data": resourceInfo.ResourceId,
+		"data": map[string]string{
+			"price":     price,
+			"timestamp": fmt.Sprintf("%d", timestamp),
+			"signature": signature,
+		},
 	})
 }

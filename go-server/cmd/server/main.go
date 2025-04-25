@@ -17,14 +17,14 @@ func main() {
 	logger.Debug("Starting CoinStore Bridge Server...")
 	db.InitMysql(logger)
 
-	// 定时任务
-	go task.ScheduleTask()
-
 	//自动迁移
 	err := db.DB.AutoMigrate(&model.ChainInfo{}, &model.BridgeTx{}, &model.ResourceInfo{}, &model.TokenInfo{}, &model.DailyReport{})
 	if err != nil {
 		logger.Debug("db AutoMigrate err: ", err)
 	}
+
+	// 定时任务
+	go task.ScheduleTask()
 
 	router := gin.Default()
 	// 创建限速器,每秒5次
