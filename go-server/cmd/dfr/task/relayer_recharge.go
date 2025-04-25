@@ -18,34 +18,34 @@ func UpdateRechargeRecord() {
 	if err != nil {
 		log.Logger.Sugar().Errorf("get relayer account error %v", err)
 	}
-	for _, account := range accounts {
-
-	}
+	//for _, account := range accounts {
+	//
+	//}
 }
 
-func UpdateBalance() {
-	var chains []model.ChainInfo
-	err := db.DB.Model(&model.ChainInfo{}).Find(chains).Error
-	if err != nil {
-		log.Logger.Sugar().Errorf("get chain info error %v", err)
-	}
-	for _, chain := range chains {
-		var relayerAccount model.RelayerAccount
-		err = db.DB.Model(&model.RelayerAccount{}).Find(relayerAccount).Error
-		if err != nil {
-			log.Logger.Sugar().Errorf("get chain info error %v", err)
-			continue
-		}
-		if chain.ChainType == 1 {
-			balance, err := getEvmBalance(chain.Endpoint, relayerAccount.Account)
-			if err == nil {
-				return
-			}
-		} else if chain.ChainType == 2 {
-
-		}
-	}
-}
+//func UpdateBalance() {
+//	var chains []model.ChainInfo
+//	err := db.DB.Model(&model.ChainInfo{}).Find(chains).Error
+//	if err != nil {
+//		log.Logger.Sugar().Errorf("get chain info error %v", err)
+//	}
+//	for _, chain := range chains {
+//		var relayerAccount model.RelayerAccount
+//		err = db.DB.Model(&model.RelayerAccount{}).Find(relayerAccount).Error
+//		if err != nil {
+//			log.Logger.Sugar().Errorf("get chain info error %v", err)
+//			continue
+//		}
+//		//if chain.ChainType == 1 {
+//		//	balance, err := getEvmBalance(chain.Endpoint, relayerAccount.Account)
+//		//	if err == nil {
+//		//		return
+//		//	}
+//		//} else if chain.ChainType == 2 {
+//		//
+//		//}
+//	}
+//}
 
 func getEvmBalance(endpoint, account string) (*big.Int, error) {
 	var err error
