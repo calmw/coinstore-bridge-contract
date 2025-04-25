@@ -580,8 +580,23 @@
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "priceTimestamp",
+        "type": "uint256"
+      },
+      {
         "internalType": "bytes",
-        "name": "signature",
+        "name": "priceSignature",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "recipientSignature",
         "type": "bytes"
       }
     ],
