@@ -19,9 +19,10 @@ var tokens = []string{"ETH", "USDC"}
 
 func GetBinancePrice() {
 	fmt.Println("~")
+	fmt.Println("~~~~~~~~~~~~~~~~~~~~~ !!!")
+	fmt.Println(tokens)
 	resp := &http.Response{}
 	var res BinancePrice
-	defer resp.Body.Close()
 	var err error
 	for _, token := range tokens {
 		url := fmt.Sprintf("https://api2.binance.com/api/v3/ticker/price?symbol=%sUSDT", token)
@@ -44,12 +45,20 @@ func GetBinancePrice() {
 			log.Println(err)
 			continue
 		}
+		if TokenPrice["binance"] == nil {
+			TokenPrice["binance"] = map[string]string{}
+		}
 		if token == "ETH" {
 			TokenPrice["binance"]["ETH"] = res.Price
 			TokenPrice["binance"]["TETH"] = res.Price
 			TokenPrice["binance"]["WETH"] = res.Price
+		} else {
+			TokenPrice["binance"][token] = res.Price
 		}
 	}
+	fmt.Println(TokenPrice)
+
+	resp.Body.Close()
 
 }
 

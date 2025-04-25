@@ -46,12 +46,13 @@ func GetPrice(c *gin.Context) {
 	timestamp := time.Now().Unix()
 	signature := ""
 
-	chainIdDeci, err := decimal.NewFromString(chainId)
-	if err != nil {
-		return
-	}
-	priceDeci, err := decimal.NewFromString(price)
-	if err != nil {
+	chainIdDeci, err1 := decimal.NewFromString(chainId)
+	priceDeci, err2 := decimal.NewFromString(price)
+	if err1 != nil || err2 != nil {
+		c.JSON(200, gin.H{
+			"code": 1,
+			"msg":  "failed",
+		})
 		return
 	}
 	if chainId == "3" {
