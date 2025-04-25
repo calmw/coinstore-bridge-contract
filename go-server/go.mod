@@ -37,8 +37,10 @@ require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/bits-and-blooms/bitset v1.17.0 // indirect
 	github.com/btcsuite/btcd v0.22.3 // indirect
+	github.com/bybit-exchange/bybit.go.api v0.0.0-20250421211709-d5b2b36fdf4b // indirect
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -100,6 +102,7 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
+	github.com/wuhewuhe/bybit.go.api v1.0.18 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.8.0 // indirect
 	golang.org/x/net v0.38.0 // indirect

@@ -2,13 +2,14 @@ package service
 
 import (
 	"coinstore/abi"
-	"coinstore/cmd/server/task"
+	"coinstore/cmd/server/token"
 	"coinstore/db"
 	"coinstore/model"
 	"fmt"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
+	"log"
 	"strings"
 	"time"
 )
@@ -30,7 +31,6 @@ func GetPrice(c *gin.Context) {
 		tokenName,
 		strings.ToLower(tokenAddress),
 	).First(&tokenInfo).Error
-	fmt.Println(4)
 	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 1,
@@ -39,13 +39,18 @@ func GetPrice(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(5)
 
-	price := task.GetPrice(strings.ToUpper(tokenName))
-	fmt.Println(price)
+	price, ok := token.ExTokenPriceData.Get(strings.ToUpper(tokenName))
+	if !ok {
+		log.Println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+		c.JSON(200, gin.H{
+			"code": 1,
+			"msg":  "failed",
+		})
+		return
+	}
 	timestamp := time.Now().Unix()
 	signature := ""
-
 	chainIdDeci, err1 := decimal.NewFromString(chainId)
 	priceDeci, err2 := decimal.NewFromString(price)
 	if err1 != nil || err2 != nil {

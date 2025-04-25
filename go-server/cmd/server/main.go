@@ -3,6 +3,7 @@ package main
 import (
 	"coinstore/cmd/server/service"
 	"coinstore/cmd/server/task"
+	"coinstore/cmd/server/token"
 	"coinstore/db"
 	"coinstore/model"
 	log "github.com/calmw/clog"
@@ -22,7 +23,7 @@ func main() {
 	if err != nil {
 		logger.Debug("db AutoMigrate err: ", err)
 	}
-
+	token.InitPriceData()
 	// 定时任务
 	go task.ScheduleTask()
 

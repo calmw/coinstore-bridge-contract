@@ -1,4 +1,4 @@
-package task
+package token
 
 import (
 	"encoding/json"
@@ -8,14 +8,10 @@ import (
 	"net/http"
 )
 
-var TokenPrice = map[string]map[string]string{}
-
 type BinancePrice struct {
 	Symbol string `json:"symbol"`
 	Price  string `json:"price"`
 }
-
-var tokens = []string{"ETH", "USDC"}
 
 func GetBinancePrice() {
 	resp := &http.Response{}
@@ -42,22 +38,9 @@ func GetBinancePrice() {
 			log.Println(err)
 			continue
 		}
-		if TokenPrice["binance"] == nil {
-			TokenPrice["binance"] = map[string]string{}
-		}
-		if token == "ETH" {
-			TokenPrice["binance"]["ETH"] = res.Price
-			TokenPrice["binance"]["TETH"] = res.Price
-			TokenPrice["binance"]["WETH"] = res.Price
-		} else {
-			TokenPrice["binance"][token] = res.Price
-		}
+		ExTokenPriceData.Set(ExBinance, token, res.Price)
 	}
-
-	resp.Body.Close()
-
-}
-
-func GetPrice(symbol string) string {
-	return TokenPrice["binance"][symbol]
+	if resp != nil && resp.Body != nil {
+		resp.Body.Close()
+	}
 }
