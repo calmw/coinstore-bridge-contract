@@ -98,7 +98,10 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         @param resourceId 跨链桥设置的resourceId
         @param recipient 目标链资产接受者地址
         @param amount 跨链金额
-        @param signature 签名，对资产接受地址的签名
+        @param price 当前token价格
+        @param priceTimestamp 价格
+        @param priceSignature 签名，对资产接受地址的签名
+        @param recipientSignature 签名，对资产接受地址的签名
      */
     function deposit(
         uint256 destinationChainId,
@@ -120,6 +123,12 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             checkPriceSignature(priceSignature, price, priceTimestamp),
             "price signature error"
         );
+        // 验证价格签名时间
+        require(
+            block.timestamp - priceTimestamp < 10,
+            "please try again"
+        );
+        DepositData memory depositData;
         // 检测resource ID是否设置
         (
             uint8 assetsType,
@@ -131,65 +140,75 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         ) = Bridge.getTokenInfoByResourceId(resourceId);
         require(uint8(assetsType) > 0, "resourceId not exist");
         // 检测目标链ID
-        uint256 chainId = Bridge.chainId();
-        require(destinationChainId != chainId, "destinationChainId error");
+        depositData.chainId = Bridge.chainId();
+        require(destinationChainId != depositData.chainId, "destinationChainId error");
+
+        depositData.resourceId = resourceId;
+        depositData.recipient = recipient;
+        depositData.amount = amount;
+        depositData.tokenAddress = tokenAddress;
+        depositData.price = price;
+        depositData.fee = fee;
+        depositData.burnable = burnable;
+        depositData.assetsType = assetsType;
+        depositData.destinationChainId = destinationChainId;
+
         // 实际到账额度
-        uint256 fee = price/fee/1e6;
-        uint256 receiveAmount = amount - ((amount * fee) / 10000);
-        if (assetsType == uint8(AssetsType.Coin)) {
-            tokenAddress = address(0);
-            require(msg.value == amount, "incorrect value supplied.");
-            Address.sendValue(payable(feeAddress), amount - receiveAmount);
-            Address.sendValue(payable(address(this)), receiveAmount);
-        } else if (assetsType == uint8(AssetsType.Erc20)) {
-            IERC20 erc20 = IERC20(tokenAddress);
-            if (burnable) {
-                erc20.safeTransferFrom(msg.sender, address(0), receiveAmount);
-            } else {
+        depositData.feeAmount = depositData.price / depositData.fee / 1e6;
+        depositData.receiveAmount = depositData.amount - depositData.feeAmount;
+        {
+            if (assetsType == uint8(AssetsType.Coin)) {
+                tokenAddress = address(0);
+                require(msg.value == amount, "incorrect value supplied.");
+                Address.sendValue(payable(feeAddress), depositData.feeAmount);
+                Address.sendValue(payable(address(this)), depositData.receiveAmount);
+            } else if (assetsType == uint8(AssetsType.Erc20)) {
+                IERC20 erc20 = IERC20(tokenAddress);
+                if (burnable) {
+                    erc20.safeTransferFrom(msg.sender, address(0), depositData.receiveAmount);
+                } else {
+                    erc20.safeTransferFrom(
+                        msg.sender,
+                        address(this),
+                        depositData.receiveAmount
+                    );
+                }
                 erc20.safeTransferFrom(
                     msg.sender,
-                    address(this),
-                    receiveAmount
+                    feeAddress,
+                    depositData.feeAmount
                 );
+            } else {
+                revert ErrAssetsType(assetsType);
             }
-            erc20.safeTransferFrom(
-                msg.sender,
-                feeAddress,
-                amount - receiveAmount
-            );
-        } else {
-            revert ErrAssetsType(assetsType);
         }
-        uint256 destId = destinationChainId;
-        bytes32 resourceId_ = resourceId;
-        address recipient_ = recipient;
 
         localNonce++;
         depositRecord[msg.sender][localNonce] = DepositRecord(
             tokenAddress,
             msg.sender,
-            recipient_,
+            depositData.recipient,
             amount,
             fee,
-            destId
+            depositData.destinationChainId
         );
         // data
         bytes memory data = abi.encode(
-            resourceId_,
-            chainId,
+            depositData.resourceId,
+            depositData.chainId,
             msg.sender,
-            recipient_,
-            receiveAmount,
+            depositData.recipient,
+            depositData.receiveAmount,
             localNonce
         );
-        Bridge.deposit(destId, resourceId_, data);
+        Bridge.deposit(depositData.destinationChainId, depositData.resourceId, data);
         emit DepositEvent(
             msg.sender,
-            recipient_,
+            depositData.recipient,
             amount,
             tokenAddress,
             localNonce,
-            destId
+            depositData.destinationChainId
         );
     }
 
@@ -244,7 +263,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes memory signature,
         uint256 price,
         uint256 priceTimestamp
-    ) private pure returns (bool) {
+    ) private view returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(price, priceTimestamp));
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature

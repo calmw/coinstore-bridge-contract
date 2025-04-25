@@ -7,6 +7,6 @@ docker buildx build --platform linux/amd64 --tag calmw/tt_bridge:0.0.25 --push .
 
 ``` shell
 # build 
-docker buildx build --platform linux/amd64 --tag calmw/tt_bridge_api:0.0.20 --push .
+docker buildx build --platform linux/amd64 --tag calmw/tt_bridge_api:0.0.25 --push .
 ```
 

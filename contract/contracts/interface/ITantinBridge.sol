@@ -60,4 +60,21 @@ interface ITantinBridge {
         uint256 fee;
         uint256 destinationChainId;
     }
+
+    struct DepositData {
+        uint256 chainId;
+        uint256 destinationChainId;
+        bytes32 resourceId;
+        address recipient;
+        uint256 amount;
+        uint256 value; // msg.value
+        address sender; // msg.sender
+        address tokenAddress;
+        uint256 price;
+        uint256 fee; // 跨链需要折合U的数量
+        uint256 feeAmount;
+        uint256 receiveAmount;
+        bool burnable;
+        uint8 assetsType;
+    }
 }
