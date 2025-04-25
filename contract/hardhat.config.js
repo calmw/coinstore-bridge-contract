@@ -29,9 +29,9 @@ module.exports = {
             // gasPrice: 10000000000
         },
         tantin_test: {
-            url: "https://testrpc.tantin.com",
+            url: "https://testrpcdex.tantin.com",
             accounts: [`${PRIVATE_KEY}`],
-            gasPrice: 1000000000000
+            gasPrice: 10000000000000
         },
         tantin: {
             url: "https://rpc.tantin.com",
