@@ -64,12 +64,20 @@ func GetPrice(c *gin.Context) {
 	if chainId == "3" {
 		priceSignature, err := abi.TronPriceSignature(chainIdDeci.BigInt(), priceDeci.BigInt(), ethcommon.HexToAddress(tokenAddress))
 		if err != nil {
+			c.JSON(200, gin.H{
+				"code": 1,
+				"msg":  "failed",
+			})
 			return
 		}
 		signature = fmt.Sprintf("%x", priceSignature)
 	} else {
 		priceSignature, err := abi.EvmPriceSignature(chainIdDeci.BigInt(), priceDeci.BigInt(), ethcommon.HexToAddress(tokenAddress))
 		if err != nil {
+			c.JSON(200, gin.H{
+				"code": 1,
+				"msg":  "failed",
+			})
 			return
 		}
 		signature = fmt.Sprintf("%x", priceSignature)

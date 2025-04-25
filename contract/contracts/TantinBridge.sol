@@ -124,10 +124,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             "price signature error"
         );
         // 验证价格签名时间
-        require(
-            block.timestamp - priceTimestamp < 10,
-            "please try again"
-        );
+        require(block.timestamp - priceTimestamp < 10, "please try again");
         DepositData memory depositData;
         // 检测resource ID是否设置
         (
@@ -141,7 +138,10 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         require(uint8(assetsType) > 0, "resourceId not exist");
         // 检测目标链ID
         depositData.chainId = Bridge.chainId();
-        require(destinationChainId != depositData.chainId, "destinationChainId error");
+        require(
+            destinationChainId != depositData.chainId,
+            "destinationChainId error"
+        );
 
         depositData.resourceId = resourceId;
         depositData.recipient = recipient;
@@ -161,11 +161,18 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
                 tokenAddress = address(0);
                 require(msg.value == amount, "incorrect value supplied.");
                 Address.sendValue(payable(feeAddress), depositData.feeAmount);
-                Address.sendValue(payable(address(this)), depositData.receiveAmount);
+                Address.sendValue(
+                    payable(address(this)),
+                    depositData.receiveAmount
+                );
             } else if (assetsType == uint8(AssetsType.Erc20)) {
                 IERC20 erc20 = IERC20(tokenAddress);
                 if (burnable) {
-                    erc20.safeTransferFrom(msg.sender, address(0), depositData.receiveAmount);
+                    erc20.safeTransferFrom(
+                        msg.sender,
+                        address(0),
+                        depositData.receiveAmount
+                    );
                 } else {
                     erc20.safeTransferFrom(
                         msg.sender,
@@ -201,7 +208,11 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             depositData.receiveAmount,
             localNonce
         );
-        Bridge.deposit(depositData.destinationChainId, depositData.resourceId, data);
+        Bridge.deposit(
+            depositData.destinationChainId,
+            depositData.resourceId,
+            data
+        );
         emit DepositEvent(
             msg.sender,
             depositData.recipient,
