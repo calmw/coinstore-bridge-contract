@@ -348,6 +348,126 @@ var VoteSig = `[{
 	"type": "function"
 }]`
 
+var PriceSig = `[{
+	"inputs": [{
+		"internalType": "uint256",
+		"name": "chainId",
+		"type": "uint256"
+	}, {
+		"internalType": "uint256",
+		"name": "price",
+		"type": "uint256"
+	}, {
+		"internalType": "address",
+		"name": "tokenAddress",
+		"type": "address"
+	}],
+	"name": "checkPriceSignature",
+	"outputs": [{
+		"internalType": "bool",
+		"name": "",
+		"type": "bool"
+	}],
+	"stateMutability": "nonpayable",
+	"type": "function"
+}, {
+	"inputs": [{
+		"internalType": "uint256",
+		"name": "sigNonce",
+		"type": "uint256"
+	}, {
+		"internalType": "uint256",
+		"name": "chainId",
+		"type": "uint256"
+	}, {
+		"internalType": "uint256",
+		"name": "originChainID",
+		"type": "uint256"
+	}, {
+		"internalType": "uint256",
+		"name": "originDepositNonce",
+		"type": "uint256"
+	}, {
+		"internalType": "bytes32",
+		"name": "dataHash",
+		"type": "bytes32"
+	}],
+	"name": "cancelProposal",
+	"outputs": [],
+	"stateMutability": "nonpayable",
+	"type": "function"
+}, {
+	"inputs": [{
+		"internalType": "uint256",
+		"name": "sigNonce",
+		"type": "uint256"
+	}, {
+		"internalType": "uint256",
+		"name": "chainId",
+		"type": "uint256"
+	}, {
+		"internalType": "address",
+		"name": "relayerAddress",
+		"type": "address"
+	}],
+	"name": "checkAdminAddRelayerSignature",
+	"outputs": [{
+		"internalType": "bool",
+		"name": "",
+		"type": "bool"
+	}],
+	"stateMutability": "nonpayable",
+	"type": "function"
+}, {
+	"inputs": [{
+		"internalType": "uint256",
+		"name": "sigNonce",
+		"type": "uint256"
+	}, {
+		"internalType": "uint256",
+		"name": "chainId",
+		"type": "uint256"
+	}, {
+		"internalType": "uint256",
+		"name": "newThreshold",
+		"type": "uint256"
+	}],
+	"name": "checkAdminChangeRelayerThresholdSignature",
+	"outputs": [{
+		"internalType": "bool",
+		"name": "",
+		"type": "bool"
+	}],
+	"stateMutability": "nonpayable",
+	"type": "function"
+}, {
+	"inputs": [{
+		"internalType": "uint256",
+		"name": "sigNonce",
+		"type": "uint256"
+	}, {
+		"internalType": "address",
+		"name": "bridgeAddress_",
+		"type": "address"
+	}, {
+		"internalType": "uint256",
+		"name": "expiry_",
+		"type": "uint256"
+	}, {
+		"internalType": "uint256",
+		"name": "relayerThreshold_",
+		"type": "uint256"
+	}],
+	"name": "checkAdminSetEnvSignature",
+	"outputs": [{
+		"internalType": "bool",
+		"name": "",
+		"type": "bool"
+	}],
+	"stateMutability": "nonpayable",
+	"type": "function"
+}]`
+
 func GenerateSignature(parameter []byte) ([]byte, error) {
 	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)

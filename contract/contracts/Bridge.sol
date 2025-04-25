@@ -93,7 +93,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         @param resourceID 跨链的resourceID
         @param assetsType 该币的类型
         @param tokenAddress 对应的token合约地址，coin为0地址
-        @param fee 该币的跨链费用
+        @param fee 该币的跨链费用,折合U的数量
         @param pause 该币种是否在黑名单中/是否允许跨链。币种黑名单/禁止该币种跨链
         @param tantinAddress 对应的tantin业务合约地址
      */

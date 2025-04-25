@@ -2,6 +2,7 @@ package main
 
 import (
 	"coinstore/cmd/server/service"
+	"coinstore/cmd/server/task"
 	"coinstore/db"
 	"coinstore/model"
 	log "github.com/calmw/clog"
@@ -15,6 +16,9 @@ func main() {
 	logger := log.Root()
 	logger.Debug("Starting CoinStore Bridge Server...")
 	db.InitMysql(logger)
+
+	// 定时任务
+	go task.ScheduleTask()
 
 	//自动迁移
 	err := db.DB.AutoMigrate(&model.ChainInfo{}, &model.BridgeTx{}, &model.ResourceInfo{}, &model.TokenInfo{}, &model.DailyReport{})
@@ -31,10 +35,10 @@ func main() {
 	router.GET("/check_address", tollbooth_gin.LimitHandler(limiter), service.CheckAddress)
 	router.GET("/bridge_latest_time", tollbooth_gin.LimitHandler(limiter), service.BridgeLatestTime)
 	router.GET("/convert_address", tollbooth_gin.LimitHandler(limiter), service.ConvertAddress)
-	//router.GET("/get_resource_id", tollbooth_gin.LimitHandler(limiter), service.GetResourceId)
 	router.GET("/get_chain_list", tollbooth_gin.LimitHandler(limiter), service.GetChainList)
 	router.GET("/get_token_list", tollbooth_gin.LimitHandler(limiter), service.GetTokenList)
 	router.GET("/config", tollbooth_gin.LimitHandler(limiter), service.GetConfig)
+	router.GET("/get_price", tollbooth_gin.LimitHandler(limiter), service.GetPrice)
 	addr := os.Getenv("LISTEN_ADDR")
 	if addr == "" {
 		addr = "0.0.0.0:8080"

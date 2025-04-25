@@ -113,12 +113,12 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         // 验证接受地址签名
         require(
             checkDepositSignature(recipientSignature, recipient, msg.sender),
-            "signature error"
+            "recipient signature error"
         );
         // 验证价格签名
         require(
-            checkPriceSignature(recipientSignature, recipient, msg.sender),
-            "signature error"
+            checkPriceSignature(priceSignature, price, priceTimestamp),
+            "price signature error"
         );
         // 检测resource ID是否设置
         (
@@ -134,6 +134,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         uint256 chainId = Bridge.chainId();
         require(destinationChainId != chainId, "destinationChainId error");
         // 实际到账额度
+        uint256 fee = price/fee/1e6;
         uint256 receiveAmount = amount - ((amount * fee) / 10000);
         if (assetsType == uint8(AssetsType.Coin)) {
             tokenAddress = address(0);

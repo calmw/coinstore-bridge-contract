@@ -169,7 +169,7 @@ func BridgeTx(c *gin.Context) {
 
 		data = append(data, Response{
 			Id:                      record.Id,
-			ResourceId:              record.ResourceId,
+			ResourceId:              string(record.ResourceId),
 			Amount:                  totalAmount,
 			ReceiveAmount:           record.Amount,
 			From:                    record.Caller,
