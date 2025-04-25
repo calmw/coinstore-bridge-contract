@@ -1,7 +1,6 @@
 package task
 
 import (
-	"fmt"
 	"github.com/jasonlvhit/gocron"
 )
 
@@ -9,8 +8,6 @@ import (
 
 func ScheduleTask() {
 	s := gocron.NewScheduler()
-	err := gocron.Every(1).Second().Do(GetBinancePrice)
-
-	fmt.Println("~~~~~~~~~~~~~~~~~~~~~", err)
+	_ = s.Every(1).Seconds().From(gocron.NextTick()).Do(GetBinancePrice)
 	<-s.Start()
 }

@@ -55,6 +55,7 @@ func GetPrice(c *gin.Context) {
 		})
 		return
 	}
+	priceDeci = priceDeci.Mul(decimal.NewFromInt(1e6))
 	if chainId == "3" {
 		priceSignature, err := abi.TronPriceSignature(chainIdDeci.BigInt(), priceDeci.BigInt(), ethcommon.HexToAddress(tokenAddress))
 		if err != nil {
@@ -73,7 +74,7 @@ func GetPrice(c *gin.Context) {
 		"code": 0,
 		"msg":  "OK",
 		"data": map[string]string{
-			"price":     price,
+			"price":     priceDeci.String(),
 			"timestamp": fmt.Sprintf("%d", timestamp),
 			"signature": signature,
 		},

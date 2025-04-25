@@ -18,9 +18,6 @@ type BinancePrice struct {
 var tokens = []string{"ETH", "USDC"}
 
 func GetBinancePrice() {
-	fmt.Println("~")
-	fmt.Println("~~~~~~~~~~~~~~~~~~~~~ !!!")
-	fmt.Println(tokens)
 	resp := &http.Response{}
 	var res BinancePrice
 	var err error
@@ -56,7 +53,6 @@ func GetBinancePrice() {
 			TokenPrice["binance"][token] = res.Price
 		}
 	}
-	fmt.Println(TokenPrice)
 
 	resp.Body.Close()
 
