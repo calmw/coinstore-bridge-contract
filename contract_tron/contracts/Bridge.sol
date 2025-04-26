@@ -13,7 +13,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
     using ECDSA for bytes32;
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant VOTE_ROLE = keccak256("VOTE_ROLE");
+    bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
     uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
     address private superAdminAddress;
@@ -86,21 +86,25 @@ contract Bridge is IBridge, Pausable, AccessControl {
     }
 
     /**
-        @notice resource设置
+@notice resource设置
         @param resourceID 跨链的resourceID
         @param assetsType 该币的类型
         @param tokenAddress 对应的token合约地址，coin为0地址
-        @param fee 该币的跨链费用
+        @param decimal 该币的精度
+        @param fee 该币的跨链费用,折合U的数量
         @param pause 该币种是否在黑名单中/是否允许跨链。币种黑名单/禁止该币种跨链
+        @param burnable 该币是否burn
+        @param mintable 该币是否mint
         @param tantinAddress 对应的tantin业务合约地址
      */
     function adminSetResource(
         bytes32 resourceID,
         AssetsType assetsType,
         address tokenAddress,
+        uint256 decimal,
         uint256 fee,
         bool pause,
-        bool burnable, // true burn;false lock
+        bool burnable,
         bool mintable,
         address tantinAddress,
         bytes memory signature
@@ -111,9 +115,10 @@ contract Bridge is IBridge, Pausable, AccessControl {
                 resourceID,
                 assetsType,
                 tokenAddress,
+                decimal,
                 fee,
                 pause,
-                pause,
+                burnable,
                 mintable,
                 tantinAddress
             ),
@@ -123,6 +128,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
             assetsType,
             tokenAddress,
             pause,
+            decimal,
             fee,
             burnable,
             mintable
@@ -132,6 +138,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
         emit SetResource(
             resourceID,
             tokenAddress,
+            decimal,
             fee,
             pause,
             burnable,
@@ -257,6 +264,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
         bytes32 resourceID,
         AssetsType assetsType,
         address tokenAddress,
+        uint256 decimal,
         uint256 fee,
         bool pause,
         bool burnable,
@@ -270,6 +278,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
                 resourceID,
                 assetsType,
                 tokenAddress,
+                decimal,
                 fee,
                 pause,
                 burnable,
