@@ -22,15 +22,15 @@ module.exports = {
             // gasPrice: 10000000000
         },
         ethereum: {
-            // url: "https://mainnet.infura.io/v3/59ec080dc74d4af893ea04bfe2b168b5",
             url: "https://mainnet.infura.io/v3/59ec080dc74d4af893ea04bfe2b168b5",
             accounts: [`${PRIVATE_KEY}`]
             // gasPrice: 10000000000
         },
         tantin_test: {
-            url: "https://testrpcdex.tantin.com",
+            url: "https://testrpc.tantin.com",
+            // url: "https://testrpcdex.tantin.com",
             accounts: [`${PRIVATE_KEY}`],
-            gasPrice: 10000000000000
+            gasPrice: 1000000000000000
         },
         tantin: {
             url: "https://rpc.tantin.com",

@@ -9,11 +9,9 @@ import (
 
 func main() {
 	contract.InitTantinEnv()
-
 	adminAddress := "0xa47142f08f859aCeb2127C6Ab66eC8c8bc4FFBA9"
 	feeAddress := "0xa47142f08f859aCeb2127C6Ab66eC8c8bc4FFBA9"
 	serverAddress := "0xa47142f08f859aCeb2127C6Ab66eC8c8bc4FFBA9"
-
 	bridge, err := contract.NewBridge()
 	if err != nil {
 		fmt.Println(err)
