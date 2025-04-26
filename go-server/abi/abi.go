@@ -173,6 +173,10 @@ var BridgeSig = `[{
 		"type": "address"
 	}, {
 		"internalType": "uint256",
+		"name": "decimal",
+		"type": "uint256"
+	},{
+		"internalType": "uint256",
 		"name": "fee",
 		"type": "uint256"
 	}, {
