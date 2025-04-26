@@ -66,11 +66,11 @@ func GetAuth(cli *ethclient.Client) (error, *bind.TransactOpts) {
 		log.Println(err)
 		return err, nil
 	}
-	//gasPrice, err := cli.SuggestGasPrice(context.Background())
-	//if err != nil {
-	//	log.Println(err)
-	//	return err, nil
-	//}
+	gasPrice, err := cli.SuggestGasPrice(context.Background())
+	if err != nil {
+		log.Println(err)
+		return err, nil
+	}
 
 	auth, err := bind.NewKeyedTransactorWithChainID(privateKeyEcdsa, big.NewInt(ChainConfig.ChainId))
 	if err != nil {
@@ -79,12 +79,11 @@ func GetAuth(cli *ethclient.Client) (error, *bind.TransactOpts) {
 	}
 
 	return nil, &bind.TransactOpts{
-		From:   auth.From,
-		Nonce:  big.NewInt(int64(nonce)),
-		Signer: auth.Signer,
-		Value:  big.NewInt(0),
-		//GasPrice:  gasPrice,
-		GasPrice:  nil,
+		From:      auth.From,
+		Nonce:     big.NewInt(int64(nonce)),
+		Signer:    auth.Signer,
+		Value:     big.NewInt(0),
+		GasPrice:  gasPrice,
 		GasFeeCap: nil,
 		GasTipCap: nil,
 		GasLimit:  0,
@@ -139,11 +138,11 @@ func InitTantinEnv() {
 		BridgeId:    1,
 		ChainId:     12302,
 		ChainTypeId: 1,
-		//RPC:                   "https://testrpc.tantin.com",
-		RPC:                   "https://testrpcdex.tantin.com",
-		BridgeContractAddress: "0x5197CeE80e15266e662c05aCcB6cB07Dc85F53F5",
-		VoteContractAddress:   "0x342577cFa203263655Cc3c1059268F5b04483F3C",
-		TantinContractAddress: "0x14b0E3dd2dd8848B7F2EFa9A589913e6C82A4C4C",
+		RPC:         "https://testrpc.tantin.com",
+		//RPC:                   "https://testrpcdex.tantin.com",
+		BridgeContractAddress: "0xde52a664f63068A00C174975262bEF1e6a6E52D6",
+		VoteContractAddress:   "0x9c3ED94d6394C9DA2797E23E7a3373Fa806560D5",
+		TantinContractAddress: "0x33926EEbb5fDa3B4Fb50A013449F0B2fc8Ee0924",
 		UsdtAddress:           "0x53F1BAA532710FC1FEE8a66433bE6c6fE823fCE9",
 		UsdcAddress:           "0x87386337645860720009341caD33C6652806aF6f",
 		EthAddress:            "0x0000000000000000000000000000000000000000",

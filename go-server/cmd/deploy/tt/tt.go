@@ -5,11 +5,17 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
+	"os"
 )
 
 func InitTt(prvKey, adminAddress, feeAddress, serverAddress string) {
 	contract.InitTantinEnv()
-	contract.ChainConfig.PrivateKey = prvKey
+	err := os.Setenv("TB_KEY", prvKey)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	//contract.ChainConfig.PrivateKey = prvKey
 
 	bridge, err := contract.NewBridge()
 	if err != nil {

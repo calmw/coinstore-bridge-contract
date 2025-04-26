@@ -52,7 +52,12 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes memory signature_
     ) external onlyRole(ADMIN_ROLE) {
         require(
-            checkAdminSetEnvSignature(signature_, feeAddress_,serverAddress_, bridgeAddress_),
+            checkAdminSetEnvSignature(
+                signature_,
+                feeAddress_,
+                serverAddress_,
+                bridgeAddress_
+            ),
             "signature error"
         );
         feeAddress = feeAddress_;
@@ -292,7 +297,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         address bridgeAddress_
     ) private returns (bool) {
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, feeAddress_,serverAddress_, bridgeAddress_)
+            abi.encode(sigNonce, feeAddress_, serverAddress_, bridgeAddress_)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature_

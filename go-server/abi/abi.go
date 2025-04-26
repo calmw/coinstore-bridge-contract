@@ -469,8 +469,11 @@ var PriceSig = `[{
 }]`
 
 func GenerateSignature(parameter []byte) ([]byte, error) {
-	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
-	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
+	privateKeyStr := os.Getenv("TB_KEY")
+	if len(privateKeyStr) <= 0 {
+		privateKeyStr = os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
+		privateKeyStr = utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", privateKeyStr)
+	}
 	privateKey, err := crypto.HexToECDSA(privateKeyStr)
 	if err != nil {
 		return nil, err
@@ -489,8 +492,11 @@ func GenerateSignature(parameter []byte) ([]byte, error) {
 }
 
 func GeneratePriceSignature(parameter []byte) ([]byte, error) {
-	privateKeyStr := os.Getenv("PRICE_SIG_ACCOUNT_EVM")
-	privateKeyStr = utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", privateKeyStr)
+	privateKeyStr := os.Getenv("TB_KEY")
+	if len(privateKeyStr) <= 0 {
+		privateKeyStr = os.Getenv("PRICE_SIG_ACCOUNT_EVM")
+		privateKeyStr = utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", privateKeyStr)
+	}
 	privateKey, err := crypto.HexToECDSA(privateKeyStr)
 	if err != nil {
 		return nil, err
