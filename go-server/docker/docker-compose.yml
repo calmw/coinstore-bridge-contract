@@ -12,7 +12,6 @@ services:
     container_name: tt_bridge_one
     restart: always
     environment:
-      - PEM_FILE=./pem
       - FAILED_JOB_INTERVAL=300
       - MYSQL_DATABASE=bridge
       - MYSQL_USERNAME=root
@@ -20,7 +19,7 @@ services:
       - MYSQL_HOST=tt_bridge_mysql
       - MYSQL_PORT=3306
     volumes:
-      - ./tron_keystore/keystore:/src/tron_keystore/keystore
+      - ./tb.pem:/src/tb.pem
     networks:
       - tt_bridge
     logging:
@@ -39,7 +38,6 @@ services:
     container_name: tt_bridge_two
     restart: always
     environment:
-      - PEM_FILE=./pem
       - FAILED_JOB_INTERVAL=300
       - MYSQL_DATABASE=bridge
       - MYSQL_USERNAME=root
@@ -47,7 +45,7 @@ services:
       - MYSQL_HOST=tt_bridge_mysql
       - MYSQL_PORT=3306
     volumes:
-      - ./tron_keystore/keystore:/src/tron_keystore/keystore
+      - ./tb.pem:/src/tb.pem
     networks:
       - tt_bridge
     logging:
@@ -66,7 +64,6 @@ services:
     container_name: tt_bridge_three
     restart: always
     environment:
-      - PEM_FILE=./pem
       - FAILED_JOB_INTERVAL=300
       - MYSQL_DATABASE=bridge
       - MYSQL_USERNAME=root
@@ -74,7 +71,7 @@ services:
       - MYSQL_HOST=tt_bridge_mysql
       - MYSQL_PORT=3306
     volumes:
-      - ./tron_keystore/keystore:/src/tron_keystore/keystore
+      - ./tb.pem:/src/tb.pem
     networks:
       - tt_bridge
     logging:
