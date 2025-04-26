@@ -22,14 +22,16 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("设置TT链合约...")
-		tt.InitTt(PrivateKey, AdminAddress, FeeAddress, ServerAddress)
+		tt.InitTt(PrivateKey, AdminAddress, FeeAddress, ServerAddress, RelayerOne, RelayerTwo, RelayerThree)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(ttCmd)
-
 	rootCmd.PersistentFlags().StringVarP(&AdminAddress, "admin_address", "a", "", "管理员角色账户")
 	rootCmd.PersistentFlags().StringVarP(&FeeAddress, "fee_address", "f", "", "跨链费接受地址")
 	rootCmd.PersistentFlags().StringVarP(&ServerAddress, "server_address", "s", "", "服务端价格签名地址")
+	rootCmd.PersistentFlags().StringVarP(&RelayerOne, "relayer_one_address", "l", "", "relayer 1 账户地址")
+	rootCmd.PersistentFlags().StringVarP(&RelayerTwo, "relayer_two_address", "m", "", "relayer 2 账户地址")
+	rootCmd.PersistentFlags().StringVarP(&RelayerThree, "relayer_three_address", "n", "", "relayer 3 账户地址")
 }

@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func InitTt(prvKey, adminAddress, feeAddress, serverAddress string) {
+func InitTt(prvKey, adminAddress, feeAddress, serverAddress, realyerOneAddress, realyerTwoAddress, realyerThreeAddress string) {
 	contract.InitTantinEnv()
 	err := os.Setenv("TB_KEY", prvKey)
 	if err != nil {
@@ -45,7 +45,7 @@ func InitTt(prvKey, adminAddress, feeAddress, serverAddress string) {
 		fmt.Println(err)
 		return
 	}
-	vote.Init()
+	vote.Init(realyerOneAddress, realyerTwoAddress, realyerThreeAddress)
 
 	tantin, err := contract.NewTanTin()
 	if err != nil {
