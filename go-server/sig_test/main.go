@@ -114,7 +114,6 @@ func ApproveSigTest() error {
 		ChainID:     chainId,
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
 	}
-	//res, err := RequestWithPem("https://10.234.99.69:8088/signature/sign", postData)
 	res, err := RequestWithPem("https://nlb.self.tantin.com:8088/signature/sign", postData)
 	fmt.Println("RequestWithPem error:", err)
 	var machineResp MachineResp

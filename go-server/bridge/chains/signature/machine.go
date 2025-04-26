@@ -4,7 +4,6 @@ package signature
 import (
 	"bytes"
 	"crypto/sha256"
-	"encoding/asn1"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -12,7 +11,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"math/big"
 	"strings"
 )
 
@@ -48,7 +46,7 @@ func SignAndSendTxEth(cli *ethclient.Client, fromAddress common.Address, chainId
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
 	}
 
-	res, err := GetSignedRlpData("https://10.234.99.69:8088/signature/sign", postData)
+	res, err := GetSignedRlpData("https://nlb.self.tantin.com:8088/signature/sign", postData)
 	fmt.Println("RequestWithPem error:", err)
 	var machineResp MachineResp
 	err = json.Unmarshal(res, &machineResp)
@@ -89,7 +87,7 @@ func SignAndSendTxTron(chainId int, fromAddress string, UnsignedRawData []byte, 
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
 	}
 
-	res, err := GetSignedRlpData("https://10.234.99.69:8088/signature/sign", postData)
+	res, err := GetSignedRlpData("https://nlb.self.tantin.com:8088/signature/sign", postData)
 	fmt.Println("RequestWithPem error:", err)
 	var machineResp MachineResp
 	err = json.Unmarshal(res, &machineResp)
@@ -105,54 +103,4 @@ func SignAndSendTxTron(chainId int, fromAddress string, UnsignedRawData []byte, 
 	}
 
 	return sigBytes, nil
-}
-
-// DER签名结构
-type ECDSASignature struct {
-	R, S *big.Int
-}
-
-// DER转原始签名
-func DerToRawSignature(derSignature string) (string, error) {
-	// 1. 解码十六进制DER签名
-	derBytes, err := hex.DecodeString(derSignature)
-	if err != nil {
-		return "", fmt.Errorf("failed to decode hex: %v", err)
-	}
-
-	// 2. 解析DER序列
-	var sig ECDSASignature
-	_, err = asn1.Unmarshal(derBytes, &sig)
-	if err != nil {
-		return "", fmt.Errorf("failed to unmarshal DER: %v", err)
-	}
-
-	// 3. 将r和s转换为32字节的数组
-	rBytes := sig.R.Bytes()
-	sBytes := sig.S.Bytes()
-
-	// 4. 确保r和s都是32字节
-	r32 := make([]byte, 32)
-	s32 := make([]byte, 32)
-
-	// 从后往前复制，确保对齐
-	copy(r32[32-len(rBytes):], rBytes)
-	copy(s32[32-len(sBytes):], sBytes)
-
-	// 5. 合并r和s
-	rawSignature := make([]byte, 64)
-	copy(rawSignature[:32], r32)
-	copy(rawSignature[32:], s32)
-
-	V := make([]byte, 1)
-	if sig.R.Uint64()%2 == 0 {
-		V = big.NewInt(27).Bytes()
-	} else {
-		V = big.NewInt(28).Bytes()
-	}
-	var res []byte
-	res = append(res, rawSignature...)
-	res = append(res, V...)
-	// 6. 返回十六进制字符串
-	return hex.EncodeToString(res), nil
 }
