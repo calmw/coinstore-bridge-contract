@@ -42,6 +42,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     /**
         @notice 设置
         @param bridgeAddress_ bridge合约地址
+        @param serverAddress_ 服务端价格签名地址
         @param feeAddress_ 跨链费接受地址
         @param signature_ 签名
      */

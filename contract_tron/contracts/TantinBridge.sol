@@ -21,6 +21,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
 
     uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
     address private superAdminAddress;
+    address private serverAddress;
     address private feeAddress;
     IBridge public Bridge; // bridge 合约
     uint256 public localNonce; // 跨链nonce
@@ -33,21 +34,29 @@ contract TantinBridge is AccessControl, ITantinBridge {
     }
 
     /**
-        @notice 设置
+@notice 设置
         @param bridgeAddress_ bridge合约地址
+        @param serverAddress_ 服务端价格签名地址
         @param feeAddress_ 跨链费接受地址
         @param signature_ 签名
      */
     function adminSetEnv(
         address feeAddress_,
+        address serverAddress_,
         address bridgeAddress_,
         bytes memory signature_
     ) external onlyRole(ADMIN_ROLE) {
         require(
-            checkAdminSetEnvSignature(signature_, feeAddress_, bridgeAddress_),
+            checkAdminSetEnvSignature(
+                signature_,
+                feeAddress_,
+                serverAddress_,
+                bridgeAddress_
+            ),
             "signature error"
         );
         feeAddress = feeAddress_;
+        serverAddress = serverAddress_;
         Bridge = IBridge(bridgeAddress_);
     }
 
@@ -222,10 +231,11 @@ contract TantinBridge is AccessControl, ITantinBridge {
     function checkAdminSetEnvSignature(
         bytes memory signature_,
         address feeAddress_,
+        address serverAddress_,
         address bridgeAddress_
     ) private returns (bool) {
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, feeAddress_, bridgeAddress_)
+            abi.encode(sigNonce, feeAddress_, serverAddress_, bridgeAddress_)
         );
         address recoverAddress = messageHash
             .toEthSignedMessageHash()

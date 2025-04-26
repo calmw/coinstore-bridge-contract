@@ -6,9 +6,6 @@ library ECDSA {
         bytes32 hash
     ) public pure returns (bytes32) {
         return
-//            keccak256(
-//                abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
-//            );
             keccak256(
                 abi.encodePacked("\x19TRON Signed Message:\n32", hash)
             );
