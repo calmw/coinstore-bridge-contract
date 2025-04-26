@@ -32,7 +32,7 @@ interface IBridge {
         AssetsType assetsType; // 跨链币种
         address tokenAddress; // 币种地址。coin的话，值为0地址
         bool pause; // 该token是否暂停跨链
-        uint256 fee; // 跨链费用,对跨链币种按比例收取，此处为万分比
+        uint256 fee; // 跨链费用,折合U的数量，带精度
         bool burnable; // true burn;false lock
         bool mintable; // true mint;false release
     }

@@ -161,7 +161,8 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         depositData.destinationChainId = destinationChainId;
 
         // 实际到账额度
-        depositData.feeAmount = depositData.price / depositData.fee / 1e6;
+        depositData.feeAmount = depositData.price * depositData.fee / 1e6;
+        require(depositData.amount > depositData.feeAmount, "amount to small");
         depositData.receiveAmount = depositData.amount - depositData.feeAmount;
         {
             if (assetsType == uint8(AssetsType.Coin)) {

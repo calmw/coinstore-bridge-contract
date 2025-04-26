@@ -16,7 +16,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     using MessageHashUtils for bytes32;
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant BRIDE_ROLE = keccak256("BRIDE_ROLE");
+    bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
     uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
     address private superAdminAddress;
@@ -153,7 +153,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         uint256 destinationChainId,
         bytes32 resourceId,
         bytes calldata data
-    ) external payable whenNotPaused onlyRole(BRIDE_ROLE) {
+    ) external payable whenNotPaused onlyRole(BRIDGE_ROLE) {
         // 检测resource ID是否设置
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         require(uint8(tokenInfo.assetsType) > 0, "resourceId not exist");
