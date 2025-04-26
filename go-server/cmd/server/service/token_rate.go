@@ -9,7 +9,6 @@ import (
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
-	"log"
 	"strings"
 	"time"
 )
@@ -42,7 +41,6 @@ func GetPrice(c *gin.Context) {
 
 	price, ok := token.ExTokenPriceData.Get(strings.ToUpper(tokenName))
 	if !ok {
-		log.Println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 		c.JSON(200, gin.H{
 			"code": 1,
 			"msg":  "failed",

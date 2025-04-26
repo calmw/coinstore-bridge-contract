@@ -51,7 +51,7 @@ func main() {
 		return
 	}
 	//tantin.Init()
-	//tantin.LatestBlock()
+	tantin.LatestBlock()
 
 	amount := big.NewInt(250000)
 	Usdt, err := contract.NewErc20(common.HexToAddress(contract.ChainConfig.UsdtAddress))
