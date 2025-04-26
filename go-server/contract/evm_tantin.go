@@ -116,7 +116,6 @@ func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destina
 	prSignature, _ := abi.EvmPriceSignature(big.NewInt(ChainConfig.ChainTypeId), price, priceTimestamp)
 	var res *types.Transaction
 
-	fmt.Println("参数11")
 	for {
 		err, txOpts := GetAuth(c.Cli)
 		if err != nil {

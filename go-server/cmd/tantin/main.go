@@ -57,23 +57,25 @@ func main() {
 	//tantin.Init(adminAddress, feeAddress, serverAddress)
 	//tantin.LatestBlock()
 
+	amount := big.NewInt(6000000)
+	Usdt, err := contract.NewErc20(common.HexToAddress(contract.ChainConfig.UsdtAddress))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	am := big.NewInt(1).Mul(amount, big.NewInt(1e18))
+	Usdt.Approve(am, contract.ChainConfig.TantinContractAddress)
+	//Usdc, err := contract.NewErc20(common.HexToAddress(contract.ChainConfig.UsdcAddress))
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//Usdc.Approve(amount, contract.ChainConfig.TantinContractAddress)
+	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
+	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdc, "0x"))
+	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdEth, "0x"))
 	for {
-		amount := big.NewInt(6000000)
-		Usdt, err := contract.NewErc20(common.HexToAddress(contract.ChainConfig.UsdtAddress))
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		Usdt.Approve(amount, contract.ChainConfig.TantinContractAddress)
-		//Usdc, err := contract.NewErc20(common.HexToAddress(contract.ChainConfig.UsdcAddress))
-		//if err != nil {
-		//	fmt.Println(err)
-		//	return
-		//}
-		//Usdc.Approve(amount, contract.ChainConfig.TantinContractAddress)
-		resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdt, "0x"))
-		//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdUsdc, "0x"))
-		//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdEth, "0x"))
+
 		tantin.Deposit(
 			common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"),
 			[32]byte(resourceIdBytes),

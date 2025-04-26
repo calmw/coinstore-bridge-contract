@@ -144,7 +144,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             "price signature error"
         );
         // 验证价格签名时间
-        require(block.timestamp - priceTimestamp < 30, "please try again");
+        require(block.timestamp - 30 < priceTimestamp, "please try again");
         // 检测resource ID是否设置
         (
             uint8 assetsType,
@@ -166,15 +166,10 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             "destinationChainId error"
         );
 
-
-
-
         // 实际到账额度
-//        depositData.feeAmount = (depositData.price * depositData.fee / 1e6) * decimal;
-        depositData.feeAmount = 1;
+        depositData.feeAmount = (depositData.price * depositData.fee / 1e6) * decimal;
         require(depositData.amount > depositData.feeAmount, "amount too small");
         depositData.receiveAmount = depositData.amount - depositData.feeAmount;
-//        depositData.receiveAmount = depositData.amount ;
         {
             if (assetsType == uint8(AssetsType.Coin)) {
                 tokenAddress = address(0);
