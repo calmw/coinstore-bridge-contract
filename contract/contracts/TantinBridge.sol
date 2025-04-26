@@ -122,7 +122,11 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes memory recipientSignature
     ) external payable {
         DepositData memory depositData;
+        depositData.price = price;
+        depositData.amount = amount;
+        depositData.recipient = recipient;
         depositData.resourceId = resourceId;
+        depositData.destinationChainId = destinationChainId;
         depositData.chainId = Bridge.chainId();
         // 验证接受地址签名
         require(
@@ -151,34 +155,30 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             bool burnable,
             bool mintable
         ) = Bridge.getTokenInfoByResourceId(depositData.resourceId);
-        require(uint8(assetsType) > 0, "resourceId not exist");
+        depositData.fee = fee;
+        depositData.burnable = burnable;
+        depositData.assetsType = assetsType;
+        depositData.tokenAddress = tokenAddress;
+        require(depositData.assetsType > 0, "resourceId not exist");
         // 检测目标链ID
         require(
             depositData.destinationChainId != depositData.chainId,
             "destinationChainId error"
         );
 
-        depositData.resourceId = resourceId;
-        depositData.recipient = recipient;
-        depositData.amount = amount;
-        depositData.tokenAddress = tokenAddress;
-        depositData.price = price;
-        depositData.fee = fee;
-        depositData.burnable = burnable;
-        depositData.assetsType = assetsType;
-        depositData.destinationChainId = destinationChainId;
+
+
 
         // 实际到账额度
-        depositData.feeAmount =
-            (depositData.price / 1e6) *
-            depositData.fee *
-            decimal;
-        require(depositData.amount > depositData.feeAmount, "amount to small");
+//        depositData.feeAmount = (depositData.price * depositData.fee / 1e6) * decimal;
+        depositData.feeAmount = 1;
+        require(depositData.amount > depositData.feeAmount, "amount too small");
         depositData.receiveAmount = depositData.amount - depositData.feeAmount;
+//        depositData.receiveAmount = depositData.amount ;
         {
             if (assetsType == uint8(AssetsType.Coin)) {
                 tokenAddress = address(0);
-                require(msg.value == amount, "incorrect value supplied.");
+                require(msg.value == depositData.amount, "incorrect value supplied.");
                 Address.sendValue(payable(feeAddress), depositData.feeAmount);
                 Address.sendValue(
                     payable(address(this)),
