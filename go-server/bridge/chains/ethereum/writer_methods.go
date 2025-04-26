@@ -175,159 +175,159 @@ func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 	log.Warn("Block watch limit exceeded, skipping execution", "source", m.Source, "dest", m.Destination, "nonce", m.DepositNonce)
 }
 
-func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
-	w.muVote.Lock()
-	defer w.muVote.Unlock()
+//func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
+//	w.muVote.Lock()
+//	defer w.muVote.Unlock()
+//
+//	for i := 0; i < TxRetryLimit; i++ {
+//		select {
+//		case <-w.stop:
+//			return
+//		default:
+//			vStatus, _, err := model.GetBridgeTxStatus(m)
+//			if err == nil && vStatus > 0 {
+//				w.log.Info("voteProposal", "skip, src", m.Source, "depositNonce", m.DepositNonce)
+//				return
+//			}
+//			//err = w.conn.LockAndUpdateOpts()
+//			//if err != nil {
+//			//	w.log.Error("Failed to update tx opts", "err", err)
+//			//	continue
+//			//}
+//			//
+//			//gasLimit := w.conn.Opts().GasLimit
+//			//gasPrice := w.conn.Opts().GasPrice
+//			//
+//			//w.log.Debug("voteProposal", "dataHash", fmt.Sprintf("%x", dataHash))
+//			//w.log.Debug("voteProposal", "DepositNonce", fmt.Sprintf("%d", m.DepositNonce.Big().Int64()))
+//			//w.log.Debug("voteProposal", "ResourceId", fmt.Sprintf("%x", m.ResourceId))
+//			//tx, err := w.voteContract.VoteProposalBySigMachine(
+//			//	w.conn.Opts(),
+//			//	m.Source.Big(),
+//			//	m.DepositNonce.Big(),
+//			//	m.ResourceId,
+//			//	dataHash,
+//			//)
+//			txHash, err := w.VoteProposalBySigMachine(m, dataHash)
+//			if err != nil {
+//				w.log.Info("voteProposal", "error", err)
+//				return
+//			}
+//			w.conn.UnlockOpts()
+//
+//			if err == nil {
+//				w.log.Info("Submitted proposal vote", "tx", txHash, "src", m.Source, "depositNonce", m.DepositNonce)
+//				for i := 0; i < 25; i++ {
+//					if w.proposalIsComplete(m, dataHash) {
+//						w.log.Info("Proposal voting complete on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
+//						break
+//					}
+//					time.Sleep(time.Second * 2)
+//				}
+//				return
+//			} else if err.Error() == ErrNonceTooLow.Error() || err.Error() == ErrTxUnderpriced.Error() {
+//				w.log.Debug("Nonce too low, will retry")
+//				time.Sleep(TxRetryInterval)
+//			} else {
+//				w.log.Warn("Voting failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce, "err", err)
+//				time.Sleep(TxRetryInterval)
+//			}
+//
+//			if w.proposalIsComplete(m, dataHash) {
+//				//w.log.Info("Proposal voting complete on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
+//				return
+//			}
+//		}
+//	}
+//	w.log.Error("Submission of Vote transaction failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce)
+//	w.sysErr <- ErrFatalTx
+//}
 
-	for i := 0; i < TxRetryLimit; i++ {
-		select {
-		case <-w.stop:
-			return
-		default:
-			vStatus, _, err := model.GetBridgeTxStatus(m)
-			if err == nil && vStatus > 0 {
-				w.log.Info("voteProposal", "skip, src", m.Source, "depositNonce", m.DepositNonce)
-				return
-			}
-			//err = w.conn.LockAndUpdateOpts()
-			//if err != nil {
-			//	w.log.Error("Failed to update tx opts", "err", err)
-			//	continue
-			//}
-			//
-			//gasLimit := w.conn.Opts().GasLimit
-			//gasPrice := w.conn.Opts().GasPrice
-			//
-			//w.log.Debug("voteProposal", "dataHash", fmt.Sprintf("%x", dataHash))
-			//w.log.Debug("voteProposal", "DepositNonce", fmt.Sprintf("%d", m.DepositNonce.Big().Int64()))
-			//w.log.Debug("voteProposal", "ResourceId", fmt.Sprintf("%x", m.ResourceId))
-			//tx, err := w.voteContract.VoteProposalBySigMachine(
-			//	w.conn.Opts(),
-			//	m.Source.Big(),
-			//	m.DepositNonce.Big(),
-			//	m.ResourceId,
-			//	dataHash,
-			//)
-			txHash, err := w.VoteProposalBySigMachine(m, dataHash)
-			if err != nil {
-				w.log.Info("voteProposal", "error", err)
-				return
-			}
-			w.conn.UnlockOpts()
+//func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) {
+//	w.muExec.Lock()
+//	defer w.muExec.Unlock()
+//
+//	var status bool
+//	var txHash string
+//	var txHashRes string
+//	receiveAt := time.Now().Format("2006-01-02 15:04:05")
+//
+//	defer func() {
+//		if status {
+//			model.UpdateExecuteStatus(m, 1, txHashRes, receiveAt)
+//		}
+//	}()
+//
+//	for i := 0; i < TxRetryLimit; i++ {
+//		select {
+//		case <-w.stop:
+//			return
+//		default:
+//			_, eStatus, err := model.GetBridgeTxStatus(m)
+//			if err == nil && eStatus > 0 {
+//				w.log.Info("ExecuteProposal", "skip,src", m.Source, "depositNonce", m.DepositNonce)
+//				return
+//			}
+//			//err = w.conn.LockAndUpdateOpts()
+//			//if err != nil {
+//			//	w.log.Error("Failed to update nonce", "err", err)
+//			//	return
+//			//}
+//			//
+//			//gasLimit := w.conn.Opts().GasLimit
+//			//gasPrice := w.conn.Opts().GasPrice
+//			//
+//			//tx, err := w.voteContract.ExecuteProposal(
+//			//	w.conn.Opts(),
+//			//	m.Source.Big(),
+//			//	m.DepositNonce.Big(),
+//			//	data,
+//			//)
+//			//fmt.Println("~~~~~~~~ data ")
+//			//fmt.Println(fmt.Sprintf("%x", data))
+//			//w.conn.UnlockOpts()
+//			txHashExec, txTime, err := w.ExecuteProposalBySigMachine(m, data)
+//			if err != nil {
+//				return
+//			}
+//
+//			if err == nil {
+//				txHash = txHashExec
+//				w.log.Info("Submitted proposal execution", "tx", txHash, "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
+//				///
+//				for j := 0; j < 5; j++ {
+//					if w.proposalIsFinalized(m.Source, m.DepositNonce, dataHash) {
+//						status = true
+//						txHashRes = txHash
+//						receiveAt = txTime.Format("2006-01-02 15:04:05")
+//						w.log.Info("Proposal finalized on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
+//						break
+//					}
+//					time.Sleep(time.Second * 5)
+//				}
+//				///
+//				return
+//			} else if err.Error() == ErrNonceTooLow.Error() || err.Error() == ErrTxUnderpriced.Error() {
+//				w.log.Error("Nonce too low, will retry")
+//				time.Sleep(TxRetryInterval)
+//			} else {
+//				w.log.Warn("Execution failed, proposal may already be complete", "err", err)
+//				time.Sleep(TxRetryInterval)
+//			}
+//
+//			if w.proposalIsFinalized(m.Source, m.DepositNonce, dataHash) {
+//				status = true
+//				txHashRes = txHash
+//				w.log.Info("Proposal finalized on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
+//				return
+//			}
+//		}
+//	}
+//	w.log.Error("Submission of Execute transaction failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce)
+//	w.sysErr <- ErrFatalTx
+//}
 
-			if err == nil {
-				w.log.Info("Submitted proposal vote", "tx", txHash, "src", m.Source, "depositNonce", m.DepositNonce)
-				for i := 0; i < 25; i++ {
-					if w.proposalIsComplete(m, dataHash) {
-						w.log.Info("Proposal voting complete on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
-						break
-					}
-					time.Sleep(time.Second * 2)
-				}
-				return
-			} else if err.Error() == ErrNonceTooLow.Error() || err.Error() == ErrTxUnderpriced.Error() {
-				w.log.Debug("Nonce too low, will retry")
-				time.Sleep(TxRetryInterval)
-			} else {
-				w.log.Warn("Voting failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce, "err", err)
-				time.Sleep(TxRetryInterval)
-			}
-
-			if w.proposalIsComplete(m, dataHash) {
-				//w.log.Info("Proposal voting complete on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
-				return
-			}
-		}
-	}
-	w.log.Error("Submission of Vote transaction failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce)
-	w.sysErr <- ErrFatalTx
-}
-
-func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) {
-	w.muExec.Lock()
-	defer w.muExec.Unlock()
-
-	var status bool
-	var txHash string
-	var txHashRes string
-	receiveAt := time.Now().Format("2006-01-02 15:04:05")
-
-	defer func() {
-		if status {
-			model.UpdateExecuteStatus(m, 1, txHashRes, receiveAt)
-		}
-	}()
-
-	for i := 0; i < TxRetryLimit; i++ {
-		select {
-		case <-w.stop:
-			return
-		default:
-			_, eStatus, err := model.GetBridgeTxStatus(m)
-			if err == nil && eStatus > 0 {
-				w.log.Info("ExecuteProposal", "skip,src", m.Source, "depositNonce", m.DepositNonce)
-				return
-			}
-			//err = w.conn.LockAndUpdateOpts()
-			//if err != nil {
-			//	w.log.Error("Failed to update nonce", "err", err)
-			//	return
-			//}
-			//
-			//gasLimit := w.conn.Opts().GasLimit
-			//gasPrice := w.conn.Opts().GasPrice
-			//
-			//tx, err := w.voteContract.ExecuteProposal(
-			//	w.conn.Opts(),
-			//	m.Source.Big(),
-			//	m.DepositNonce.Big(),
-			//	data,
-			//)
-			//fmt.Println("~~~~~~~~ data ")
-			//fmt.Println(fmt.Sprintf("%x", data))
-			//w.conn.UnlockOpts()
-			txHashExec, txTime, err := w.ExecuteProposalBySigMachine(m, data)
-			if err != nil {
-				return
-			}
-
-			if err == nil {
-				txHash = txHashExec
-				w.log.Info("Submitted proposal execution", "tx", txHash, "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
-				///
-				for j := 0; j < 5; j++ {
-					if w.proposalIsFinalized(m.Source, m.DepositNonce, dataHash) {
-						status = true
-						txHashRes = txHash
-						receiveAt = txTime.Format("2006-01-02 15:04:05")
-						w.log.Info("Proposal finalized on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
-						break
-					}
-					time.Sleep(time.Second * 5)
-				}
-				///
-				return
-			} else if err.Error() == ErrNonceTooLow.Error() || err.Error() == ErrTxUnderpriced.Error() {
-				w.log.Error("Nonce too low, will retry")
-				time.Sleep(TxRetryInterval)
-			} else {
-				w.log.Warn("Execution failed, proposal may already be complete", "err", err)
-				time.Sleep(TxRetryInterval)
-			}
-
-			if w.proposalIsFinalized(m.Source, m.DepositNonce, dataHash) {
-				status = true
-				txHashRes = txHash
-				w.log.Info("Proposal finalized on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
-				return
-			}
-		}
-	}
-	w.log.Error("Submission of Execute transaction failed", "source", m.Source, "dest", m.Destination, "depositNonce", m.DepositNonce)
-	w.sysErr <- ErrFatalTx
-}
-
-func (w *Writer) VoteProposalBySigMachine(m msg.Message, dataHash [32]byte) (string, error) {
+func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) (string, error) {
 
 	err := w.conn.LockAndUpdateOpts()
 	if err != nil {
@@ -365,7 +365,7 @@ func (w *Writer) VoteProposalBySigMachine(m msg.Message, dataHash [32]byte) (str
 
 }
 
-func (w *Writer) ExecuteProposalBySigMachine(m msg.Message, data []byte) (string, *time.Time, error) {
+func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) (string, *time.Time, error) {
 
 	err := w.conn.LockAndUpdateOpts()
 	if err != nil {
