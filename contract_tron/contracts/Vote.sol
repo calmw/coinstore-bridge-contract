@@ -129,7 +129,7 @@ contract Vote is IVote, AccessControl {
         totalRelayer--;
     }
 
-    event NonceId(uint72 no);
+
     /**
         @notice relayer执行投票通过后的到帐操作
         @param originChainId 源链ID
@@ -143,6 +143,10 @@ contract Vote is IVote, AccessControl {
         bytes32 resourceId,
         bytes32 dataHash
     ) external onlyRole(RELAYER_ROLE) {
+        require(
+            originDepositNonce < uint256(18446744073709551616),
+            "origin deposit nonce too big"
+        );
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
                             uint72(originChainId);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
@@ -218,8 +222,6 @@ contract Vote is IVote, AccessControl {
                 );
             }
         }
-
-        emit NonceId(nonceAndID);
     }
 
     /**
@@ -233,6 +235,10 @@ contract Vote is IVote, AccessControl {
         uint256 originDepositNonce,
         bytes32 dataHash
     ) public onlyRole(RELAYER_ROLE) {
+        require(
+            originDepositNonce < uint256(18446744073709551616),
+            "origin deposit nonce too big"
+        );
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
                             uint72(originChainID);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
@@ -298,8 +304,7 @@ contract Vote is IVote, AccessControl {
         @notice 目标链执行到帐操作
         @param data 跨链data, encode(originChainId,originDepositNonce,depositer,recipient,amount,resourceId)
      */
-//    function execute(bytes calldata data) private { // TODO
-    function execute(bytes calldata data) public {
+    function execute(bytes calldata data) private {
         uint256 dataLength;
         bytes32 resourceId;
         uint256 originChainId;
@@ -323,6 +328,7 @@ contract Vote is IVote, AccessControl {
             uint8 assetsType,
             address tokenAddress,
             bool pause,
+            uint256 decimal,
             uint256 fee,
             bool burnable,
             bool mintable
@@ -336,7 +342,7 @@ contract Vote is IVote, AccessControl {
                 erc20.mint(recipient, receiveAmount);
             } else {
                 IERC20 erc20 = IERC20(tokenAddress);
-                erc20.transfer(recipient, receiveAmount);
+                erc20.safeTransfer(recipient, receiveAmount);
             }
         } else {
             revert ErrAssetsType(assetsType);
