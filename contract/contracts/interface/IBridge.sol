@@ -20,6 +20,7 @@ interface IBridge {
     event SetResource(
         bytes32 indexed resourceID,
         address tokenAddress,
+        uint256 decimal,
         uint256 fee,
         bool pause, // 该resourceID是否被暂停交易
         bool burnable, // true burn;false lock
@@ -32,7 +33,8 @@ interface IBridge {
         AssetsType assetsType; // 跨链币种
         address tokenAddress; // 币种地址。coin的话，值为0地址
         bool pause; // 该token是否暂停跨链
-        uint256 fee; // 跨链费用,折合U的数量，带精度
+        uint256 decimal; // 该token的精度
+        uint256 fee; // 跨链费用,折合U的数量
         bool burnable; // true burn;false lock
         bool mintable; // true mint;false release
     }
@@ -63,5 +65,5 @@ interface IBridge {
 
     function getTokenInfoByResourceId(
         bytes32 resourceId
-    ) external view returns (uint8, address, bool, uint256, bool, bool);
+    ) external view returns (uint8, address, bool, uint256, uint256, bool, bool);
 }

@@ -129,7 +129,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         );
         // 验证价格签名
         require(
-            checkPriceSignature(priceSignature, depositData.chainId,price, priceTimestamp),
+            checkPriceSignature(priceSignature, depositData.chainId, price, priceTimestamp),
             "price signature error"
         );
         // 验证价格签名时间
@@ -139,14 +139,15 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             uint8 assetsType,
             address tokenAddress,
             bool pause,
+            uint256 decimal,
             uint256 fee,
             bool burnable,
             bool mintable
-        ) = Bridge.getTokenInfoByResourceId(resourceId);
+        ) = Bridge.getTokenInfoByResourceId(depositData.resourceId);
         require(uint8(assetsType) > 0, "resourceId not exist");
         // 检测目标链ID
         require(
-            destinationChainId != depositData.chainId,
+            depositData.destinationChainId != depositData.chainId,
             "destinationChainId error"
         );
 
@@ -161,7 +162,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         depositData.destinationChainId = destinationChainId;
 
         // 实际到账额度
-        depositData.feeAmount = depositData.price * depositData.fee / 1e6;
+        depositData.feeAmount = depositData.price * depositData.fee * decimal / 1e6;
         require(depositData.amount > depositData.feeAmount, "amount to small");
         depositData.receiveAmount = depositData.amount - depositData.feeAmount;
         {

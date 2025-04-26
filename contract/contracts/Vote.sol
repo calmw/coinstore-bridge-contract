@@ -329,6 +329,7 @@ contract Vote is IVote, AccessControl, Initializable {
             uint8 assetsType,
             address tokenAddress,
             bool pause,
+            uint256 decimal,
             uint256 fee,
             bool burnable,
             bool mintable

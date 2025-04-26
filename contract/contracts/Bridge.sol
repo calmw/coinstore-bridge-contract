@@ -101,6 +101,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         bytes32 resourceID,
         AssetsType assetsType,
         address tokenAddress,
+        uint256 decimal,
         uint256 fee,
         bool pause,
         bool burnable,
@@ -114,6 +115,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
                 resourceID,
                 assetsType,
                 tokenAddress,
+                decimal,
                 fee,
                 pause,
                 burnable,
@@ -126,6 +128,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
             assetsType,
             tokenAddress,
             pause,
+            decimal,
             fee,
             burnable,
             mintable
@@ -135,6 +138,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         emit SetResource(
             resourceID,
             tokenAddress,
+            decimal,
             fee,
             pause,
             burnable,
@@ -192,12 +196,13 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     // 由resourceId获取token信息
     function getTokenInfoByResourceId(
         bytes32 resourceId
-    ) public view returns (uint8, address, bool, uint256, bool, bool) {
+    ) public view returns (uint8, address, bool, uint256, uint256, bool, bool) {
         TokenInfo memory token = resourceIdToTokenInfo[resourceId];
         return (
             uint8(token.assetsType),
             token.tokenAddress,
             token.pause,
+            token.decimal,
             token.fee,
             token.burnable,
             token.mintable
@@ -260,6 +265,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         bytes32 resourceID,
         AssetsType assetsType,
         address tokenAddress,
+        uint256 decimal,
         uint256 fee,
         bool pause,
         bool burnable,
@@ -273,6 +279,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
                 resourceID,
                 assetsType,
                 tokenAddress,
+                decimal,
                 fee,
                 pause,
                 burnable,
