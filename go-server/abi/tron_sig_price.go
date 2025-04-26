@@ -14,5 +14,5 @@ func TronPriceSignature(chainId, price *big.Int, tokenAddress common.Address) ([
 		price,
 		tokenAddress,
 	)
-	return GenerateSignatureTron(parameterBytes[4:])
+	return GeneratePriceSignatureTron(parameterBytes[4:])
 }

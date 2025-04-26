@@ -14,5 +14,5 @@ func EvmPriceSignature(chainId, price *big.Int, tokenAddress common.Address) ([]
 		price,
 		tokenAddress,
 	)
-	return GenerateSignature(parameterBytes[4:])
+	return GeneratePriceSignature(parameterBytes[4:])
 }
