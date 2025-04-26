@@ -38,6 +38,7 @@ func NewBridge() (*BridgeEvm, error) {
 func (b *BridgeEvm) Init() {
 	b.GrantRole(AdminRole, common.HexToAddress(AdminAccount))
 	b.GrantRole(VoteRole, common.HexToAddress(ChainConfig.VoteContractAddress))
+	b.GrantRole(BridgeRole, common.HexToAddress(ChainConfig.TantinContractAddress))
 	b.AdminSetEnv()
 	b.AdminSetResource(
 		ResourceIdUsdt,

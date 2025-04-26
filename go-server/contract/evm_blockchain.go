@@ -66,11 +66,11 @@ func GetAuth(cli *ethclient.Client) (error, *bind.TransactOpts) {
 		log.Println(err)
 		return err, nil
 	}
-	gasPrice, err := cli.SuggestGasPrice(context.Background())
-	if err != nil {
-		log.Println(err)
-		return err, nil
-	}
+	//gasPrice, err := cli.SuggestGasPrice(context.Background())
+	//if err != nil {
+	//	log.Println(err)
+	//	return err, nil
+	//}
 
 	auth, err := bind.NewKeyedTransactorWithChainID(privateKeyEcdsa, big.NewInt(ChainConfig.ChainId))
 	if err != nil {
@@ -79,11 +79,12 @@ func GetAuth(cli *ethclient.Client) (error, *bind.TransactOpts) {
 	}
 
 	return nil, &bind.TransactOpts{
-		From:      auth.From,
-		Nonce:     big.NewInt(int64(nonce)),
-		Signer:    auth.Signer,
-		Value:     big.NewInt(0),
-		GasPrice:  gasPrice,
+		From:   auth.From,
+		Nonce:  big.NewInt(int64(nonce)),
+		Signer: auth.Signer,
+		Value:  big.NewInt(0),
+		//GasPrice:  gasPrice,
+		GasPrice:  nil,
 		GasFeeCap: nil,
 		GasTipCap: nil,
 		GasLimit:  0,
