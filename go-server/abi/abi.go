@@ -119,6 +119,10 @@ var TantinSig = `[{
 		"type": "address"
 	}, {
 		"internalType": "address",
+		"name": "serverAddress",
+		"type": "address"
+	}, {
+		"internalType": "address",
 		"name": "bridgeAddress",
 		"type": "address"
 	}],
@@ -354,9 +358,9 @@ var PriceSig = `[{
 		"name": "price",
 		"type": "uint256"
 	}, {
-		"internalType": "address",
-		"name": "tokenAddress",
-		"type": "address"
+		"internalType": "uint256",
+		"name": "priceTimestamp",
+		"type": "uint256"
 	}],
 	"name": "checkPriceSignature",
 	"outputs": [{

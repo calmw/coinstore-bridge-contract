@@ -74,7 +74,12 @@ func main() {
 	time.Sleep(time.Second * 5)
 	for {
 		// 0x3942fda93c573e2ce9e85b0bb00ba98a144f27f6
-		tantin.Deposit(common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"), [32]byte(resourceIdBytes), big.NewInt(2), amount, big.NewInt(1e6), big.NewInt(time.Now().Unix()), contract.ChainConfig.UsdtAddress)
+		tantin.Deposit(common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"), [32]byte(resourceIdBytes),
+			big.NewInt(2),
+			amount,
+			big.NewInt(1e6),
+			big.NewInt(time.Now().Unix()),
+		)
 		//tantin.Deposit(common.HexToAddress("0x3942fda93c573e2ce9e85b0bb00ba98a144f27f6"), [32]byte(resourceIdBytes), big.NewInt(4), amount)
 		time.Sleep(time.Second * 30)
 	}

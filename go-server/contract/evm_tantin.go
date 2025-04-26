@@ -55,7 +55,7 @@ func (c TanTinEvm) AdminSetEnv(feeAddress, serverAddress string) {
 		fmt.Println(err)
 		return
 	}
-	signature, _ := abi.TantinAdminSetEnvSignature(sigNonce, common.HexToAddress(feeAddress), common.HexToAddress(ChainConfig.BridgeContractAddress))
+	signature, _ := abi.TantinAdminSetEnvSignature(sigNonce, common.HexToAddress(feeAddress), common.HexToAddress(serverAddress), common.HexToAddress(ChainConfig.BridgeContractAddress))
 
 	for {
 		err, txOpts := GetAuth(c.Cli)
@@ -111,9 +111,9 @@ func (c TanTinEvm) GrantRole(role string, addr common.Address) {
 	log.Println(fmt.Sprintf("GrantRole 确认成功"))
 }
 
-func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount, price, priceTimestamp *big.Int, tokenAddress string) {
+func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount, price, priceTimestamp *big.Int) {
 	reSignature, _ := abi.TantinDepositSignature(receiver)
-	prSignature, _ := abi.EvmPriceSignature(big.NewInt(ChainConfig.ChainId), price, common.HexToAddress(tokenAddress))
+	prSignature, _ := abi.EvmPriceSignature(big.NewInt(ChainConfig.ChainId), price, priceTimestamp)
 	var res *types.Transaction
 
 	fmt.Println("参数11")
@@ -142,8 +142,8 @@ func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destina
 			amount,
 			price,
 			priceTimestamp,
-			reSignature,
 			prSignature,
+			reSignature,
 		)
 		if err == nil {
 			break

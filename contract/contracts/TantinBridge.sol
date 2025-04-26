@@ -120,6 +120,8 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes memory priceSignature,
         bytes memory recipientSignature
     ) external payable {
+        DepositData memory depositData;
+        depositData.chainId = Bridge.chainId();
         // 验证接受地址签名
         require(
             checkDepositSignature(recipientSignature, recipient, msg.sender),
@@ -127,107 +129,105 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         );
         // 验证价格签名
         require(
-            checkPriceSignature(priceSignature, price, priceTimestamp),
+            checkPriceSignature(priceSignature, depositData.chainId,price, priceTimestamp),
             "price signature error"
         );
         // 验证价格签名时间
-        require(block.timestamp - priceTimestamp < 10, "please try again");
-        DepositData memory depositData;
-        // 检测resource ID是否设置
-        (
-            uint8 assetsType,
-            address tokenAddress,
-            bool pause,
-            uint256 fee,
-            bool burnable,
-            bool mintable
-        ) = Bridge.getTokenInfoByResourceId(resourceId);
-        require(uint8(assetsType) > 0, "resourceId not exist");
-        // 检测目标链ID
-        depositData.chainId = Bridge.chainId();
-        require(
-            destinationChainId != depositData.chainId,
-            "destinationChainId error"
-        );
+//        require(block.timestamp - priceTimestamp < 1000, "please try again");
+//        // 检测resource ID是否设置
+//        (
+//            uint8 assetsType,
+//            address tokenAddress,
+//            bool pause,
+//            uint256 fee,
+//            bool burnable,
+//            bool mintable
+//        ) = Bridge.getTokenInfoByResourceId(resourceId);
+//        require(uint8(assetsType) > 0, "resourceId not exist");
+//        // 检测目标链ID
+//        require(
+//            destinationChainId != depositData.chainId,
+//            "destinationChainId error"
+//        );
 
-        depositData.resourceId = resourceId;
-        depositData.recipient = recipient;
-        depositData.amount = amount;
-        depositData.tokenAddress = tokenAddress;
-        depositData.price = price;
-        depositData.fee = fee;
-        depositData.burnable = burnable;
-        depositData.assetsType = assetsType;
-        depositData.destinationChainId = destinationChainId;
-
-        // 实际到账额度
-        depositData.feeAmount = depositData.price / depositData.fee / 1e6;
-        depositData.receiveAmount = depositData.amount - depositData.feeAmount;
-        {
-            if (assetsType == uint8(AssetsType.Coin)) {
-                tokenAddress = address(0);
-                require(msg.value == amount, "incorrect value supplied.");
-                Address.sendValue(payable(feeAddress), depositData.feeAmount);
-                Address.sendValue(
-                    payable(address(this)),
-                    depositData.receiveAmount
-                );
-            } else if (assetsType == uint8(AssetsType.Erc20)) {
-                IERC20 erc20 = IERC20(tokenAddress);
-                if (burnable) {
-                    erc20.safeTransferFrom(
-                        msg.sender,
-                        address(0),
-                        depositData.receiveAmount
-                    );
-                } else {
-                    erc20.safeTransferFrom(
-                        msg.sender,
-                        address(this),
-                        depositData.receiveAmount
-                    );
-                }
-                erc20.safeTransferFrom(
-                    msg.sender,
-                    feeAddress,
-                    depositData.feeAmount
-                );
-            } else {
-                revert ErrAssetsType(assetsType);
-            }
-        }
-
-        localNonce++;
-        depositRecord[msg.sender][localNonce] = DepositRecord(
-            tokenAddress,
-            msg.sender,
-            depositData.recipient,
-            amount,
-            fee,
-            depositData.destinationChainId
-        );
-        // data
-        bytes memory data = abi.encode(
-            depositData.resourceId,
-            depositData.chainId,
-            msg.sender,
-            depositData.recipient,
-            depositData.receiveAmount,
-            localNonce
-        );
-        Bridge.deposit(
-            depositData.destinationChainId,
-            depositData.resourceId,
-            data
-        );
-        emit DepositEvent(
-            msg.sender,
-            depositData.recipient,
-            amount,
-            tokenAddress,
-            localNonce,
-            depositData.destinationChainId
-        );
+//        depositData.resourceId = resourceId;
+//        depositData.recipient = recipient;
+//        depositData.amount = amount;
+//        depositData.tokenAddress = tokenAddress;
+//        depositData.price = price;
+//        depositData.fee = fee;
+//        depositData.burnable = burnable;
+//        depositData.assetsType = assetsType;
+//        depositData.destinationChainId = destinationChainId;
+//
+//        // 实际到账额度
+//        depositData.feeAmount = depositData.price / depositData.fee / 1e6;
+//        depositData.receiveAmount = depositData.amount - depositData.feeAmount;
+//        {
+//            if (assetsType == uint8(AssetsType.Coin)) {
+//                tokenAddress = address(0);
+//                require(msg.value == amount, "incorrect value supplied.");
+//                Address.sendValue(payable(feeAddress), depositData.feeAmount);
+//                Address.sendValue(
+//                    payable(address(this)),
+//                    depositData.receiveAmount
+//                );
+//            } else if (assetsType == uint8(AssetsType.Erc20)) {
+//                IERC20 erc20 = IERC20(tokenAddress);
+//                if (burnable) {
+//                    erc20.safeTransferFrom(
+//                        msg.sender,
+//                        address(0),
+//                        depositData.receiveAmount
+//                    );
+//                } else {
+//                    erc20.safeTransferFrom(
+//                        msg.sender,
+//                        address(this),
+//                        depositData.receiveAmount
+//                    );
+//                }
+//                erc20.safeTransferFrom(
+//                    msg.sender,
+//                    feeAddress,
+//                    depositData.feeAmount
+//                );
+//            } else {
+//                revert ErrAssetsType(assetsType);
+//            }
+//        }
+//
+//        localNonce++;
+//        depositRecord[msg.sender][localNonce] = DepositRecord(
+//            tokenAddress,
+//            msg.sender,
+//            depositData.recipient,
+//            amount,
+//            fee,
+//            depositData.destinationChainId
+//        );
+//        // data
+//        bytes memory data = abi.encode(
+//            depositData.resourceId,
+//            depositData.chainId,
+//            msg.sender,
+//            depositData.recipient,
+//            depositData.receiveAmount,
+//            localNonce
+//        );
+//        Bridge.deposit(
+//            depositData.destinationChainId,
+//            depositData.resourceId,
+//            data
+//        );
+//        emit DepositEvent(
+//            msg.sender,
+//            depositData.recipient,
+//            amount,
+//            tokenAddress,
+//            localNonce,
+//            depositData.destinationChainId
+//        );
     }
 
     /**
@@ -279,10 +279,11 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     // 验证price签名
     function checkPriceSignature(
         bytes memory signature,
+        uint256 chainId,
         uint256 price,
         uint256 priceTimestamp
     ) private view returns (bool) {
-        bytes32 messageHash = keccak256(abi.encode(price, priceTimestamp));
+        bytes32 messageHash = keccak256(abi.encode(chainId, price, priceTimestamp));
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
         );
