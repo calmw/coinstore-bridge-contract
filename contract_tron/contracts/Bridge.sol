@@ -196,12 +196,13 @@ contract Bridge is IBridge, Pausable, AccessControl {
     // 由resourceId获取token信息
     function getTokenInfoByResourceId(
         bytes32 resourceId
-    ) public view returns (uint8, address, bool, uint256, bool, bool) {
+    ) public view returns (uint8, address, bool, uint256, uint256, bool, bool) {
         TokenInfo memory token = resourceIdToTokenInfo[resourceId];
         return (
             uint8(token.assetsType),
             token.tokenAddress,
             token.pause,
+            token.decimal,
             token.fee,
             token.burnable,
             token.mintable

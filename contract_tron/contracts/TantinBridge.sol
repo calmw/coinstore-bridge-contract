@@ -181,19 +181,19 @@ contract TantinBridge is AccessControl, ITantinBridge {
             } else if (assetsType == uint8(AssetsType.Erc20)) {
                 IERC20 erc20 = IERC20(tokenAddress);
                 if (burnable) {
-                    erc20.safeTransferFrom(
+                    erc20.transferFrom(
                         msg.sender,
                         address(0),
                         depositData.receiveAmount
                     );
                 } else {
-                    erc20.safeTransferFrom(
+                    erc20.transferFrom(
                         msg.sender,
                         address(this),
                         depositData.receiveAmount
                     );
                 }
-                erc20.safeTransferFrom(
+                erc20.transferFrom(
                     msg.sender,
                     feeAddress,
                     depositData.feeAmount
@@ -292,7 +292,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
         bytes32 messageHash = keccak256(
             abi.encode(chainId, price, priceTimestamp)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
             signature
         );
 

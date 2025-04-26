@@ -342,7 +342,7 @@ contract Vote is IVote, AccessControl {
                 erc20.mint(recipient, receiveAmount);
             } else {
                 IERC20 erc20 = IERC20(tokenAddress);
-                erc20.safeTransfer(recipient, receiveAmount);
+                erc20.transfer(recipient, receiveAmount);
             }
         } else {
             revert ErrAssetsType(assetsType);

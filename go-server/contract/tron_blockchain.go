@@ -20,15 +20,14 @@ func InitTronEnv() {
 		ChainId:               3448148188,
 		ChainTypeId:           2,
 		RPC:                   "grpc.nile.trongrid.io:50051",
-		BridgeContractAddress: "TKLp254kqo9AkTUvfghCe8gUkfnSPMQ618",
-		VoteContractAddress:   "THJ64uFwziCKQ2sJQo15KnCjLGw1hLMdMh",
-		TantinContractAddress: "TCAmivrJ73HmbsxWh2gCBdyoLBfuSsW7pH",
+		BridgeContractAddress: "TFxciX43n4Np4bvKkzUNpRYaM6pEUB6HBr",
+		VoteContractAddress:   "TVWmdb8o1X5mdEhZsiHB8wSuuHcicbEJYA",
+		TantinContractAddress: "TDiyHNnKnBtWGCHEQPeB7UpRyUeAJUekpv",
 		UsdtAddress:           "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf",
 		UsdcAddress:           "TFXYQ93J5ptYcWaVFJxnadLZUB459uX2MK",
 		EthAddress:            "0x0000000000000000000000000000000000000000",
-		//WEthAddress:           "TCAYwjRpHjFX4hgQqaJPbuNCFqxgqwJBns",
-		WEthAddress: "TYdFb6FoZvJyXE5ERm53F2RG25UF3NaSTi",
-		PrivateKey:  privateKeyStr,
+		WEthAddress:           "TYosr3nfECjdK8QwPpNS71p2okbDsbKMe4",
+		PrivateKey:            privateKeyStr,
 	}
 }
 

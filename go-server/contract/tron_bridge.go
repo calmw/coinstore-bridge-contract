@@ -17,6 +17,7 @@ import (
 	"math/big"
 	"os"
 	"strings"
+	"time"
 )
 
 const (
@@ -55,24 +56,26 @@ func NewBridgeTron() (*BridgeTron, error) {
 	}, nil
 }
 
-func (b *BridgeTron) Init() {
+func (b *BridgeTron) Init(adminAddress string, fee uint64) {
 	//txHash20, err20 := b.TransferUsdtTest()
 	//fmt.Println(txHash20, err20)
-	//txHash2, err2 := b.GrantRole(AdminRole, OwnerAccount)
-	//fmt.Println(txHash2, err2)
-	//time.Sleep(time.Second)
-	//txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
-	//fmt.Println(txHash3, err3)
-	//time.Sleep(time.Second)
-	//txHash, err := b.AdminSetEnv()
-	//fmt.Println(txHash, err)
-	//time.Sleep(time.Second)
-	//txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), false, false, false)
-	//fmt.Println(txHash4, err4)
-	//time.Sleep(time.Second)
-	//txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, big.NewInt(100), false, false, false)
-	//fmt.Println(txHash5, err5)
-	//time.Sleep(time.Second)
+	txHash2, err2 := b.GrantRole(AdminRole, adminAddress)
+	fmt.Println(txHash2, err2)
+	txHash22, err22 := b.GrantRole(BridgeRole, ChainConfig.TantinContractAddress)
+	fmt.Println(txHash22, err22)
+	time.Sleep(time.Second)
+	txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
+	fmt.Println(txHash3, err3)
+	time.Sleep(time.Second)
+	txHash, err := b.AdminSetEnv()
+	fmt.Println(txHash, err)
+	time.Sleep(time.Second)
+	txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), false, false, false)
+	fmt.Println(txHash4, err4)
+	time.Sleep(time.Second)
+	txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, big.NewInt(100), false, false, false)
+	fmt.Println(txHash5, err5)
+	time.Sleep(time.Second)
 	txHash6, err6 := b.AdminSetResource(ResourceIdEth, 2, ChainConfig.WEthAddress, big.NewInt(100), false, false, false)
 	fmt.Println(txHash6, err6)
 }
