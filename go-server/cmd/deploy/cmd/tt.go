@@ -34,5 +34,5 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&RelayerOne, "relayer_one_address", "l", "", "relayer 1 账户地址")
 	rootCmd.PersistentFlags().StringVarP(&RelayerTwo, "relayer_two_address", "m", "", "relayer 2 账户地址")
 	rootCmd.PersistentFlags().StringVarP(&RelayerThree, "relayer_three_address", "n", "", "relayer 3 账户地址")
-	rootCmd.PersistentFlags().Uint64VarP(&Fee, "fee", "e", 4, "跨链费，折合USDT个数")
+	rootCmd.PersistentFlags().Uint64VarP(&Fee, "fee", "e", 4, "跨链费，折合U的数量")
 }
