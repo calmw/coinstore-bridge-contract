@@ -152,7 +152,7 @@ func (b *BridgeTron) TransferUsdtTest() (string, error) {
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
-func (b *BridgeTron) AdminSetResource(resourceId string, assetsType uint8, tokenAddress string, fee *big.Int, pause bool, burnable bool, mintable bool) (string, error) {
+func (b *BridgeTron) AdminSetResource(resourceId string, assetsType uint8, tokenAddress string, decimal, fee *big.Int, pause bool, burnable bool, mintable bool) (string, error) {
 	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
 	defer b.Ks.Lock(b.Ka.Address)
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))

@@ -24,7 +24,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     uint256 public chainId; // 自定义链ID
     uint256 public chainType; // 自定义链类型， 1 EVM 2 Tron
     mapping(uint256 => uint256) public depositCounts; // destinationChainID => number of deposits
-    mapping(bytes32 => address) public resourceIdToContractAddress; // resourceID => 业务合约地址(tantin address)
     mapping(address => bytes32) public contractAddressToResourceID; // 业务合约地址(tantin address) => resourceID
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
     mapping(uint256 => mapping(uint256 => DepositRecord)) public depositRecords; // depositNonce => (destinationChainId => Deposit Record)
@@ -98,7 +97,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         @param pause 该币种是否在黑名单中/是否允许跨链。币种黑名单/禁止该币种跨链
         @param burnable 该币是否burn
         @param mintable 该币是否mint
-        @param tantinAddress 对应的tantin业务合约地址
      */
     function adminSetResource(
         bytes32 resourceID,
@@ -109,7 +107,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         bool pause,
         bool burnable,
         bool mintable,
-        address tantinAddress,
         bytes memory signature
     ) external onlyRole(ADMIN_ROLE) {
         require(
@@ -122,8 +119,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
                 fee,
                 pause,
                 burnable,
-                mintable,
-                tantinAddress
+                mintable
             ),
             "signature error"
         );
@@ -136,7 +132,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
             burnable,
             mintable
         );
-        resourceIdToContractAddress[resourceID] = tantinAddress;
 
         emit SetResource(
             resourceID,
@@ -145,8 +140,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
             fee,
             pause,
             burnable,
-            mintable,
-            tantinAddress
+            mintable
         );
     }
 
@@ -187,13 +181,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         require(uint8(tokenInfo.assetsType) > 0, "resourceId not exist");
         return tokenInfo.fee;
-    }
-
-    // 由resourceId获取tantin address信息
-    function getContractAddressByResourceId(
-        bytes32 resourceId
-    ) public view returns (address) {
-        return resourceIdToContractAddress[resourceId];
     }
 
     // 由resourceId获取token信息
@@ -272,8 +259,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         uint256 fee,
         bool pause,
         bool burnable,
-        bool mintable,
-        address tantinAddress
+        bool mintable
     ) private returns (bool) {
         bytes32 messageHash = keccak256(
             abi.encode(
@@ -286,8 +272,7 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
                 fee,
                 pause,
                 burnable,
-                mintable,
-                tantinAddress
+                mintable
             )
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(

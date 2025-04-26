@@ -177,7 +177,6 @@ func (b *BridgeEvm) AdminSetResource(resourceId string, assetsType uint8, tokenA
 			[32]byte(resourceIdBytes),
 			assetsType,
 			tokenAddress,
-			common.HexToAddress(ChainConfig.TantinContractAddress),
 			decimal,
 			fee,
 			pause,

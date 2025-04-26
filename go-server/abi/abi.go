@@ -191,10 +191,6 @@ var BridgeSig = `[{
 		"internalType": "bool",
 		"name": "mintable",
 		"type": "bool"
-	}, {
-		"internalType": "address",
-		"name": "tantinAddress",
-		"type": "address"
 	}],
 	"name": "checkAdminSetResourceSignature",
 	"outputs": [{
