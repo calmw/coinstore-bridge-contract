@@ -217,6 +217,12 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "decimal",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "fee",
         "type": "uint256"
       },
@@ -276,7 +282,7 @@
   },
   {
     "inputs": [],
-    "name": "DEFAULT_ADMIN_ROLE",
+    "name": "BRIDGE_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -289,7 +295,7 @@
   },
   {
     "inputs": [],
-    "name": "VOTE_ROLE",
+    "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -370,6 +376,11 @@
         "internalType": "address",
         "name": "tokenAddress",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "decimal",
+        "type": "uint256"
       },
       {
         "internalType": "uint256",
@@ -639,6 +650,11 @@
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
         "internalType": "bool",
         "name": "",
         "type": "bool"
@@ -775,6 +791,11 @@
         "internalType": "bool",
         "name": "pause",
         "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "decimal",
+        "type": "uint256"
       },
       {
         "internalType": "uint256",
