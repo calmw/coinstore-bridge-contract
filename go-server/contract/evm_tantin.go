@@ -42,6 +42,14 @@ func (c TanTinEvm) Init() {
 	//c.AdminSetToken(ResourceIdUsdc, 2, common.HexToAddress(ChainConfig.UsdcAddress), false, false, false)
 }
 
+func (c TanTinEvm) LatestBlock() {
+	number, err := c.Cli.BlockNumber(context.Background())
+	fmt.Println(number, err)
+	time.Sleep(time.Second * 5)
+	number, err = c.Cli.BlockNumber(context.Background())
+	fmt.Println(number, err)
+}
+
 func (c TanTinEvm) AdminSetEnv(feeAddress string) {
 	var res *types.Transaction
 	sigNonce, err := c.Contract.SigNonce(nil)

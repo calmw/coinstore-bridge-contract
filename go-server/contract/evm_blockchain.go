@@ -135,10 +135,11 @@ func InitTantinEnv() {
 	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
-		BridgeId:              1,
-		ChainId:               12302,
-		ChainTypeId:           1,
-		RPC:                   "https://testrpc.tantin.com",
+		BridgeId:    1,
+		ChainId:     12302,
+		ChainTypeId: 1,
+		//RPC:                   "https://testrpc.tantin.com",
+		RPC:                   "https://testrpcdex.tantin.com",
 		BridgeContractAddress: "0x27B56c6A1C66A78e41A20141e79F8559C33af9b5",
 		VoteContractAddress:   "0x62B166B387E0EA79Fa52Ae3A623dbF9F8Db3893b",
 		TantinContractAddress: "0x94Bbc0cc03245Ec1f9B5d7134fB3A9D579ADc3c9",
