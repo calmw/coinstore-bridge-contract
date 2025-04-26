@@ -8,7 +8,7 @@ networks:
 services:
 
   tt_bridge_one:
-    image: calmw/tt_bridge:0.0.13
+    image: calmw/tt_bridge:0.0.18
     container_name: tt_bridge_one
     restart: always
     environment:
@@ -34,7 +34,7 @@ services:
           memory: 2G
 
   tt_bridge_two:
-    image: calmw/tt_bridge:0.0.13
+    image: calmw/tt_bridge:0.0.18
     container_name: tt_bridge_two
     restart: always
     environment:
@@ -60,7 +60,7 @@ services:
           memory: 2G
 
   tt_bridge_three:
-    image: calmw/tt_bridge:0.0.13
+    image: calmw/tt_bridge:0.0.18
     container_name: tt_bridge_three
     restart: always
     environment:
@@ -111,7 +111,7 @@ services:
           memory: 2G
 
   tt_bridge_api:
-    image: calmw/tt_bridge_api:0.0.18
+    image: calmw/tt_bridge_api:0.0.28
     container_name: tt_bridge_api
     restart: always
     ports:
