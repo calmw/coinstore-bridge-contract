@@ -167,41 +167,44 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         );
 
         // 实际到账额度
-        depositData.feeAmount = (depositData.price * depositData.fee / 1e6) * decimal;
+        depositData.feeAmount =
+            ((depositData.price * depositData.fee) / 1e6) *
+            decimal;
         require(depositData.amount > depositData.feeAmount, "amount too small");
         depositData.receiveAmount = depositData.amount - depositData.feeAmount;
-        {
-            if (assetsType == uint8(AssetsType.Coin)) {
-                tokenAddress = address(0);
-                require(msg.value == depositData.amount, "incorrect value supplied.");
-                Address.sendValue(payable(feeAddress), depositData.feeAmount);
-                Address.sendValue(
-                    payable(address(this)),
-                    depositData.receiveAmount
-                );
-            } else if (assetsType == uint8(AssetsType.Erc20)) {
-                IERC20 erc20 = IERC20(tokenAddress);
-                if (burnable) {
-                    erc20.safeTransferFrom(
-                        msg.sender,
-                        address(0),
-                        depositData.receiveAmount
-                    );
-                } else {
-                    erc20.safeTransferFrom(
-                        msg.sender,
-                        address(this),
-                        depositData.receiveAmount
-                    );
-                }
+        if (assetsType == uint8(AssetsType.Coin)) {
+            tokenAddress = address(0);
+            require(
+                msg.value == depositData.amount,
+                "incorrect value supplied."
+            );
+            Address.sendValue(payable(feeAddress), depositData.feeAmount);
+            Address.sendValue(
+                payable(address(this)),
+                depositData.receiveAmount
+            );
+        } else if (assetsType == uint8(AssetsType.Erc20)) {
+            IERC20 erc20 = IERC20(tokenAddress);
+            if (burnable) {
                 erc20.safeTransferFrom(
                     msg.sender,
-                    feeAddress,
-                    depositData.feeAmount
+                    address(0),
+                    depositData.receiveAmount
                 );
             } else {
-                revert ErrAssetsType(assetsType);
+                erc20.safeTransferFrom(
+                    msg.sender,
+                    address(this),
+                    depositData.receiveAmount
+                );
             }
+            erc20.safeTransferFrom(
+                msg.sender,
+                feeAddress,
+                depositData.feeAmount
+            );
+        } else {
+            revert ErrAssetsType(assetsType);
         }
 
         localNonce++;

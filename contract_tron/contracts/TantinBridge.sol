@@ -95,7 +95,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
     }
 
     /**
-@notice 发起跨链
+        @notice 发起跨链
         @param destinationChainId 目标链ID
         @param resourceId 跨链桥设置的resourceId
         @param recipient 目标链资产接受者地址
@@ -116,7 +116,11 @@ contract TantinBridge is AccessControl, ITantinBridge {
         bytes memory recipientSignature
     ) external payable {
         DepositData memory depositData;
+        depositData.price = price;
+        depositData.amount = amount;
+        depositData.recipient = recipient;
         depositData.resourceId = resourceId;
+        depositData.destinationChainId = destinationChainId;
         depositData.chainId = Bridge.chainId();
         // 验证接受地址签名
         require(
@@ -134,7 +138,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
             "price signature error"
         );
         // 验证价格签名时间
-        require(block.timestamp - priceTimestamp < 30, "please try again");
+        require(block.timestamp - 30 < priceTimestamp, "please try again");
         // 检测resource ID是否设置
         (
             uint8 assetsType,
@@ -145,23 +149,16 @@ contract TantinBridge is AccessControl, ITantinBridge {
             bool burnable,
             bool mintable
         ) = Bridge.getTokenInfoByResourceId(depositData.resourceId);
-        require(uint8(assetsType) > 0, "resourceId not exist");
+        depositData.fee = fee;
+        depositData.burnable = burnable;
+        depositData.assetsType = assetsType;
+        depositData.tokenAddress = tokenAddress;
+        require(depositData.assetsType > 0, "resourceId not exist");
         // 检测目标链ID
         require(
             depositData.destinationChainId != depositData.chainId,
             "destinationChainId error"
         );
-
-        depositData.resourceId = resourceId;
-        depositData.recipient = recipient;
-        depositData.amount = amount;
-        depositData.tokenAddress = tokenAddress;
-        depositData.price = price;
-        depositData.fee = fee;
-        depositData.burnable = burnable;
-        depositData.assetsType = assetsType;
-        depositData.destinationChainId = destinationChainId;
-
         // 实际到账额度
         depositData.feeAmount =
             (depositData.price / 1e6) *
@@ -169,38 +166,36 @@ contract TantinBridge is AccessControl, ITantinBridge {
             decimal;
         require(depositData.amount > depositData.feeAmount, "amount to small");
         depositData.receiveAmount = depositData.amount - depositData.feeAmount;
-        {
-            if (assetsType == uint8(AssetsType.Coin)) {
-                tokenAddress = address(0);
-                require(msg.value == amount, "incorrect value supplied.");
-                Address.sendValue(payable(feeAddress), depositData.feeAmount);
-                Address.sendValue(
-                    payable(address(this)),
-                    depositData.receiveAmount
-                );
-            } else if (assetsType == uint8(AssetsType.Erc20)) {
-                IERC20 erc20 = IERC20(tokenAddress);
-                if (burnable) {
-                    erc20.transferFrom(
-                        msg.sender,
-                        address(0),
-                        depositData.receiveAmount
-                    );
-                } else {
-                    erc20.transferFrom(
-                        msg.sender,
-                        address(this),
-                        depositData.receiveAmount
-                    );
-                }
+        if (assetsType == uint8(AssetsType.Coin)) {
+            tokenAddress = address(0);
+            require(msg.value == amount, "incorrect value supplied.");
+            Address.sendValue(payable(feeAddress), depositData.feeAmount);
+            Address.sendValue(
+                payable(address(this)),
+                depositData.receiveAmount
+            );
+        } else if (assetsType == uint8(AssetsType.Erc20)) {
+            IERC20 erc20 = IERC20(tokenAddress);
+            if (burnable) {
                 erc20.transferFrom(
                     msg.sender,
-                    feeAddress,
-                    depositData.feeAmount
+                    address(0),
+                    depositData.receiveAmount
                 );
             } else {
-                revert ErrAssetsType(assetsType);
+                erc20.transferFrom(
+                    msg.sender,
+                    address(this),
+                    depositData.receiveAmount
+                );
             }
+            erc20.transferFrom(
+                msg.sender,
+                feeAddress,
+                depositData.feeAmount
+            );
+        } else {
+            revert ErrAssetsType(assetsType);
         }
 
         localNonce++;
