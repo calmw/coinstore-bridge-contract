@@ -36,6 +36,7 @@ var (
 	RelayerOne    string
 	RelayerTwo    string
 	RelayerThree  string
+	Fee           uint64
 )
 
 var rootCmd = &cobra.Command{

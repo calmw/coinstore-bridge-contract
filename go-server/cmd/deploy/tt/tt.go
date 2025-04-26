@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func InitTt(prvKey, adminAddress, feeAddress, serverAddress, realyerOneAddress, realyerTwoAddress, realyerThreeAddress string) {
+func InitTt(prvKey, adminAddress, feeAddress, serverAddress, realyerOneAddress, realyerTwoAddress, realyerThreeAddress string, fee uint64) {
 	contract.InitTantinEnv()
 	err := os.Setenv("TB_KEY", prvKey)
 	if err != nil {
@@ -20,12 +20,12 @@ func InitTt(prvKey, adminAddress, feeAddress, serverAddress, realyerOneAddress, 
 		fmt.Println(err)
 		return
 	}
-	bridge.Init(adminAddress)
+	bridge.Init(adminAddress, fee)
 	bridge.AdminSetResource(
 		contract.ResourceIdEth,
 		2,
 		common.HexToAddress(contract.ChainConfig.WEthAddress),
-		big.NewInt(100),
+		big.NewInt(int64(fee)),
 		false,
 		false,
 		false,
@@ -34,7 +34,7 @@ func InitTt(prvKey, adminAddress, feeAddress, serverAddress, realyerOneAddress, 
 		contract.ResourceIdWeth,
 		2,
 		common.HexToAddress(contract.ChainConfig.WEthAddress),
-		big.NewInt(100),
+		big.NewInt(int64(fee)),
 		false,
 		false,
 		false,

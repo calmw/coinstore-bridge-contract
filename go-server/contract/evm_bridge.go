@@ -35,7 +35,7 @@ func NewBridge() (*BridgeEvm, error) {
 	}, nil
 }
 
-func (b *BridgeEvm) Init(adminAddress string) {
+func (b *BridgeEvm) Init(adminAddress string, fee uint64) {
 	b.GrantRole(AdminRole, common.HexToAddress(adminAddress))
 	b.GrantRole(VoteRole, common.HexToAddress(ChainConfig.VoteContractAddress))
 	b.GrantRole(BridgeRole, common.HexToAddress(ChainConfig.TantinContractAddress))
@@ -44,7 +44,7 @@ func (b *BridgeEvm) Init(adminAddress string) {
 		ResourceIdUsdt,
 		2,
 		common.HexToAddress(ChainConfig.UsdtAddress),
-		big.NewInt(100),
+		big.NewInt(int64(fee)),
 		false,
 		false,
 		false,
@@ -53,7 +53,7 @@ func (b *BridgeEvm) Init(adminAddress string) {
 		ResourceIdUsdc,
 		2,
 		common.HexToAddress(ChainConfig.UsdcAddress),
-		big.NewInt(100),
+		big.NewInt(int64(fee)),
 		false,
 		false,
 		false,

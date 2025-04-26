@@ -73,8 +73,9 @@ func main() {
 	//resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(contract.ResourceIdEth, "0x"))
 	time.Sleep(time.Second * 5)
 	for {
-		// 0x3942fda93c573e2ce9e85b0bb00ba98a144f27f6
-		tantin.Deposit(common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"), [32]byte(resourceIdBytes),
+		tantin.Deposit(
+			common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"),
+			[32]byte(resourceIdBytes),
 			big.NewInt(2),
 			amount,
 			big.NewInt(1e6),
