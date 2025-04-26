@@ -121,6 +121,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes memory recipientSignature
     ) external payable {
         DepositData memory depositData;
+        depositData.resourceId = resourceId;
         depositData.chainId = Bridge.chainId();
         // 验证接受地址签名
         require(
@@ -129,7 +130,12 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         );
         // 验证价格签名
         require(
-            checkPriceSignature(priceSignature, depositData.chainId, price, priceTimestamp),
+            checkPriceSignature(
+                priceSignature,
+                depositData.chainId,
+                price,
+                priceTimestamp
+            ),
             "price signature error"
         );
         // 验证价格签名时间
@@ -162,7 +168,10 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         depositData.destinationChainId = destinationChainId;
 
         // 实际到账额度
-        depositData.feeAmount = depositData.price * depositData.fee * decimal / 1e6;
+        depositData.feeAmount =
+            (depositData.price / 1e6) *
+            depositData.fee *
+            decimal;
         require(depositData.amount > depositData.feeAmount, "amount to small");
         depositData.receiveAmount = depositData.amount - depositData.feeAmount;
         {
@@ -285,7 +294,9 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         uint256 price,
         uint256 priceTimestamp
     ) private view returns (bool) {
-        bytes32 messageHash = keccak256(abi.encode(chainId, price, priceTimestamp));
+        bytes32 messageHash = keccak256(
+            abi.encode(chainId, price, priceTimestamp)
+        );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
         );

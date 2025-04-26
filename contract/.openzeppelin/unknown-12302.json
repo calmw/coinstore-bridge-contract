@@ -747,6 +747,1194 @@
           ]
         }
       }
+    },
+    "e45f8bdce30da284db741faff5a55f547c09d3e9bd0ecb5790b1004db384c948": {
+      "address": "0x1DB3700D7965F841839FA60169A582fa30014297",
+      "txHash": "0x777e19224ad1cb857008e8927565d3e072dc8e6e6ff99044c7fc269a08595a4f",
+      "layout": {
+        "solcVersion": "0.8.22",
+        "storage": [
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)275_storage)",
+            "contract": "AccessControl",
+            "src": "@openzeppelin/contracts/access/AccessControl.sol:55"
+          },
+          {
+            "label": "sigNonce",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:28"
+          },
+          {
+            "label": "superAdminAddress",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:29"
+          },
+          {
+            "label": "serverAddress",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:30"
+          },
+          {
+            "label": "feeAddress",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:31"
+          },
+          {
+            "label": "Bridge",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_contract(IBridge)4272",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:32"
+          },
+          {
+            "label": "localNonce",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:33"
+          },
+          {
+            "label": "depositRecord",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_struct(DepositRecord)4379_storage))",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:34"
+          },
+          {
+            "label": "blacklist",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:35"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IBridge)4272": {
+            "label": "contract IBridge",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_struct(DepositRecord)4379_storage))": {
+            "label": "mapping(address => mapping(uint256 => struct ITantinBridge.DepositRecord))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)275_storage)": {
+            "label": "mapping(bytes32 => struct AccessControl.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(DepositRecord)4379_storage)": {
+            "label": "mapping(uint256 => struct ITantinBridge.DepositRecord)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(DepositRecord)4379_storage": {
+            "label": "struct ITantinBridge.DepositRecord",
+            "members": [
+              {
+                "label": "tokenAddress",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "sender",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "recipient",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "fee",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "destinationChainId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_struct(RoleData)275_storage": {
+            "label": "struct AccessControl.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73"
+            }
+          ]
+        }
+      }
+    },
+    "e9fcc7725d15034cfbc9f0f4158d9cdf2e377f6523798cfbd7b841d83ac0b4c5": {
+      "address": "0x188a8cf4a046C6e69e5E2BA1781FD19eB8A1c71A",
+      "txHash": "0x07517c64891290292090a3ff475fc8aee18661d70f69d559619b43184681dd95",
+      "layout": {
+        "solcVersion": "0.8.22",
+        "storage": [
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)275_storage)",
+            "contract": "AccessControl",
+            "src": "@openzeppelin/contracts/access/AccessControl.sol:55"
+          },
+          {
+            "label": "sigNonce",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:28"
+          },
+          {
+            "label": "superAdminAddress",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:29"
+          },
+          {
+            "label": "serverAddress",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:30"
+          },
+          {
+            "label": "feeAddress",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:31"
+          },
+          {
+            "label": "Bridge",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_contract(IBridge)4275",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:32"
+          },
+          {
+            "label": "localNonce",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:33"
+          },
+          {
+            "label": "depositRecord",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_struct(DepositRecord)4382_storage))",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:34"
+          },
+          {
+            "label": "blacklist",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:35"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IBridge)4275": {
+            "label": "contract IBridge",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_struct(DepositRecord)4382_storage))": {
+            "label": "mapping(address => mapping(uint256 => struct ITantinBridge.DepositRecord))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)275_storage)": {
+            "label": "mapping(bytes32 => struct AccessControl.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(DepositRecord)4382_storage)": {
+            "label": "mapping(uint256 => struct ITantinBridge.DepositRecord)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(DepositRecord)4382_storage": {
+            "label": "struct ITantinBridge.DepositRecord",
+            "members": [
+              {
+                "label": "tokenAddress",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "sender",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "recipient",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "fee",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "destinationChainId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_struct(RoleData)275_storage": {
+            "label": "struct AccessControl.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73"
+            }
+          ]
+        }
+      }
+    },
+    "10f82a67b0c28d5990e6ea71e64bcc04b37965d39574ac966393bc0b10436cd2": {
+      "address": "0x0455CEF4052a5c3C63D41A8B22aB9e04eF0a3406",
+      "txHash": "0x9b98343ba88926cbd093196fdb67c43f0c50148fb61c3decafaf50d911f32465",
+      "layout": {
+        "solcVersion": "0.8.22",
+        "storage": [
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)275_storage)",
+            "contract": "AccessControl",
+            "src": "@openzeppelin/contracts/access/AccessControl.sol:55"
+          },
+          {
+            "label": "sigNonce",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:28"
+          },
+          {
+            "label": "superAdminAddress",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:29"
+          },
+          {
+            "label": "serverAddress",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:30"
+          },
+          {
+            "label": "feeAddress",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:31"
+          },
+          {
+            "label": "Bridge",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_contract(IBridge)4275",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:32"
+          },
+          {
+            "label": "localNonce",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:33"
+          },
+          {
+            "label": "depositRecord",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_struct(DepositRecord)4382_storage))",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:34"
+          },
+          {
+            "label": "blacklist",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:35"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IBridge)4275": {
+            "label": "contract IBridge",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_struct(DepositRecord)4382_storage))": {
+            "label": "mapping(address => mapping(uint256 => struct ITantinBridge.DepositRecord))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)275_storage)": {
+            "label": "mapping(bytes32 => struct AccessControl.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(DepositRecord)4382_storage)": {
+            "label": "mapping(uint256 => struct ITantinBridge.DepositRecord)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(DepositRecord)4382_storage": {
+            "label": "struct ITantinBridge.DepositRecord",
+            "members": [
+              {
+                "label": "tokenAddress",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "sender",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "recipient",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "fee",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "destinationChainId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_struct(RoleData)275_storage": {
+            "label": "struct AccessControl.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73"
+            }
+          ]
+        }
+      }
+    },
+    "abd7f45d5beb66658000e6a9b4732f353ccf190c9c115ce626b449c586d619aa": {
+      "address": "0xCCbD9bc68174AaF09C824E6FDFD55BAf7570B02F",
+      "txHash": "0xc357c6d30fe2794435e84cae0d94a0fb59a385e86d1d2ea9738f3839759e3c7f",
+      "layout": {
+        "solcVersion": "0.8.22",
+        "storage": [
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)275_storage)",
+            "contract": "AccessControl",
+            "src": "@openzeppelin/contracts/access/AccessControl.sol:55"
+          },
+          {
+            "label": "sigNonce",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:28"
+          },
+          {
+            "label": "superAdminAddress",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:29"
+          },
+          {
+            "label": "serverAddress",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:30"
+          },
+          {
+            "label": "feeAddress",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:31"
+          },
+          {
+            "label": "Bridge",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_contract(IBridge)4274",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:32"
+          },
+          {
+            "label": "localNonce",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:33"
+          },
+          {
+            "label": "depositRecord",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_struct(DepositRecord)4381_storage))",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:34"
+          },
+          {
+            "label": "blacklist",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:35"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IBridge)4274": {
+            "label": "contract IBridge",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_struct(DepositRecord)4381_storage))": {
+            "label": "mapping(address => mapping(uint256 => struct ITantinBridge.DepositRecord))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)275_storage)": {
+            "label": "mapping(bytes32 => struct AccessControl.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(DepositRecord)4381_storage)": {
+            "label": "mapping(uint256 => struct ITantinBridge.DepositRecord)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(DepositRecord)4381_storage": {
+            "label": "struct ITantinBridge.DepositRecord",
+            "members": [
+              {
+                "label": "tokenAddress",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "sender",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "recipient",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "fee",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "destinationChainId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_struct(RoleData)275_storage": {
+            "label": "struct AccessControl.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73"
+            }
+          ]
+        }
+      }
+    },
+    "e5a9e015d9c246877729c7f85d4ea3b17be01c14d5856a67e42b7e8d7d5c6b70": {
+      "address": "0xbED585B96a2ca39ffcB85cc6AA1E52Ea77b588ad",
+      "txHash": "0x0fd8a08a468c44a464a68e8dbdec21872c3cff0153a6dd40c9136715539b5919",
+      "layout": {
+        "solcVersion": "0.8.22",
+        "storage": [
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)275_storage)",
+            "contract": "AccessControl",
+            "src": "@openzeppelin/contracts/access/AccessControl.sol:55"
+          },
+          {
+            "label": "sigNonce",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:28"
+          },
+          {
+            "label": "superAdminAddress",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:29"
+          },
+          {
+            "label": "serverAddress",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:30"
+          },
+          {
+            "label": "feeAddress",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:31"
+          },
+          {
+            "label": "Bridge",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_contract(IBridge)4417",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:32"
+          },
+          {
+            "label": "localNonce",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:33"
+          },
+          {
+            "label": "depositRecord",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_struct(DepositRecord)4524_storage))",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:34"
+          },
+          {
+            "label": "blacklist",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:35"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IBridge)4417": {
+            "label": "contract IBridge",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_struct(DepositRecord)4524_storage))": {
+            "label": "mapping(address => mapping(uint256 => struct ITantinBridge.DepositRecord))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)275_storage)": {
+            "label": "mapping(bytes32 => struct AccessControl.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(DepositRecord)4524_storage)": {
+            "label": "mapping(uint256 => struct ITantinBridge.DepositRecord)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(DepositRecord)4524_storage": {
+            "label": "struct ITantinBridge.DepositRecord",
+            "members": [
+              {
+                "label": "tokenAddress",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "sender",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "recipient",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "fee",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "destinationChainId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_struct(RoleData)275_storage": {
+            "label": "struct AccessControl.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73"
+            }
+          ]
+        }
+      }
+    },
+    "090955d242f2d933fe29981bd567de7a5cc56de8bdf3498f1391d9e54f4fe7ea": {
+      "address": "0xc6E49bd0961cb55d52110F280B306fCa14D3412d",
+      "txHash": "0x64e1af648caf559c489d07f56e9a9a9fb3325edddcf1a3379498d342ee3eed35",
+      "layout": {
+        "solcVersion": "0.8.22",
+        "storage": [
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)275_storage)",
+            "contract": "AccessControl",
+            "src": "@openzeppelin/contracts/access/AccessControl.sol:55"
+          },
+          {
+            "label": "sigNonce",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:28"
+          },
+          {
+            "label": "superAdminAddress",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:29"
+          },
+          {
+            "label": "serverAddress",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:30"
+          },
+          {
+            "label": "feeAddress",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_address",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:31"
+          },
+          {
+            "label": "Bridge",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_contract(IBridge)4415",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:32"
+          },
+          {
+            "label": "localNonce",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:33"
+          },
+          {
+            "label": "depositRecord",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_struct(DepositRecord)4522_storage))",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:34"
+          },
+          {
+            "label": "blacklist",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "TantinBridge",
+            "src": "contracts/TantinBridge.sol:35"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IBridge)4415": {
+            "label": "contract IBridge",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_struct(DepositRecord)4522_storage))": {
+            "label": "mapping(address => mapping(uint256 => struct ITantinBridge.DepositRecord))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)275_storage)": {
+            "label": "mapping(bytes32 => struct AccessControl.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(DepositRecord)4522_storage)": {
+            "label": "mapping(uint256 => struct ITantinBridge.DepositRecord)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(DepositRecord)4522_storage": {
+            "label": "struct ITantinBridge.DepositRecord",
+            "members": [
+              {
+                "label": "tokenAddress",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "sender",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "recipient",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "amount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "fee",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "destinationChainId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_struct(RoleData)275_storage": {
+            "label": "struct AccessControl.RoleData",
+            "members": [
+              {
+                "label": "hasRole",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73"
+            }
+          ]
+        }
+      }
     }
   }
 }
