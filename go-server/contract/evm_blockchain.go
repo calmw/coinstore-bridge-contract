@@ -132,15 +132,14 @@ func GetAuthWithValue(cli *ethclient.Client, value *big.Int) (error, *bind.Trans
 }
 
 func InitTantinEnv() {
-	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
-	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
+	privateKeyStr := os.Getenv("TT_BRIDGE_SIGN")
 	ChainConfig = ChainConfigs{
 		BridgeId:    1,
 		ChainId:     12302,
 		ChainTypeId: 1,
-		RPC:         "https://testrpc.tantin.com",
-		//RPC:                   "https://testrpcdex.tantin.com",
-		BridgeContractAddress: "0xde52a664f63068A00C174975262bEF1e6a6E52D6",
+		//RPC:         "https://testrpc.tantin.com",
+		RPC:                   "https://testrpcdex.tantin.com",
+		BridgeContractAddress: "0xacd4db145cAf9b558B2Fe0c42EbB38D7A3b6f69D",
 		VoteContractAddress:   "0x9c3ED94d6394C9DA2797E23E7a3373Fa806560D5",
 		TantinContractAddress: "0x33926EEbb5fDa3B4Fb50A013449F0B2fc8Ee0924",
 		UsdtAddress:           "0x53F1BAA532710FC1FEE8a66433bE6c6fE823fCE9",
