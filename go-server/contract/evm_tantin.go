@@ -34,12 +34,10 @@ func NewTanTin() (*TanTinEvm, error) {
 	}, nil
 }
 
-func (c TanTinEvm) Init() {
-	c.GrantRole(AdminRole, common.HexToAddress(AdminAccount))
+func (c TanTinEvm) Init(adminAddress, feeAddress, serverAddress string) {
+	c.GrantRole(AdminRole, common.HexToAddress(adminAddress))
 	c.GrantRole(BridgeRole, common.HexToAddress(ChainConfig.VoteContractAddress))
-	c.AdminSetEnv(AdminAccount)
-	//c.AdminSetToken(ResourceIdUsdt, 2, common.HexToAddress(ChainConfig.UsdtAddress), false, false, false)
-	//c.AdminSetToken(ResourceIdUsdc, 2, common.HexToAddress(ChainConfig.UsdcAddress), false, false, false)
+	c.AdminSetEnv(feeAddress, serverAddress)
 }
 
 func (c TanTinEvm) LatestBlock() {
@@ -50,7 +48,7 @@ func (c TanTinEvm) LatestBlock() {
 	fmt.Println(number, err)
 }
 
-func (c TanTinEvm) AdminSetEnv(feeAddress string) {
+func (c TanTinEvm) AdminSetEnv(feeAddress, serverAddress string) {
 	var res *types.Transaction
 	sigNonce, err := c.Contract.SigNonce(nil)
 	if err != nil {
@@ -65,7 +63,7 @@ func (c TanTinEvm) AdminSetEnv(feeAddress string) {
 			log.Println(err)
 			return
 		}
-		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(feeAddress), common.HexToAddress(ChainConfig.BridgeContractAddress), signature)
+		res, err = c.Contract.AdminSetEnv(txOpts, common.HexToAddress(feeAddress), common.HexToAddress(serverAddress), common.HexToAddress(ChainConfig.BridgeContractAddress), signature)
 		if err == nil {
 			break
 		}
@@ -114,8 +112,9 @@ func (c TanTinEvm) GrantRole(role string, addr common.Address) {
 	log.Println(fmt.Sprintf("GrantRole 确认成功"))
 }
 
-func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount *big.Int) {
-	signature, _ := abi.TantinDepositSignature(receiver)
+func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount, price, priceTimestamp *big.Int, tokenAddress string) {
+	reSignature, _ := abi.TantinDepositSignature(receiver)
+	prSignature, _ := abi.EvmPriceSignature(big.NewInt(ChainConfig.ChainId), price, common.HexToAddress(tokenAddress))
 	var res *types.Transaction
 
 	fmt.Println("参数11")
@@ -125,14 +124,16 @@ func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destina
 			log.Println(err)
 			return
 		}
-
 		fmt.Println("参数")
 		fmt.Println(
 			destinationChainId,
 			fmt.Sprintf("0x%x", resourceId),
 			receiver,
 			amount,
-			fmt.Sprintf("0x%x", signature),
+			price,
+			priceTimestamp,
+			fmt.Sprintf("0x%x", reSignature),
+			fmt.Sprintf("0x%x", prSignature),
 		)
 		res, err = c.Contract.Deposit(
 			txOpts,
@@ -140,7 +141,10 @@ func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destina
 			resourceId,
 			receiver,
 			amount,
-			signature,
+			price,
+			priceTimestamp,
+			reSignature,
+			prSignature,
 		)
 		if err == nil {
 			break

@@ -29,15 +29,17 @@ import (
 )
 
 var (
-	PrivateKey string
-	ChainName  string
+	PrivateKey    string
+	AdminAddress  string
+	FeeAddress    string
+	ServerAddress string
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "deploy",
 	Short: "合约初始化设置",
 	Long: `功能描述：合约部署后，设置合约
-使用示例: ./tt bsc --chain TT/BSC/TRON/ETH  --key abc123...`,
+使用示例: ./tb bsc --admin_address '' --fee_address '' --server_address '' --key '' `,
 }
 
 func Execute() {
@@ -48,6 +50,5 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&ChainName, "chain", "c", "TT", "链名称")
 	rootCmd.PersistentFlags().StringVarP(&PrivateKey, "key", "k", "abc123...", "私钥")
 }

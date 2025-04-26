@@ -4,6 +4,7 @@ Copyright © 2025 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"coinstore/cmd/deploy/tt"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -20,20 +21,15 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("tt called")
+		fmt.Println("设置TT链合约...")
+		tt.InitTt(PrivateKey, AdminAddress, FeeAddress, ServerAddress)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(ttCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// ttCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// ttCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().StringVarP(&AdminAddress, "admin_address", "a", "", "管理员角色账户")
+	rootCmd.PersistentFlags().StringVarP(&FeeAddress, "fee_address", "f", "", "跨链费接受地址")
+	rootCmd.PersistentFlags().StringVarP(&ServerAddress, "server_address", "s", "", "服务端价格签名地址")
 }

@@ -501,6 +501,11 @@
       },
       {
         "internalType": "address",
+        "name": "serverAddress_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "bridgeAddress_",
         "type": "address"
       },
