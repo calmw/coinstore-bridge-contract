@@ -70,14 +70,14 @@ func (b *BridgeTron) Init(adminAddress string, fee uint64) {
 	txHash, err := b.AdminSetEnv()
 	fmt.Println(txHash, err)
 	time.Sleep(time.Second)
-	txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), false, false, false)
-	fmt.Println(txHash4, err4)
-	time.Sleep(time.Second)
-	txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, big.NewInt(100), false, false, false)
-	fmt.Println(txHash5, err5)
-	time.Sleep(time.Second)
-	txHash6, err6 := b.AdminSetResource(ResourceIdEth, 2, ChainConfig.WEthAddress, big.NewInt(100), false, false, false)
-	fmt.Println(txHash6, err6)
+	//txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), false, false, false)
+	//fmt.Println(txHash4, err4)
+	//time.Sleep(time.Second)
+	//txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, big.NewInt(100), false, false, false)
+	//fmt.Println(txHash5, err5)
+	//time.Sleep(time.Second)
+	//txHash6, err6 := b.AdminSetResource(ResourceIdEth, 2, ChainConfig.WEthAddress, big.NewInt(100), false, false, false)
+	//fmt.Println(txHash6, err6)
 }
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {

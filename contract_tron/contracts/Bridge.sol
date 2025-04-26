@@ -86,7 +86,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
     }
 
     /**
-@notice resource设置
+        @notice resource设置
         @param resourceID 跨链的resourceID
         @param assetsType 该币的类型
         @param tokenAddress 对应的token合约地址，coin为0地址
@@ -95,7 +95,6 @@ contract Bridge is IBridge, Pausable, AccessControl {
         @param pause 该币种是否在黑名单中/是否允许跨链。币种黑名单/禁止该币种跨链
         @param burnable 该币是否burn
         @param mintable 该币是否mint
-        @param tantinAddress 对应的tantin业务合约地址
      */
     function adminSetResource(
         bytes32 resourceID,
@@ -106,7 +105,6 @@ contract Bridge is IBridge, Pausable, AccessControl {
         bool pause,
         bool burnable,
         bool mintable,
-        address tantinAddress,
         bytes memory signature
     ) external onlyRole(ADMIN_ROLE) {
         require(
@@ -119,8 +117,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
                 fee,
                 pause,
                 burnable,
-                mintable,
-                tantinAddress
+                mintable
             ),
             "signature error"
         );
@@ -133,7 +130,6 @@ contract Bridge is IBridge, Pausable, AccessControl {
             burnable,
             mintable
         );
-        resourceIdToContractAddress[resourceID] = tantinAddress;
 
         emit SetResource(
             resourceID,
@@ -142,8 +138,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
             fee,
             pause,
             burnable,
-            mintable,
-            tantinAddress
+            mintable
         );
     }
 
@@ -269,8 +264,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
         uint256 fee,
         bool pause,
         bool burnable,
-        bool mintable,
-        address tantinAddress
+        bool mintable
     ) private returns (bool) {
         bytes32 messageHash = keccak256(
             abi.encode(
@@ -283,8 +277,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
                 fee,
                 pause,
                 burnable,
-                mintable,
-                tantinAddress
+                mintable
             )
         );
         address recoverAddress = messageHash

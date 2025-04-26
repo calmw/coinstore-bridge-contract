@@ -24,8 +24,7 @@ interface IBridge {
         uint256 fee,
         bool pause, // 该resourceID是否被暂停交易
         bool burnable, // true burn;false lock
-        bool mintable,
-        address tantinAddress
+        bool mintable
     );
 
     // 跨链币种信息

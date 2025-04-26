@@ -198,7 +198,6 @@ func (b *BridgeEvm) AdminSetResource(resourceId string, assetsType uint8, tokenA
 			pause,
 			burnable,
 			mintable,
-			common.HexToAddress(ChainConfig.TantinContractAddress),
 			signature,
 		)
 		if err == nil {

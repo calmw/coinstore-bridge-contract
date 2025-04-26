@@ -31,7 +31,7 @@ var (
 
 // BridgeMetaData contains all meta data concerning the Bridge contract.
 var BridgeMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"name\":\"AccessControlBadConfirmation\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"neededRole\",\"type\":\"bytes32\"}],\"name\":\"AccessControlUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ECDSAInvalidSignature\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"length\",\"type\":\"uint256\"}],\"name\":\"ECDSAInvalidSignatureLength\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"s\",\"type\":\"bytes32\"}],\"name\":\"ECDSAInvalidSignatureS\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"EnforcedPause\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ExpectedPause\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidInitialization\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotInitializing\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"destinationChainId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"depositNonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"Deposit\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint64\",\"name\":\"version\",\"type\":\"uint64\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Paused\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"decimal\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"pause\",\"type\":\"bool\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"burnable\",\"type\":\"bool\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"mintable\",\"type\":\"bool\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"tantinAddress\",\"type\":\"address\"}],\"name\":\"SetResource\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Unpaused\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"BRIDGE_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"Vote\",\"outputs\":[{\"internalType\":\"contractIVote\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"adminPauseTransfers\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"voteAddress_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"chainId_\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"chainType_\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"signature_\",\"type\":\"bytes\"}],\"name\":\"adminSetEnv\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"enumIBridge.AssetsType\",\"name\":\"assetsType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"decimal\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"pause\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"burnable\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"mintable\",\"type\":\"bool\"},{\"internalType\":\"address\",\"name\":\"tantinAddress\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"adminSetResource\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"adminUnpauseTransfers\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"chainId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"chainType\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"contractAddressToResourceID\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"destinationChainId\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"depositCounts\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"depositRecords\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"destinationChainId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"ctime\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"}],\"name\":\"getContractAddressByResourceId\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"}],\"name\":\"getFeeByResourceId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"}],\"name\":\"getTokenInfoByResourceId\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"paused\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"callerConfirmation\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"resourceIdToContractAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"resourceIdToTokenInfo\",\"outputs\":[{\"internalType\":\"enumIBridge.AssetsType\",\"name\":\"assetsType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"pause\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"decimal\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"burnable\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"mintable\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sigNonce\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[],\"name\":\"AccessControlBadConfirmation\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"neededRole\",\"type\":\"bytes32\"}],\"name\":\"AccessControlUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ECDSAInvalidSignature\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"length\",\"type\":\"uint256\"}],\"name\":\"ECDSAInvalidSignatureLength\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"s\",\"type\":\"bytes32\"}],\"name\":\"ECDSAInvalidSignatureS\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"EnforcedPause\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ExpectedPause\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidInitialization\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotInitializing\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"destinationChainId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"depositNonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"Deposit\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint64\",\"name\":\"version\",\"type\":\"uint64\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Paused\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"decimal\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"pause\",\"type\":\"bool\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"burnable\",\"type\":\"bool\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"mintable\",\"type\":\"bool\"}],\"name\":\"SetResource\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"Unpaused\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"BRIDGE_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"Vote\",\"outputs\":[{\"internalType\":\"contractIVote\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"adminPauseTransfers\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"voteAddress_\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"chainId_\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"chainType_\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"signature_\",\"type\":\"bytes\"}],\"name\":\"adminSetEnv\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"enumIBridge.AssetsType\",\"name\":\"assetsType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"decimal\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"pause\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"burnable\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"mintable\",\"type\":\"bool\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"adminSetResource\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"adminUnpauseTransfers\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"chainId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"chainType\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"contractAddressToResourceID\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"destinationChainId\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"depositCounts\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"depositRecords\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"destinationChainId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"resourceID\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"ctime\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"}],\"name\":\"getFeeByResourceId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceId\",\"type\":\"bytes32\"}],\"name\":\"getTokenInfoByResourceId\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"paused\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"callerConfirmation\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"resourceIdToTokenInfo\",\"outputs\":[{\"internalType\":\"enumIBridge.AssetsType\",\"name\":\"assetsType\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"tokenAddress\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"pause\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"decimal\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"burnable\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"mintable\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sigNonce\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // BridgeABI is the input ABI used to generate the binding from.
@@ -488,37 +488,6 @@ func (_Bridge *BridgeCallerSession) DepositRecords(arg0 *big.Int, arg1 *big.Int)
 	return _Bridge.Contract.DepositRecords(&_Bridge.CallOpts, arg0, arg1)
 }
 
-// GetContractAddressByResourceId is a free data retrieval call binding the contract method 0x429b88e1.
-//
-// Solidity: function getContractAddressByResourceId(bytes32 resourceId) view returns(address)
-func (_Bridge *BridgeCaller) GetContractAddressByResourceId(opts *bind.CallOpts, resourceId [32]byte) (common.Address, error) {
-	var out []interface{}
-	err := _Bridge.contract.Call(opts, &out, "getContractAddressByResourceId", resourceId)
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// GetContractAddressByResourceId is a free data retrieval call binding the contract method 0x429b88e1.
-//
-// Solidity: function getContractAddressByResourceId(bytes32 resourceId) view returns(address)
-func (_Bridge *BridgeSession) GetContractAddressByResourceId(resourceId [32]byte) (common.Address, error) {
-	return _Bridge.Contract.GetContractAddressByResourceId(&_Bridge.CallOpts, resourceId)
-}
-
-// GetContractAddressByResourceId is a free data retrieval call binding the contract method 0x429b88e1.
-//
-// Solidity: function getContractAddressByResourceId(bytes32 resourceId) view returns(address)
-func (_Bridge *BridgeCallerSession) GetContractAddressByResourceId(resourceId [32]byte) (common.Address, error) {
-	return _Bridge.Contract.GetContractAddressByResourceId(&_Bridge.CallOpts, resourceId)
-}
-
 // GetFeeByResourceId is a free data retrieval call binding the contract method 0xd52ee1c7.
 //
 // Solidity: function getFeeByResourceId(bytes32 resourceId) view returns(uint256)
@@ -678,37 +647,6 @@ func (_Bridge *BridgeSession) Paused() (bool, error) {
 // Solidity: function paused() view returns(bool)
 func (_Bridge *BridgeCallerSession) Paused() (bool, error) {
 	return _Bridge.Contract.Paused(&_Bridge.CallOpts)
-}
-
-// ResourceIdToContractAddress is a free data retrieval call binding the contract method 0x8cb73af5.
-//
-// Solidity: function resourceIdToContractAddress(bytes32 ) view returns(address)
-func (_Bridge *BridgeCaller) ResourceIdToContractAddress(opts *bind.CallOpts, arg0 [32]byte) (common.Address, error) {
-	var out []interface{}
-	err := _Bridge.contract.Call(opts, &out, "resourceIdToContractAddress", arg0)
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// ResourceIdToContractAddress is a free data retrieval call binding the contract method 0x8cb73af5.
-//
-// Solidity: function resourceIdToContractAddress(bytes32 ) view returns(address)
-func (_Bridge *BridgeSession) ResourceIdToContractAddress(arg0 [32]byte) (common.Address, error) {
-	return _Bridge.Contract.ResourceIdToContractAddress(&_Bridge.CallOpts, arg0)
-}
-
-// ResourceIdToContractAddress is a free data retrieval call binding the contract method 0x8cb73af5.
-//
-// Solidity: function resourceIdToContractAddress(bytes32 ) view returns(address)
-func (_Bridge *BridgeCallerSession) ResourceIdToContractAddress(arg0 [32]byte) (common.Address, error) {
-	return _Bridge.Contract.ResourceIdToContractAddress(&_Bridge.CallOpts, arg0)
 }
 
 // ResourceIdToTokenInfo is a free data retrieval call binding the contract method 0x6cbfe81f.
@@ -885,25 +823,25 @@ func (_Bridge *BridgeTransactorSession) AdminSetEnv(voteAddress_ common.Address,
 	return _Bridge.Contract.AdminSetEnv(&_Bridge.TransactOpts, voteAddress_, chainId_, chainType_, signature_)
 }
 
-// AdminSetResource is a paid mutator transaction binding the contract method 0xc99dee40.
+// AdminSetResource is a paid mutator transaction binding the contract method 0x9cbbfa2f.
 //
-// Solidity: function adminSetResource(bytes32 resourceID, uint8 assetsType, address tokenAddress, uint256 decimal, uint256 fee, bool pause, bool burnable, bool mintable, address tantinAddress, bytes signature) returns()
-func (_Bridge *BridgeTransactor) AdminSetResource(opts *bind.TransactOpts, resourceID [32]byte, assetsType uint8, tokenAddress common.Address, decimal *big.Int, fee *big.Int, pause bool, burnable bool, mintable bool, tantinAddress common.Address, signature []byte) (*types.Transaction, error) {
-	return _Bridge.contract.Transact(opts, "adminSetResource", resourceID, assetsType, tokenAddress, decimal, fee, pause, burnable, mintable, tantinAddress, signature)
+// Solidity: function adminSetResource(bytes32 resourceID, uint8 assetsType, address tokenAddress, uint256 decimal, uint256 fee, bool pause, bool burnable, bool mintable, bytes signature) returns()
+func (_Bridge *BridgeTransactor) AdminSetResource(opts *bind.TransactOpts, resourceID [32]byte, assetsType uint8, tokenAddress common.Address, decimal *big.Int, fee *big.Int, pause bool, burnable bool, mintable bool, signature []byte) (*types.Transaction, error) {
+	return _Bridge.contract.Transact(opts, "adminSetResource", resourceID, assetsType, tokenAddress, decimal, fee, pause, burnable, mintable, signature)
 }
 
-// AdminSetResource is a paid mutator transaction binding the contract method 0xc99dee40.
+// AdminSetResource is a paid mutator transaction binding the contract method 0x9cbbfa2f.
 //
-// Solidity: function adminSetResource(bytes32 resourceID, uint8 assetsType, address tokenAddress, uint256 decimal, uint256 fee, bool pause, bool burnable, bool mintable, address tantinAddress, bytes signature) returns()
-func (_Bridge *BridgeSession) AdminSetResource(resourceID [32]byte, assetsType uint8, tokenAddress common.Address, decimal *big.Int, fee *big.Int, pause bool, burnable bool, mintable bool, tantinAddress common.Address, signature []byte) (*types.Transaction, error) {
-	return _Bridge.Contract.AdminSetResource(&_Bridge.TransactOpts, resourceID, assetsType, tokenAddress, decimal, fee, pause, burnable, mintable, tantinAddress, signature)
+// Solidity: function adminSetResource(bytes32 resourceID, uint8 assetsType, address tokenAddress, uint256 decimal, uint256 fee, bool pause, bool burnable, bool mintable, bytes signature) returns()
+func (_Bridge *BridgeSession) AdminSetResource(resourceID [32]byte, assetsType uint8, tokenAddress common.Address, decimal *big.Int, fee *big.Int, pause bool, burnable bool, mintable bool, signature []byte) (*types.Transaction, error) {
+	return _Bridge.Contract.AdminSetResource(&_Bridge.TransactOpts, resourceID, assetsType, tokenAddress, decimal, fee, pause, burnable, mintable, signature)
 }
 
-// AdminSetResource is a paid mutator transaction binding the contract method 0xc99dee40.
+// AdminSetResource is a paid mutator transaction binding the contract method 0x9cbbfa2f.
 //
-// Solidity: function adminSetResource(bytes32 resourceID, uint8 assetsType, address tokenAddress, uint256 decimal, uint256 fee, bool pause, bool burnable, bool mintable, address tantinAddress, bytes signature) returns()
-func (_Bridge *BridgeTransactorSession) AdminSetResource(resourceID [32]byte, assetsType uint8, tokenAddress common.Address, decimal *big.Int, fee *big.Int, pause bool, burnable bool, mintable bool, tantinAddress common.Address, signature []byte) (*types.Transaction, error) {
-	return _Bridge.Contract.AdminSetResource(&_Bridge.TransactOpts, resourceID, assetsType, tokenAddress, decimal, fee, pause, burnable, mintable, tantinAddress, signature)
+// Solidity: function adminSetResource(bytes32 resourceID, uint8 assetsType, address tokenAddress, uint256 decimal, uint256 fee, bool pause, bool burnable, bool mintable, bytes signature) returns()
+func (_Bridge *BridgeTransactorSession) AdminSetResource(resourceID [32]byte, assetsType uint8, tokenAddress common.Address, decimal *big.Int, fee *big.Int, pause bool, burnable bool, mintable bool, signature []byte) (*types.Transaction, error) {
+	return _Bridge.Contract.AdminSetResource(&_Bridge.TransactOpts, resourceID, assetsType, tokenAddress, decimal, fee, pause, burnable, mintable, signature)
 }
 
 // AdminUnpauseTransfers is a paid mutator transaction binding the contract method 0x8f53d4a1.
@@ -2018,20 +1956,19 @@ func (it *BridgeSetResourceIterator) Close() error {
 
 // BridgeSetResource represents a SetResource event raised by the Bridge contract.
 type BridgeSetResource struct {
-	ResourceID    [32]byte
-	TokenAddress  common.Address
-	Decimal       *big.Int
-	Fee           *big.Int
-	Pause         bool
-	Burnable      bool
-	Mintable      bool
-	TantinAddress common.Address
-	Raw           types.Log // Blockchain specific contextual infos
+	ResourceID   [32]byte
+	TokenAddress common.Address
+	Decimal      *big.Int
+	Fee          *big.Int
+	Pause        bool
+	Burnable     bool
+	Mintable     bool
+	Raw          types.Log // Blockchain specific contextual infos
 }
 
-// FilterSetResource is a free log retrieval operation binding the contract event 0x730ef9c028f71d316f3ab372ae861f70ecc456e629778e84f1f9af5dc9ef7ae9.
+// FilterSetResource is a free log retrieval operation binding the contract event 0x3e3428d4923be6feff5174d43daaaeb53b0fc08375b61eb9a0bc2eedea8c7aa6.
 //
-// Solidity: event SetResource(bytes32 indexed resourceID, address tokenAddress, uint256 decimal, uint256 fee, bool pause, bool burnable, bool mintable, address tantinAddress)
+// Solidity: event SetResource(bytes32 indexed resourceID, address tokenAddress, uint256 decimal, uint256 fee, bool pause, bool burnable, bool mintable)
 func (_Bridge *BridgeFilterer) FilterSetResource(opts *bind.FilterOpts, resourceID [][32]byte) (*BridgeSetResourceIterator, error) {
 
 	var resourceIDRule []interface{}
@@ -2046,9 +1983,9 @@ func (_Bridge *BridgeFilterer) FilterSetResource(opts *bind.FilterOpts, resource
 	return &BridgeSetResourceIterator{contract: _Bridge.contract, event: "SetResource", logs: logs, sub: sub}, nil
 }
 
-// WatchSetResource is a free log subscription operation binding the contract event 0x730ef9c028f71d316f3ab372ae861f70ecc456e629778e84f1f9af5dc9ef7ae9.
+// WatchSetResource is a free log subscription operation binding the contract event 0x3e3428d4923be6feff5174d43daaaeb53b0fc08375b61eb9a0bc2eedea8c7aa6.
 //
-// Solidity: event SetResource(bytes32 indexed resourceID, address tokenAddress, uint256 decimal, uint256 fee, bool pause, bool burnable, bool mintable, address tantinAddress)
+// Solidity: event SetResource(bytes32 indexed resourceID, address tokenAddress, uint256 decimal, uint256 fee, bool pause, bool burnable, bool mintable)
 func (_Bridge *BridgeFilterer) WatchSetResource(opts *bind.WatchOpts, sink chan<- *BridgeSetResource, resourceID [][32]byte) (event.Subscription, error) {
 
 	var resourceIDRule []interface{}
@@ -2088,9 +2025,9 @@ func (_Bridge *BridgeFilterer) WatchSetResource(opts *bind.WatchOpts, sink chan<
 	}), nil
 }
 
-// ParseSetResource is a log parse operation binding the contract event 0x730ef9c028f71d316f3ab372ae861f70ecc456e629778e84f1f9af5dc9ef7ae9.
+// ParseSetResource is a log parse operation binding the contract event 0x3e3428d4923be6feff5174d43daaaeb53b0fc08375b61eb9a0bc2eedea8c7aa6.
 //
-// Solidity: event SetResource(bytes32 indexed resourceID, address tokenAddress, uint256 decimal, uint256 fee, bool pause, bool burnable, bool mintable, address tantinAddress)
+// Solidity: event SetResource(bytes32 indexed resourceID, address tokenAddress, uint256 decimal, uint256 fee, bool pause, bool burnable, bool mintable)
 func (_Bridge *BridgeFilterer) ParseSetResource(log types.Log) (*BridgeSetResource, error) {
 	event := new(BridgeSetResource)
 	if err := _Bridge.contract.UnpackLog(event, "SetResource", log); err != nil {

@@ -243,12 +243,6 @@
         "internalType": "bool",
         "name": "mintable",
         "type": "bool"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "tantinAddress",
-        "type": "address"
       }
     ],
     "name": "SetResource",
@@ -403,11 +397,6 @@
         "type": "bool"
       },
       {
-        "internalType": "address",
-        "name": "tantinAddress",
-        "type": "address"
-      },
-      {
         "internalType": "bytes",
         "name": "signature",
         "type": "bytes"
@@ -557,25 +546,6 @@
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "resourceId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "getContractAddressByResourceId",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -746,25 +716,6 @@
     "name": "renounceRole",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "resourceIdToContractAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
