@@ -67,20 +67,19 @@ func (b *BridgeEvm) AdminSetEnv() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(sigNonce, 21)
 	signature, _ := abi.BridgeAdminSetEnvSignature(
 		sigNonce,
 		common.HexToAddress(ChainConfig.VoteContractAddress),
 		big.NewInt(ChainConfig.BridgeId),
 		big.NewInt(ChainConfig.ChainTypeId),
 	)
-	fmt.Println(
-		sigNonce,
-		common.HexToAddress(ChainConfig.VoteContractAddress),
-		big.NewInt(ChainConfig.BridgeId),
-		big.NewInt(ChainConfig.ChainTypeId),
-		fmt.Sprintf("%x", signature),
-	)
+	//fmt.Println(
+	//	sigNonce,
+	//	common.HexToAddress(ChainConfig.VoteContractAddress),
+	//	big.NewInt(ChainConfig.BridgeId),
+	//	big.NewInt(ChainConfig.ChainTypeId),
+	//	fmt.Sprintf("%x", signature),
+	//)
 
 	for {
 		err, txOpts := GetAuth(b.Cli)

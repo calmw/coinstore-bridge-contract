@@ -28,7 +28,6 @@ func BridgeAdminSetEnvSignature(sigNonce *big.Int, voteAddress common.Address, c
 	contractAbi, _ := abi.JSON(strings.NewReader(BridgeSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminSetEnvSignature",
 		sigNonce,
-		chainId,
 		voteAddress,
 		chainId,
 		chainType,

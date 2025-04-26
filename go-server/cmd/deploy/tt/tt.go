@@ -22,7 +22,7 @@ func InitTt(prvKey, adminAddress, feeAddress, serverAddress string) {
 		fmt.Println(err)
 		return
 	}
-	bridge.Init()
+	bridge.Init(adminAddress)
 	bridge.AdminSetResource(
 		contract.ResourceIdEth,
 		2,

@@ -97,7 +97,6 @@ func (c TanTinEvm) GrantRole(role string, addr common.Address) {
 		if err == nil {
 			break
 		}
-		fmt.Println(err)
 		time.Sleep(3 * time.Second)
 	}
 	log.Println(fmt.Sprintf("GrantRole 成功"))

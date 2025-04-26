@@ -201,10 +201,6 @@ var BridgeSig = `[{
 		"internalType": "uint256",
 		"name": "sigNonce",
 		"type": "uint256"
-	}, {
-		"internalType": "uint256",
-		"name": "chainId",
-		"type": "uint256"
 	},{
 		"internalType": "address",
 		"name": "voteAddress_",
@@ -481,13 +477,13 @@ func GenerateSignature(parameter []byte) ([]byte, error) {
 	singer := beeCrypto.NewDefaultSigner(privateKey)
 
 	hash := crypto.Keccak256Hash(parameter)
-	fmt.Println(fmt.Sprintf("hsah 0x%x", hash))
+	//fmt.Println(fmt.Sprintf("hsah 0x%x", hash))
 	// 私钥签名hash
 	sign, err := singer.Sign(hash.Bytes())
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("0x%x\n", sign)
+	//fmt.Printf("0x%x\n", sign)
 	return sign, err
 }
 
