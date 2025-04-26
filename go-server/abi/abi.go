@@ -496,9 +496,7 @@ func GeneratePriceSignature(parameter []byte) ([]byte, error) {
 		return nil, err
 	}
 	singer := beeCrypto.NewDefaultSigner(privateKey)
-
 	hash := crypto.Keccak256Hash(parameter)
-	fmt.Println(fmt.Sprintf("hsah 0x%x", hash))
 	// 私钥签名hash
 	sign, err := singer.Sign(hash.Bytes())
 	if err != nil {
