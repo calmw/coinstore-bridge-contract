@@ -16,7 +16,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
     bytes32 public constant BRIDGE_ROLE = keccak256("BRIDGE_ROLE");
 
     uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
-    address private superAdminAddress;
+    address public superAdminAddress;
     IVote public Vote; // vote 合约
     uint256 public chainType; // 自定义链类型， 1 EVM 2 Tron
     mapping(uint256 => uint256) public depositCounts; // destinationChainID => number of deposits
@@ -188,8 +188,8 @@ contract Bridge is IBridge, Pausable, AccessControl {
     function checkAdminSetEnvSignature(
         bytes memory signature_,
         address voteAddress_
-    ) private returns (bool) {
-        bytes32 messageHash = keccak256(abi.encode(sigNonce, voteAddress_));
+    ) public returns (bool) {
+        bytes32 messageHash = keccak256(abi.encode(sigNonce, block.chainid, voteAddress_));
         address recoverAddress = messageHash
             .toEthSignedMessageHash()
             .recoverSigner(signature_);
@@ -198,6 +198,18 @@ contract Bridge is IBridge, Pausable, AccessControl {
             sigNonce++;
         }
         return res;
+    }
+
+    // 验证adminSetEnv签名
+    function checkAdminSetEnvSignature2(
+        bytes memory signature_,
+        address voteAddress_
+    ) public view returns (address) {
+        bytes32 messageHash = keccak256(abi.encode(sigNonce, voteAddress_));
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature_);
+        return recoverAddress;
     }
 
     // 验证adminPauseTransfers签名
