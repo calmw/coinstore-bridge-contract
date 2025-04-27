@@ -113,7 +113,7 @@ func (c TanTinEvm) GrantRole(role string, addr common.Address) {
 
 func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destinationChainId, amount, price, priceTimestamp *big.Int) {
 	reSignature, _ := abi.TantinDepositSignature(receiver)
-	prSignature, _ := abi.EvmPriceSignature(big.NewInt(ChainConfig.ChainTypeId), price, priceTimestamp)
+	prSignature, _ := abi.EvmPriceSignature(big.NewInt(ChainConfig.ChainId), price, priceTimestamp)
 	var res *types.Transaction
 
 	for {
