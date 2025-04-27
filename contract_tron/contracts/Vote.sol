@@ -378,9 +378,9 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, bridgeAddress_, expiry_, relayerThreshold_)
         );
-        address recoverAddress = messageHash
-            .toEthSignedMessageHash()
-            .recoverSigner(signature_);
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature_
+        );
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -395,13 +395,12 @@ contract Vote is IVote, AccessControl {
         bytes memory signature_,
         uint256 newThreshold
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, newThreshold, chainId)
+            abi.encode(sigNonce, newThreshold, block.chainid)
         );
-        address recoverAddress = messageHash
-            .toEthSignedMessageHash()
-            .recoverSigner(signature_);
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature_
+        );
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -416,13 +415,12 @@ contract Vote is IVote, AccessControl {
         bytes memory signature_,
         address relayerAddress
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, relayerAddress, chainId)
+            abi.encode(sigNonce, relayerAddress, block.chainid)
         );
-        address recoverAddress = messageHash
-            .toEthSignedMessageHash()
-            .recoverSigner(signature_);
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature_
+        );
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -437,13 +435,12 @@ contract Vote is IVote, AccessControl {
         bytes memory signature_,
         address relayerAddress
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, relayerAddress, chainId)
+            abi.encode(sigNonce, relayerAddress, block.chainid)
         );
-        address recoverAddress = messageHash
-            .toEthSignedMessageHash()
-            .recoverSigner(signature_);
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature_
+        );
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
