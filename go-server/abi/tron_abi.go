@@ -9,8 +9,10 @@ import (
 )
 
 func GenerateSignatureTron(parameter []byte) ([]byte, error) {
-	//privateKeyStr := os.Getenv("COINSTORE_BRIDGE_TRON_LOCAL")
 	privateKeyStr := os.Getenv("TB_KEY")
+	if len(privateKeyStr) < 0 {
+		privateKeyStr = os.Getenv("COINSTORE_BRIDGE_TRON_LOCAL")
+	}
 	privateKey, err := crypto.HexToECDSA(privateKeyStr)
 	singer := beeCrypto.NewDefaultSigner(privateKey)
 	hash := crypto.Keccak256Hash(parameter)

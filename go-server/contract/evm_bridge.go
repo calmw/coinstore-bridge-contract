@@ -36,9 +36,9 @@ func NewBridge() (*BridgeEvm, error) {
 }
 
 func (b *BridgeEvm) Init(adminAddress string, fee uint64) {
-	b.GrantRole(AdminRole, common.HexToAddress(adminAddress))
-	b.GrantRole(VoteRole, common.HexToAddress(ChainConfig.VoteContractAddress))
-	b.GrantRole(BridgeRole, common.HexToAddress(ChainConfig.TantinContractAddress))
+	//b.GrantRole(AdminRole, common.HexToAddress(adminAddress))
+	//b.GrantRole(VoteRole, common.HexToAddress(ChainConfig.VoteContractAddress))
+	//b.GrantRole(BridgeRole, common.HexToAddress(ChainConfig.TantinContractAddress))
 	b.AdminSetEnv()
 	b.AdminSetResource(
 		ResourceIdUsdt,
@@ -69,8 +69,14 @@ func (b *BridgeEvm) AdminSetEnv() {
 		fmt.Println(err)
 		return
 	}
+	chainId, err := b.Cli.ChainID(context.Background())
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	signature, _ := abi.BridgeAdminSetEnvSignature(
 		sigNonce,
+		chainId,
 		common.HexToAddress(ChainConfig.VoteContractAddress),
 	)
 

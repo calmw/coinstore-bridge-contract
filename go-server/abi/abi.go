@@ -206,6 +206,10 @@ var BridgeSig = `[{
 		"name": "sigNonce",
 		"type": "uint256"
 	},{
+		"internalType": "uint256",
+		"name": "chainId",
+		"type": "uint256"
+	},{
 		"internalType": "address",
 		"name": "voteAddress_",
 		"type": "address"

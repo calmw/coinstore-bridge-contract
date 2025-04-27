@@ -61,6 +61,9 @@ func (b *BridgeTron) Init(adminAddress string, fee uint64) {
 	//fmt.Println(txHash20, err20)
 	//txHash2, err2 := b.GrantRole(AdminRole, adminAddress)
 	//fmt.Println(txHash2, err2)
+	//fmt.Println(AdminRole)
+	//fmt.Println(adminAddress)
+	//time.Sleep(time.Second * 2000)
 	//txHash22, err22 := b.GrantRole(BridgeRole, ChainConfig.TantinContractAddress)
 	//fmt.Println(txHash22, err22)
 	//time.Sleep(time.Second)
@@ -88,19 +91,20 @@ func (b *BridgeTron) AdminSetEnv() (string, error) {
 		return "", err
 	}
 	voteEth, _ := utils.TronToEth(ChainConfig.VoteContractAddress)
+	fmt.Println(voteEth)
+	chainId := big.NewInt(728126428)
 	signature, _ := abi.BridgeAdminSetEnvSignatureTron(
 		sigNonce,
+		chainId,
 		ethCommon.HexToAddress(voteEth),
 	)
 
-	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%d\"},{\"uint256\":\"%d\"},{\"bytes\":\"%s\"}]",
+	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"bytes\":\"%s\"}]",
 		ChainConfig.VoteContractAddress,
-		ChainConfig.BridgeId,
-		ChainConfig.ChainTypeId,
 		fmt.Sprintf("%x", signature),
 	)
 	fmt.Println(triggerData)
-	tx, err := b.Cli.TriggerContract(b.Ka.Address.String(), b.ContractAddress, "adminSetEnv(address,uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
+	tx, err := b.Cli.TriggerContract(b.Ka.Address.String(), b.ContractAddress, "adminSetEnv(address,bytes)", triggerData, 1000000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
