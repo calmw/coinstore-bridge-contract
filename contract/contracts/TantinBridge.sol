@@ -280,7 +280,6 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
 
         return recoverAddress == sender;
     }
-
     // 验证price签名
     function checkPriceSignature(
         bytes memory signature,
@@ -296,6 +295,23 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
 
         return recoverAddress == serverAddress;
     }
+
+    // 验证price签名
+    function checkPriceSignature2(
+        bytes memory signature,
+        uint256 price,
+        uint256 priceTimestamp
+    ) public view returns (address) {
+        bytes32 messageHash = keccak256(
+            abi.encode(uint256(block.chainid), price, priceTimestamp)
+        );
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature
+        );
+
+        return recoverAddress;
+    }
+
 
     function checkAdminSetEnvSignature(
         bytes memory signature_,

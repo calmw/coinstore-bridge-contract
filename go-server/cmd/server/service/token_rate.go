@@ -24,7 +24,6 @@ func GetPrice(c *gin.Context) {
 	}
 	tokenName := c.Query("token_name")
 	tokenAddress := c.Query("token_address")
-	chainId := c.Query("chain_id")
 	var tokenInfo model.TokenInfo
 	err := db.DB.Model(&model.TokenInfo{}).Where("token_name=? and token_address=? ",
 		tokenName,
@@ -38,7 +37,6 @@ func GetPrice(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println("~~~~~~~~~~~1 ")
 	var ok bool
 	price := "1000000"
 	tokenName = strings.ToUpper(tokenName)
@@ -53,22 +51,19 @@ func GetPrice(c *gin.Context) {
 		}
 	}
 
-	fmt.Println("~~~~~~~~~~~2 ")
 	timestamp := time.Now().Unix()
 	signature := ""
-	chainIdDeci, err1 := decimal.NewFromString(chainId)
-	priceDeci, err2 := decimal.NewFromString(price)
-	if err1 != nil || err2 != nil {
+	priceDeci, err := decimal.NewFromString(price)
+	if err != nil {
 		c.JSON(200, gin.H{
 			"code": 1,
 			"msg":  "failed",
 		})
 		return
 	}
-	fmt.Println("~~~~~~~~~~~ 3 ")
 	priceDeci = priceDeci.Mul(decimal.NewFromInt(1e6))
-	if chainId == "3" {
-		priceSignature, err := abi.TronPriceSignature(chainIdDeci.BigInt(), priceDeci.BigInt(), big.NewInt(timestamp))
+	if tokenInfo.ChainId > 50000000 {
+		priceSignature, err := abi.TronPriceSignature(big.NewInt(int64(tokenInfo.ChainId)), priceDeci.BigInt(), big.NewInt(timestamp))
 		if err != nil {
 			c.JSON(200, gin.H{
 				"code": 1,
@@ -78,8 +73,7 @@ func GetPrice(c *gin.Context) {
 		}
 		signature = fmt.Sprintf("%x", priceSignature)
 	} else {
-		fmt.Println("~~~~~~~~~~~ 5 ")
-		priceSignature, err := abi.EvmPriceSignature(chainIdDeci.BigInt(), priceDeci.BigInt(), big.NewInt(timestamp))
+		priceSignature, err := abi.EvmPriceSignature(big.NewInt(int64(tokenInfo.ChainId)), priceDeci.BigInt(), big.NewInt(timestamp))
 		if err != nil {
 			c.JSON(200, gin.H{
 				"code": 1,
