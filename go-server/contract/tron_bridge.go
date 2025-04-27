@@ -63,16 +63,16 @@ func (b *BridgeTron) Init(adminAddress string, fee uint64) {
 	//fmt.Println(txHash2, err2)
 	//fmt.Println(AdminRole)
 	//fmt.Println(adminAddress)
-	//time.Sleep(time.Second * 2000)
+	//time.Sleep(time.Second)
 	//txHash22, err22 := b.GrantRole(BridgeRole, ChainConfig.TantinContractAddress)
 	//fmt.Println(txHash22, err22)
 	//time.Sleep(time.Second)
 	//txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
 	//fmt.Println(txHash3, err3)
 	//time.Sleep(time.Second)
-	txHash, err := b.AdminSetEnv()
-	fmt.Println(txHash, err)
-	time.Sleep(time.Second * 2000)
+	//txHash, err := b.AdminSetEnv()
+	//fmt.Println(txHash, err)
+	//time.Sleep(time.Second)
 	txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), big.NewInt(int64(fee)), false, false, false)
 	fmt.Println(txHash4, err4)
 	time.Sleep(time.Second)
@@ -91,11 +91,9 @@ func (b *BridgeTron) AdminSetEnv() (string, error) {
 		return "", err
 	}
 	voteEth, _ := utils.TronToEth(ChainConfig.VoteContractAddress)
-	fmt.Println(voteEth)
-	chainId := big.NewInt(728126428)
 	signature, _ := abi.BridgeAdminSetEnvSignatureTron(
 		sigNonce,
-		chainId,
+		big.NewInt(ChainConfig.ChainId),
 		ethCommon.HexToAddress(voteEth),
 	)
 
