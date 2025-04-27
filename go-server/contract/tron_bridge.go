@@ -91,8 +91,6 @@ func (b *BridgeTron) AdminSetEnv() (string, error) {
 	signature, _ := abi.BridgeAdminSetEnvSignatureTron(
 		sigNonce,
 		ethCommon.HexToAddress(voteEth),
-		big.NewInt(ChainConfig.BridgeId),
-		big.NewInt(ChainConfig.ChainTypeId),
 	)
 
 	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"uint256\":\"%d\"},{\"uint256\":\"%d\"},{\"bytes\":\"%s\"}]",

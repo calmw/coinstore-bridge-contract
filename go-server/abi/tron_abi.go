@@ -22,12 +22,9 @@ func GenerateSignatureTron(parameter []byte) ([]byte, error) {
 }
 
 func GeneratePriceSignatureTron(parameter []byte) ([]byte, error) {
-	//privateKeyStr := os.Getenv("PRICE_SIG_ACCOUNT_TRON")
-	//privateKeyStr = utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", privateKeyStr)
 	privateKeyStr := os.Getenv("TB_KEY")
 	if len(privateKeyStr) <= 0 {
 		privateKeyStr = os.Getenv("COINSTORE_BRIDGE_TRON_LOCAL")
-		//privateKeyStr = utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", privateKeyStr)
 	}
 	privateKey, err := crypto.HexToECDSA(privateKeyStr)
 	singer := beeCrypto.NewDefaultSigner(privateKey)

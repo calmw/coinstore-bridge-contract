@@ -29,7 +29,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
     }
 
     /**
-@notice 设置
+        @notice 设置
         @param voteAddress_ 投票合约地址
         @param signature_ 签名
      */

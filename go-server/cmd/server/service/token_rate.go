@@ -9,6 +9,7 @@ import (
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
+	"math/big"
 	"strings"
 	"time"
 )
@@ -38,15 +39,20 @@ func GetPrice(c *gin.Context) {
 		})
 		return
 	}
-
-	price, ok := token.ExTokenPriceData.Get(strings.ToUpper(tokenName))
-	if !ok {
-		c.JSON(200, gin.H{
-			"code": 1,
-			"msg":  "failed",
-		})
-		return
+	var ok bool
+	price := "1000000"
+	tokenName = strings.ToUpper(tokenName)
+	if !strings.Contains(tokenName, "usdt") {
+		price, ok = token.ExTokenPriceData.Get(tokenName)
+		if !ok {
+			c.JSON(200, gin.H{
+				"code": 1,
+				"msg":  "failed",
+			})
+			return
+		}
 	}
+
 	timestamp := time.Now().Unix()
 	signature := ""
 	chainIdDeci, err1 := decimal.NewFromString(chainId)
@@ -60,7 +66,7 @@ func GetPrice(c *gin.Context) {
 	}
 	priceDeci = priceDeci.Mul(decimal.NewFromInt(1e6))
 	if chainId == "3" {
-		priceSignature, err := abi.TronPriceSignature(chainIdDeci.BigInt(), priceDeci.BigInt(), ethcommon.HexToAddress(tokenAddress))
+		priceSignature, err := abi.TronPriceSignature(chainIdDeci.BigInt(), priceDeci.BigInt(), big.NewInt(timestamp))
 		if err != nil {
 			c.JSON(200, gin.H{
 				"code": 1,
@@ -70,7 +76,7 @@ func GetPrice(c *gin.Context) {
 		}
 		signature = fmt.Sprintf("%x", priceSignature)
 	} else {
-		priceSignature, err := abi.EvmPriceSignature(chainIdDeci.BigInt(), priceDeci.BigInt(), ethcommon.HexToAddress(tokenAddress))
+		priceSignature, err := abi.EvmPriceSignature(chainIdDeci.BigInt(), priceDeci.BigInt(), big.NewInt(timestamp))
 		if err != nil {
 			c.JSON(200, gin.H{
 				"code": 1,
