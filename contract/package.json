@@ -41,12 +41,12 @@
     "deploy-tantin-bsc": "npx hardhat --network bsc run scripts/bsc/tantin.js",
     "upgrade-tantin-bsc": "npx hardhat --network bsc run scripts/bsc/tantin_proxy.js",
 
-    "deploy-bridge-bsc_mainnet": "npx hardhat --network bsc_mainnet run scripts/bsc/bridge.js",
-    "upgrade-bridge-bsc_mainnet": "npx hardhat --network bsc_mainnet run scripts/bsc/bridge_proxy.js",
-    "deploy-vote-bsc_mainnet": "npx hardhat --network bsc_mainnet run scripts/bsc/vote.js",
-    "upgrade-vote-bsc_mainnet": "npx hardhat --network bsc_mainnet run scripts/bsc/vote_proxy.js",
-    "deploy-tantin-bsc_mainnet": "npx hardhat --network bsc_mainnet run scripts/bsc/tantin.js",
-    "upgrade-tantin-bsc_mainnet": "npx hardhat --network bsc_mainnet run scripts/bsc/tantin_proxy.js",
+    "deploy-bridge-bsc_mainnet": "npx hardhat --network bsc_mainnet run scripts/bsc_main/bridge.js",
+    "upgrade-bridge-bsc_mainnet": "npx hardhat --network bsc_mainnet run scripts/bsc_main/bridge_proxy.js",
+    "deploy-vote-bsc_mainnet": "npx hardhat --network bsc_mainnet run scripts/bsc_main/vote.js",
+    "upgrade-vote-bsc_mainnet": "npx hardhat --network bsc_mainnet run scripts/bsc_main/vote_proxy.js",
+    "deploy-tantin-bsc_mainnet": "npx hardhat --network bsc_mainnet run scripts/bsc_main/tantin.js",
+    "upgrade-tantin-bsc_mainnet": "npx hardhat --network bsc_mainnet run scripts/bsc_main/tantin_proxy.js",
 
     "deploy-bridge-ethereum": "npx hardhat --network ethereum run scripts/ethereum/bridge.js",
     "upgrade-bridge-ethereum": "npx hardhat --network ethereum run scripts/ethereum/bridge_proxy.js",

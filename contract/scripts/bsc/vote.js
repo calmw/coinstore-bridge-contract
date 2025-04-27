@@ -2,7 +2,7 @@ const {ethers, upgrades} = require("hardhat")
 const {BigNumber} = require("ethers");
 const {write_contract_address} = require("../fs");
 
-const perfix = "bsc_"
+const perfix = "bsc_testnet_"
 const contract_name = "Vote"
 
 async function main() {

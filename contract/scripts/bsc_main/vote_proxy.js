@@ -3,7 +3,7 @@ require('@openzeppelin/hardhat-upgrades')
 const {write_contract_address, read_contract_address} = require("../fs");
 
 
-const perfix = "bsc_testnet_"
+const perfix = "bsc_main_"
 const contract_name = "Vote"
 
 async function main() {

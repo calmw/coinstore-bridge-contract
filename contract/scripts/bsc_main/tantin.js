@@ -2,10 +2,12 @@ const {ethers, upgrades} = require("hardhat")
 const {BigNumber} = require("ethers");
 const {write_contract_address} = require("../fs");
 
-const perfix = "bsc_testnet_"
-const contract_name = "Bridge"
+
+const perfix = "bsc_main_"
+const contract_name = "TantinBridge"
 
 async function main() {
+
     const contract = await ethers.getContractFactory(contract_name)
     console.log("Deploying .........")
 
