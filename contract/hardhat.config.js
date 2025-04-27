@@ -43,9 +43,9 @@ module.exports = {
             // gasPrice: 10000000000
         },
         sepolia: {
-            // url: "https://sepolia.infura.io/v3/732f6502b35c486fb07e333b32e89c04",
+            url: "https://sepolia.infura.io/v3/732f6502b35c486fb07e333b32e89c04",
             // url: "https://endpoints.omniatech.io/v1/eth/sepolia/public",
-            url: "https://sepolia.drpc.org",
+            // url: "https://sepolia.drpc.org",
             accounts: [`${PRIVATE_KEY}`]
             // gasPrice: 1000000000000
         }

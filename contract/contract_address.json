@@ -8,13 +8,13 @@
   "sepolia_Bridge": "0xC0E8a9C9872A6A7E7F5F2999731dec5d798D82B7",
   "sepolia_Vote": "0x6b66eBFA87AaC1dB355B0ec49ECab7F4b32b1b30",
   "sepolia_TantinBridge": "0x77bcb682e01D8763F6757c0D0Beaf577Afcfdf43",
-  "bsc_Bridge": "0x0a11489155579fba49C6856FE76E4AC1DFf9D4fc",
-  "bsc_Vote": "0x62B166B387E0EA79Fa52Ae3A623dbF9F8Db3893b",
-  "bsc_TantinBridge": "0xAeEa0c86d993D047e935333B3484f335c5dF61ad",
   "ethereum_Bridge": "0x27B56c6A1C66A78e41A20141e79F8559C33af9b5",
   "ethereum_Vote": "0x62B166B387E0EA79Fa52Ae3A623dbF9F8Db3893b",
   "ethereum_TantinBridge": "0x94Bbc0cc03245Ec1f9B5d7134fB3A9D579ADc3c9",
   "Tantin_test_Bridge": "0xD3431eE5188B49Ec6E007967C1A92fb0a3c1D7f8",
   "Tantin_test_Vote": "0x2c3004feDadC242662e28E8e276F30ECfea3A29b",
-  "Tantin_test_TantinBridge": "0xBD8477955b75163B2a4ae8DB121CA7BBa107f7dd"
+  "Tantin_test_TantinBridge": "0xBD8477955b75163B2a4ae8DB121CA7BBa107f7dd",
+  "bsc_testnet_Bridge": "0x5389d4eae713F7b7F57e88faaaCF5E7aEe06E0ad",
+  "bsc_testnet_Vote": "0xfa363746c7a69ea50C7019e789Ab96e55E5D3aD5",
+  "bsc_testnet_TantinBridge": "0xA84BDAf841AD6980b205df56F170df279698845a"
 }
