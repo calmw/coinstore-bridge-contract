@@ -488,7 +488,6 @@ func GeneratePriceSignature(parameter []byte) ([]byte, error) {
 	if len(privateKeyStr) <= 0 {
 		privateKeyStr = os.Getenv("TT_BRIDGE_SIGN")
 	}
-	fmt.Println(privateKeyStr, "~~~~~~~~")
 	privateKey, err := crypto.HexToECDSA(privateKeyStr)
 	if err != nil {
 		return nil, err

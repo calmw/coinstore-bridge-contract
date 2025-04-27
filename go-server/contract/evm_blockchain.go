@@ -3,7 +3,6 @@ package contract
 import (
 	"coinstore/utils"
 	"context"
-	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -61,7 +60,6 @@ func GetAuth(cli *ethclient.Client) (error, *bind.TransactOpts) {
 		return err, nil
 	}
 	publicKey := crypto.PubkeyToAddress(privateKeyEcdsa.PublicKey)
-	fmt.Println(publicKey.String(), "&&&&&&&&&")
 	nonce, err := cli.PendingNonceAt(context.Background(), publicKey)
 	if err != nil {
 		log.Println(err)
