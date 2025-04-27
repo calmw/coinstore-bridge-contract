@@ -24,7 +24,6 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
     uint256 public chainId; // 自定义链ID
     uint256 public chainType; // 自定义链类型， 1 EVM 2 Tron
     mapping(uint256 => uint256) public depositCounts; // destinationChainID => number of deposits
-    mapping(address => bytes32) public contractAddressToResourceID; // 业务合约地址(tantin address) => resourceID
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
     mapping(uint256 => mapping(uint256 => DepositRecord)) public depositRecords; // depositNonce => (destinationChainId => Deposit Record)
 

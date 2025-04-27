@@ -1,6 +1,7 @@
 package abi
 
 import (
+	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
@@ -32,6 +33,7 @@ func BridgeAdminSetEnvSignatureTron(sigNonce *big.Int, voteAddress common.Addres
 		chainId,
 		chainType,
 	)
+	fmt.Println(fmt.Sprintf("%x", parameterBytes), "-------------")
 	return GenerateSignatureTron(parameterBytes[4:])
 }
 

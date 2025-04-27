@@ -21,8 +21,6 @@ contract Bridge is IBridge, Pausable, AccessControl {
     uint256 public chainId; // 自定义链ID
     uint256 public chainType; // 自定义链类型， 1 EVM 2 Tron
     mapping(uint256 => uint256) public depositCounts; // destinationChainID => number of deposits
-    mapping(bytes32 => address) public resourceIdToContractAddress; // resourceID => 业务合约地址(tantin address)
-    mapping(address => bytes32) public contractAddressToResourceID; // 业务合约地址(tantin address) => resourceID
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
     mapping(uint256 => mapping(uint256 => DepositRecord)) public depositRecords; // depositNonce => (destinationChainId => Deposit Record)
 
@@ -152,7 +150,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
         uint256 destinationChainId,
         bytes32 resourceId,
         bytes calldata data
-    ) external payable whenNotPaused {
+    ) external payable whenNotPaused onlyRole(BRIDGE_ROLE) {
         // 检测resource ID是否设置
         TokenInfo memory tokenInfo = resourceIdToTokenInfo[resourceId];
         require(uint8(tokenInfo.assetsType) > 0, "resourceId not exist");
@@ -181,13 +179,6 @@ contract Bridge is IBridge, Pausable, AccessControl {
         return tokenInfo.fee;
     }
 
-    // 由resourceId获取tantin address信息
-    function getContractAddressByResourceId(
-        bytes32 resourceId
-    ) public view returns (address) {
-        return resourceIdToContractAddress[resourceId];
-    }
-
     // 由resourceId获取token信息
     function getTokenInfoByResourceId(
         bytes32 resourceId
@@ -212,11 +203,11 @@ contract Bridge is IBridge, Pausable, AccessControl {
         uint256 chainType_
     ) private returns (bool) {
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, chainId_, voteAddress_, chainId_, chainType_)
+            abi.encode(sigNonce, voteAddress_, chainId_, chainType_)
         );
-        address recoverAddress = messageHash
-            .toEthSignedMessageHash()
-            .recoverSigner(signature_);
+        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
+            signature_
+        );
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -229,9 +220,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
         bytes memory signature
     ) private returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId));
-        address recoverAddress = messageHash
-            .toEthSignedMessageHash()
-            .recoverSigner(signature);
+        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
+            signature
+        );
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -244,9 +235,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
         bytes memory signature
     ) private returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId));
-        address recoverAddress = messageHash
-            .toEthSignedMessageHash()
-            .recoverSigner(signature);
+        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
+            signature
+        );
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -280,10 +271,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
                 mintable
             )
         );
-        address recoverAddress = messageHash
-            .toEthSignedMessageHash()
-            .recoverSigner(signature);
-
+        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
+            signature
+        );
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;

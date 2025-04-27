@@ -69,7 +69,7 @@ func (b *BridgeTron) Init(adminAddress string, fee uint64) {
 	//time.Sleep(time.Second)
 	txHash, err := b.AdminSetEnv()
 	fmt.Println(txHash, err)
-	time.Sleep(time.Second)
+	time.Sleep(time.Second * 2000)
 	txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), big.NewInt(int64(fee)), false, false, false)
 	fmt.Println(txHash4, err4)
 	time.Sleep(time.Second)
@@ -81,9 +81,7 @@ func (b *BridgeTron) Init(adminAddress string, fee uint64) {
 }
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {
-
 	err := b.Ks.Unlock(*b.Ka, b.KeyStorePassphrase)
-	//fmt.Println("!!!!!!!", err, b.KeyStorePassphrase)
 	defer b.Ks.Lock(b.Ka.Address)
 	sigNonce, err := trigger.GetSigNonce(b.ContractAddress, b.Ka.Address.String())
 	if err != nil {
