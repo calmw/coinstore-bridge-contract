@@ -138,26 +138,15 @@ func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destina
 			fmt.Sprintf("0x%x", prSignature),
 		)
 
-		//res, err = c.Contract.Deposit(
-		//	txOpts,
-		//	destinationChainId,
-		//	resourceId,
-		//	receiver,
-		//	amount,
-		//	price,
-		//	priceTimestamp,
-		//	prSignature,
-		//	reSignature,
-		//)
 		res, err = c.Contract.Deposit(
 			txOpts,
 			destinationChainId,
 			resourceId,
 			receiver,
 			amount,
-			big.NewInt(1805155000),
-			big.NewInt(1745755295),
-			hexutils.HexToBytes("43dbd4e9f3f97714da0b7547f26898f3601d87911fdb3793840900ab88d847cc50c8c9dc18fd40c5ff293d725ab566458d5bc642367a4bb9e3eadd6a94109b4d1c"),
+			price,
+			priceTimestamp,
+			prSignature,
 			reSignature,
 		)
 		if err == nil {
