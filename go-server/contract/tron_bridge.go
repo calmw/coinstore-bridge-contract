@@ -70,21 +70,21 @@ func (b *BridgeTron) Init(adminAddress string, fee uint64) {
 	txHash, err := b.AdminSetEnv()
 	fmt.Println(txHash, err)
 	time.Sleep(time.Second)
-	//txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), false, false, false)
-	//fmt.Println(txHash4, err4)
-	//time.Sleep(time.Second)
-	//txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, big.NewInt(100), false, false, false)
-	//fmt.Println(txHash5, err5)
-	//time.Sleep(time.Second)
-	//txHash6, err6 := b.AdminSetResource(ResourceIdEth, 2, ChainConfig.WEthAddress, big.NewInt(100), false, false, false)
-	//fmt.Println(txHash6, err6)
+	txHash4, err4 := b.AdminSetResource(ResourceIdUsdt, 2, ChainConfig.UsdtAddress, big.NewInt(100), big.NewInt(int64(fee)), false, false, false)
+	fmt.Println(txHash4, err4)
+	time.Sleep(time.Second)
+	txHash5, err5 := b.AdminSetResource(ResourceIdUsdc, 2, ChainConfig.UsdcAddress, big.NewInt(100), big.NewInt(int64(fee)), false, false, false)
+	fmt.Println(txHash5, err5)
+	time.Sleep(time.Second)
+	txHash6, err6 := b.AdminSetResource(ResourceIdEth, 2, ChainConfig.WEthAddress, big.NewInt(100), big.NewInt(int64(fee)), false, false, false)
+	fmt.Println(txHash6, err6)
 }
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {
 
 	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
 	defer b.Ks.Lock(b.Ka.Address)
-	sigNonce, err := trigger.GetSigNonce(b.ContractAddress, OwnerAccount)
+	sigNonce, err := trigger.GetSigNonce(b.ContractAddress, b.Ka.Address.String())
 	if err != nil {
 		return "", err
 	}
@@ -105,7 +105,7 @@ func (b *BridgeTron) AdminSetEnv() (string, error) {
 		fmt.Sprintf("%x", signature),
 	)
 	fmt.Println(triggerData)
-	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetEnv(address,uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
+	tx, err := b.Cli.TriggerContract(b.Ka.Address.String(), b.ContractAddress, "adminSetEnv(address,uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
@@ -120,9 +120,8 @@ func (b *BridgeTron) GrantRole(role, addr string) (string, error) {
 	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
 	defer b.Ks.Lock(b.Ka.Address)
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
-	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
+	tx, err := b.Cli.TriggerContract(b.Ka.Address.String(), b.ContractAddress, "grantRole(bytes32,address)", triggerData, 8000000000, 0, "", 0)
 
-	fmt.Println(111, b.ContractAddress, err)
 	if err != nil {
 		return "", err
 	}
@@ -156,38 +155,38 @@ func (b *BridgeTron) AdminSetResource(resourceId string, assetsType uint8, token
 	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
 	defer b.Ks.Lock(b.Ka.Address)
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
-	sigNonce, err := trigger.GetSigNonce(b.ContractAddress, OwnerAccount)
+	sigNonce, err := trigger.GetSigNonce(b.ContractAddress, b.Ka.Address.String())
 	if err != nil {
 		return "", err
 	}
 	//sigNonce := big.NewInt(1)
 	tokenEth, _ := utils.TronToEth(tokenAddress)
-	tantinEth, _ := utils.TronToEth(ChainConfig.TantinContractAddress)
 	signature, _ := abi.BridgeAdminSetResourceSignatureTron(
 		sigNonce,
 		big.NewInt(ChainConfig.BridgeId),
 		[32]byte(resourceIdBytes),
 		assetsType,
 		ethCommon.HexToAddress(tokenEth),
-		ethCommon.HexToAddress(tantinEth),
+		decimal,
 		fee,
 		pause,
 		burnable,
 		mintable,
 	)
-	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bool\":%v},{\"bool\":%v},{\"bool\":%v},{\"address\":\"%s\"},{\"bytes\":\"%s\"}]",
+	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"uint8\":\"%d\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"bool\":%v},{\"bool\":%v},{\"bool\":%v},{\"bytes\":\"%s\"}]",
 		strings.TrimPrefix(resourceId, "0x"),
 		assetsType,
 		tokenAddress,
+		decimal,
 		fee,
 		false,
 		false,
 		false,
-		ChainConfig.TantinContractAddress,
 		fmt.Sprintf("%x", signature),
 	)
 	fmt.Println(triggerData)
-	tx, err := b.Cli.TriggerContract(OwnerAccount, b.ContractAddress, "adminSetResource(bytes32,uint8,address,uint256,bool,bool,bool,address,bytes)", triggerData, 300000000, 0, "", 0)
+	fmt.Println(b.Ka.Address.String())
+	tx, err := b.Cli.TriggerContract(b.Ka.Address.String(), b.ContractAddress, "adminSetResource(bytes32,uint8,address,uint256,uint256,bool,bool,bool,bytes)", triggerData, 400000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}

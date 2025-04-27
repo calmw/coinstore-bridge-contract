@@ -29,18 +29,19 @@ import (
 )
 
 var (
-	PrivateKey    string
-	AdminAddress  string
-	FeeAddress    string
-	ServerAddress string
-	RelayerOne    string
-	RelayerTwo    string
-	RelayerThree  string
-	Fee           uint64
+	PrivateKey             string
+	AdminAddress           string
+	FeeAddress             string
+	ServerAddress          string
+	RelayerOne             string
+	RelayerTwo             string
+	RelayerThree           string
+	TronKeyStorePassphrase string
+	Fee                    uint64
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "deploy",
+	Use:   "tb",
 	Short: "合约初始化设置",
 	Long: `功能描述：合约部署后，设置合约
 使用示例: ./tb bsc --admin_address '0xa...' --fee_address '0xa...' --server_address '0xa...' --key 'ee...' --relayer_one_address  '0x1...'   --relayer_two_address  '0x0...' --relayer_three_address '0x2...' `,
@@ -54,5 +55,11 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&PrivateKey, "key", "k", "abc123...", "私钥")
+	rootCmd.PersistentFlags().StringVarP(&AdminAddress, "admin_address", "a", "", "管理员角色账户")
+	rootCmd.PersistentFlags().StringVarP(&FeeAddress, "fee_address", "f", "", "跨链费接受地址")
+	rootCmd.PersistentFlags().StringVarP(&ServerAddress, "server_address", "s", "", "服务端价格签名地址")
+	rootCmd.PersistentFlags().StringVarP(&RelayerOne, "relayer_one_address", "l", "", "relayer 1 账户地址")
+	rootCmd.PersistentFlags().StringVarP(&RelayerTwo, "relayer_two_address", "m", "", "relayer 2 账户地址")
+	rootCmd.PersistentFlags().StringVarP(&RelayerThree, "relayer_three_address", "n", "", "relayer 3 账户地址")
+	rootCmd.PersistentFlags().Uint64VarP(&Fee, "fee", "e", 4, "跨链费，折合U的数量")
 }

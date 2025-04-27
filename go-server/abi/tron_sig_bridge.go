@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func BridgeAdminSetResourceSignatureTron(sigNonce, chainId *big.Int, resourceID [32]byte, assetsType uint8, tokenAddress, tantinAddress common.Address, fee *big.Int, pause bool, burnable bool, mintable bool) ([]byte, error) {
+func BridgeAdminSetResourceSignatureTron(sigNonce, chainId *big.Int, resourceID [32]byte, assetsType uint8, tokenAddress common.Address, decimal, fee *big.Int, pause bool, burnable bool, mintable bool) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(BridgeSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminSetResourceSignature",
 		sigNonce,
@@ -15,11 +15,11 @@ func BridgeAdminSetResourceSignatureTron(sigNonce, chainId *big.Int, resourceID 
 		resourceID,
 		assetsType,
 		tokenAddress,
+		decimal,
 		fee,
 		pause,
 		burnable,
 		mintable,
-		tantinAddress,
 	)
 	return GenerateSignatureTron(parameterBytes[4:])
 }

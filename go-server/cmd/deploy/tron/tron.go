@@ -3,8 +3,6 @@ package tron
 import (
 	"coinstore/contract"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
-	"math/big"
 	"os"
 )
 
@@ -21,38 +19,18 @@ func InitTron(prvKey, adminAddress, feeAddress, serverAddress, realyerOneAddress
 		return
 	}
 	bridge.Init(adminAddress, fee)
-	bridge.AdminSetResource(
-		contract.ResourceIdEth,
-		2,
-		common.HexToAddress(contract.ChainConfig.WEthAddress),
-		big.NewInt(1e18),
-		big.NewInt(int64(fee)),
-		false,
-		false,
-		false,
-	)
-	bridge.AdminSetResource(
-		contract.ResourceIdWeth,
-		2,
-		common.HexToAddress(contract.ChainConfig.WEthAddress),
-		big.NewInt(1e18),
-		big.NewInt(int64(fee)),
-		false,
-		false,
-		false,
-	)
 
-	vote, err := contract.NewVote()
+	vote, err := contract.NewVoteTron()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	vote.Init(realyerOneAddress, realyerTwoAddress, realyerThreeAddress)
 
-	tantin, err := contract.NewTanTin()
+	tantin, err := contract.NewTanTinTron()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	tantin.Init(adminAddress, feeAddress, serverAddress)
+	tantin.Init()
 }
