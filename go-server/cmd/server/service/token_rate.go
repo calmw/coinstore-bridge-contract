@@ -38,10 +38,11 @@ func GetPrice(c *gin.Context) {
 		})
 		return
 	}
+	fmt.Println("~~~~~~~~~~~1 ")
 	var ok bool
 	price := "1000000"
 	tokenName = strings.ToUpper(tokenName)
-	if !strings.Contains(tokenName, "usdt") {
+	if !strings.Contains(tokenName, "USDT") {
 		price, ok = token.ExTokenPriceData.Get(tokenName)
 		if !ok {
 			c.JSON(200, gin.H{
@@ -51,7 +52,6 @@ func GetPrice(c *gin.Context) {
 			return
 		}
 	}
-
 	timestamp := time.Now().Unix()
 	signature := ""
 	chainIdDeci, err1 := decimal.NewFromString(chainId)
