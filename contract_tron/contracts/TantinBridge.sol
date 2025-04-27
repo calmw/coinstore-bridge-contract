@@ -226,7 +226,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
     }
 
     /**
-@notice 查询跨链费用
+        @notice 查询跨链费用
         @param resourceId 跨链桥设置的resourceId
     */
     function getFee(bytes32 resourceId) external view returns (uint256) {
@@ -285,6 +285,22 @@ contract TantinBridge is AccessControl, ITantinBridge {
             .recoverSigner(signature);
 
         return recoverAddress == serverAddress;
+    }
+
+    // 验证price签名
+    function checkPriceSignature2(
+        bytes memory signature,
+        uint256 price,
+        uint256 priceTimestamp
+    ) public view returns (address) {
+        bytes32 messageHash = keccak256(
+            abi.encode(block.chainid, price, priceTimestamp)
+        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature);
+
+        return recoverAddress;
     }
 
     function checkAdminSetEnvSignature(

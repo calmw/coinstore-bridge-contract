@@ -33,12 +33,6 @@ func NewTanTinTron(ka *keystore.Account, ks *keystore.KeyStore, keyStorePassphra
 	if err != nil {
 		return nil, err
 	}
-	//prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
-	////prvKey := "3f9f4b92d709f167b8ba98b9f89a5ec5272973aeb8f1affd11d5d2c67c5acf62"
-	//ks, ka, err := tron_keystore_copy.InitKeyStore(prvKey)
-	//if err != nil {
-	//	panic(fmt.Sprintf("private key conversion failed %v", err))
-	//}
 	return &TanTinTron{
 		KeyStorePassphrase: keyStorePassphrase,
 		Ks:                 ks,
@@ -153,19 +147,33 @@ func (t *TanTinTron) AdminSetToken(resourceId string, assetsType uint8, tokenAdd
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
-func (t *TanTinTron) Deposit(destinationChainId, amount *big.Int, resourceId, recipient string) (string, error) {
+func (t *TanTinTron) Deposit(destinationChainId, amount, price, priceTimestamp *big.Int, resourceId, recipient string) (string, error) {
 	_ = t.Ks.Unlock(*t.Ka, t.KeyStorePassphrase)
 	defer t.Ks.Lock(t.Ka.Address)
 	recipientEth, err := utils.TronToEth(recipient)
 	signature, err := abi.TantinDepositSignatureTron(
 		ethCommon.HexToAddress(recipientEth),
 	)
-	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"bytes32\":\"%s\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"}]",
-		destinationChainId.String(), strings.TrimPrefix(resourceId, "0x"), recipient, amount.String(), fmt.Sprintf("%x", signature),
+	fmt.Println(err, "~~~~~~~11")
+	signaturePrice, err := abi.TronPriceSignature(
+		big.NewInt(ChainConfig.ChainId),
+		price,
+		priceTimestamp,
+	)
+	fmt.Println(err, "~~~~~~~111")
+	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"bytes32\":\"%s\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"},{\"bytes\":\"%s\"}]",
+		destinationChainId.String(),
+		strings.TrimPrefix(resourceId, "0x"),
+		recipient,
+		amount.String(),
+		price.String(),
+		priceTimestamp.String(),
+		fmt.Sprintf("%x", signaturePrice),
+		fmt.Sprintf("%x", signature),
 	)
 	fmt.Println(triggerData)
 	//tx, err := t.Cli.TriggerContract(OwnerAccount, t.ContractAddress, "deposit(uint256,bytes32,address,uint256,bytes)", triggerData, 300000000, 0, "", 0)
-	tx, err := t.Cli.TriggerContract("TFBymbm7LrbRreGtByMPRD2HUyneKabsqb", t.ContractAddress, "deposit(uint256,bytes32,address,uint256,bytes)", triggerData, 300000000, 0, "", 0)
+	tx, err := t.Cli.TriggerContract("TFBymbm7LrbRreGtByMPRD2HUyneKabsqb", t.ContractAddress, "deposit(uint256,bytes32,address,uint256,uint256,uint256,bytes,bytes)", triggerData, 3000000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
