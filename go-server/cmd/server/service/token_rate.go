@@ -6,7 +6,6 @@ import (
 	"coinstore/db"
 	"coinstore/model"
 	"fmt"
-	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 	"math/big"
