@@ -98,7 +98,6 @@ func (v *VoteTron) AdminSetEnv(bridgeAddress string, expiry *big.Int, relayerThr
 	}
 	ctrlr := transaction.NewController(v.Cli, v.Ks, v.Ka, tx.Transaction)
 	if err = ctrlr.ExecuteTransaction(); err != nil {
-		fmt.Println("!!!! 2 ", err)
 		return "", err
 	}
 	log.Println("tx hash: ", common.BytesToHexString(tx.GetTxid()))

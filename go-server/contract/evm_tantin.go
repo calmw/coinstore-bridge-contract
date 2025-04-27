@@ -117,7 +117,6 @@ func (c TanTinEvm) Deposit(receiver common.Address, resourceId [32]byte, destina
 	if err != nil {
 		return
 	}
-	fmt.Println(id, "!!!")
 	prSignature, _ := abi.EvmPriceSignature(id, price, priceTimestamp)
 	var res *types.Transaction
 

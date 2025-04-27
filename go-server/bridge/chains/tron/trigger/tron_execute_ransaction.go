@@ -13,7 +13,6 @@ func ExecuteTronTransaction(c *transaction.Controller, chainId int, fromAddress,
 	case transaction.Software:
 		//c.SignTxForSending()
 		err := SignTxForSending(c, chainId, fromAddress, apiSecret)
-		fmt.Println("!!!!!!!!!!!!", err)
 		if err != nil {
 			return err
 		}
@@ -21,15 +20,12 @@ func ExecuteTronTransaction(c *transaction.Controller, chainId int, fromAddress,
 		c.HardwareSignTxForSending()
 	}
 	err := SignTxForSending(c, chainId, fromAddress, apiSecret)
-	fmt.Println("!!!!!!!!!!!!~~", err)
-	//fmt.Println("Signature !! 1", c.Tx.Signature)
 	fmt.Println("Signature !! 1", fmt.Sprintf("%x", c.Tx.Signature))
 	if err != nil {
 		return err
 	}
 	c.SendSignedTx()
 	c.TxConfirmation()
-	fmt.Println("!!!!!!!!!!!!~~###", c.ExecutionError)
 	return c.ExecutionError
 }
 
