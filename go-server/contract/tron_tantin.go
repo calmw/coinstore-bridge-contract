@@ -77,13 +77,14 @@ func (t *TanTinTron) AdminSetEnv(feeAddress, serverAddress, bridgeAddress string
 		ethCommon.HexToAddress(serverEth),
 		ethCommon.HexToAddress(bridgeEth),
 	)
-	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"address\":\"%s\"},{\"bytes\":\"%s\"}]",
+	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"address\":\"%s\"},{\"address\":\"%s\"},{\"bytes\":\"%s\"}]",
 		feeAddress,
-		ChainConfig.BridgeContractAddress,
+		serverAddress,
+		bridgeAddress,
 		fmt.Sprintf("%x", signature),
 	)
 	fmt.Println(triggerData)
-	tx, err := t.Cli.TriggerContract(t.Ka.Address.String(), t.ContractAddress, "adminSetEnv(address,address,bytes)", triggerData, 1500000000, 0, "", 0)
+	tx, err := t.Cli.TriggerContract(t.Ka.Address.String(), t.ContractAddress, "adminSetEnv(address,address,address,bytes)", triggerData, 1500000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}

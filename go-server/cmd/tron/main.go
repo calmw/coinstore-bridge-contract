@@ -1,9 +1,11 @@
 package main
 
 import (
+	"coinstore/cmd/deploy/tron"
 	"coinstore/contract"
 	"fmt"
 	"math/big"
+	"os"
 	"time"
 )
 
@@ -27,8 +29,14 @@ func main() {
 	//	return
 	//}
 	//vote.Init()
-
-	tantin, err := contract.NewTanTinTron()
+	prvKey := os.Getenv("COINSTORE_BRIDGE_TRON_LOCAL")
+	fmt.Println(prvKey)
+	ks, ka, err := tron.InitKeyStore(prvKey, "123456")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	tantin, err := contract.NewTanTinTron(ka, ks, "123456")
 	if err != nil {
 		fmt.Println(err)
 		return
