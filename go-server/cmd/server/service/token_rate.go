@@ -52,6 +52,8 @@ func GetPrice(c *gin.Context) {
 			return
 		}
 	}
+
+	fmt.Println("~~~~~~~~~~~2 ")
 	timestamp := time.Now().Unix()
 	signature := ""
 	chainIdDeci, err1 := decimal.NewFromString(chainId)
@@ -63,6 +65,7 @@ func GetPrice(c *gin.Context) {
 		})
 		return
 	}
+	fmt.Println("~~~~~~~~~~~ 3 ")
 	priceDeci = priceDeci.Mul(decimal.NewFromInt(1e6))
 	if chainId == "3" {
 		priceSignature, err := abi.TronPriceSignature(chainIdDeci.BigInt(), priceDeci.BigInt(), big.NewInt(timestamp))
@@ -75,6 +78,7 @@ func GetPrice(c *gin.Context) {
 		}
 		signature = fmt.Sprintf("%x", priceSignature)
 	} else {
+		fmt.Println("~~~~~~~~~~~ 5 ")
 		priceSignature, err := abi.EvmPriceSignature(chainIdDeci.BigInt(), priceDeci.BigInt(), big.NewInt(timestamp))
 		if err != nil {
 			c.JSON(200, gin.H{
