@@ -334,16 +334,6 @@
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "chainId_",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "chainType_",
-        "type": "uint256"
-      },
-      {
         "internalType": "bytes",
         "name": "signature_",
         "type": "bytes"
@@ -422,44 +412,12 @@
   },
   {
     "inputs": [],
-    "name": "chainId",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "chainType",
     "outputs": [
       {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "contractAddressToResourceID",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
