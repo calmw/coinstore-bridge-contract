@@ -190,9 +190,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
         address voteAddress_
     ) private returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(sigNonce, voteAddress_));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature_
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature_);
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -205,9 +205,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
         bytes memory signature
     ) private returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(sigNonce, block.chainid));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature);
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -220,9 +220,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
         bytes memory signature
     ) private returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(sigNonce, block.chainid));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature);
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -256,9 +256,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
                 mintable
             )
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner()(
-            signature
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature);
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;

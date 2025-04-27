@@ -30,7 +30,7 @@ contract Vote is IVote, AccessControl {
     uint256 public expiry; // 开始投票后经过 expiry 的块数量后投票过期
     mapping(uint72 => mapping(bytes32 => Proposal)) public proposals; // destinationChainID + depositNonce => dataHash => Proposal
     mapping(uint72 => mapping(bytes32 => mapping(address => bool)))
-    public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
+        public hasVotedOnProposal; // destinationChainID + depositNonce => dataHash => relayerAddress => bool
 
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -129,7 +129,6 @@ contract Vote is IVote, AccessControl {
         totalRelayer--;
     }
 
-
     /**
         @notice relayer执行投票通过后的到帐操作
         @param originChainId 源链ID
@@ -148,7 +147,7 @@ contract Vote is IVote, AccessControl {
             "origin deposit nonce too big"
         );
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-                            uint72(originChainId);
+            uint72(originChainId);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
         require(
             uint8(proposal.status) <= 1,
@@ -240,7 +239,7 @@ contract Vote is IVote, AccessControl {
             "origin deposit nonce too big"
         );
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-                            uint72(originChainID);
+            uint72(originChainID);
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
         require(
@@ -274,7 +273,7 @@ contract Vote is IVote, AccessControl {
         bytes calldata data
     ) external onlyRole(RELAYER_ROLE) {
         uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-                            uint72(originChainId);
+            uint72(originChainId);
         bytes32 dataHash = keccak256(abi.encodePacked(Bridge, data));
         Proposal storage proposal = proposals[nonceAndID][dataHash];
 
@@ -378,9 +377,9 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, bridgeAddress_, expiry_, relayerThreshold_)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
-            signature_
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature_);
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -398,9 +397,9 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, newThreshold, block.chainid)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
-            signature_
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature_);
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -418,9 +417,9 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, relayerAddress, block.chainid)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
-            signature_
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature_);
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -438,9 +437,9 @@ contract Vote is IVote, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, relayerAddress, block.chainid)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
-            signature_
-        );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature_);
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
