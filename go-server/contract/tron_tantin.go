@@ -72,6 +72,7 @@ func (t *TanTinTron) AdminSetEnv(feeAddress, serverAddress, bridgeAddress string
 	serverEth, _ := utils.TronToEth(serverAddress)
 	signature, _ := abi.TantinAdminSetEnvSignatureTron(
 		sigNonce,
+		big.NewInt(ChainConfig.ChainId),
 		ethCommon.HexToAddress(feeEth),
 		ethCommon.HexToAddress(serverEth),
 		ethCommon.HexToAddress(bridgeEth),
