@@ -15,7 +15,6 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"math/big"
-	"os"
 	"strings"
 	"time"
 )
@@ -36,18 +35,18 @@ type BridgeTron struct {
 	Cli             *client.GrpcClient
 }
 
-func NewBridgeTron() (*BridgeTron, error) {
+func NewBridgeTron(ka *keystore.Account, ks *keystore.KeyStore) (*BridgeTron, error) {
 	endpoint := ChainConfig.RPC
 	cli := client.NewGrpcClient(endpoint)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
-	prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
-	ks, ka, err := tron_keystore.InitKeyStore(prvKey)
-	if err != nil {
-		panic(fmt.Sprintf("private key conversion failed %v", err))
-	}
+	//prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
+	//ks, ka, err := tron_keystore.InitKeyStore(prvKey)
+	//if err != nil {
+	//	panic(fmt.Sprintf("private key conversion failed %v", err))
+	//}
 	return &BridgeTron{
 		Ks:              ks,
 		Ka:              ka,

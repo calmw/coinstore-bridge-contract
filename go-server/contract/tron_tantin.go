@@ -15,7 +15,6 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"math/big"
-	"os"
 	"strings"
 	"time"
 )
@@ -27,19 +26,19 @@ type TanTinTron struct {
 	Cli             *client.GrpcClient
 }
 
-func NewTanTinTron() (*TanTinTron, error) {
+func NewTanTinTron(ka *keystore.Account, ks *keystore.KeyStore) (*TanTinTron, error) {
 	endpoint := ChainConfig.RPC
 	cli := client.NewGrpcClient(endpoint)
 	err := cli.Start(grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
-	prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
-	//prvKey := "3f9f4b92d709f167b8ba98b9f89a5ec5272973aeb8f1affd11d5d2c67c5acf62"
-	ks, ka, err := tron_keystore.InitKeyStore(prvKey)
-	if err != nil {
-		panic(fmt.Sprintf("private key conversion failed %v", err))
-	}
+	//prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
+	////prvKey := "3f9f4b92d709f167b8ba98b9f89a5ec5272973aeb8f1affd11d5d2c67c5acf62"
+	//ks, ka, err := tron_keystore.InitKeyStore(prvKey)
+	//if err != nil {
+	//	panic(fmt.Sprintf("private key conversion failed %v", err))
+	//}
 	return &TanTinTron{
 		Ks:              ks,
 		Ka:              ka,
@@ -48,14 +47,14 @@ func NewTanTinTron() (*TanTinTron, error) {
 	}, nil
 }
 
-func (t *TanTinTron) Init() {
-	txHash1, err1 := t.GrantRole(AdminRole, OwnerAccount)
+func (t *TanTinTron) Init(adminAddress, feeAddress, serverAddress string) {
+	txHash1, err1 := t.GrantRole(AdminRole, adminAddress)
 	fmt.Println(txHash1, err1)
 	time.Sleep(time.Second)
 	txHash2, err2 := t.GrantRole(BridgeRole, ChainConfig.VoteContractAddress)
 	fmt.Println(txHash2, err2)
 	time.Sleep(time.Second)
-	txHash, err := t.AdminSetEnv(OwnerAccount, ChainConfig.BridgeContractAddress)
+	txHash, err := t.AdminSetEnv(feeAddress, serverAddress)
 	fmt.Println(txHash, err)
 }
 
