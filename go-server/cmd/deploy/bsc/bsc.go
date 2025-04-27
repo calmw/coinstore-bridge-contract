@@ -31,16 +31,6 @@ func InitTt(prvKey, adminAddress, feeAddress, serverAddress, realyerOneAddress, 
 		false,
 		false,
 	)
-	bridge.AdminSetResource(
-		contract.ResourceIdWeth,
-		2,
-		common.HexToAddress(contract.ChainConfig.WEthAddress),
-		big.NewInt(1e18),
-		big.NewInt(int64(fee)),
-		false,
-		false,
-		false,
-	)
 
 	vote, err := contract.NewVote()
 	if err != nil {

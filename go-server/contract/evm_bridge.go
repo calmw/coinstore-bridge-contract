@@ -36,30 +36,30 @@ func NewBridge() (*BridgeEvm, error) {
 }
 
 func (b *BridgeEvm) Init(adminAddress string, fee uint64) {
-	//b.GrantRole(AdminRole, common.HexToAddress(adminAddress))
-	//b.GrantRole(VoteRole, common.HexToAddress(ChainConfig.VoteContractAddress))
-	//b.GrantRole(BridgeRole, common.HexToAddress(ChainConfig.TantinContractAddress))
-	//b.AdminSetEnv()
-	//b.AdminSetResource(
-	//	ResourceIdUsdt,
-	//	2,
-	//	common.HexToAddress(ChainConfig.UsdtAddress),
-	//	big.NewInt(1e6),
-	//	big.NewInt(int64(fee)),
-	//	false,
-	//	false,
-	//	false,
-	//)
-	//b.AdminSetResource(
-	//	ResourceIdUsdc,
-	//	2,
-	//	common.HexToAddress(ChainConfig.UsdcAddress),
-	//	big.NewInt(1e6),
-	//	big.NewInt(int64(fee)),
-	//	false,
-	//	false,
-	//	false,
-	//)
+	b.GrantRole(AdminRole, common.HexToAddress(adminAddress))
+	b.GrantRole(VoteRole, common.HexToAddress(ChainConfig.VoteContractAddress))
+	b.GrantRole(BridgeRole, common.HexToAddress(ChainConfig.TantinContractAddress))
+	b.AdminSetEnv()
+	b.AdminSetResource(
+		ResourceIdUsdt,
+		2,
+		common.HexToAddress(ChainConfig.UsdtAddress),
+		big.NewInt(1e6),
+		big.NewInt(int64(fee)),
+		false,
+		false,
+		false,
+	)
+	b.AdminSetResource(
+		ResourceIdUsdc,
+		2,
+		common.HexToAddress(ChainConfig.UsdcAddress),
+		big.NewInt(1e6),
+		big.NewInt(int64(fee)),
+		false,
+		false,
+		false,
+	)
 }
 
 func (b *BridgeEvm) AdminSetEnv() {
