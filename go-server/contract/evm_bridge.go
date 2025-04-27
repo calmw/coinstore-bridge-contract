@@ -72,16 +72,7 @@ func (b *BridgeEvm) AdminSetEnv() {
 	signature, _ := abi.BridgeAdminSetEnvSignature(
 		sigNonce,
 		common.HexToAddress(ChainConfig.VoteContractAddress),
-		big.NewInt(ChainConfig.BridgeId),
-		big.NewInt(ChainConfig.ChainTypeId),
 	)
-	//fmt.Println(
-	//	sigNonce,
-	//	common.HexToAddress(ChainConfig.VoteContractAddress),
-	//	big.NewInt(ChainConfig.BridgeId),
-	//	big.NewInt(ChainConfig.ChainTypeId),
-	//	fmt.Sprintf("%x", signature),
-	//)
 
 	for {
 		err, txOpts := GetAuth(b.Cli)
@@ -92,8 +83,6 @@ func (b *BridgeEvm) AdminSetEnv() {
 		res, err = b.Contract.AdminSetEnv(
 			txOpts,
 			common.HexToAddress(ChainConfig.VoteContractAddress),
-			big.NewInt(ChainConfig.BridgeId),
-			big.NewInt(ChainConfig.ChainTypeId),
 			signature,
 		)
 		if err == nil {
@@ -111,7 +100,7 @@ func (b *BridgeEvm) AdminSetEnv() {
 		time.Sleep(time.Second * 2)
 	}
 
-	fmt.Println(fmt.Sprintf("AdminSetEnv 确认成功 %v", res.Hash()))
+	fmt.Println(fmt.Sprintf("AdminSetEnv 确认成功"))
 }
 
 func (b *BridgeEvm) GrantRole(role string, addr common.Address) {
@@ -154,14 +143,9 @@ func (b *BridgeEvm) AdminSetResource(resourceId string, assetsType uint8, tokenA
 			fmt.Println(err)
 			return
 		}
-		chainId, err := b.Contract.ChainId(nil)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
 		signature, _ := abi.BridgeAdminSetResourceSignature(
 			sigNonce,
-			chainId,
+			big.NewInt(ChainConfig.ChainId),
 			[32]byte(resourceIdBytes),
 			assetsType,
 			tokenAddress,

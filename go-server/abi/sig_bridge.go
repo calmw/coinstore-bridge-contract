@@ -24,13 +24,11 @@ func BridgeAdminSetResourceSignature(sigNonce, chainId *big.Int, resourceID [32]
 	return GenerateSignature(parameterBytes[4:])
 }
 
-func BridgeAdminSetEnvSignature(sigNonce *big.Int, voteAddress common.Address, chainId, chainType *big.Int) ([]byte, error) {
+func BridgeAdminSetEnvSignature(sigNonce *big.Int, voteAddress common.Address) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(BridgeSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminSetEnvSignature",
 		sigNonce,
 		voteAddress,
-		chainId,
-		chainType,
 	)
 	return GenerateSignature(parameterBytes[4:])
 }

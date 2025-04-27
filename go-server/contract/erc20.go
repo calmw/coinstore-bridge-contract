@@ -62,7 +62,7 @@ func (c Erc20) Approve(amount *big.Int, address string) {
 		time.Sleep(time.Second * 2)
 	}
 
-	log.Println(fmt.Sprintf("Approve 确认成功 %s", res.Hash()))
+	log.Println(fmt.Sprintf("Approve 确认成功"))
 }
 
 func (c Erc20) Transfer(amount *big.Int, address string) {
@@ -94,5 +94,5 @@ func (c Erc20) Transfer(amount *big.Int, address string) {
 		time.Sleep(time.Second * 2)
 	}
 
-	log.Println(fmt.Sprintf("Transfer 确认成功 %s", res.Hash()))
+	log.Println(fmt.Sprintf("Transfer 确认成功"))
 }

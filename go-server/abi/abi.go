@@ -209,14 +209,6 @@ var BridgeSig = `[{
 		"internalType": "address",
 		"name": "voteAddress_",
 		"type": "address"
-	}, {
-		"internalType": "uint256",
-		"name": "chainId_",
-		"type": "uint256"
-	}, {
-		"internalType": "uint256",
-		"name": "chainType_",
-		"type": "uint256"
 	}],
 	"name": "checkAdminSetEnvSignature",
 	"outputs": [{
