@@ -396,9 +396,8 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes memory signature_,
         uint256 newThreshold
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, newThreshold, chainId)
+            abi.encode(sigNonce, newThreshold, block.chainid)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature_
@@ -417,9 +416,8 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes memory signature_,
         address relayerAddress
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, relayerAddress, chainId)
+            abi.encode(sigNonce, relayerAddress, block.chainid)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature_
@@ -438,9 +436,8 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes memory signature_,
         address relayerAddress
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, relayerAddress, chainId)
+            abi.encode(sigNonce, relayerAddress, block.chainid)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature_

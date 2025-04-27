@@ -127,7 +127,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         depositData.recipient = recipient;
         depositData.resourceId = resourceId;
         depositData.destinationChainId = destinationChainId;
-        depositData.chainId = Bridge.chainId();
+        depositData.chainId = block.chainid;
         // 验证接受地址签名
         require(
             checkDepositSignature(recipientSignature, recipient, msg.sender),
@@ -135,12 +135,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         );
         // 验证价格签名
         require(
-            checkPriceSignature(
-                priceSignature,
-                depositData.chainId,
-                price,
-                priceTimestamp
-            ),
+            checkPriceSignature(priceSignature, price, priceTimestamp),
             "price signature error"
         );
         // 验证价格签名时间
@@ -289,12 +284,11 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
     // 验证price签名
     function checkPriceSignature(
         bytes memory signature,
-        uint256 chainId,
         uint256 price,
         uint256 priceTimestamp
     ) private view returns (bool) {
         bytes32 messageHash = keccak256(
-            abi.encode(chainId, price, priceTimestamp)
+            abi.encode(block.chainid, price, priceTimestamp)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
@@ -329,8 +323,9 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes memory signature,
         address user
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
-        bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId, user));
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, block.chainid, user)
+        );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
         );
@@ -348,8 +343,9 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bytes memory signature,
         address user
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
-        bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId, user));
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, block.chainid, user)
+        );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
         );
@@ -372,11 +368,10 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         bool mintable,
         bool pause
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
             abi.encode(
                 sigNonce,
-                chainId,
+                block.chainid,
                 resourceID,
                 assetsType,
                 tokenAddress,
@@ -402,9 +397,8 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         address tokenAddress,
         uint256 amount
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, chainId, tokenAddress, amount)
+            abi.encode(sigNonce, block.chainid, tokenAddress, amount)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature

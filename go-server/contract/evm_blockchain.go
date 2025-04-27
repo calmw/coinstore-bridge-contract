@@ -139,7 +139,7 @@ func InitTantinEnv() {
 		ChainTypeId: 1,
 		RPC:         "https://testrpc.tantin.com",
 		//RPC:                   "https://testrpcdex.tantin.com",
-		BridgeContractAddress: "0x4299Ab10b1895554A94637c6d0E88bc83eE8127C",
+		BridgeContractAddress: "0x79e30637Eb1480eaDc548B155C25b7606AE48069",
 		VoteContractAddress:   "0x220c089B1C575Bd893d22a4605a7A02CEEF68b94",
 		TantinContractAddress: "0x1882d3adDC2AcbEDe1CfF24bB0E0325eD8279A0E",
 		UsdtAddress:           "0x53F1BAA532710FC1FEE8a66433bE6c6fE823fCE9",
