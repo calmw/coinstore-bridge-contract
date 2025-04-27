@@ -27,7 +27,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
 
     uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
     address private superAdminAddress;
-    address private serverAddress;
+    address public serverAddress;
     address private feeAddress;
     IBridge public Bridge; // bridge 合约
     uint256 public localNonce; // 跨链nonce
@@ -288,7 +288,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         uint256 priceTimestamp
     ) private view returns (bool) {
         bytes32 messageHash = keccak256(
-            abi.encode(block.chainid, price, priceTimestamp)
+            abi.encode(uint256(block.chainid), price, priceTimestamp)
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature

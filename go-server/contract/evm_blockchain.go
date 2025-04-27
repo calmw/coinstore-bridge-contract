@@ -3,6 +3,7 @@ package contract
 import (
 	"coinstore/utils"
 	"context"
+	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -55,12 +56,12 @@ func Client(c ChainConfigs) (error, *ethclient.Client) {
 
 func GetAuth(cli *ethclient.Client) (error, *bind.TransactOpts) {
 	privateKeyEcdsa, err := crypto.HexToECDSA(ChainConfig.PrivateKey)
-
 	if err != nil {
 		log.Println(err)
 		return err, nil
 	}
 	publicKey := crypto.PubkeyToAddress(privateKeyEcdsa.PublicKey)
+	fmt.Println(publicKey.String(), "&&&&&&&&&")
 	nonce, err := cli.PendingNonceAt(context.Background(), publicKey)
 	if err != nil {
 		log.Println(err)
@@ -141,7 +142,7 @@ func InitTantinEnv() {
 		//RPC:                   "https://testrpcdex.tantin.com",
 		BridgeContractAddress: "0xD3431eE5188B49Ec6E007967C1A92fb0a3c1D7f8",
 		VoteContractAddress:   "0x2c3004feDadC242662e28E8e276F30ECfea3A29b",
-		TantinContractAddress: "0xd9E6699b397E204C09e0baB549D31de9e518F148",
+		TantinContractAddress: "0xBD8477955b75163B2a4ae8DB121CA7BBa107f7dd",
 		UsdtAddress:           "0x53F1BAA532710FC1FEE8a66433bE6c6fE823fCE9",
 		UsdcAddress:           "0x87386337645860720009341caD33C6652806aF6f",
 		EthAddress:            "0x0000000000000000000000000000000000000000",
