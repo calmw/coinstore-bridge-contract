@@ -55,7 +55,7 @@ func (c TanTinEvm) AdminSetEnv(feeAddress, serverAddress string) {
 		fmt.Println(err)
 		return
 	}
-	signature, _ := abi.TantinAdminSetEnvSignature(sigNonce, common.HexToAddress(feeAddress), common.HexToAddress(serverAddress), common.HexToAddress(ChainConfig.BridgeContractAddress))
+	signature, _ := abi.TantinAdminSetEnvSignature(sigNonce, big.NewInt(ChainConfig.ChainId), common.HexToAddress(feeAddress), common.HexToAddress(serverAddress), common.HexToAddress(ChainConfig.BridgeContractAddress))
 
 	for {
 		err, txOpts := GetAuth(c.Cli)

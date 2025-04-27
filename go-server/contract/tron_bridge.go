@@ -161,7 +161,7 @@ func (b *BridgeTron) AdminSetResource(resourceId string, assetsType uint8, token
 	tokenEth, _ := utils.TronToEth(tokenAddress)
 	signature, _ := abi.BridgeAdminSetResourceSignatureTron(
 		sigNonce,
-		big.NewInt(ChainConfig.BridgeId),
+		big.NewInt(ChainConfig.ChainId),
 		[32]byte(resourceIdBytes),
 		assetsType,
 		ethCommon.HexToAddress(tokenEth),

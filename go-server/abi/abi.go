@@ -113,6 +113,10 @@ var TantinSig = `[{
 		"internalType": "uint256",
 		"name": "sigNonce",
 		"type": "uint256"
+	},{
+		"internalType": "uint256",
+		"name": "chainId",
+		"type": "uint256"
 	}, {
 		"internalType": "address",
 		"name": "feeAddress",

@@ -31,10 +31,11 @@ func TantinAdminSetTokenSignature(sigNonce, chainId *big.Int, resourceID [32]byt
 	return GenerateSignature(parameterBytes[4:])
 }
 
-func TantinAdminSetEnvSignature(sigNonce *big.Int, feeAddress, serverAddress, bridgeAddress common.Address) ([]byte, error) {
+func TantinAdminSetEnvSignature(sigNonce, chainId *big.Int, feeAddress, serverAddress, bridgeAddress common.Address) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(TantinSig))
 	parameterBytes, err := contractAbi.Pack("checkAdminSetEnvSignature",
 		sigNonce,
+		chainId,
 		feeAddress,
 		serverAddress,
 		bridgeAddress,
