@@ -143,17 +143,6 @@ func (b *BridgeEvm) GrantRole(role string, addr common.Address) {
 	log.Println(fmt.Sprintf("GrantRole 确认成功"))
 }
 
-// 	bridge.AdminSetResource(
-//		contract.ResourceIdUsdt,
-//		2,
-//		common.HexToAddress(contract.ChainConfig.UsdtAddress),
-//		big.NewInt(100),
-//	)
-
-func AdminSetResource(resourceId string, assetsType uint8, tokenAddress common.Address, fee *big.Int) {
-
-}
-
 // AdminSetResource 0x0000000000000000000000000000000000000000
 func (b *BridgeEvm) AdminSetResource(resourceId string, assetsType uint8, tokenAddress common.Address, decimal, fee *big.Int, pause bool, burnable bool, mintable bool) {
 	var res *types.Transaction

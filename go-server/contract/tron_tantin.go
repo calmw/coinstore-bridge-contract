@@ -54,11 +54,11 @@ func (t *TanTinTron) Init(adminAddress, feeAddress, serverAddress string) {
 	txHash2, err2 := t.GrantRole(BridgeRole, ChainConfig.VoteContractAddress)
 	fmt.Println(txHash2, err2)
 	time.Sleep(time.Second)
-	txHash, err := t.AdminSetEnv(feeAddress, serverAddress)
+	txHash, err := t.AdminSetEnv(feeAddress, serverAddress, serverAddress)
 	fmt.Println(txHash, err)
 }
 
-func (t *TanTinTron) AdminSetEnv(feeAddress, bridgeAddress string) (string, error) {
+func (t *TanTinTron) AdminSetEnv(feeAddress, serverAddress, bridgeAddress string) (string, error) {
 	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
 	defer t.Ks.Lock(t.Ka.Address)
 	sigNonce, err := trigger.GetSigNonce(t.ContractAddress, OwnerAccount)
@@ -68,9 +68,11 @@ func (t *TanTinTron) AdminSetEnv(feeAddress, bridgeAddress string) (string, erro
 	//sigNonce := big.NewInt(0)
 	bridgeEth, _ := utils.TronToEth(bridgeAddress)
 	feeEth, _ := utils.TronToEth(feeAddress)
+	serverEth, _ := utils.TronToEth(serverAddress)
 	signature, _ := abi.TantinAdminSetEnvSignatureTron(
 		sigNonce,
 		ethCommon.HexToAddress(feeEth),
+		ethCommon.HexToAddress(serverEth),
 		ethCommon.HexToAddress(bridgeEth),
 	)
 	triggerData := fmt.Sprintf("[{\"address\":\"%s\"},{\"address\":\"%s\"},{\"bytes\":\"%s\"}]",

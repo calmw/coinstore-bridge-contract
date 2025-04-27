@@ -87,8 +87,6 @@ func (b *BridgeTron) AdminSetEnv() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	//sigNonce := big.NewInt(0)
-
 	voteEth, _ := utils.TronToEth(ChainConfig.VoteContractAddress)
 	signature, _ := abi.BridgeAdminSetEnvSignatureTron(
 		sigNonce,

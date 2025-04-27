@@ -28,7 +28,6 @@ func BridgeAdminSetEnvSignatureTron(sigNonce *big.Int, voteAddress common.Addres
 	contractAbi, _ := abi.JSON(strings.NewReader(BridgeSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminSetEnvSignature",
 		sigNonce,
-		chainId,
 		voteAddress,
 		chainId,
 		chainType,
@@ -47,11 +46,12 @@ func VoteAdminSetEnvSignatureTron(sigNonce *big.Int, bridgeAddress common.Addres
 	return GenerateSignatureTron(parameterBytes[4:])
 }
 
-func TantinAdminSetEnvSignatureTron(sigNonce *big.Int, feeAddress, bridgeAddress common.Address) ([]byte, error) {
+func TantinAdminSetEnvSignatureTron(sigNonce *big.Int, feeAddress, serverAddress, bridgeAddress common.Address) ([]byte, error) {
 	contractAbi, _ := abi.JSON(strings.NewReader(TantinSig))
 	parameterBytes, _ := contractAbi.Pack("checkAdminSetEnvSignature",
 		sigNonce,
 		feeAddress,
+		serverAddress,
 		bridgeAddress,
 	)
 	return GenerateSignatureTron(parameterBytes[4:])
