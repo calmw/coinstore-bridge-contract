@@ -3,7 +3,6 @@ package contract
 import (
 	"coinstore/abi"
 	"coinstore/bridge/chains/tron/trigger"
-	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"fmt"
 	"github.com/calmw/tron-sdk/pkg/client"
@@ -18,13 +17,14 @@ import (
 )
 
 type VoteTron struct {
-	ContractAddress string
-	Ka              *keystore.Account
-	Ks              *keystore.KeyStore
-	Cli             *client.GrpcClient
+	ContractAddress    string
+	KeyStorePassphrase string
+	Ka                 *keystore.Account
+	Ks                 *keystore.KeyStore
+	Cli                *client.GrpcClient
 }
 
-func NewVoteTron(ka *keystore.Account, ks *keystore.KeyStore) (*VoteTron, error) {
+func NewVoteTron(ka *keystore.Account, ks *keystore.KeyStore, keyStorePassphrase string) (*VoteTron, error) {
 	endpoint := ChainConfig.RPC
 	cli := client.NewGrpcClient(endpoint)
 	err := cli.Start(grpc.WithInsecure())
@@ -32,15 +32,16 @@ func NewVoteTron(ka *keystore.Account, ks *keystore.KeyStore) (*VoteTron, error)
 		return nil, err
 	}
 	//prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
-	//ks, ka, err := tron_keystore.InitKeyStore(prvKey)
+	//ks, ka, err := tron_keystore_copy.InitKeyStore(prvKey)
 	//if err != nil {
 	//	panic(fmt.Sprintf("private key conversion failed %v", err))
 	//}
 	return &VoteTron{
-		Ks:              ks,
-		Ka:              ka,
-		Cli:             cli,
-		ContractAddress: ChainConfig.VoteContractAddress,
+		KeyStorePassphrase: keyStorePassphrase,
+		Ks:                 ks,
+		Ka:                 ka,
+		Cli:                cli,
+		ContractAddress:    ChainConfig.VoteContractAddress,
 	}, nil
 }
 
@@ -68,9 +69,9 @@ func (v *VoteTron) Init(realyerOneAddress, realyerTwoAddress, realyerThreeAddres
 }
 
 func (v *VoteTron) AdminSetEnv(bridgeAddress string, expiry *big.Int, relayerThreshold *big.Int) (string, error) {
-	_ = v.Ks.Unlock(*v.Ka, tron_keystore.KeyStorePassphrase)
+	_ = v.Ks.Unlock(*v.Ka, v.KeyStorePassphrase)
 	defer v.Ks.Lock(v.Ka.Address)
-	sigNonce, err := trigger.GetSigNonce(v.ContractAddress, OwnerAccount)
+	sigNonce, err := trigger.GetSigNonce(v.ContractAddress, v.Ka.Address.String())
 	if err != nil {
 		return "", err
 	}
@@ -90,7 +91,7 @@ func (v *VoteTron) AdminSetEnv(bridgeAddress string, expiry *big.Int, relayerThr
 		fmt.Sprintf("%x", signature),
 	)
 	fmt.Println(triggerData)
-	tx, err := v.Cli.TriggerContract(OwnerAccount, ChainConfig.VoteContractAddress, "adminSetEnv(address,uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
+	tx, err := v.Cli.TriggerContract(v.Ka.Address.String(), ChainConfig.VoteContractAddress, "adminSetEnv(address,uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
 	fmt.Println("!!!!", err)
 	if err != nil {
 		return "", err
@@ -105,10 +106,10 @@ func (v *VoteTron) AdminSetEnv(bridgeAddress string, expiry *big.Int, relayerThr
 }
 
 func (v *VoteTron) GrantRole(role, addr string) (string, error) {
-	_ = v.Ks.Unlock(*v.Ka, tron_keystore.KeyStorePassphrase)
+	_ = v.Ks.Unlock(*v.Ka, v.KeyStorePassphrase)
 	defer v.Ks.Lock(v.Ka.Address)
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
-	tx, err := v.Cli.TriggerContract(OwnerAccount, v.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
+	tx, err := v.Cli.TriggerContract(v.Ka.Address.String(), v.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}

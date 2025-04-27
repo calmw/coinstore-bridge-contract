@@ -18,21 +18,21 @@ func InitTron(prvKey, adminAddress, feeAddress, serverAddress, realyerOneAddress
 		fmt.Println(err)
 		return
 	}
-	bridge, err := contract.NewBridgeTron(ka, ks)
+	bridge, err := contract.NewBridgeTron(ka, ks, tronKeyStorePassphrase)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	bridge.Init(adminAddress, fee)
 
-	vote, err := contract.NewVoteTron(ka, ks)
+	vote, err := contract.NewVoteTron(ka, ks, tronKeyStorePassphrase)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	vote.Init(realyerOneAddress, realyerTwoAddress, realyerThreeAddress)
 
-	tantin, err := contract.NewTanTinTron(ka, ks)
+	tantin, err := contract.NewTanTinTron(ka, ks, tronKeyStorePassphrase)
 	if err != nil {
 		fmt.Println(err)
 		return

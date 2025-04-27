@@ -1,4 +1,4 @@
-package tron_keystore
+package tron_keystore_copy
 
 import (
 	"encoding/hex"
@@ -11,7 +11,7 @@ import (
 
 const (
 	KeyStorePassphrase = "your_strong_password"
-	KeyStoreDir        = "./tron_keystore/keystore"
+	KeyStoreDir        = "./tron_keystore_copy/keystore"
 )
 
 func InitKeyStore(privateKeyStr string) (*keystore.KeyStore, *keystore.Account, error) {

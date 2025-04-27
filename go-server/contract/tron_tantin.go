@@ -3,7 +3,6 @@ package contract
 import (
 	"coinstore/abi"
 	"coinstore/bridge/chains/tron/trigger"
-	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"fmt"
 	"github.com/calmw/tron-sdk/pkg/client"
@@ -20,13 +19,14 @@ import (
 )
 
 type TanTinTron struct {
-	ContractAddress string
-	Ka              *keystore.Account
-	Ks              *keystore.KeyStore
-	Cli             *client.GrpcClient
+	ContractAddress    string
+	KeyStorePassphrase string
+	Ka                 *keystore.Account
+	Ks                 *keystore.KeyStore
+	Cli                *client.GrpcClient
 }
 
-func NewTanTinTron(ka *keystore.Account, ks *keystore.KeyStore) (*TanTinTron, error) {
+func NewTanTinTron(ka *keystore.Account, ks *keystore.KeyStore, keyStorePassphrase string) (*TanTinTron, error) {
 	endpoint := ChainConfig.RPC
 	cli := client.NewGrpcClient(endpoint)
 	err := cli.Start(grpc.WithInsecure())
@@ -35,15 +35,16 @@ func NewTanTinTron(ka *keystore.Account, ks *keystore.KeyStore) (*TanTinTron, er
 	}
 	//prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
 	////prvKey := "3f9f4b92d709f167b8ba98b9f89a5ec5272973aeb8f1affd11d5d2c67c5acf62"
-	//ks, ka, err := tron_keystore.InitKeyStore(prvKey)
+	//ks, ka, err := tron_keystore_copy.InitKeyStore(prvKey)
 	//if err != nil {
 	//	panic(fmt.Sprintf("private key conversion failed %v", err))
 	//}
 	return &TanTinTron{
-		Ks:              ks,
-		Ka:              ka,
-		Cli:             cli,
-		ContractAddress: ChainConfig.TantinContractAddress,
+		KeyStorePassphrase: keyStorePassphrase,
+		Ks:                 ks,
+		Ka:                 ka,
+		Cli:                cli,
+		ContractAddress:    ChainConfig.TantinContractAddress,
 	}, nil
 }
 
@@ -59,9 +60,9 @@ func (t *TanTinTron) Init(adminAddress, feeAddress, serverAddress string) {
 }
 
 func (t *TanTinTron) AdminSetEnv(feeAddress, serverAddress, bridgeAddress string) (string, error) {
-	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
+	_ = t.Ks.Unlock(*t.Ka, t.KeyStorePassphrase)
 	defer t.Ks.Lock(t.Ka.Address)
-	sigNonce, err := trigger.GetSigNonce(t.ContractAddress, OwnerAccount)
+	sigNonce, err := trigger.GetSigNonce(t.ContractAddress, t.Ka.Address.String())
 	if err != nil {
 		return "", err
 	}
@@ -81,7 +82,7 @@ func (t *TanTinTron) AdminSetEnv(feeAddress, serverAddress, bridgeAddress string
 		fmt.Sprintf("%x", signature),
 	)
 	fmt.Println(triggerData)
-	tx, err := t.Cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetEnv(address,address,bytes)", triggerData, 1500000000, 0, "", 0)
+	tx, err := t.Cli.TriggerContract(t.Ka.Address.String(), t.ContractAddress, "adminSetEnv(address,address,bytes)", triggerData, 1500000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
@@ -94,10 +95,10 @@ func (t *TanTinTron) AdminSetEnv(feeAddress, serverAddress, bridgeAddress string
 }
 
 func (t *TanTinTron) GrantRole(role, addr string) (string, error) {
-	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
+	_ = t.Ks.Unlock(*t.Ka, t.KeyStorePassphrase)
 	defer t.Ks.Lock(t.Ka.Address)
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
-	tx, err := t.Cli.TriggerContract(OwnerAccount, t.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
+	tx, err := t.Cli.TriggerContract(t.Ka.Address.String(), t.ContractAddress, "grantRole(bytes32,address)", triggerData, 9500000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
@@ -110,10 +111,10 @@ func (t *TanTinTron) GrantRole(role, addr string) (string, error) {
 }
 
 func (t *TanTinTron) AdminSetToken(resourceId string, assetsType uint8, tokenAddress string, burnable, mintable, pause bool) (string, error) {
-	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
+	_ = t.Ks.Unlock(*t.Ka, t.KeyStorePassphrase)
 	defer t.Ks.Lock(t.Ka.Address)
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
-	sigNonce, err := trigger.GetSigNonce(t.ContractAddress, OwnerAccount)
+	sigNonce, err := trigger.GetSigNonce(t.ContractAddress, t.Ka.Address.String())
 	if err != nil {
 		return "", err
 	}
@@ -138,7 +139,7 @@ func (t *TanTinTron) AdminSetToken(resourceId string, assetsType uint8, tokenAdd
 		fmt.Sprintf("%x", signature),
 	)
 	fmt.Println(triggerData)
-	tx, err := t.Cli.TriggerContract(OwnerAccount, t.ContractAddress, "adminSetToken(bytes32,uint8,address,bool,bool,bool,bytes)", triggerData, 6000000000, 0, "", 0)
+	tx, err := t.Cli.TriggerContract(t.Ka.Address.String(), t.ContractAddress, "adminSetToken(bytes32,uint8,address,bool,bool,bool,bytes)", triggerData, 6000000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
@@ -151,7 +152,7 @@ func (t *TanTinTron) AdminSetToken(resourceId string, assetsType uint8, tokenAdd
 }
 
 func (t *TanTinTron) Deposit(destinationChainId, amount *big.Int, resourceId, recipient string) (string, error) {
-	_ = t.Ks.Unlock(*t.Ka, tron_keystore.KeyStorePassphrase)
+	_ = t.Ks.Unlock(*t.Ka, t.KeyStorePassphrase)
 	defer t.Ks.Lock(t.Ka.Address)
 	recipientEth, err := utils.TronToEth(recipient)
 	signature, err := abi.TantinDepositSignatureTron(

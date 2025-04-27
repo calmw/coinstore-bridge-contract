@@ -3,7 +3,6 @@ package contract
 import (
 	"coinstore/abi"
 	"coinstore/bridge/chains/tron/trigger"
-	"coinstore/tron_keystore"
 	"coinstore/utils"
 	"fmt"
 	"github.com/calmw/tron-sdk/pkg/client"
@@ -29,13 +28,14 @@ const (
 )
 
 type BridgeTron struct {
-	ContractAddress string
-	Ka              *keystore.Account
-	Ks              *keystore.KeyStore
-	Cli             *client.GrpcClient
+	ContractAddress    string
+	KeyStorePassphrase string
+	Ka                 *keystore.Account
+	Ks                 *keystore.KeyStore
+	Cli                *client.GrpcClient
 }
 
-func NewBridgeTron(ka *keystore.Account, ks *keystore.KeyStore) (*BridgeTron, error) {
+func NewBridgeTron(ka *keystore.Account, ks *keystore.KeyStore, keyStorePassphrase string) (*BridgeTron, error) {
 	endpoint := ChainConfig.RPC
 	cli := client.NewGrpcClient(endpoint)
 	err := cli.Start(grpc.WithInsecure())
@@ -43,29 +43,30 @@ func NewBridgeTron(ka *keystore.Account, ks *keystore.KeyStore) (*BridgeTron, er
 		return nil, err
 	}
 	//prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
-	//ks, ka, err := tron_keystore.InitKeyStore(prvKey)
+	//ks, ka, err := tron_keystore_copy.InitKeyStore(prvKey)
 	//if err != nil {
 	//	panic(fmt.Sprintf("private key conversion failed %v", err))
 	//}
 	return &BridgeTron{
-		Ks:              ks,
-		Ka:              ka,
-		Cli:             cli,
-		ContractAddress: ChainConfig.BridgeContractAddress,
+		KeyStorePassphrase: keyStorePassphrase,
+		Ks:                 ks,
+		Ka:                 ka,
+		Cli:                cli,
+		ContractAddress:    ChainConfig.BridgeContractAddress,
 	}, nil
 }
 
 func (b *BridgeTron) Init(adminAddress string, fee uint64) {
 	//txHash20, err20 := b.TransferUsdtTest()
 	//fmt.Println(txHash20, err20)
-	txHash2, err2 := b.GrantRole(AdminRole, adminAddress)
-	fmt.Println(txHash2, err2)
-	txHash22, err22 := b.GrantRole(BridgeRole, ChainConfig.TantinContractAddress)
-	fmt.Println(txHash22, err22)
-	time.Sleep(time.Second)
-	txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
-	fmt.Println(txHash3, err3)
-	time.Sleep(time.Second)
+	//txHash2, err2 := b.GrantRole(AdminRole, adminAddress)
+	//fmt.Println(txHash2, err2)
+	//txHash22, err22 := b.GrantRole(BridgeRole, ChainConfig.TantinContractAddress)
+	//fmt.Println(txHash22, err22)
+	//time.Sleep(time.Second)
+	//txHash3, err3 := b.GrantRole(VoteRole, ChainConfig.VoteContractAddress)
+	//fmt.Println(txHash3, err3)
+	//time.Sleep(time.Second)
 	txHash, err := b.AdminSetEnv()
 	fmt.Println(txHash, err)
 	time.Sleep(time.Second)
@@ -81,7 +82,8 @@ func (b *BridgeTron) Init(adminAddress string, fee uint64) {
 
 func (b *BridgeTron) AdminSetEnv() (string, error) {
 
-	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
+	err := b.Ks.Unlock(*b.Ka, b.KeyStorePassphrase)
+	//fmt.Println("!!!!!!!", err, b.KeyStorePassphrase)
 	defer b.Ks.Lock(b.Ka.Address)
 	sigNonce, err := trigger.GetSigNonce(b.ContractAddress, b.Ka.Address.String())
 	if err != nil {
@@ -108,13 +110,14 @@ func (b *BridgeTron) AdminSetEnv() (string, error) {
 	}
 	ctrlr := transaction.NewController(b.Cli, b.Ks, b.Ka, tx.Transaction)
 	if err = ctrlr.ExecuteTransaction(); err != nil {
+		fmt.Println("#############", err)
 		return "", err
 	}
 	return common.BytesToHexString(tx.GetTxid()), nil
 }
 
 func (b *BridgeTron) GrantRole(role, addr string) (string, error) {
-	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
+	_ = b.Ks.Unlock(*b.Ka, b.KeyStorePassphrase)
 	defer b.Ks.Lock(b.Ka.Address)
 	triggerData := fmt.Sprintf("[{\"bytes32\":\"%s\"},{\"address\":\"%s\"}]", role, addr)
 	tx, err := b.Cli.TriggerContract(b.Ka.Address.String(), b.ContractAddress, "grantRole(bytes32,address)", triggerData, 8000000000, 0, "", 0)
@@ -149,7 +152,7 @@ func (b *BridgeTron) TransferUsdtTest() (string, error) {
 }
 
 func (b *BridgeTron) AdminSetResource(resourceId string, assetsType uint8, tokenAddress string, decimal, fee *big.Int, pause bool, burnable bool, mintable bool) (string, error) {
-	_ = b.Ks.Unlock(*b.Ka, tron_keystore.KeyStorePassphrase)
+	_ = b.Ks.Unlock(*b.Ka, b.KeyStorePassphrase)
 	defer b.Ks.Lock(b.Ka.Address)
 	resourceIdBytes := hexutils.HexToBytes(strings.TrimPrefix(resourceId, "0x"))
 	sigNonce, err := trigger.GetSigNonce(b.ContractAddress, b.Ka.Address.String())
