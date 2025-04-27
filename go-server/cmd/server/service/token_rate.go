@@ -37,6 +37,7 @@ func GetPrice(c *gin.Context) {
 		})
 		return
 	}
+	fmt.Println("~~~~~~~~~~~1 ")
 	var ok bool
 	price := "1000000"
 	tokenName = strings.ToUpper(tokenName)
@@ -51,6 +52,7 @@ func GetPrice(c *gin.Context) {
 		}
 	}
 
+	fmt.Println("~~~~~~~~~~~2 ")
 	timestamp := time.Now().Unix()
 	signature := ""
 	priceDeci, err := decimal.NewFromString(price)
@@ -73,6 +75,7 @@ func GetPrice(c *gin.Context) {
 		}
 		signature = fmt.Sprintf("%x", priceSignature)
 	} else {
+		fmt.Println("~~~~~~~~~~~ 5 ")
 		priceSignature, err := abi.EvmPriceSignature(big.NewInt(int64(tokenInfo.ChainId)), priceDeci.BigInt(), big.NewInt(timestamp))
 		if err != nil {
 			c.JSON(200, gin.H{
