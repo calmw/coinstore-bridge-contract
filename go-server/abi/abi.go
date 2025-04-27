@@ -484,9 +484,10 @@ func GenerateSignature(parameter []byte) ([]byte, error) {
 }
 
 func GeneratePriceSignature(parameter []byte) ([]byte, error) {
-	privateKeyStr := os.Getenv("TT_BRIDGE_SIGN")
+	privateKeyStr := os.Getenv("PRICE_SIG_ACCOUNT_EVM")
 	if len(privateKeyStr) <= 0 {
-		privateKeyStr = os.Getenv("PRICE_SIG_ACCOUNT_EVM")
+		privateKeyStr = os.Getenv("TT_BRIDGE_SIGN")
+	} else {
 		privateKeyStr = utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", privateKeyStr)
 	}
 	privateKey, err := crypto.HexToECDSA(privateKeyStr)
