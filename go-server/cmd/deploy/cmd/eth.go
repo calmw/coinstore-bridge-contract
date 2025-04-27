@@ -4,6 +4,7 @@ Copyright © 2025 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"coinstore/cmd/deploy/eth"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -11,16 +12,13 @@ import (
 
 // ethCmd represents the eth command
 var ethCmd = &cobra.Command{
-	Use:   "eth",
+	Use:   "bsc",
 	Short: "ETH链合约初始化设置",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long: `功能描述：合约部署后，设置合约
+使用示例: ./tb bsc --admin_address '0xa...' --fee_address '0xa...' --server_address '0xa...' --key 'ee...' --relayer_one_address  '0x1...'   --relayer_two_address  '0x0...' --relayer_three_address '0x2...' `,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("eth called")
+		fmt.Println("设置ETH链合约...")
+		eth.InitTt(PrivateKey, AdminAddress, FeeAddress, ServerAddress, RelayerOne, RelayerTwo, RelayerThree, Fee)
 	},
 }
 
