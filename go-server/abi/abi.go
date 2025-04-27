@@ -492,7 +492,6 @@ func GeneratePriceSignature(parameter []byte) ([]byte, error) {
 	}
 	// 获取地址
 	addr := crypto.PubkeyToAddress(privateKey.PublicKey)
-	fmt.Printf("私钥为: %s\n", privateKeyStr)
 	fmt.Printf("地址为: %s\n", addr.Hex())
 	singer := beeCrypto.NewDefaultSigner(privateKey)
 	hash := crypto.Keccak256Hash(parameter)
