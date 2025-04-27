@@ -52,8 +52,8 @@ func (v *VoteTron) Init(realyerOneAddress, realyerTwoAddress, realyerThreeAddres
 	txHash2, err2 := v.GrantRole(BridgeRole, ChainConfig.BridgeContractAddress)
 	fmt.Println(txHash2, err2)
 	time.Sleep(time.Second)
-	//txHash3, err3 := v.GrantRole(RelayerRole, OwnerAccount) // TODO 线上更改
-	//fmt.Println(txHash3, err3)
+	txHash3, err3 := v.GrantRole(RelayerRole, v.Ka.Address.String()) // TODO 线上去掉
+	fmt.Println(txHash3, err3)
 	time.Sleep(time.Second)
 	txHash4, err4 := v.GrantRole(RelayerRole, realyerOneAddress)
 	fmt.Println(txHash4, err4)

@@ -35,7 +35,7 @@ func NewTanTin() (*TanTinEvm, error) {
 }
 
 func (c TanTinEvm) Init(adminAddress, feeAddress, serverAddress string) {
-	//c.GrantRole(AdminRole, common.HexToAddress(adminAddress))
+	c.GrantRole(AdminRole, common.HexToAddress(adminAddress))
 	//c.GrantRole(BridgeRole, common.HexToAddress(ChainConfig.VoteContractAddress))
 	c.AdminSetEnv(feeAddress, serverAddress)
 }

@@ -49,7 +49,7 @@ func main() {
 		//txHash, err := tantin.Deposit(big.NewInt(1), big.NewInt(3), contract.ResourceIdEth, "TEkkeJsMAQD18HqodvYLZ91BJRv1kG1sN7")
 		txHash, err := tantin.Deposit(
 			big.NewInt(12302),
-			big.NewInt(3),
+			big.NewInt(6*1e6),
 			big.NewInt(1e6),
 			big.NewInt(time.Now().Unix()),
 			contract.ResourceIdUsdt,

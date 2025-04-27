@@ -46,10 +46,10 @@ func (t *TanTinTron) Init(adminAddress, feeAddress, serverAddress string) {
 	txHash1, err1 := t.GrantRole(AdminRole, adminAddress)
 	fmt.Println(txHash1, err1)
 	time.Sleep(time.Second)
-	txHash2, err2 := t.GrantRole(BridgeRole, ChainConfig.VoteContractAddress)
-	fmt.Println(txHash2, err2)
+	//txHash2, err2 := t.GrantRole(BridgeRole, ChainConfig.VoteContractAddress)
+	//fmt.Println(txHash2, err2)
 	time.Sleep(time.Second)
-	txHash, err := t.AdminSetEnv(feeAddress, serverAddress, serverAddress)
+	txHash, err := t.AdminSetEnv(feeAddress, serverAddress, ChainConfig.BridgeContractAddress)
 	fmt.Println(txHash, err)
 }
 
@@ -77,8 +77,9 @@ func (t *TanTinTron) AdminSetEnv(feeAddress, serverAddress, bridgeAddress string
 		bridgeAddress,
 		fmt.Sprintf("%x", signature),
 	)
+	fmt.Println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 	fmt.Println(triggerData)
-	tx, err := t.Cli.TriggerContract(t.Ka.Address.String(), t.ContractAddress, "adminSetEnv(address,address,address,bytes)", triggerData, 1500000000, 0, "", 0)
+	tx, err := t.Cli.TriggerContract(t.Ka.Address.String(), t.ContractAddress, "adminSetEnv(address,address,address,bytes)", triggerData, 900000000, 0, "", 0)
 	if err != nil {
 		return "", err
 	}
