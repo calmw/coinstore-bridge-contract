@@ -34,7 +34,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
     }
 
     /**
-@notice 设置
+        @notice 设置
         @param bridgeAddress_ bridge合约地址
         @param serverAddress_ 服务端价格签名地址
         @param feeAddress_ 跨链费接受地址
@@ -121,7 +121,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
         depositData.recipient = recipient;
         depositData.resourceId = resourceId;
         depositData.destinationChainId = destinationChainId;
-        depositData.chainId = Bridge.chainId();
+        depositData.chainId = block.chainid;
         // 验证接受地址签名
         require(
             checkDepositSignature(recipientSignature, recipient, msg.sender),
@@ -129,12 +129,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
         );
         // 验证价格签名
         require(
-            checkPriceSignature(
-                priceSignature,
-                depositData.chainId,
-                price,
-                priceTimestamp
-            ),
+            checkPriceSignature(priceSignature, price, priceTimestamp),
             "price signature error"
         );
         // 验证价格签名时间
@@ -159,16 +154,19 @@ contract TantinBridge is AccessControl, ITantinBridge {
             depositData.destinationChainId != depositData.chainId,
             "destinationChainId error"
         );
+
         // 实际到账额度
         depositData.feeAmount =
-            (depositData.price / 1e6) *
-            depositData.fee *
+            ((depositData.price * depositData.fee) / 1e6) *
             decimal;
-        require(depositData.amount > depositData.feeAmount, "amount to small");
+        require(depositData.amount > depositData.feeAmount, "amount too small");
         depositData.receiveAmount = depositData.amount - depositData.feeAmount;
         if (assetsType == uint8(AssetsType.Coin)) {
             tokenAddress = address(0);
-            require(msg.value == amount, "incorrect value supplied.");
+            require(
+                msg.value == depositData.amount,
+                "incorrect value supplied."
+            );
             Address.sendValue(payable(feeAddress), depositData.feeAmount);
             Address.sendValue(
                 payable(address(this)),
@@ -177,19 +175,19 @@ contract TantinBridge is AccessControl, ITantinBridge {
         } else if (assetsType == uint8(AssetsType.Erc20)) {
             IERC20 erc20 = IERC20(tokenAddress);
             if (burnable) {
-                erc20.transferFrom(
+                erc20.safeTransferFrom(
                     msg.sender,
                     address(0),
                     depositData.receiveAmount
                 );
             } else {
-                erc20.transferFrom(
+                erc20.safeTransferFrom(
                     msg.sender,
                     address(this),
                     depositData.receiveAmount
                 );
             }
-            erc20.transferFrom(
+            erc20.safeTransferFrom(
                 msg.sender,
                 feeAddress,
                 depositData.feeAmount
@@ -232,7 +230,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
     }
 
     /**
-        @notice 查询跨链费用
+@notice 查询跨链费用
         @param resourceId 跨链桥设置的resourceId
     */
     function getFee(bytes32 resourceId) external view returns (uint256) {
@@ -259,7 +257,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
             Address.sendValue(payable(msg.sender), amount);
         } else {
             IERC20 erc20 = IERC20(tokenAddress);
-            erc20.transfer(msg.sender, amount);
+            erc20.safeTransfer(msg.sender, amount);
         }
     }
 
@@ -270,9 +268,9 @@ contract TantinBridge is AccessControl, ITantinBridge {
         address sender
     ) private pure returns (bool) {
         bytes32 messageHash = keccak256(abi.encode(recipient));
-        address recoverAddress = messageHash
-            .toEthSignedMessageHash()
-            .recoverSigner(signature);
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature
+        );
 
         return recoverAddress == sender;
     }
@@ -280,14 +278,13 @@ contract TantinBridge is AccessControl, ITantinBridge {
     // 验证price签名
     function checkPriceSignature(
         bytes memory signature,
-        uint256 chainId,
         uint256 price,
         uint256 priceTimestamp
     ) private view returns (bool) {
         bytes32 messageHash = keccak256(
-            abi.encode(chainId, price, priceTimestamp)
+            abi.encode(block.chainid, price, priceTimestamp)
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature
         );
 
@@ -303,9 +300,9 @@ contract TantinBridge is AccessControl, ITantinBridge {
         bytes32 messageHash = keccak256(
             abi.encode(sigNonce, feeAddress_, serverAddress_, bridgeAddress_)
         );
-        address recoverAddress = messageHash
-            .toEthSignedMessageHash()
-            .recoverSigner(signature_);
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature_
+        );
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -320,13 +317,12 @@ contract TantinBridge is AccessControl, ITantinBridge {
         bytes memory signature,
         address user
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, chainId, user, sigNonce)
+            abi.encode(sigNonce, block.chainid, user)
         );
-        address recoverAddress = messageHash
-            .toEthSignedMessageHash()
-            .recoverSigner(signature);
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature
+        );
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -341,11 +337,12 @@ contract TantinBridge is AccessControl, ITantinBridge {
         bytes memory signature,
         address user
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
-        bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId, user));
-        address recoverAddress = messageHash
-            .toEthSignedMessageHash()
-            .recoverSigner(signature);
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, block.chainid, user)
+        );
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature
+        );
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -365,11 +362,10 @@ contract TantinBridge is AccessControl, ITantinBridge {
         bool mintable,
         bool pause
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
             abi.encode(
                 sigNonce,
-                chainId,
+                block.chainid,
                 resourceID,
                 assetsType,
                 tokenAddress,
@@ -378,9 +374,9 @@ contract TantinBridge is AccessControl, ITantinBridge {
                 pause
             )
         );
-        address recoverAddress = messageHash
-            .toEthSignedMessageHash()
-            .recoverSigner(signature);
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature
+        );
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {
@@ -395,13 +391,12 @@ contract TantinBridge is AccessControl, ITantinBridge {
         address tokenAddress,
         uint256 amount
     ) private returns (bool) {
-        uint256 chainId = Bridge.chainId();
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, chainId, tokenAddress, amount)
+            abi.encode(sigNonce, block.chainid, tokenAddress, amount)
         );
-        address recoverAddress = messageHash
-            .toEthSignedMessageHash()
-            .recoverSigner(signature);
+        address recoverAddress = messageHash.toEthSignedMessageHash().recover(
+            signature
+        );
 
         bool res = recoverAddress == superAdminAddress;
         if (res) {

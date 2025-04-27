@@ -52,8 +52,6 @@ interface IBridge {
         bytes calldata data
     ) external payable;
 
-    function chainId() external view returns (uint256);
-
     function getFeeByResourceId(
         bytes32 resourceId
     ) external view returns (uint256);
@@ -61,7 +59,7 @@ interface IBridge {
     function getTokenInfoByResourceId(
         bytes32 resourceId
     )
-    external
-    view
-    returns (uint8, address, bool, uint256, uint256, bool, bool);
+        external
+        view
+        returns (uint8, address, bool, uint256, uint256, bool, bool);
 }

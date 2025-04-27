@@ -18,7 +18,6 @@ contract Bridge is IBridge, Pausable, AccessControl {
     uint256 public sigNonce; // 签名nonce, parameter➕nonce➕chainID
     address private superAdminAddress;
     IVote public Vote; // vote 合约
-    uint256 public chainId; // 自定义链ID
     uint256 public chainType; // 自定义链类型， 1 EVM 2 Tron
     mapping(uint256 => uint256) public depositCounts; // destinationChainID => number of deposits
     mapping(bytes32 => TokenInfo) public resourceIdToTokenInfo; //  resourceID => 设置的Token信息
@@ -30,29 +29,19 @@ contract Bridge is IBridge, Pausable, AccessControl {
     }
 
     /**
-        @notice 设置
+@notice 设置
         @param voteAddress_ 投票合约地址
-        @param chainId_ 链ID
         @param signature_ 签名
      */
     function adminSetEnv(
         address voteAddress_,
-        uint256 chainId_,
-        uint256 chainType_,
         bytes memory signature_
     ) external onlyRole(ADMIN_ROLE) {
         require(
-            checkAdminSetEnvSignature(
-                signature_,
-                voteAddress_,
-                chainId_,
-                chainType_
-            ),
+            checkAdminSetEnvSignature(signature_, voteAddress_),
             "signature error"
         );
         Vote = IVote(voteAddress_);
-        chainId = chainId_;
-        chainType = chainType_;
     }
 
     /**
@@ -198,13 +187,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
     // 验证adminSetEnv签名
     function checkAdminSetEnvSignature(
         bytes memory signature_,
-        address voteAddress_,
-        uint256 chainId_,
-        uint256 chainType_
+        address voteAddress_
     ) private returns (bool) {
-        bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, voteAddress_, chainId_, chainType_)
-        );
+        bytes32 messageHash = keccak256(abi.encode(sigNonce, voteAddress_));
         address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
             signature_
         );
@@ -215,26 +200,11 @@ contract Bridge is IBridge, Pausable, AccessControl {
         return res;
     }
 
-    function checkAdminSetEnvSignature2(
-        bytes memory signature_,
-        address voteAddress_,
-        uint256 chainId_,
-        uint256 chainType_
-    ) private returns (address) {
-        bytes32 messageHash = keccak256(
-            abi.encode(sigNonce, voteAddress_, chainId_, chainType_)
-        );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature_
-        );
-        return recoverAddress;
-    }
-
     // 验证adminPauseTransfers签名
     function checkAdminPauseTransfersSignature(
         bytes memory signature
     ) private returns (bool) {
-        bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId));
+        bytes32 messageHash = keccak256(abi.encode(sigNonce, block.chainid));
         address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
             signature
         );
@@ -249,7 +219,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
     function checkAdminUnpauseTransfersSignature(
         bytes memory signature
     ) private returns (bool) {
-        bytes32 messageHash = keccak256(abi.encode(sigNonce, chainId));
+        bytes32 messageHash = keccak256(abi.encode(sigNonce, block.chainid));
         address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
             signature
         );
@@ -275,7 +245,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
         bytes32 messageHash = keccak256(
             abi.encode(
                 sigNonce,
-                chainId,
+                block.chainid,
                 resourceID,
                 assetsType,
                 tokenAddress,
@@ -286,7 +256,7 @@ contract Bridge is IBridge, Pausable, AccessControl {
                 mintable
             )
         );
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
+        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner()(
             signature
         );
         bool res = recoverAddress == superAdminAddress;
