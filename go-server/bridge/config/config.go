@@ -3,7 +3,6 @@ package config
 import (
 	"coinstore/db"
 	"coinstore/model"
-	"github.com/calmw/tron-sdk/pkg/address"
 	"github.com/shopspring/decimal"
 	"math/big"
 )
@@ -24,12 +23,10 @@ const (
 var TronCfg Config
 
 type Config struct {
-	ChainName string
-	ChainId   int
-	//ChainType             ChainType
+	ChainName             string
+	ChainId               int
 	Endpoint              string
 	From                  string
-	FromTron              address.Address
 	BridgeContractAddress string
 	VoteContractAddress   string
 	GasLimit              *big.Int
@@ -43,7 +40,7 @@ type Config struct {
 }
 
 func NewConfig(cfg model.ChainInfo) Config {
-	var err error
+	//var err error
 	gasLimit := big.NewInt(DefaultGasLimit)
 	if cfg.GasLimit > 0 {
 		gasLimit = big.NewInt(cfg.GasLimit)
@@ -71,21 +68,12 @@ func NewConfig(cfg model.ChainInfo) Config {
 	if cfg.Http > 0 {
 		http = true
 	}
-	fromAddress := address.Address{}
-	if cfg.ChainType == 2 {
-		fromAddress, err = address.Base58ToAddress(cfg.From)
-		if err != nil {
-			panic(err)
-		}
-	}
 
 	return Config{
-		ChainName: cfg.ChainName,
-		ChainId:   cfg.ChainId,
-		//ChainType:             ChainType(cfg.ChainType),
+		ChainName:             cfg.ChainName,
+		ChainId:               cfg.ChainId,
 		Endpoint:              cfg.Endpoint,
 		From:                  cfg.From,
-		FromTron:              fromAddress,
 		BridgeContractAddress: cfg.BridgeContract,
 		VoteContractAddress:   cfg.VoteContract,
 		GasLimit:              gasLimit,

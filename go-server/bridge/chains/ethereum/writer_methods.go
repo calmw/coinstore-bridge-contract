@@ -74,6 +74,12 @@ func IDAndNonce(srcId msg.ChainId, nonce msg.Nonce) *big.Int {
 
 func (w *Writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
 	fmt.Println("$$$$$$$$$$$$$$", w)
+	fmt.Println("$$$$$$$$$$$$$$", w)
+	fmt.Println("$$$$$$$$$$$$$$", w)
+	fmt.Println("$$$$$$$$$$$$$$", w)
+	fmt.Println("$$$$$$$$$$$$$$", w)
+	fmt.Println("$$$$$$$$$$$$$$", w)
+	fmt.Println("$$$$$$$$$$$$$$", w)
 	fmt.Println("$$$$$$$$$$$$$$")
 	fmt.Println(w.conn.CallOpts())
 	fmt.Println("$$$$$$$$$$$$$$")
