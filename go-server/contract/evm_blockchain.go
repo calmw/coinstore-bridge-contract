@@ -136,7 +136,7 @@ func InitTantinEnv() {
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
 		BridgeId:              1,
-		ChainId:               202502,
+		ChainId:               12302,
 		ChainTypeId:           1,
 		RPC:                   "https://rpc.tantin.com",
 		BridgeContractAddress: "0xD2a68d1Df5b17833e8dD59D72CC35Be4b248Adc7",
@@ -155,11 +155,9 @@ func InitBscEnv() {
 	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
-		BridgeId: 2,
-		//ChainId:     56,
-		ChainId:     97,
-		ChainTypeId: 1,
-		//RPC:                   "https://late-crimson-seed.bsc.quiknode.pro/a4fc048c9a2202531c24cb466332b6072d63c590",
+		BridgeId:              2,
+		ChainId:               97,
+		ChainTypeId:           1,
 		RPC:                   "https://data-seed-prebsc-2-s3.bnbchain.org:8545",
 		BridgeContractAddress: "0x27B56c6A1C66A78e41A20141e79F8559C33af9b5",
 		VoteContractAddress:   "0x62B166B387E0EA79Fa52Ae3A623dbF9F8Db3893b",
@@ -198,11 +196,9 @@ func InitEthEnv() {
 	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
-		BridgeId: 4,
-		//ChainId:     1,
-		ChainId:     11155111,
-		ChainTypeId: 1,
-		//RPC:                   "https://late-crimson-seed.quiknode.pro/a4fc048c9a2202531c24cb466332b6072d63c590",
+		BridgeId:              4,
+		ChainId:               11155111,
+		ChainTypeId:           1,
 		RPC:                   "https://sepolia.drpc.org",
 		BridgeContractAddress: "0x0E55103d7862e4EB499159BDc876A2156A795D06",
 		VoteContractAddress:   "0x6f98FEa5fb2A542729Ae667EaC85332d1efbba34",
