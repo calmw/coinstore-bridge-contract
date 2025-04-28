@@ -209,20 +209,40 @@ func InitBscProdEnv() {
 	}
 }
 
+//func InitEthEnv() {
+//	//coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
+//	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
+//	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
+//	ChainConfig = ChainConfigs{
+//		BridgeId: 4,
+//		//ChainId:     1,
+//		ChainId:     11155111,
+//		ChainTypeId: 1,
+//		//RPC:                   "https://late-crimson-seed.quiknode.pro/a4fc048c9a2202531c24cb466332b6072d63c590",
+//		RPC:                   "https://sepolia.drpc.org",
+//		BridgeContractAddress: "0x0E55103d7862e4EB499159BDc876A2156A795D06",
+//		VoteContractAddress:   "0x6f98FEa5fb2A542729Ae667EaC85332d1efbba34",
+//		TantinContractAddress: "0xA916A9B2a5dE9835A8811818991D7150CDF90faf",
+//		UsdtAddress:           "0x94Bbc0cc03245Ec1f9B5d7134fB3A9D579ADc3c9", // Tether USD
+//		UsdcAddress:           "0x43f66dB67821e38BF935924c999B94dBD24Bd35f", // USD Coin
+//		EthAddress:            "0x0000000000000000000000000000000000000000",
+//		WEthAddress:           "0xA94706880640B461E25034277E3f8d625B730Bc6",
+//		PrivateKey:            privateKeyStr,
+//	}
+//}
+
 func InitEthEnv() {
 	//coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
 	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
-		BridgeId: 4,
-		//ChainId:     1,
-		ChainId:     11155111,
-		ChainTypeId: 1,
-		//RPC:                   "https://late-crimson-seed.quiknode.pro/a4fc048c9a2202531c24cb466332b6072d63c590",
-		RPC:                   "https://sepolia.drpc.org",
-		BridgeContractAddress: "0x0E55103d7862e4EB499159BDc876A2156A795D06",
-		VoteContractAddress:   "0x6f98FEa5fb2A542729Ae667EaC85332d1efbba34",
-		TantinContractAddress: "0xA916A9B2a5dE9835A8811818991D7150CDF90faf",
+		BridgeId:              4,
+		ChainId:               5611,
+		ChainTypeId:           1,
+		RPC:                   "https://opbnb-testnet-rpc.bnbchain.org",
+		BridgeContractAddress: "0x27B56c6A1C66A78e41A20141e79F8559C33af9b5",
+		VoteContractAddress:   "0x62B166B387E0EA79Fa52Ae3A623dbF9F8Db3893b",
+		TantinContractAddress: "0x94Bbc0cc03245Ec1f9B5d7134fB3A9D579ADc3c9",
 		UsdtAddress:           "0x94Bbc0cc03245Ec1f9B5d7134fB3A9D579ADc3c9", // Tether USD
 		UsdcAddress:           "0x43f66dB67821e38BF935924c999B94dBD24Bd35f", // USD Coin
 		EthAddress:            "0x0000000000000000000000000000000000000000",

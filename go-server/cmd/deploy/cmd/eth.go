@@ -12,7 +12,7 @@ import (
 
 // ethCmd represents the eth command
 var ethCmd = &cobra.Command{
-	Use:   "bsc",
+	Use:   "eth",
 	Short: "ETH链合约初始化设置",
 	Long: `功能描述：合约部署后，设置合约
 使用示例: ./tb bsc --admin_address '0xa...' --fee_address '0xa...' --server_address '0xa...' --key 'ee...' --relayer_one_address  '0x1...'   --relayer_two_address  '0x0...' --relayer_three_address '0x2...' `,

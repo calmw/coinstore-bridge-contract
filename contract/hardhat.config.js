@@ -45,10 +45,11 @@ module.exports = {
         sepolia: {
             // url: "https://sepolia.infura.io/v3/732f6502b35c486fb07e333b32e89c04",
             // url: "https://endpoints.omniatech.io/v1/eth/sepolia/public",
-            // url: "https://sepolia.drpc.org",
-            url: "https://1rpc.io/sepolia",
-            accounts: [`${PRIVATE_KEY}`]
-            // gasPrice: 1000000000000
+            url: "https://sepolia.drpc.org",
+            // url: "https://1rpc.io/sepolia",
+            // url: "https://linea-sepolia.infura.io",
+            accounts: [`${PRIVATE_KEY}`],
+            gasPrice: 1000000000000
         }
     },
     etherscan: {
