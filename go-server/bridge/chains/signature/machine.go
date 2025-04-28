@@ -55,7 +55,6 @@ func SignAndSendTxEth(cli *ethclient.Client, chainId uint64, tx *types.Transacti
 	}
 
 	res, err := GetSignedRlpData("https://18.141.210.154:8088/signature/sign", postData)
-	fmt.Println("RequestWithPem error:", err)
 	var machineResp MachineResp
 	err = json.Unmarshal(res, &machineResp)
 	if err != nil {
@@ -80,7 +79,19 @@ func SignAndSendTxTron(chainId int, UnsignedRawData []byte, apiSecret string) ([
 	chainId = 728126428
 	taskID := RandInt(100, 10000)
 	// 签名数据
-	rawData := fmt.Sprintf("%x", UnsignedRawData)
+
+	////
+	//proto.Marshal()
+	//rawData, err := proto.Marshal(tx.Transaction.GetRawData())
+	//if err != nil {
+	//	return "", err
+	//}
+	h256h := sha256.New()
+	h256h.Write(UnsignedRawData)
+	hash := h256h.Sum(nil)
+	rawData := fmt.Sprintf("%x", hash)
+
+	///
 	sigStr := fmt.Sprintf("%d%s%d%s%s",
 		chainId,
 		strings.ToLower(sigAccount),
@@ -102,7 +113,6 @@ func SignAndSendTxTron(chainId int, UnsignedRawData []byte, apiSecret string) ([
 	}
 
 	res, err := GetSignedRlpData("https://18.141.210.154:8088/signature/sign", postData)
-	fmt.Println("RequestWithPem error:", err)
 	var machineResp MachineResp
 	err = json.Unmarshal(res, &machineResp)
 	if err != nil {

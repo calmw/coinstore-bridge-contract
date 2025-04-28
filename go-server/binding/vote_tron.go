@@ -3,6 +3,7 @@ package binding
 import (
 	"coinstore/bridge/chains/tron/trigger"
 	"coinstore/utils"
+	"fmt"
 	"github.com/calmw/tron-sdk/pkg/client"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
@@ -48,9 +49,10 @@ func (v *VoteTron) HasVotedOnProposal(arg0 *big.Int, arg1 [32]byte, arg2 common.
 }
 
 func (v *VoteTron) VoteProposal(originChainId *big.Int, originDepositNonce *big.Int, resourceId [32]byte, dataHash [32]byte) (string, error) {
-	return trigger.VoteProposal(v.cli, OwnerAccount, v.ContractAddress, originChainId, originDepositNonce, resourceId, dataHash)
+	fmt.Println(v.FromAddress, "@12#")
+	return trigger.VoteProposal(v.cli, v.FromAddress, v.ContractAddress, originChainId, originDepositNonce, resourceId, dataHash)
 }
 
 func (v *VoteTron) ExecuteProposal(originChainId *big.Int, originDepositNonce *big.Int, data []byte, resourceId [32]byte) (string, error) {
-	return trigger.ExecuteProposal(v.cli, OwnerAccount, v.ContractAddress, originChainId, originDepositNonce, data, resourceId)
+	return trigger.ExecuteProposal(v.cli, v.FromAddress, v.ContractAddress, originChainId, originDepositNonce, data, resourceId)
 }

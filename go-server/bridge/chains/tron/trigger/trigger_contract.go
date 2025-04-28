@@ -216,7 +216,7 @@ func VoteProposal(cli *client.GrpcClient, from, contractAddress string, originCh
 	if len(apiSecret) <= 0 {
 		apiSecret = "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"
 	}
-	if err = ExecuteTronTransaction(ctrlr, 728126428, from, apiSecret); err != nil {
+	if err = ExecuteTronTransaction(ctrlr, 728126428, apiSecret); err != nil {
 		return "", err
 	}
 	tx.GetLogs()
@@ -259,7 +259,7 @@ func ExecuteProposal(cli *client.GrpcClient, from, contractAddress string, origi
 	if len(apiSecret) <= 0 {
 		apiSecret = "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"
 	}
-	if err = ExecuteTronTransaction(ctrlr, 728126428, from, apiSecret); err != nil {
+	if err = ExecuteTronTransaction(ctrlr, 728126428, apiSecret); err != nil {
 		return "", err
 	}
 	return hexutils.BytesToHex(tx.GetTxid()), nil

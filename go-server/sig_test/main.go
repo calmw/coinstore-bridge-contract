@@ -115,7 +115,6 @@ func ApproveSigTest() error {
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
 	}
 	res, err := RequestWithPem("https://18.141.210.154:8088/signature/sign", postData)
-	fmt.Println("RequestWithPem error:", err)
 	var machineResp MachineResp
 	err = json.Unmarshal(res, &machineResp)
 	if err != nil {

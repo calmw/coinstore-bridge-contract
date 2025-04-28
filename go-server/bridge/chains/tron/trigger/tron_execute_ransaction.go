@@ -7,31 +7,27 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func ExecuteTronTransaction(c *transaction.Controller, chainId int, fromAddress, apiSecret string) error {
-	fmt.Println(c.Behavior.SigningImpl, "~~~~~~~~~")
+func ExecuteTronTransaction(c *transaction.Controller, chainId int, apiSecret string) error {
 	switch c.Behavior.SigningImpl {
 	case transaction.Software:
 		//c.SignTxForSending()
-		err := SignTxForSending(c, chainId, fromAddress, apiSecret)
+		fmt.Println("~~~~~~~~~~~~~~~~~~~~~~~1 ", c.Tx.Signature)
+		err := SignTxForSending(c, chainId, apiSecret)
 		if err != nil {
 			return err
 		}
+		fmt.Println("~~~~~~~~~~~~~~~~~~~~~~~2 ", c.Tx.Signature)
 	case transaction.Ledger:
 		c.HardwareSignTxForSending()
 	}
-	err := SignTxForSending(c, chainId, fromAddress, apiSecret)
-	fmt.Println("Signature !! 1", fmt.Sprintf("%x", c.Tx.Signature))
-	if err != nil {
-		return err
-	}
+	fmt.Println("Signature:", fmt.Sprintf("%x", c.Tx.Signature))
 	c.SendSignedTx()
 	c.TxConfirmation()
 	return c.ExecutionError
 }
 
-func SignTxForSending(c *transaction.Controller, chainId int, fromAddress, apiSecret string) error {
+func SignTxForSending(c *transaction.Controller, chainId int, apiSecret string) error {
 	rawData, err := proto.Marshal(c.Tx.GetRawData())
-	//fmt.Println("rawData !! 1", fmt.Sprintf("%x", rawData))
 	if err != nil {
 		return err
 	}
