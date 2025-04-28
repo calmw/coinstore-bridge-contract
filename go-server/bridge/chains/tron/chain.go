@@ -20,7 +20,7 @@ type Chain struct {
 
 func InitializeChain(cfg *config.Config, logger log.Logger, sysErr chan<- error) (*Chain, error) {
 	stop := make(chan int)
-	conn := NewConnection(cfg.ChainType, cfg.Endpoint, cfg.Http, cfg.From, logger, cfg.GasLimit, cfg.MaxGasPrice, cfg.MinGasPrice)
+	conn := NewConnection(cfg.Endpoint, cfg.Http, cfg.From, logger, cfg.GasLimit, cfg.MaxGasPrice, cfg.MinGasPrice)
 	err := conn.Connect()
 	if err != nil {
 		return nil, err
@@ -76,9 +76,9 @@ func (c *Chain) Name() string {
 	return c.cfg.ChainName
 }
 
-func (c *Chain) ChainType() config.ChainType {
-	return c.cfg.ChainType
-}
+//func (c *Chain) ChainType() config.ChainType {
+//	return c.cfg.ChainType
+//}
 
 func (c *Chain) LatestBlock() core.LatestBlock {
 	return c.listener.latestBlock

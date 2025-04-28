@@ -11,7 +11,7 @@ type Chain interface {
 	Start() error // Start chain
 	SetRouter(*Router)
 	Id() msg.ChainId
-	ChainType() config.ChainType
+	//ChainType() config.ChainType
 	Name() string
 	LatestBlock() LatestBlock
 	Stop()

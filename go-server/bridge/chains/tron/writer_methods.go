@@ -94,14 +94,11 @@ func (w *Writer) shouldVote(m msg.Message, dataHash [32]byte) bool {
 }
 
 func (w *Writer) CreateProposal(m msg.Message) bool {
-	fmt.Println(m, "~~~")
-	fmt.Println(w, "~~~")
 	w.log.Info("Creating generic proposal", "src", m.Source, "nonce", m.DepositNonce)
 
 	metadata := m.Payload[0].([]byte)
 	data := chains.ConstructGenericProposalData(metadata)
 	bridgeEthAddress, _ := utils.TronToEth(w.Cfg.BridgeContractAddress)
-	fmt.Println("~~~~~", bridgeEthAddress)
 	toHash := append(common.HexToAddress(bridgeEthAddress).Bytes(), data...)
 	dataHash := utils.Keccak256(toHash)
 	if !w.shouldVote(m, dataHash) {
@@ -179,7 +176,6 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 				dataHash,
 			)
 
-			fmt.Println("~~~~~~~~~~~~~~~~ dataHash ")
 			fmt.Println(fmt.Sprintf("0x%x", dataHash))
 			if err == nil {
 				w.log.Info("Submitted proposal vote", "tx", txHash, "src", m.Source, "depositNonce", m.DepositNonce)
@@ -238,7 +234,6 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 				m.ResourceId,
 			)
 
-			fmt.Println("~~~~~~~~~~~~~~~~", m.Source.Big(), "~", m.DepositNonce.Big())
 			fmt.Println(fmt.Sprintf("0x%x", data))
 
 			if err == nil {

@@ -152,10 +152,7 @@ func SendTransactionFromRlpData(cli *ethclient.Client, rlpDataHex string) (strin
 	fmt.Println(rlpDataHex)
 	fmt.Println(strings.TrimPrefix(rlpDataHex, "0x"))
 	rawTxBytes := hexutils.HexToBytes(strings.TrimPrefix(rlpDataHex, "0x"))
-
-	//bb := hexutils.HexToBytes("f8ac808504a817c8008261a8942bf013133ae838b6934b7f96fd43a10ee3fc3e1880b844095ea7b3000000000000000000000000982d3ef9db6c2cb4aadfd609eb69264f382e5c5d000000000000000000000000000000000000000000000000000000000000000183062e2fa00a41d1514e447d8a71590f824b27dcf4aabd8387eb5975e540e84f163ccef1a2a04b2e16da5994099e1c82043109f6c608cc03ee76595b55c2e042301f49655003")
 	tx := new(types.Transaction)
-	//err := rlp.DecodeBytes(bb, &tx)
 	err := rlp.DecodeBytes(rawTxBytes, &tx)
 	if err != nil {
 		return "", err
@@ -167,23 +164,6 @@ func SendTransactionFromRlpData(cli *ethclient.Client, rlpDataHex string) (strin
 
 	fmt.Printf("tx sent: %s", tx.Hash().Hex())
 	return tx.Hash().String(), nil
-
-	// tx sent: 0xc429e5f128387d224ba8bed6885e86525e14bfdc2eb24b5e9c3351a1176fd81f
-	//sData := "0xab...."
-	//sData = strings.TrimPrefix(sData, "0x")
-	//sDataByte := hexutils.HexToBytes(sData)
-	//newTx := types.Transaction{}
-	//
-	//err := newTx.UnmarshalJSON(sDataByte)
-	//if err != nil {
-	//	return
-	//}
-	//// 发送交易到链上
-	//err = client.SendTransaction(context.Background(), &newTx)
-	//if err != nil {
-	//	log.Fatalf("Failed to send transaction: %v", err)
-	//}
-	//fmt.Println("Transaction sent:", signedTx.Hash().Hex()) // 打印交易哈希
 
 }
 

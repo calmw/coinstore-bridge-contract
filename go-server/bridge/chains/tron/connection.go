@@ -40,9 +40,9 @@ type Connection struct {
 	connTron *client.GrpcClient
 }
 
-func NewConnection(chainType config.ChainType, endpoint string, http bool, from string, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
+func NewConnection(endpoint string, http bool, from string, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
 	return &Connection{
-		chainType:   chainType,
+		//chainType:   chainType,
 		endpoint:    endpoint,
 		http:        http,
 		from:        from,

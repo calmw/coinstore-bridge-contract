@@ -24,9 +24,9 @@ const (
 var TronCfg Config
 
 type Config struct {
-	ChainName             string
-	ChainId               int
-	ChainType             ChainType
+	ChainName string
+	ChainId   int
+	//ChainType             ChainType
 	Endpoint              string
 	From                  string
 	FromTron              address.Address
@@ -80,9 +80,9 @@ func NewConfig(cfg model.ChainInfo) Config {
 	}
 
 	return Config{
-		ChainName:             cfg.ChainName,
-		ChainId:               cfg.ChainId,
-		ChainType:             ChainType(cfg.ChainType),
+		ChainName: cfg.ChainName,
+		ChainId:   cfg.ChainId,
+		//ChainType:             ChainType(cfg.ChainType),
 		Endpoint:              cfg.Endpoint,
 		From:                  cfg.From,
 		FromTron:              fromAddress,

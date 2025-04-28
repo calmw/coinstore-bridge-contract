@@ -6,12 +6,12 @@ import (
 	"fmt"
 	log "github.com/calmw/clog"
 	"github.com/calmw/tron-sdk/pkg/client"
-	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 	"math/big"
+	"os"
 	"sync"
 	"time"
 )
@@ -67,37 +67,36 @@ func (c *Connection) Connect() error {
 		return err
 	}
 	c.connEvm = ethclient.NewClient(rpcClient)
-
 	c.callOpts = &bind.CallOpts{From: ethcommon.HexToAddress(c.from)}
 
 	return nil
 }
 
 // newTransactOpts builds the TransactOpts for the connection's keypair.
-func (c *Connection) newTransactOpts() error {
-	nonce, err := c.connEvm.PendingNonceAt(context.Background(), ethcommon.HexToAddress(c.from))
-	if err != nil {
-		return err
-	}
-	gasPrice, err := c.connEvm.SuggestGasPrice(context.Background())
-	if err != nil {
-		return err
-	}
-	gasLimit, err := c.connEvm.EstimateGas(context.Background(), ethereum.CallMsg{})
-	if err != nil {
-		return err
-	}
-	gasTipCap, err := c.connEvm.SuggestGasTipCap(context.Background())
-	if err != nil {
-		return err
-	}
-	c.opts.Nonce = big.NewInt(int64(nonce))
-	c.opts.GasPrice = gasPrice
-	c.opts.GasLimit = gasLimit
-	c.opts.GasTipCap = gasTipCap
-
-	return nil
-}
+//func (c *Connection) newTransactOpts() error {
+//	nonce, err := c.connEvm.PendingNonceAt(context.Background(), ethcommon.HexToAddress(c.from))
+//	if err != nil {
+//		return err
+//	}
+//	gasPrice, err := c.connEvm.SuggestGasPrice(context.Background())
+//	if err != nil {
+//		return err
+//	}
+//	gasLimit, err := c.connEvm.EstimateGas(context.Background(), ethereum.CallMsg{})
+//	if err != nil {
+//		return err
+//	}
+//	gasTipCap, err := c.connEvm.SuggestGasTipCap(context.Background())
+//	if err != nil {
+//		return err
+//	}
+//	c.opts.Nonce = big.NewInt(int64(nonce))
+//	c.opts.GasPrice = gasPrice
+//	c.opts.GasLimit = gasLimit
+//	c.opts.GasTipCap = gasTipCap
+//
+//	return nil
+//}
 
 func (c *Connection) ClientEvm() *ethclient.Client {
 	return c.connEvm
@@ -115,24 +114,24 @@ func (c *Connection) CallOpts() *bind.CallOpts {
 	return c.callOpts
 }
 
-func (c *Connection) SafeEstimateGas() (*big.Int, error) {
-	var suggestedGasPrice *big.Int
-	nodePriceEstimate, err := c.connEvm.SuggestGasPrice(context.TODO())
-	if err != nil {
-		return nil, err
-	} else {
-		suggestedGasPrice = nodePriceEstimate
-	}
-
-	gasPrice := multiplyGasPrice(suggestedGasPrice, c.gasMultiplier)
-	if gasPrice.Cmp(c.minGasPrice) == -1 {
-		return c.minGasPrice, nil
-	} else if gasPrice.Cmp(c.maxGasPrice) == 1 {
-		return c.maxGasPrice, nil
-	} else {
-		return gasPrice, nil
-	}
-}
+//func (c *Connection) SafeEstimateGas() (*big.Int, error) {
+//	var suggestedGasPrice *big.Int
+//	nodePriceEstimate, err := c.connEvm.SuggestGasPrice(context.TODO())
+//	if err != nil {
+//		return nil, err
+//	} else {
+//		suggestedGasPrice = nodePriceEstimate
+//	}
+//
+//	gasPrice := multiplyGasPrice(suggestedGasPrice, c.gasMultiplier)
+//	if gasPrice.Cmp(c.minGasPrice) == -1 {
+//		return c.minGasPrice, nil
+//	} else if gasPrice.Cmp(c.maxGasPrice) == 1 {
+//		return c.maxGasPrice, nil
+//	} else {
+//		return gasPrice, nil
+//	}
+//}
 
 func (c *Connection) EstimateGasLondon(baseFee *big.Int) (*big.Int, *big.Int, error) {
 	var maxPriorityFeePerGas *big.Int
@@ -166,51 +165,42 @@ func (c *Connection) EstimateGasLondon(baseFee *big.Int) (*big.Int, *big.Int, er
 	return maxPriorityFeePerGas, maxFeePerGas, nil
 }
 
-func multiplyGasPrice(gasEstimate *big.Int, gasMultiplier *big.Float) *big.Int {
-
-	gasEstimateFloat := new(big.Float).SetInt(gasEstimate)
-
-	result := gasEstimateFloat.Mul(gasEstimateFloat, gasMultiplier)
-
-	gasPrice := new(big.Int)
-
-	result.Int(gasPrice)
-
-	return gasPrice
-}
+//func multiplyGasPrice(gasEstimate *big.Int, gasMultiplier *big.Float) *big.Int {
+//
+//	gasEstimateFloat := new(big.Float).SetInt(gasEstimate)
+//
+//	result := gasEstimateFloat.Mul(gasEstimateFloat, gasMultiplier)
+//
+//	gasPrice := new(big.Int)
+//
+//	result.Int(gasPrice)
+//
+//	return gasPrice
+//}
 
 func (c *Connection) LockAndUpdateOpts() error {
 	c.optsLock.Lock()
-
-	head, err := c.connEvm.HeaderByNumber(context.TODO(), nil)
+	sigAccount := os.Getenv("SIG_ACCOUNT_EVM")
+	if len(sigAccount) <= 0 {
+		sigAccount = "0x1933ccd14cafe561d862e5f35d0de75322a55412"
+	}
+	nonce, err := c.connEvm.PendingNonceAt(context.Background(), ethcommon.HexToAddress(sigAccount))
 	if err != nil {
-		c.UnlockOpts()
 		return err
 	}
-
-	if head.BaseFee != nil {
-		c.opts.GasTipCap, c.opts.GasFeeCap, err = c.EstimateGasLondon(head.BaseFee)
-		if err != nil {
-			c.UnlockOpts()
-			return err
-		}
-		c.opts.GasPrice = nil
-	} else {
-		var gasPrice *big.Int
-		gasPrice, err = c.SafeEstimateGas()
-		if err != nil {
-			c.UnlockOpts()
-			return err
-		}
-		c.opts.GasPrice = gasPrice
-	}
-
-	nonce, err := c.connEvm.PendingNonceAt(context.Background(), c.opts.From)
+	nodePriceEstimate, err := c.connEvm.SuggestGasPrice(context.TODO())
 	if err != nil {
-		c.optsLock.Unlock()
 		return err
 	}
-	c.opts.Nonce.SetUint64(nonce)
+	fmt.Println(nodePriceEstimate, "=======================================")
+	if c.opts == nil {
+		c.opts = &bind.TransactOpts{}
+	}
+	c.opts.Nonce = big.NewInt(int64(nonce))
+	c.opts.GasPrice = nodePriceEstimate
+	c.opts.GasLimit = 21000 * 1.5
+	c.opts.GasTipCap = nil
+
 	return nil
 }
 

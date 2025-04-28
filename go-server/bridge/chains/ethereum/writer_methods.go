@@ -73,7 +73,16 @@ func IDAndNonce(srcId msg.ChainId, nonce msg.Nonce) *big.Int {
 }
 
 func (w *Writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
-	hasVoted, err := w.voteContract.HasVotedOnProposal(w.conn.CallOpts(), IDAndNonce(srcId, nonce), dataHash, w.conn.Opts().From)
+	fmt.Println("$$$$$$$$$$$$$$", w)
+	fmt.Println("$$$$$$$$$$$$$$")
+	fmt.Println(w.conn.CallOpts())
+	fmt.Println("$$$$$$$$$$$$$$")
+	sigAccount := os.Getenv("SIG_ACCOUNT_EVM")
+	if len(sigAccount) <= 0 {
+		sigAccount = "0x1933ccd14cafe561d862e5f35d0de75322a55412"
+	}
+	fromAddress := common.HexToAddress(sigAccount)
+	hasVoted, err := w.voteContract.HasVotedOnProposal(w.conn.CallOpts(), IDAndNonce(srcId, nonce), dataHash, fromAddress)
 	if err != nil {
 		w.log.Error("Failed to check proposal existence", "err", err)
 		return false

@@ -8,7 +8,6 @@ import (
 	"coinstore/bridge/monitor"
 	"coinstore/db"
 	"coinstore/model"
-	"errors"
 	"fmt"
 	log "github.com/calmw/clog"
 )
@@ -38,13 +37,8 @@ func Run() error {
 		var newChain core.Chain
 		chainLogger := log.Root().New("chain", chainConfig.ChainName)
 
-		if chainConfig.ChainType == config.ChainTypeEvm {
-			newChain, err = ethereum.InitializeChain(chainConfig, chainLogger, sysErr)
-			if err != nil {
-				logger.Error("initialize chain", "error", err)
-				return err
-			}
-		} else if chainConfig.ChainType == config.ChainTypeTron {
+		if chainConfig.ChainId == 3448148188 || chainConfig.ChainId == 728126428 {
+			fmt.Println("!!!!!!!!!!!! tron ", chainConfig.ChainId)
 			config.TronCfg = chainConfig
 			newChain, err = tron.InitializeChain(&chainConfig, chainLogger, sysErr)
 			if err != nil {
@@ -52,8 +46,12 @@ func Run() error {
 				return err
 			}
 		} else {
-			logger.Error("chain type", "error", err)
-			return errors.New("chain type not supported")
+			fmt.Println("!!!!!!!!!!!! evm ", chainConfig.ChainId)
+			newChain, err = ethereum.InitializeChain(chainConfig, chainLogger, sysErr)
+			if err != nil {
+				logger.Error("initialize chain", "error", err)
+				return err
+			}
 		}
 		core.ChainType[cfg.ChainId] = config.ChainType(cfg.ChainType)
 		c.AddChain(newChain)
