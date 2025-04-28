@@ -79,7 +79,7 @@ func (m *Monitor) RetryFailedOrder(order model.BridgeTx) {
 	}
 
 	if order.VoteStatus > 0 { // 投票已经成功，执行execute
-		if order.DestinationChainId == 3 {
+		if order.DestinationChainId == 3448148188 || order.DestinationChainId == 728126428 {
 			writer := tron.WritersTron
 			if tron.WritersTron == nil {
 				m.log.Debug("跨链桥状态异常", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
