@@ -46,7 +46,7 @@ func SignAndSendTxEth(cli *ethclient.Client, fromAddress common.Address, chainId
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
 	}
 
-	res, err := GetSignedRlpData("https://nlb.self.tantin.com:8088/signature/sign", postData)
+	res, err := GetSignedRlpData("https://nlb.devops.tantin.com:8088/signature/sign", postData)
 	fmt.Println("RequestWithPem error:", err)
 	var machineResp MachineResp
 	err = json.Unmarshal(res, &machineResp)
@@ -87,7 +87,7 @@ func SignAndSendTxTron(chainId int, fromAddress string, UnsignedRawData []byte, 
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
 	}
 
-	res, err := GetSignedRlpData("https://nlb.self.tantin.com:8088/signature/sign", postData)
+	res, err := GetSignedRlpData("https://nlb.devops.tantin.com:8088/signature/sign", postData)
 	fmt.Println("RequestWithPem error:", err)
 	var machineResp MachineResp
 	err = json.Unmarshal(res, &machineResp)

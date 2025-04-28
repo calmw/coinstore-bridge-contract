@@ -1,14 +1,11 @@
 package ethereum
 
 import (
-	"coinstore/binding"
 	"coinstore/bridge/chains"
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
 	"coinstore/bridge/msg"
-	"fmt"
 	log "github.com/calmw/clog"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 var _ core.Chain = &Chain{}
@@ -28,29 +25,6 @@ func InitializeChain(cfg config.Config, logger log.Logger, sysErr chan<- error) 
 	if err != nil {
 		logger.Error("new connection", "error", err)
 		return nil, err
-	}
-
-	bridgeContract, err := binding.NewBridge(common.HexToAddress(cfg.BridgeContractAddress), conn.ClientEvm())
-	if err != nil {
-		return nil, err
-	}
-
-	chainId, err := bridgeContract.ChainId(conn.CallOpts())
-	if err != nil {
-		return nil, err
-	}
-
-	if chainId.Int64() != int64(cfg.ChainId) {
-		return nil, fmt.Errorf("chainId (%d) and configuration chainId (%d) do not match", chainId.Int64(), cfg.ChainId)
-	}
-
-	chainTypeId, err := bridgeContract.ChainType(conn.CallOpts())
-	if err != nil {
-		return nil, err
-	}
-
-	if chainTypeId.Int64() != int64(cfg.ChainType) {
-		return nil, fmt.Errorf("chainTypeId (%d) and configuration chainTypeId (%d) do not match", chainTypeId.Int64(), cfg.ChainType)
 	}
 
 	if cfg.LatestBlock {

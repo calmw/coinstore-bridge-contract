@@ -114,7 +114,7 @@ func ApproveSigTest() error {
 		ChainID:     chainId,
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
 	}
-	res, err := RequestWithPem("https://nlb.self.tantin.com:8088/signature/sign", postData)
+	res, err := RequestWithPem("https://nlb.devops.tantin.com:8088/signature/sign", postData)
 	fmt.Println("RequestWithPem error:", err)
 	var machineResp MachineResp
 	err = json.Unmarshal(res, &machineResp)
