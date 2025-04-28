@@ -79,19 +79,11 @@ func SignAndSendTxTron(chainId int, UnsignedRawData []byte, apiSecret string) ([
 	chainId = 728126428
 	taskID := RandInt(100, 10000)
 	// 签名数据
-
-	////
-	//proto.Marshal()
-	//rawData, err := proto.Marshal(tx.Transaction.GetRawData())
-	//if err != nil {
-	//	return "", err
-	//}
 	h256h := sha256.New()
 	h256h.Write(UnsignedRawData)
 	hash := h256h.Sum(nil)
 	rawData := fmt.Sprintf("%x", hash)
 
-	///
 	sigStr := fmt.Sprintf("%d%s%d%s%s",
 		chainId,
 		strings.ToLower(sigAccount),

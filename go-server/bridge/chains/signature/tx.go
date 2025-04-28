@@ -22,6 +22,6 @@ func SendTransactionUseRlpData(cli *ethclient.Client, rlpDataHex string) (string
 		return "", err
 	}
 
-	fmt.Printf("tx sent: %s", tx.Hash().Hex())
+	fmt.Printf("tx sent: %s", tx.Hash().String())
 	return tx.Hash().String(), nil
 }
