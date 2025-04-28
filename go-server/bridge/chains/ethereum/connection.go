@@ -1,7 +1,6 @@
 package ethereum
 
 import (
-	"coinstore/bridge/config"
 	"context"
 	"errors"
 	"fmt"
@@ -18,7 +17,6 @@ import (
 )
 
 type Connection struct {
-	chainType     config.ChainType
 	endpoint      string
 	http          bool
 	from          string
@@ -41,9 +39,8 @@ type Connection struct {
 	connTron *client.GrpcClient
 }
 
-func NewConnection(chainType config.ChainType, endpoint, from string, http bool, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
+func NewConnection(endpoint, from string, http bool, log log.Logger, gasLimit, maxGasPrice, minGasPrice *big.Int) *Connection {
 	return &Connection{
-		chainType:   chainType,
 		endpoint:    endpoint,
 		http:        http,
 		from:        from,

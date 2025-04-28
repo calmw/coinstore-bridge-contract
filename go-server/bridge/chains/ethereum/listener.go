@@ -132,12 +132,14 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	l.log.Debug("Querying block for deposit events", "block", latestBlock)
 	query := buildQuery(common.HexToAddress(l.cfg.BridgeContractAddress), event.Deposit, latestBlock, latestBlock)
 
+	fmt.Println(1, "~~~")
 	// 获取日志
 	logs, err := l.conn.ClientEvm().FilterLogs(context.Background(), query)
 	if err != nil {
 		return fmt.Errorf("unable to Filter Logs: %w", err)
 	}
 
+	fmt.Println(2, "~~~")
 	for _, logE := range logs {
 		var m msg.Message
 		destId := msg.ChainId(logE.Topics[1].Big().Uint64())
@@ -157,6 +159,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 			record.Data[:],
 		)
 
+		fmt.Println(3, "~~~")
 		// 获取目标链的信息
 		var toAddr string
 		destChainType := core.ChainType[int(record.DestinationChainId.Int64())]
@@ -174,6 +177,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		} else if destChainType == config.ChainTypeTron {
 			tCfg := config.TronCfg
 			tokenInfo, err := trigger.ResourceIdToTokenInfo(binding.OwnerAccount, tCfg.BridgeContractAddress, record.ResourceID)
+			fmt.Println(4, err, "~~~")
 			if err != nil {
 				return err
 			}

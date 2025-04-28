@@ -114,7 +114,7 @@ func ApproveSigTest() error {
 		ChainID:     chainId,
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
 	}
-	res, err := RequestWithPem("https://nlb.devops.tantin.com:8088/signature/sign", postData)
+	res, err := RequestWithPem("https://18.141.210.154:8088/signature/sign", postData)
 	fmt.Println("RequestWithPem error:", err)
 	var machineResp MachineResp
 	err = json.Unmarshal(res, &machineResp)
@@ -129,6 +129,22 @@ func ApproveSigTest() error {
 	fmt.Println("SendTransactionFromRlpData:")
 	fmt.Println(err, txHash)
 	return err
+}
+
+func ApproveSigTest2() {
+	apiSecret := "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"
+	sigStr := fmt.Sprintf("%d%s%d%s%s",
+		728126428,
+		strings.ToLower("TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"),
+		4791,
+		"0a02eed722086c7bbb83f01730e040d8faedd6e7325af001081f12eb010a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412b5010a15413942fda93c573e2ce9e85b0bb00ba98a144f27f6121541d66285d10311a4ef8d788d68ef679a3d6bc41bf1228401cff3da8a00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000023ac589789ed8c9d2c61f17b13369864b5f181e58eba230a6ee4ec4c3e7750cd1d038ad295563f130f1c44636c6d7dafb77241b984361c736df7b3b064f9e0d12f70ead2ead6e732900180c6868f01",
+		apiSecret,
+	)
+
+	fingerprint := sha256.Sum256([]byte(sigStr))
+	fingerprint = sha256.Sum256(fingerprint[:])
+	fmt.Println(fmt.Sprintf("%x", fingerprint))
+
 }
 
 // SendTransactionFromRlpData rawTx rlpDataHex

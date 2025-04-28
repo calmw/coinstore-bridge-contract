@@ -35,7 +35,7 @@ func SignTxForSending(c *transaction.Controller, chainId int, fromAddress, apiSe
 	if err != nil {
 		return err
 	}
-	sig, err := signature.SignAndSendTxTron(chainId, fromAddress, rawData, apiSecret)
+	sig, err := signature.SignAndSendTxTron(chainId, rawData, apiSecret)
 	if err != nil {
 		return err
 	}

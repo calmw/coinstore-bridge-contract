@@ -352,11 +352,15 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) (string, error) 
 	})
 
 	apiSecret := os.Getenv("API_SECRET_SIG_MACHINE")
+	if len(apiSecret) <= 0 {
+		apiSecret = "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"
+	}
 	chainId, err := w.conn.connEvm.ChainID(context.Background())
 	if err != nil {
 		return "", fmt.Errorf("get chain id err %v", err)
 	}
-	err = signature.SignAndSendTxEth(w.conn.connEvm, common.HexToAddress(w.Cfg.From), chainId.Uint64(), tx, apiSecret)
+
+	err = signature.SignAndSendTxEth(w.conn.connEvm, chainId.Uint64(), tx, apiSecret)
 	if err != nil {
 		return "", fmt.Errorf("vote propose err %v", err)
 	}
@@ -391,11 +395,14 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 	tx.Time()
 
 	apiSecret := os.Getenv("API_SECRET_SIG_MACHINE")
+	if len(apiSecret) <= 0 {
+		apiSecret = "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"
+	}
 	chainId, err := w.conn.connEvm.ChainID(context.Background())
 	if err != nil {
 		return "", nil, fmt.Errorf("get chain id err %v", err)
 	}
-	err = signature.SignAndSendTxEth(w.conn.connEvm, common.HexToAddress(w.Cfg.From), chainId.Uint64(), tx, apiSecret)
+	err = signature.SignAndSendTxEth(w.conn.connEvm, chainId.Uint64(), tx, apiSecret)
 	if err != nil {
 		return "", nil, fmt.Errorf("vote propose err %v", err)
 	}

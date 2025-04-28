@@ -62,7 +62,6 @@ func GetSignedRlpData(url string, data SigDataPost) ([]byte, error) {
 	)
 	fmt.Println("post data:")
 	fmt.Println(postData)
-	//strings.NewReader(postData)
 	d := strings.NewReader(postData)
 	request, _ := http.NewRequest("POST", url, d)
 	request.Header.Set("Content-Type", "application/json")
@@ -71,8 +70,6 @@ func GetSignedRlpData(url string, data SigDataPost) ([]byte, error) {
 		return nil, err
 	} else {
 		resData, _ := io.ReadAll(resp.Body)
-		//fmt.Println("post response:")
-		//fmt.Println(string(resData))
 		return resData, nil
 	}
 }

@@ -11,14 +11,20 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"os"
 	"strings"
 )
 
-func SignAndSendTxEth(cli *ethclient.Client, fromAddress common.Address, chainId uint64, tx *types.Transaction, apiSecret string) error {
+func SignAndSendTxEth(cli *ethclient.Client, chainId uint64, tx *types.Transaction, apiSecret string) error {
 	marshalJSON, err := tx.MarshalJSON()
 	if err != nil {
 		return err
 	}
+	sigAccount := os.Getenv("SIG_ACCOUNT_EVM")
+	if len(sigAccount) <= 0 {
+		sigAccount = "0x1933ccd14cafe561d862e5f35d0de75322a55412"
+	}
+	fromAddress := common.HexToAddress(sigAccount)
 	fmt.Println("txDataJson")
 	fmt.Println(string(marshalJSON))
 	taskID := RandInt(100, 10000)
@@ -35,6 +41,8 @@ func SignAndSendTxEth(cli *ethclient.Client, fromAddress common.Address, chainId
 		txDataRlp,
 		apiSecret,
 	)
+	fmt.Println("1")
+	fmt.Println(sigStr)
 
 	fingerprint := sha256.Sum256([]byte(sigStr))
 	fingerprint = sha256.Sum256(fingerprint[:])
@@ -46,7 +54,7 @@ func SignAndSendTxEth(cli *ethclient.Client, fromAddress common.Address, chainId
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
 	}
 
-	res, err := GetSignedRlpData("https://nlb.devops.tantin.com:8088/signature/sign", postData)
+	res, err := GetSignedRlpData("https://18.141.210.154:8088/signature/sign", postData)
 	fmt.Println("RequestWithPem error:", err)
 	var machineResp MachineResp
 	err = json.Unmarshal(res, &machineResp)
@@ -64,30 +72,36 @@ func SignAndSendTxEth(cli *ethclient.Client, fromAddress common.Address, chainId
 }
 
 // SignAndSendTxTron  728126428
-func SignAndSendTxTron(chainId int, fromAddress string, UnsignedRawData []byte, apiSecret string) ([]byte, error) {
-
+func SignAndSendTxTron(chainId int, UnsignedRawData []byte, apiSecret string) ([]byte, error) {
+	sigAccount := os.Getenv("SIG_ACCOUNT_TRON")
+	if len(sigAccount) <= 0 {
+		sigAccount = "TTgY73yj5vzGM2HGHhVt7AR7avMW4jUx6n"
+	}
+	chainId = 728126428
 	taskID := RandInt(100, 10000)
 	// 签名数据
 	rawData := fmt.Sprintf("%x", UnsignedRawData)
 	sigStr := fmt.Sprintf("%d%s%d%s%s",
 		chainId,
-		strings.ToLower(fromAddress),
+		strings.ToLower(sigAccount),
 		taskID,
 		rawData,
 		apiSecret,
 	)
+	fmt.Println("2")
+	fmt.Println(sigStr)
 
 	fingerprint := sha256.Sum256([]byte(sigStr))
 	fingerprint = sha256.Sum256(fingerprint[:])
 	postData := SigDataPost{
-		FromAddress: fromAddress,
+		FromAddress: sigAccount,
 		TxData:      rawData,
 		TaskID:      taskID,
 		ChainID:     chainId,
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
 	}
 
-	res, err := GetSignedRlpData("https://nlb.devops.tantin.com:8088/signature/sign", postData)
+	res, err := GetSignedRlpData("https://18.141.210.154:8088/signature/sign", postData)
 	fmt.Println("RequestWithPem error:", err)
 	var machineResp MachineResp
 	err = json.Unmarshal(res, &machineResp)

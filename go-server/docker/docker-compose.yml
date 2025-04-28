@@ -12,6 +12,8 @@ services:
     container_name: tt_bridge_one
     restart: always
     environment:
+      - SIG_ACCOUNT_EVM=0x1933ccd14cafe561d862e5f35d0de75322a55412
+      - SIG_ACCOUNT_TRON=TTgY73yj5vzGM2HGHhVt7AR7avMW4jUx6n
       - FAILED_JOB_INTERVAL=300
       - MYSQL_DATABASE=bridge
       - MYSQL_USERNAME=root
@@ -38,6 +40,8 @@ services:
     container_name: tt_bridge_two
     restart: always
     environment:
+      - SIG_ACCOUNT_EVM=0x1933ccd14cafe561d862e5f35d0de75322a55412
+      - SIG_ACCOUNT_TRON=TTgY73yj5vzGM2HGHhVt7AR7avMW4jUx6n
       - FAILED_JOB_INTERVAL=300
       - MYSQL_DATABASE=bridge
       - MYSQL_USERNAME=root
@@ -64,6 +68,8 @@ services:
     container_name: tt_bridge_three
     restart: always
     environment:
+      - SIG_ACCOUNT_EVM=0x1933ccd14cafe561d862e5f35d0de75322a55412
+      - SIG_ACCOUNT_TRON=TTgY73yj5vzGM2HGHhVt7AR7avMW4jUx6n
       - FAILED_JOB_INTERVAL=300
       - MYSQL_DATABASE=bridge
       - MYSQL_USERNAME=root

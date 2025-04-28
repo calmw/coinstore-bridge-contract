@@ -39,7 +39,7 @@ func SignTxForSending(c *transaction.Controller, chainId int, fromAddress, apiSe
 	hash := h256h.Sum(nil)
 	fmt.Println("hash:")
 	fmt.Println(fmt.Sprintf("%x", hash))
-	sig, err := signature.SignAndSendTxTron(chainId, fromAddress, hash, apiSecret)
+	sig, err := signature.SignAndSendTxTron(chainId, hash, apiSecret)
 	if err != nil {
 		return err
 	}
