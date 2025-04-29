@@ -73,16 +73,7 @@ func IDAndNonce(srcId msg.ChainId, nonce msg.Nonce) *big.Int {
 }
 
 func (w *Writer) hasVoted(srcId msg.ChainId, nonce msg.Nonce, dataHash [32]byte) bool {
-	fmt.Println("$$$$$$$$$$$$$$", w)
-	fmt.Println("$$$$$$$$$$$$$$", w)
-	fmt.Println("$$$$$$$$$$$$$$", w)
-	fmt.Println("$$$$$$$$$$$$$$", w)
-	fmt.Println("$$$$$$$$$$$$$$", w)
-	fmt.Println("$$$$$$$$$$$$$$", w)
-	fmt.Println("$$$$$$$$$$$$$$", w)
-	fmt.Println("$$$$$$$$$$$$$$")
 	fmt.Println(w.conn.CallOpts())
-	fmt.Println("$$$$$$$$$$$$$$")
 	sigAccount := os.Getenv("SIG_ACCOUNT_EVM")
 	if len(sigAccount) <= 0 {
 		sigAccount = "0x1933ccd14cafe561d862e5f35d0de75322a55412"
@@ -112,6 +103,9 @@ func (w *Writer) shouldVote(m msg.Message, dataHash [32]byte) bool {
 }
 
 func (w *Writer) CreateProposal(m msg.Message) bool {
+	fmt.Println("--")
+	fmt.Println(w.log)
+	fmt.Println("--")
 	w.log.Info("Creating generic proposal", "src", m.Source, "nonce", m.DepositNonce)
 
 	metadata := m.Payload[0].([]byte)

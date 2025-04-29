@@ -78,6 +78,11 @@ func (m *Monitor) RetryFailedOrder(order model.BridgeTx) {
 		return
 	}
 
+	fmt.Println(order.SourceChainId, "~~~~~2")
+	fmt.Println(order.DestinationChainId, "~~~~~2")
+	fmt.Println(order.DestinationChainId == 3448148188 || order.DestinationChainId == 728126428)
+	fmt.Println(tron.WritersTron)
+
 	if order.VoteStatus > 0 { // 投票已经成功，执行execute
 		if order.DestinationChainId == 3448148188 || order.DestinationChainId == 728126428 {
 			writer := tron.WritersTron
