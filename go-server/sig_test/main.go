@@ -134,7 +134,8 @@ func TronTest() error {
 		ChainID:     chianId,
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
 	}
-	res, err := RequestWithPem("https://18.141.210.154:8088/signature/sign", postData)
+	//res, err := RequestWithPem("https://18.141.210.154:8088/signature/sign", postData)
+	res, err := RequestWithPem("https://47.129.133.232:8088/signature/sign", postData)
 	if err != nil {
 		return err
 	}
