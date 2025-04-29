@@ -154,12 +154,12 @@ func GetEventData(contractAddress string, number int64) ([]EvtData, error) {
 	}
 	for _, d := range eventLog.Data {
 		if d.EventName == "Deposit" && strings.ToLower(d.ContractAddress) == strings.ToLower(contractAddress) {
-			fmt.Println("---------------------------")
-			//fmt.Println(result)
-			fmt.Println(d.TransactionID)
-			fmt.Println(d.Result.ResourceID)
-			fmt.Println(d.Result.DepositNonce)
-			fmt.Println(d.Result.DestinationChainId)
+			//fmt.Println("---------------------------")
+			////fmt.Println(result)
+			//fmt.Println(d.TransactionID)
+			//fmt.Println(d.Result.ResourceID)
+			//fmt.Println(d.Result.DepositNonce)
+			//fmt.Println(d.Result.DestinationChainId)
 			result = append(result, EvtData{
 				Data:               d.Result.Data,
 				TxHash:             d.TransactionID,

@@ -204,7 +204,6 @@ func VoteProposal(cli *client.GrpcClient, from, contractAddress string, originCh
 	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes32\":\"%s\"},{\"bytes32\":\"%s\"}]",
 		originChainId.String(), originDepositNonce.String(), hexutils.BytesToHex(resourceId[:]), hexutils.BytesToHex(dataHash[:]),
 	)
-	fmt.Println("------------------------------------------------------- 1", from, contractAddress)
 	tx, err := cli.TriggerContract(from, contractAddress, "voteProposal(uint256,uint256,bytes32,bytes32)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
