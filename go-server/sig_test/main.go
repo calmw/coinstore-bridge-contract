@@ -25,8 +25,13 @@ import (
 
 func main() {
 	//TronTest()
-	privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
-	coin, err := TransferCoin(privateKey, "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb", "TEwX7WKNQqsRpxd6KyHHQPMMigLg9c258y", 2)
+	//privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
+	//coin, err := TransferCoin(privateKey, "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb", "TEwX7WKNQqsRpxd6KyHHQPMMigLg9c258y", 2)
+
+	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON_LOCAL")
+	fromAddress := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
+	toAddress := "TEwX7WKNQqsRpxd6KyHHQPMMigLg9c258y"
+	coin, err := TransferCoin(privateKey, fromAddress, toAddress, 2)
 	fmt.Println(coin, err)
 }
 
