@@ -49,7 +49,6 @@ func (v *VoteTron) HasVotedOnProposal(arg0 *big.Int, arg1 [32]byte, arg2 common.
 }
 
 func (v *VoteTron) VoteProposal(originChainId *big.Int, originDepositNonce *big.Int, resourceId [32]byte, dataHash [32]byte) (string, error) {
-	fmt.Println(v.FromAddress, "@12#")
 	return trigger.VoteProposal(v.cli, v.FromAddress, v.ContractAddress, originChainId, originDepositNonce, resourceId, dataHash)
 }
 

@@ -31,11 +31,6 @@ func NewVoteTron(ka *keystore.Account, ks *keystore.KeyStore, keyStorePassphrase
 	if err != nil {
 		return nil, err
 	}
-	//prvKey := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", os.Getenv("COIN_STORE_BRIDGE_TRON"))
-	//ks, ka, err := tron_keystore_copy.InitKeyStore(prvKey)
-	//if err != nil {
-	//	panic(fmt.Sprintf("private key conversion failed %v", err))
-	//}
 	return &VoteTron{
 		KeyStorePassphrase: keyStorePassphrase,
 		Ks:                 ks,
@@ -90,7 +85,6 @@ func (v *VoteTron) AdminSetEnv(bridgeAddress string, expiry *big.Int, relayerThr
 		relayerThreshold.String(),
 		fmt.Sprintf("%x", signature),
 	)
-	fmt.Println(triggerData)
 	tx, err := v.Cli.TriggerContract(v.Ka.Address.String(), ChainConfig.VoteContractAddress, "adminSetEnv(address,uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
