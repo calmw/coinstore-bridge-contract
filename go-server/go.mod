@@ -13,7 +13,7 @@ require (
 	github.com/bybit-exchange/bybit.go.api v0.0.0-20250421211709-d5b2b36fdf4b
 	github.com/calmw/bee-tron v0.0.3
 	github.com/calmw/clog v0.0.3
-	github.com/calmw/tron-sdk v0.0.14
+	github.com/calmw/tron-sdk v0.0.15
 	github.com/didip/tollbooth/v7 v7.0.2
 	github.com/didip/tollbooth_gin v0.0.0-20250112173845-11eddec067c4
 	github.com/ethereum/go-ethereum v1.15.8

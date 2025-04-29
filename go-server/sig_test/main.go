@@ -9,8 +9,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/btcsuite/btcd/btcec/v2"
+	"github.com/btcsuite/btcd/btcec/v2/ecdsa"
 	"github.com/calmw/tron-sdk/pkg/client"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/status-im/keycard-go/hexutils"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
@@ -25,7 +25,9 @@ import (
 
 func main() {
 	//TronTest()
-	TransferCoin("af056e353eaddc842029822cc4c7285ef379880eaae25a1f8d8a16da5f41ff2b", "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb", "TEwX7WKNQqsRpxd6KyHHQPMMigLg9c258y", 2)
+	privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
+	coin, err := TransferCoin(privateKey, "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb", "TEwX7WKNQqsRpxd6KyHHQPMMigLg9c258y", 2)
+	fmt.Println(coin, err)
 }
 
 func TransferCoin(privateKey, fromAddress, toAddress string, amount int64) (string, error) {
@@ -43,16 +45,24 @@ func TransferCoin(privateKey, fromAddress, toAddress string, amount int64) (stri
 	if err != nil {
 		return "", err
 	}
-	h256h := sha256.New()
-	h256h.Write(rawData)
-	hash := h256h.Sum(nil)
-	sk, _ := btcec.PrivKeyFromBytes(privateKeyBytes)
-	signature, err := crypto.Sign(hash, sk.ToECDSA())
-	if err != nil {
-		return "", err
-	}
-	tx.Transaction.Signature = append(tx.Transaction.Signature, signature)
+	hash := sha256.Sum256(rawData)
+	pk, _ := btcec.PrivKeyFromBytes(privateKeyBytes)
+	//signature, err := crypto.Sign(hash, pk.ToECDSA())
+	//if err != nil {
+	//	return "", err
+	//}
+	sigCompact := ecdsa.SignCompact(pk, hash[:], true)
+	recoveryID := int(sigCompact[0]) - 27 // header减去27就是recoveryID
+	r := sigCompact[1:33]                 // r部分
+	s := sigCompact[33:65]                // s部分
+	// 使用 v 作为标识符（27或28）
+	v := byte(recoveryID + 27)
+	// 拼接最终的签名（r + s + v）
+	finalSig := append(r, s...)
+	finalSig = append(finalSig, v)
+	tx.Transaction.Signature = append(tx.Transaction.Signature, finalSig)
 	res, err := c.Broadcast(tx.Transaction)
+	fmt.Println(err)
 	if err != nil || !res.Result {
 		return "", errors.New("broadcast error")
 	}
@@ -61,6 +71,50 @@ func TransferCoin(privateKey, fromAddress, toAddress string, amount int64) (stri
 	fmt.Println(txHash)
 	return txHash, nil
 }
+
+//func TransferCoin() (string, error) {
+//	privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
+//	fromAddress := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
+//	toAddress := "TEwX7WKNQqsRpxd6KyHHQPMMigLg9c258y"
+//	amount := int64(1)
+//	c := client.NewGrpcClient("grpc.nile.trongrid.io:50051")
+//	err := c.Start(grpc.WithInsecure())
+//	if err != nil {
+//		return "", err
+//	}
+//	tx, err := c.Transfer(fromAddress, toAddress, amount)
+//	if err != nil {
+//		return "", err
+//	}
+//	rawData, err := proto.Marshal(tx.Transaction.GetRawData())
+//	if err != nil {
+//		return "", err
+//	}
+//	hash := sha256.Sum256(rawData)
+//	privateKeyBytes, err := hex.DecodeString(privateKey)
+//	pk, _ := btcec.PrivKeyFromBytes(privateKeyBytes)
+//	sigCompact := ecdsa.SignCompact(pk, hash[:], true)
+//	recoveryID := int(sigCompact[0]) - 27 // header减去27就是recoveryID
+//	r := sigCompact[1:33]                 // r部分
+//	s := sigCompact[33:65]                // s部分
+//	// 使用 v 作为标识符（27或28）
+//	v := byte(recoveryID + 27)
+//	// 拼接最终的签名（r + s + v）
+//	finalSig := append(r, s...)
+//	finalSig = append(finalSig, v)
+//	// 打印最终签名
+//	fmt.Println(fmt.Sprintf("最终签名: %x", finalSig))
+//	fmt.Println(fmt.Sprintf("签名长度: %d", len(finalSig)))
+//	tx.Transaction.Signature = append(tx.Transaction.Signature, finalSig)
+//
+//	fmt.Println(err, 111)
+//	res, err := c.Broadcast(tx.Transaction)
+//	if err != nil || !res.Result {
+//		return "", errors.New("broadcast error")
+//	}
+//	txHash := strings.ToLower(hexutils.BytesToHex(tx.Txid))
+//	return txHash, nil
+//}
 
 type SigDataPost struct {
 	FromAddress string `json:"fromAddress"`
