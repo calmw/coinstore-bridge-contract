@@ -182,10 +182,10 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		}
 
 		tokenInfo, err := l.BridgeContract.ResourceIdToTokenInfo(nil, record.ResourceID)
-		fmt.Println("000 ", l.cfg.BridgeContractAddress)
-		fmt.Println(fmt.Sprintf("0x%x", record.ResourceID), " ", record.DestinationChainId)
-		fmt.Println(tokenInfo)
-		fmt.Println(err, "666666666666666666666666666")
+		//fmt.Println("000 ", l.cfg.BridgeContractAddress)
+		//fmt.Println(fmt.Sprintf("0x%x", record.ResourceID), " ", record.DestinationChainId)
+		//fmt.Println(tokenInfo)
+		//fmt.Println(err, "666666666666666666666666666")
 		if err != nil {
 			l.log.Error("source token info not found", "chainId", record.DestinationChainId)
 		}
