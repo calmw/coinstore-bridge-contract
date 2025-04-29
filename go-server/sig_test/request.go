@@ -30,6 +30,7 @@ type MachineResp struct {
 func RequestWithPem(url string, data SigDataPost) ([]byte, error) {
 
 	b, err := os.ReadFile("./sig1.pem")
+	//b, err := os.ReadFile("./c1.pem")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -71,3 +71,8 @@ func TestHasVotedOnProposal(t *testing.T) {
 // 0x4136cf9a3651f289996a23255cfc05ea609893af9a
 // 0x36cf9a3651f289996a23255cfc05ea609893af9a
 // 0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6
+
+func TestPrivateKeyToWalletAddress1(t *testing.T) {
+	got, err := PrivateKeyToWalletAddress("4d69dca2ebc32e9d448a1c6d6fa3da61fc537077279c3ab6c6702adfe70dd8a2")
+	fmt.Println(got, err)
+}

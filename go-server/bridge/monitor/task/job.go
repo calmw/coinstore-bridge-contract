@@ -116,7 +116,7 @@ func (m *Monitor) RetryFailedOrder(order model.BridgeTx) {
 			writer.ExecuteProposal(bridgeData, data, dataHash)
 		}
 	} else { // 投票未成功，vote + execute
-		if order.DestinationChainId == 3 {
+		if order.DestinationChainId == 3448148188 || order.DestinationChainId == 728126428 {
 			writer := tron.WritersTron
 			m.log.Debug("重试vote+execute", "sourceId", bridgeData.Source, "destinationId", bridgeData.Destination, "depositNonce", bridgeData.DepositNonce)
 			writer.CreateProposal(bridgeData)
