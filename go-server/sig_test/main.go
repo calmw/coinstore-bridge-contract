@@ -31,12 +31,12 @@ func main() {
 	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON_LOCAL")
 	fromAddress := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
 	toAddress := "TEwX7WKNQqsRpxd6KyHHQPMMigLg9c258y"
-	coin, err := TransferCoin(privateKey, fromAddress, toAddress, 2)
+	amount := int64(1)
+	coin, err := TransferCoin(privateKey, fromAddress, toAddress, amount)
 	fmt.Println(coin, err)
 }
 
 func TransferCoin(privateKey, fromAddress, toAddress string, amount int64) (string, error) {
-	privateKeyBytes, _ := hex.DecodeString(privateKey)
 	c := client.NewGrpcClient("grpc.shasta.trongrid.io:50051")
 	err := c.Start(grpc.WithInsecure())
 	if err != nil {
@@ -51,11 +51,8 @@ func TransferCoin(privateKey, fromAddress, toAddress string, amount int64) (stri
 		return "", err
 	}
 	hash := sha256.Sum256(rawData)
+	privateKeyBytes, _ := hex.DecodeString(privateKey)
 	pk, _ := btcec.PrivKeyFromBytes(privateKeyBytes)
-	//signature, err := crypto.Sign(hash, pk.ToECDSA())
-	//if err != nil {
-	//	return "", err
-	//}
 	sigCompact := ecdsa.SignCompact(pk, hash[:], true)
 	recoveryID := int(sigCompact[0]) - 27 // header减去27就是recoveryID
 	r := sigCompact[1:33]                 // r部分
