@@ -246,8 +246,6 @@ func ExecuteProposal(cli *client.GrpcClient, from, contractAddress string, origi
 	//	return "", err
 	//}
 
-	fmt.Println("~~~~~~~~~~~~~~~~ = ", triggerData)
-
 	tx, err := cli.TriggerContract(from, contractAddress, "executeProposal(uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
 	if err != nil {
 		return "", err
