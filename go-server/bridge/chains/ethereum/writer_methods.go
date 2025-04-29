@@ -347,6 +347,8 @@ func (w *Writer) ExecuteProposalBySigMachine(m msg.Message, data []byte, dataHas
 	nonce := w.conn.Opts().Nonce
 	gasLimit := w.conn.Opts().GasLimit
 	gasPrice := w.conn.Opts().GasPrice
+	fmt.Println(m)
+	fmt.Println(fmt.Sprintf("%x", data))
 	inputData, err := signature.GenerateExecuteProposalInputData(big.NewInt(int64(m.Source)), big.NewInt(int64(m.DepositNonce)), data)
 	if err != nil {
 		return "", nil, err

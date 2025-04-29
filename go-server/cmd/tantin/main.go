@@ -78,7 +78,8 @@ func main() {
 		tantin.Deposit(
 			common.HexToAddress("0x80B27CDE65Fafb1f048405923fD4a624fEa2d1C6"),
 			[32]byte(resourceIdBytes),
-			big.NewInt(3448148188),
+			//big.NewInt(3448148188),
+			big.NewInt(97),
 			amount,
 			big.NewInt(1e6),
 			big.NewInt(time.Now().Unix()),

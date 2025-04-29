@@ -134,7 +134,7 @@ contract Vote is IVote, AccessControl, Initializable {
     /**
         @notice relayer执行投票通过后的到帐操作
         @param originChainId 源链ID
-        @param originDepositNonce 源链nonceqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+        @param originDepositNonce 源链nonce
         @param resourceId 跨链的resourceID
         @param dataHash dataHash
      */

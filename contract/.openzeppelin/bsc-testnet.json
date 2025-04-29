@@ -329,7 +329,7 @@
             "label": "Bridge",
             "offset": 0,
             "slot": "3",
-            "type": "t_contract(IBridge)5798",
+            "type": "t_contract(IBridge)4304",
             "contract": "Vote",
             "src": "contracts/Vote.sol:28"
           },
@@ -369,7 +369,7 @@
             "label": "proposals",
             "offset": 0,
             "slot": "8",
-            "type": "t_mapping(t_uint72,t_mapping(t_bytes32,t_struct(Proposal)6012_storage))",
+            "type": "t_mapping(t_uint72,t_mapping(t_bytes32,t_struct(Proposal)4398_storage))",
             "contract": "Vote",
             "src": "contracts/Vote.sol:33"
           },
@@ -399,11 +399,11 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(IBridge)5798": {
+          "t_contract(IBridge)4304": {
             "label": "contract IBridge",
             "numberOfBytes": "20"
           },
-          "t_enum(ProposalStatus)5946": {
+          "t_enum(ProposalStatus)4332": {
             "label": "enum IVote.ProposalStatus",
             "members": [
               "Inactive",
@@ -422,7 +422,7 @@
             "label": "mapping(bytes32 => mapping(address => bool))",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(Proposal)6012_storage)": {
+          "t_mapping(t_bytes32,t_struct(Proposal)4398_storage)": {
             "label": "mapping(bytes32 => struct IVote.Proposal)",
             "numberOfBytes": "32"
           },
@@ -434,11 +434,11 @@
             "label": "mapping(uint72 => mapping(bytes32 => mapping(address => bool)))",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint72,t_mapping(t_bytes32,t_struct(Proposal)6012_storage))": {
+          "t_mapping(t_uint72,t_mapping(t_bytes32,t_struct(Proposal)4398_storage))": {
             "label": "mapping(uint72 => mapping(bytes32 => struct IVote.Proposal))",
             "numberOfBytes": "32"
           },
-          "t_struct(Proposal)6012_storage": {
+          "t_struct(Proposal)4398_storage": {
             "label": "struct IVote.Proposal",
             "members": [
               {
@@ -467,7 +467,7 @@
               },
               {
                 "label": "status",
-                "type": "t_enum(ProposalStatus)5946",
+                "type": "t_enum(ProposalStatus)4332",
                 "offset": 0,
                 "slot": "4"
               },
