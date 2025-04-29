@@ -112,7 +112,7 @@ func (w *Writer) CreateProposal(m msg.Message) bool {
 	data := chains.ConstructGenericProposalData(metadata)
 	toHash := append(common.HexToAddress(w.Cfg.BridgeContractAddress).Bytes(), data...)
 	dataHash := utils.Keccak256(toHash)
-	fmt.Println("dateHash:", fmt.Sprintf("%x", dataHash))
+	//fmt.Println("dateHash:", fmt.Sprintf("%x", dataHash))
 	if !w.shouldVote(m, dataHash) {
 		if w.proposalIsPassed(m.Source, m.DepositNonce, dataHash) {
 			w.ExecuteProposal(m, data, dataHash)
