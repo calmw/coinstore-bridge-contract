@@ -174,7 +174,6 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		} else if destChainType == config.ChainTypeTron {
 			tCfg := config.TronCfg
 			tokenInfo, err := trigger.ResourceIdToTokenInfo(binding.OwnerAccount, tCfg.BridgeContractAddress, record.ResourceID)
-			fmt.Println(4, err, "~~~")
 			if err != nil {
 				return err
 			}

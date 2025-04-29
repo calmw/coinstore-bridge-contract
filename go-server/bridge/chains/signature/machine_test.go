@@ -41,13 +41,10 @@ func TestSignAndSendTxTron(t *testing.T) {
 func ExecuteTronTransaction(c *transaction.Controller, chainId int, apiSecret string) error {
 	switch c.Behavior.SigningImpl {
 	case transaction.Software:
-		//c.SignTxForSending()
-		fmt.Println("~~~~~~~~~~~~~~~~~~~~~~~1 ", c.Tx.Signature)
 		err := SignTxForSending(c, chainId, apiSecret)
 		if err != nil {
 			return err
 		}
-		fmt.Println("~~~~~~~~~~~~~~~~~~~~~~~2 ", c.Tx.Signature)
 	case transaction.Ledger:
 		c.HardwareSignTxForSending()
 	}

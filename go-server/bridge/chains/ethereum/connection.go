@@ -197,7 +197,7 @@ func (c *Connection) LockAndUpdateOpts() error {
 	}
 	c.opts.Nonce = big.NewInt(int64(nonce))
 	c.opts.GasPrice = nodePriceEstimate
-	c.opts.GasLimit = 21000 * 10
+	c.opts.GasLimit = 21000 * 15
 	c.opts.GasTipCap = nil
 
 	return nil

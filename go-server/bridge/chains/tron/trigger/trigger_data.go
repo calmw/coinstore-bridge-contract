@@ -333,7 +333,6 @@ func ParseBridgeResourceIdToTokenInfo(inputData []byte) (TokenInfo, error) {
 		return TokenInfo{}, err
 	}
 
-	fmt.Println("!!!!!!", fmt.Sprintf("%x", inputData[:4]))
 	// 获取函数参数
 	outputs := make([]interface{}, len(method.Outputs))
 	if outputs, err = method.Outputs.Unpack(inputData[4:]); err != nil {

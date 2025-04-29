@@ -60,8 +60,6 @@ func GetSignedRlpData(url string, data SigDataPost) ([]byte, error) {
 	postData := fmt.Sprintf(`{"fromAddress":"%s","txData":"%s","taskId":%d,"chainId":%d,"fingerprint":"%s"}`,
 		data.FromAddress, data.TxData, data.TaskID, data.ChainID, data.Fingerprint,
 	)
-	fmt.Println("post data:")
-	fmt.Println(postData)
 	d := strings.NewReader(postData)
 	request, _ := http.NewRequest("POST", url, d)
 	request.Header.Set("Content-Type", "application/json")

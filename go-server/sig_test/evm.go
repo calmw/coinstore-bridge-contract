@@ -60,19 +60,12 @@ func ApproveSigTest() error {
 		GasPrice: gasPrice,
 		Data:     data,
 	})
-	marshalJSON, err := tx.MarshalJSON()
-	if err != nil {
-		return err
-	}
-	fmt.Println("txDataJson")
-	fmt.Println(string(marshalJSON))
+
 	taskID := RandInt(100, 10000)
 	// 编码数据
 	var buf bytes.Buffer
 	err = tx.EncodeRLP(&buf)
 	txDataRlp := fmt.Sprintf("%x", buf.Bytes())
-	fmt.Println("txDataRlp")
-	fmt.Println(txDataRlp)
 	apiSecret := "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"
 	sigStr := fmt.Sprintf("%d%s%d%s%s",
 		chainId,
@@ -92,7 +85,9 @@ func ApproveSigTest() error {
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
 	}
 	res, err := RequestWithPem("https://18.141.210.154:8088/signature/sign", postData)
-	fmt.Println("RequestWithPem error:", err)
+	if err != nil {
+		return err
+	}
 	var machineResp MachineResp
 	err = json.Unmarshal(res, &machineResp)
 	if err != nil {
@@ -141,7 +136,6 @@ func SendTransactionFromRlpData(cli *ethclient.Client, rlpDataHex string) (strin
 		return "", err
 	}
 
-	fmt.Printf("tx sent: %s", tx.Hash().Hex())
 	return tx.Hash().String(), nil
 	//tx sent: 0xc429e5f128387d224ba8bed6885e86525e14bfdc2eb24b5e9c3351a1176fd81f
 	//sData := "0xab...."

@@ -5,6 +5,7 @@ import (
 	"coinstore/bridge/chains/tron"
 	"coinstore/bridge/config"
 	"coinstore/bridge/core"
+	"coinstore/bridge/monitor"
 	"coinstore/db"
 	"coinstore/model"
 	"fmt"
@@ -37,7 +38,6 @@ func Run() error {
 		chainLogger := log.Root().New("chain", chainConfig.ChainName)
 
 		if chainConfig.ChainId == 3448148188 || chainConfig.ChainId == 728126428 {
-			fmt.Println("!!!!!!!!!!!! tron ", chainConfig.ChainId)
 			config.TronCfg = chainConfig
 			newChain, err = tron.InitializeChain(&chainConfig, chainLogger, sysErr)
 			if err != nil {
@@ -45,7 +45,6 @@ func Run() error {
 				return err
 			}
 		} else {
-			fmt.Println("!!!!!!!!!!!! evm ", chainConfig.ChainId)
 			newChain, err = ethereum.InitializeChain(chainConfig, chainLogger, sysErr)
 			if err != nil {
 				logger.Error("initialize chain", "error", err)
@@ -58,7 +57,7 @@ func Run() error {
 
 	logger.Debug("ChainInfo on initialization... ")
 
-	//go monitor.Start()
+	go monitor.Start()
 	c.Start()
 	return nil
 }

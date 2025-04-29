@@ -62,11 +62,12 @@ func RequestWithPem(url string, data SigDataPost) ([]byte, error) {
 	postData := fmt.Sprintf(`{"fromAddress":"%s","txData":"%s","taskId":%d,"chainId":%d,"fingerprint":"%s"}`,
 		data.FromAddress, data.TxData, data.TaskID, data.ChainID, data.Fingerprint,
 	)
-	fmt.Println("post data:")
-	fmt.Println(postData)
 	strings.NewReader(postData)
 	d := strings.NewReader(postData)
-	request, _ := http.NewRequest("POST", url, d)
+	request, err := http.NewRequest("POST", url, d)
+	if err != nil {
+		return nil, err
+	}
 	request.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(request)
 	if err != nil {

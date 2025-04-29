@@ -2,7 +2,6 @@ package signature
 
 import (
 	"context"
-	"fmt"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rlp"
@@ -22,6 +21,5 @@ func SendTransactionUseRlpData(cli *ethclient.Client, rlpDataHex string) (string
 		return "", err
 	}
 
-	fmt.Printf("tx sent: %s", tx.Hash().String())
 	return tx.Hash().String(), nil
 }

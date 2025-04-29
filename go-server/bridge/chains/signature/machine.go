@@ -15,25 +15,20 @@ import (
 	"strings"
 )
 
-func SignAndSendTxEth(cli *ethclient.Client, chainId uint64, tx *types.Transaction, apiSecret string) error {
-	marshalJSON, err := tx.MarshalJSON()
-	if err != nil {
-		return err
-	}
+func SignAndSendTxEth(cli *ethclient.Client, chainId uint64, tx *types.Transaction, apiSecret string) (string, error) {
 	sigAccount := os.Getenv("SIG_ACCOUNT_EVM")
 	if len(sigAccount) <= 0 {
 		sigAccount = "0x1933ccd14cafe561d862e5f35d0de75322a55412"
 	}
 	fromAddress := common.HexToAddress(sigAccount)
-	fmt.Println("txDataJson")
-	fmt.Println(string(marshalJSON))
 	taskID := RandInt(100, 10000)
 	// 编码数据
 	var buf bytes.Buffer
-	err = tx.EncodeRLP(&buf)
+	err := tx.EncodeRLP(&buf)
+	if err != nil {
+		return "", err
+	}
 	txDataRlp := fmt.Sprintf("%x", buf.Bytes())
-	fmt.Println("txDataRlp")
-	fmt.Println(txDataRlp)
 	sigStr := fmt.Sprintf("%d%s%d%s%s",
 		chainId,
 		strings.ToLower(fromAddress.String()),
@@ -41,8 +36,6 @@ func SignAndSendTxEth(cli *ethclient.Client, chainId uint64, tx *types.Transacti
 		txDataRlp,
 		apiSecret,
 	)
-	fmt.Println("1")
-	fmt.Println(sigStr)
 
 	fingerprint := sha256.Sum256([]byte(sigStr))
 	fingerprint = sha256.Sum256(fingerprint[:])
@@ -58,16 +51,14 @@ func SignAndSendTxEth(cli *ethclient.Client, chainId uint64, tx *types.Transacti
 	var machineResp MachineResp
 	err = json.Unmarshal(res, &machineResp)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if machineResp.Code != 200 {
-		return errors.New("signature machine error")
+		return "", errors.New("signature machine error")
 	}
 	// 发送交易
 	txHash, err := SendTransactionUseRlpData(cli, machineResp.Data)
-	fmt.Println("SendTransactionFromRlpData:")
-	fmt.Println(err, txHash)
-	return err
+	return txHash, err
 }
 
 // SignAndSendTxTron  728126428

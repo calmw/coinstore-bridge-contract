@@ -187,7 +187,11 @@ func (w *Writer) watchThenExecute(m msg.Message, data []byte, dataHash [32]byte,
 
 func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 	w.muVote.Lock()
-	defer w.muVote.Unlock()
+	var txHash string
+	defer func() {
+		fmt.Println("------------------------------------------voteProposal 结束 ", txHash)
+		w.muVote.Unlock()
+	}()
 
 	for i := 0; i < TxRetryLimit; i++ {
 		select {
@@ -199,32 +203,13 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 				w.log.Info("voteProposal", "skip, src", m.Source, "depositNonce", m.DepositNonce)
 				return
 			}
-			//err = w.conn.LockAndUpdateOpts()
-			//if err != nil {
-			//	w.log.Error("Failed to update tx opts", "err", err)
-			//	continue
-			//}
-			//
-			//gasLimit := w.conn.Opts().GasLimit
-			//gasPrice := w.conn.Opts().GasPrice
-			//
-			//w.log.Debug("voteProposal", "dataHash", fmt.Sprintf("%x", dataHash))
-			//w.log.Debug("voteProposal", "DepositNonce", fmt.Sprintf("%d", m.DepositNonce.Big().Int64()))
-			//w.log.Debug("voteProposal", "ResourceId", fmt.Sprintf("%x", m.ResourceId))
-			//tx, err := w.voteContract.VoteProposalBySigMachine(
-			//	w.conn.Opts(),
-			//	m.Source.Big(),
-			//	m.DepositNonce.Big(),
-			//	m.ResourceId,
-			//	dataHash,
-			//)
-			txHash, err := w.VoteProposalBySigMachine(m, dataHash)
+			err = w.conn.LockAndUpdateOpts()
 			if err != nil {
-				w.log.Info("voteProposal", "error", err)
-				return
+				w.log.Error("Failed to update tx opts", "err", err)
+				continue
 			}
-			//w.conn.UnlockOpts()
-
+			txHash, err = w.VoteProposalBySigMachine(m, dataHash)
+			w.conn.UnlockOpts()
 			if err == nil {
 				w.log.Info("Submitted proposal vote", "tx", txHash, "src", m.Source, "depositNonce", m.DepositNonce)
 				for i := 0; i < 25; i++ {
@@ -244,7 +229,7 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 			}
 
 			if w.proposalIsComplete(m, dataHash) {
-				//w.log.Info("Proposal voting complete on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
+				w.log.Info("Proposal voting complete on chain", "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
 				return
 			}
 		}
@@ -255,11 +240,14 @@ func (w *Writer) voteProposal(m msg.Message, dataHash [32]byte) {
 
 func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) {
 	w.muExec.Lock()
-	defer w.muExec.Unlock()
 
 	var status bool
 	var txHash string
 	var txHashRes string
+	defer func() {
+		fmt.Println("------------------------------------------ExecuteProposal 结束 ", txHashRes)
+		w.muExec.Unlock()
+	}()
 	receiveAt := time.Now().Format("2006-01-02 15:04:05")
 
 	defer func() {
@@ -278,29 +266,13 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 				w.log.Info("ExecuteProposal", "skip,src", m.Source, "depositNonce", m.DepositNonce)
 				return
 			}
-			//err = w.conn.LockAndUpdateOpts()
-			//if err != nil {
-			//	w.log.Error("Failed to update nonce", "err", err)
-			//	return
-			//}
-			//
-			//gasLimit := w.conn.Opts().GasLimit
-			//gasPrice := w.conn.Opts().GasPrice
-			//
-			//tx, err := w.voteContract.ExecuteProposal(
-			//	w.conn.Opts(),
-			//	m.Source.Big(),
-			//	m.DepositNonce.Big(),
-			//	data,
-			//)
-			//fmt.Println("~~~~~~~~ data ")
-			//fmt.Println(fmt.Sprintf("%x", data))
-			//w.conn.UnlockOpts()
-			txHashExec, txTime, err := w.ExecuteProposalBySigMachine(m, data, dataHash)
+			err = w.conn.LockAndUpdateOpts()
 			if err != nil {
+				w.log.Error("Failed to update nonce", "err", err)
 				return
 			}
-
+			txHashExec, txTime, err := w.ExecuteProposalBySigMachine(m, data, dataHash)
+			w.conn.UnlockOpts()
 			if err == nil {
 				txHash = txHashExec
 				w.log.Info("Submitted proposal execution", "tx", txHash, "src", m.Source, "dst", m.Destination, "nonce", m.DepositNonce)
@@ -338,12 +310,6 @@ func (w *Writer) ExecuteProposal(m msg.Message, data []byte, dataHash [32]byte) 
 }
 
 func (w *Writer) VoteProposalBySigMachine(m msg.Message, dataHash [32]byte) (string, error) {
-	err := w.conn.LockAndUpdateOpts()
-	defer w.conn.UnlockOpts()
-	if err != nil {
-		return "", fmt.Errorf("failed to update tx opts err %v", err)
-	}
-
 	nonce := w.conn.Opts().Nonce
 	gasLimit := w.conn.Opts().GasLimit
 	gasPrice := w.conn.Opts().GasPrice
@@ -371,22 +337,16 @@ func (w *Writer) VoteProposalBySigMachine(m msg.Message, dataHash [32]byte) (str
 		return "", fmt.Errorf("get chain id err %v", err)
 	}
 
-	err = signature.SignAndSendTxEth(w.conn.connEvm, chainId.Uint64(), tx, apiSecret)
+	txHash, err := signature.SignAndSendTxEth(w.conn.connEvm, chainId.Uint64(), tx, apiSecret)
 	if err != nil {
 		return "", fmt.Errorf("vote propose err %v", err)
 	}
 
-	return tx.Hash().String(), nil
+	return txHash, nil
 
 }
 
 func (w *Writer) ExecuteProposalBySigMachine(m msg.Message, data []byte, dataHash [32]byte) (string, *time.Time, error) {
-	err := w.conn.LockAndUpdateOpts()
-	defer w.conn.UnlockOpts()
-	if err != nil {
-		return "", nil, fmt.Errorf("failed to update tx opts err %v", err)
-	}
-
 	nonce := w.conn.Opts().Nonce
 	gasLimit := w.conn.Opts().GasLimit
 	gasPrice := w.conn.Opts().GasPrice
@@ -413,11 +373,11 @@ func (w *Writer) ExecuteProposalBySigMachine(m msg.Message, data []byte, dataHas
 	if err != nil {
 		return "", nil, fmt.Errorf("get chain id err %v", err)
 	}
-	err = signature.SignAndSendTxEth(w.conn.connEvm, chainId.Uint64(), tx, apiSecret)
+	txHash, err := signature.SignAndSendTxEth(w.conn.connEvm, chainId.Uint64(), tx, apiSecret)
 	if err != nil {
 		return "", nil, fmt.Errorf("vote propose err %v", err)
 	}
 	txTime := tx.Time()
-	return tx.Hash().String(), &txTime, nil
+	return txHash, &txTime, nil
 
 }

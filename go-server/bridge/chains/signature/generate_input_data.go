@@ -69,7 +69,7 @@ func GenerateExecuteProposalInputData(originChainId, originDepositNonce *big.Int
     "type": "function"
   }]`
 	contractAbi, _ := abi.JSON(strings.NewReader(abiJson))
-	return contractAbi.Pack("voteProposal",
+	return contractAbi.Pack("executeProposal",
 		originChainId,
 		originDepositNonce,
 		data,

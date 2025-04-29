@@ -77,8 +77,6 @@ func (t *TanTinTron) AdminSetEnv(feeAddress, serverAddress, bridgeAddress string
 		bridgeAddress,
 		fmt.Sprintf("%x", signature),
 	)
-	fmt.Println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-	fmt.Println(triggerData)
 	tx, err := t.Cli.TriggerContract(t.Ka.Address.String(), t.ContractAddress, "adminSetEnv(address,address,address,bytes)", triggerData, 900000000, 0, "", 0)
 	if err != nil {
 		return "", err
@@ -155,13 +153,11 @@ func (t *TanTinTron) Deposit(destinationChainId, amount, price, priceTimestamp *
 	signature, err := abi.TantinDepositSignatureTron(
 		ethCommon.HexToAddress(recipientEth),
 	)
-	fmt.Println(err, "~~~~~~~11")
 	signaturePrice, err := abi.TronPriceSignature(
 		big.NewInt(ChainConfig.ChainId),
 		price,
 		priceTimestamp,
 	)
-	fmt.Println(err, "~~~~~~~111")
 	triggerData := fmt.Sprintf("[{\"uint256\":\"%s\"},{\"bytes32\":\"%s\"},{\"address\":\"%s\"},{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"uint256\":\"%s\"},{\"bytes\":\"%s\"},{\"bytes\":\"%s\"}]",
 		destinationChainId.String(),
 		strings.TrimPrefix(resourceId, "0x"),

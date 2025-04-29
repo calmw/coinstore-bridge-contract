@@ -92,7 +92,6 @@ func (v *VoteTron) AdminSetEnv(bridgeAddress string, expiry *big.Int, relayerThr
 	)
 	fmt.Println(triggerData)
 	tx, err := v.Cli.TriggerContract(v.Ka.Address.String(), ChainConfig.VoteContractAddress, "adminSetEnv(address,uint256,uint256,bytes)", triggerData, 300000000, 0, "", 0)
-	fmt.Println("!!!!", err)
 	if err != nil {
 		return "", err
 	}
