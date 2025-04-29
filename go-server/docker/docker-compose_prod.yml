@@ -20,7 +20,7 @@ services:
       - MYSQL_HOST=tt_bridge_mysql
       - MYSQL_PORT=3306
     volumes:
-      - ./pem:/src/pem
+      - /data/tantin_bridge/pem:/src/pem
     networks:
       - tt_bridge
     logging:
@@ -47,7 +47,7 @@ services:
       - MYSQL_HOST=tt_bridge_mysql
       - MYSQL_PORT=3306
     volumes:
-      - ./pem:/src/pem
+      - /data/tantin_bridge/pem:/src/pem
     networks:
       - tt_bridge
     logging:
@@ -74,7 +74,7 @@ services:
       - MYSQL_HOST=tt_bridge_mysql
       - MYSQL_PORT=3306
     volumes:
-      - ./pem:/src/pem
+      - /data/tantin_bridge/pem:/src/pem
     networks:
       - tt_bridge
     logging:

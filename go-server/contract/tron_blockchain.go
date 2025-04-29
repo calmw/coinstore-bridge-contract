@@ -26,7 +26,7 @@ func InitTronEnv() {
 		UsdtAddress:           "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf",
 		UsdcAddress:           "TFXYQ93J5ptYcWaVFJxnadLZUB459uX2MK",
 		EthAddress:            "0x0000000000000000000000000000000000000000",
-		WEthAddress:           "TYosr3nfECjdK8QwPpNS71p2okbDsbKMe4",
+		WEthAddress:           "TRNsnYM71Uqs59kx6bFJZg5gdmMEPA3TBs",
 		PrivateKey:            privateKeyStr,
 	}
 }

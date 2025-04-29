@@ -3,7 +3,6 @@ package binding
 import (
 	"coinstore/bridge/chains/tron/trigger"
 	"coinstore/utils"
-	"fmt"
 	"github.com/calmw/tron-sdk/pkg/client"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
