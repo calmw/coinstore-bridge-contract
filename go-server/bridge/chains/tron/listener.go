@@ -128,10 +128,10 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 	}
 	for _, logE := range data {
 		var m msg.Message
-		fmt.Println("get events:")
-		fmt.Println("ResourceID", logE.ResourceID)
-		fmt.Println("DestinationChainId", logE.DestinationChainId)
-		fmt.Println("Data", logE.Data)
+		//fmt.Println("get events:")
+		//fmt.Println("ResourceID", logE.ResourceID)
+		//fmt.Println("DestinationChainId", logE.DestinationChainId)
+		//fmt.Println("Data", logE.Data)
 		var bigIntD big.Int
 		var bigIntN big.Int
 		destinationChainId, success := bigIntD.SetString(logE.DestinationChainId, 10)
