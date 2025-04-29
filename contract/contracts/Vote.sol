@@ -134,7 +134,7 @@ contract Vote is IVote, AccessControl, Initializable {
     /**
         @notice relayer执行投票通过后的到帐操作
         @param originChainId 源链ID
-        @param originDepositNonce 源链nonce
+        @param originDepositNonce 源链nonceqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
         @param resourceId 跨链的resourceID
         @param dataHash dataHash
      */
@@ -144,85 +144,85 @@ contract Vote is IVote, AccessControl, Initializable {
         bytes32 resourceId,
         bytes32 dataHash
     ) external onlyRole(RELAYER_ROLE) {
-//        require(
-//            originDepositNonce < uint256(18446744073709551616),
-//            "origin deposit nonce too big"
-//        );
-//        uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
-//            uint72(originChainId);
-//        Proposal storage proposal = proposals[nonceAndID][dataHash];
-//        require(
-//            uint8(proposal.status) <= 1,
-//            "proposal already passed/executed/cancelled"
-//        );
-//        require(
-//            !hasVotedOnProposal[nonceAndID][dataHash][msg.sender],
-//            "relayer already voted"
-//        );
-//
-//        if (uint8(proposal.status) == 0) {
-//            // 第一次对提案投票
-//            ++totalProposal;
-//            proposals[nonceAndID][dataHash] = Proposal(
-//                resourceId,
-//                dataHash,
-//                new address[](1),
-//                new address[](0),
-//                ProposalStatus.Active,
-//                block.number
-//            );
-//
-//            proposal.yesVotes[0] = msg.sender; // 索引 0 是创建提案的relayer
-//            emit ProposalEvent(
-//                originChainId,
-//                originDepositNonce,
-//                ProposalStatus.Active,
-//                resourceId,
-//                dataHash
-//            );
-//        } else {
-//            // 非第一次对提案投票
-//            if (block.number - proposal.proposedBlock > expiry) {
-//                // 如果块高差达到设定阀值，就取消提案,可以设置1～2天，更短时间可以增加安全性
-//                proposal.status = ProposalStatus.Cancelled;
-//                emit ProposalEvent(
-//                    originChainId,
-//                    originDepositNonce,
-//                    ProposalStatus.Cancelled,
-//                    resourceId,
-//                    dataHash
-//                );
-//            } else {
-//                require(dataHash == proposal.dataHash, "datahash mismatch");
-//                proposal.yesVotes.push(msg.sender);
-//            }
-//        }
-//        if (proposal.status != ProposalStatus.Cancelled) {
-//            // 提案非过期状态
-//            hasVotedOnProposal[nonceAndID][dataHash][msg.sender] = true;
-//            emit ProposalVote(
-//                originChainId,
-//                originDepositNonce,
-//                proposal.status,
-//                resourceId
-//            );
-//
-//            // 检测投票后的提案状态
-//            // 如果投票数量达到设定阀值，或者阀值设置为1，就通过提案
-//            if (
-//                relayerThreshold <= 1 ||
-//                proposal.yesVotes.length >= relayerThreshold
-//            ) {
-//                proposal.status = ProposalStatus.Passed;
-//                emit ProposalEvent(
-//                    originChainId,
-//                    originDepositNonce,
-//                    ProposalStatus.Passed,
-//                    resourceId,
-//                    dataHash
-//                );
-//            }
-//        }
+        require(
+            originDepositNonce < uint256(18446744073709551616),
+            "origin deposit nonce too big"
+        );
+        uint72 nonceAndID = (uint72(originDepositNonce) << 8) |
+            uint72(originChainId);
+        Proposal storage proposal = proposals[nonceAndID][dataHash];
+        require(
+            uint8(proposal.status) <= 1,
+            "proposal already passed/executed/cancelled"
+        );
+        require(
+            !hasVotedOnProposal[nonceAndID][dataHash][msg.sender],
+            "relayer already voted"
+        );
+
+        if (uint8(proposal.status) == 0) {
+            // 第一次对提案投票
+            ++totalProposal;
+            proposals[nonceAndID][dataHash] = Proposal(
+                resourceId,
+                dataHash,
+                new address[](1),
+                new address[](0),
+                ProposalStatus.Active,
+                block.number
+            );
+
+            proposal.yesVotes[0] = msg.sender; // 索引 0 是创建提案的relayer
+            emit ProposalEvent(
+                originChainId,
+                originDepositNonce,
+                ProposalStatus.Active,
+                resourceId,
+                dataHash
+            );
+        } else {
+            // 非第一次对提案投票
+            if (block.number - proposal.proposedBlock > expiry) {
+                // 如果块高差达到设定阀值，就取消提案,可以设置1～2天，更短时间可以增加安全性
+                proposal.status = ProposalStatus.Cancelled;
+                emit ProposalEvent(
+                    originChainId,
+                    originDepositNonce,
+                    ProposalStatus.Cancelled,
+                    resourceId,
+                    dataHash
+                );
+            } else {
+                require(dataHash == proposal.dataHash, "datahash mismatch");
+                proposal.yesVotes.push(msg.sender);
+            }
+        }
+        if (proposal.status != ProposalStatus.Cancelled) {
+            // 提案非过期状态
+            hasVotedOnProposal[nonceAndID][dataHash][msg.sender] = true;
+            emit ProposalVote(
+                originChainId,
+                originDepositNonce,
+                proposal.status,
+                resourceId
+            );
+
+            // 检测投票后的提案状态
+            // 如果投票数量达到设定阀值，或者阀值设置为1，就通过提案
+            if (
+                relayerThreshold <= 1 ||
+                proposal.yesVotes.length >= relayerThreshold
+            ) {
+                proposal.status = ProposalStatus.Passed;
+                emit ProposalEvent(
+                    originChainId,
+                    originDepositNonce,
+                    ProposalStatus.Passed,
+                    resourceId,
+                    dataHash
+                );
+            }
+        }
     }
 
     /**

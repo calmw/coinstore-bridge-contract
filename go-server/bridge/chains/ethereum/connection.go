@@ -192,13 +192,12 @@ func (c *Connection) LockAndUpdateOpts() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(nodePriceEstimate, "=======================================")
 	if c.opts == nil {
 		c.opts = &bind.TransactOpts{}
 	}
 	c.opts.Nonce = big.NewInt(int64(nonce))
 	c.opts.GasPrice = nodePriceEstimate
-	c.opts.GasLimit = 21000 * 1.5
+	c.opts.GasLimit = 21000 * 10
 	c.opts.GasTipCap = nil
 
 	return nil

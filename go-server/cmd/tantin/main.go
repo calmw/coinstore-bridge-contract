@@ -58,13 +58,13 @@ func main() {
 	//tantin.LatestBlock()
 
 	amount := big.NewInt(6000000)
-	//Usdt, err := contract.NewErc20(common.HexToAddress(contract.ChainConfig.UsdtAddress))
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//am := big.NewInt(1).Mul(amount, big.NewInt(1e18))
-	//Usdt.Approve(am, contract.ChainConfig.TantinContractAddress)
+	Usdt, err := contract.NewErc20(common.HexToAddress(contract.ChainConfig.UsdtAddress))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	am := big.NewInt(1).Mul(amount, big.NewInt(1e18))
+	Usdt.Approve(am, contract.ChainConfig.TantinContractAddress)
 	//Usdc, err := contract.NewErc20(common.HexToAddress(contract.ChainConfig.UsdcAddress))
 	//if err != nil {
 	//	fmt.Println(err)
