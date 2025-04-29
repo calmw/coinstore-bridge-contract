@@ -7,17 +7,16 @@ import (
 )
 
 func TestTransferCoin(t *testing.T) {
-	privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
+	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON_LOCAL")
 	fromAddress := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
 	toAddress := "TEwX7WKNQqsRpxd6KyHHQPMMigLg9c258y"
 	amount := int64(1)
-	coin, err := TransferCoin(privateKey, fromAddress, toAddress, amount)
-	fmt.Println(coin, err)
-
+	tx, err := TransferCoin(privateKey, fromAddress, toAddress, amount)
+	fmt.Println(tx, err)
 }
 
 func TestPrivateKeyToWalletAddress(t *testing.T) {
-	privateKey := os.Getenv("COIN_STORE_BRIDGE_TRON")
+	privateKey := os.Getenv("COINSTORE_BRIDGE_TRON_LOCAL")
 	address, err := PrivateKeyToWalletAddress(privateKey)
 	fmt.Println(address, err)
 }
