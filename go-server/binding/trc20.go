@@ -11,10 +11,12 @@ import (
 	"github.com/calmw/tron-sdk/pkg/address"
 	"github.com/calmw/tron-sdk/pkg/client"
 	"github.com/calmw/tron-sdk/pkg/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/status-im/keycard-go/hexutils"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -166,6 +168,33 @@ func PrivateKeyToWalletAddress(pk string) (string, error) {
 	//sk, pubKey := btcec.PrivKeyFromBytes(privateKeyBytes)
 	// sk.PubKey().ToECDSA() == pubKey.ToECDSA() ,值一样
 	addr := address.PubkeyToAddress(*sk.PubKey().ToECDSA())
+	return addr.String(), nil
+}
+
+func PrivateKeyToWalletAddress2(pk string) (string, error) {
+	privateKeyBytes, err := hex.DecodeString(pk)
+	if err != nil {
+		return "", err
+	}
+	if len(privateKeyBytes) != common.Secp256k1PrivateKeyBytesLength {
+		fmt.Println(common.ErrBadKeyLength)
+	}
+
+	///
+	// 2. 从字节数组生成 ECDSA 私钥
+	privateKey, err := crypto.ToECDSA(privateKeyBytes)
+	if err != nil {
+		log.Fatalf("invalid private key bytes: %v", err)
+	}
+
+	///
+	sk, _ := btcec.PrivKeyFromBytes(privateKeyBytes)
+	//sk, pubKey := btcec.PrivKeyFromBytes(privateKeyBytes)
+	// sk.PubKey().ToECDSA() == pubKey.ToECDSA() ,值一样
+	addr := address.PubkeyToAddress(*sk.PubKey().ToECDSA())
+	addr2 := address.PubkeyToAddress(privateKey.PublicKey)
+	fmt.Println(addr)
+	fmt.Println(addr2)
 	return addr.String(), nil
 }
 

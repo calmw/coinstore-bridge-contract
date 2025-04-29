@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/btcsuite/btcd/btcec/v2"
@@ -64,9 +65,9 @@ func TransferCoin() (string, error) {
 func TronTest() error {
 	//privateKey := os.Getenv("COINSTORE_BRIDGE_TRON_LOCAL")
 	//fromAddress := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
-	//fromAddress := "TTgY73yj5vzGM2HGHhVt7AR7avMW4jUx6n"
+	fromAddress := "TTgY73yj5vzGM2HGHhVt7AR7avMW4jUx6n"
 	privateKey := "4d69dca2ebc32e9d448a1c6d6fa3da61fc537077279c3ab6c6702adfe70dd8a2"
-	fromAddress := "TYMHM8fjbMJDDeyEXnmAntq5t4afzv4T8M"
+	//fromAddress := "TYMHM8fjbMJDDeyEXnmAntq5t4afzv4T8M"
 	toAddress := "TEwX7WKNQqsRpxd6KyHHQPMMigLg9c258y"
 	amount := int64(1)
 
@@ -102,50 +103,52 @@ func TronTest() error {
 	finalSig = append(finalSig, v)
 
 	signature := finalSig
-	//fmt.Println("本地签名长度", len(signature))
-	//fmt.Println("本地签名 ", fmt.Sprintf("%x", signature))
-	///
+	fmt.Println("本地签名 0 ", sigCompact[0])
+	fmt.Println("本地签名长度", len(signature))
+	fmt.Println("本地签名", signature)
+	fmt.Println("本地签名 ", fmt.Sprintf("%x", signature))
 
-	//fromAddress = "TTgY73yj5vzGM2HGHhVt7AR7avMW4jUx6n"
-	//data := hexutils.BytesToHex(hash[:])
-	//taskID := RandInt(100, 1000)
-	//chianId := 728126428
-	//apiSecret := "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"
-	//sigStr := fmt.Sprintf("%d%s%d%s%s",
-	//	chianId,
-	//	strings.ToLower(fromAddress),
-	//	taskID,
-	//	data,
-	//	apiSecret,
-	//)
-	//
-	//fingerprint := sha256.Sum256([]byte(sigStr))
-	//fingerprint = sha256.Sum256(fingerprint[:])
-	//postData := SigDataPost{
-	//	FromAddress: fromAddress,
-	//	TxData:      data,
-	//	TaskID:      taskID,
-	//	ChainID:     chianId,
-	//	Fingerprint: fmt.Sprintf("%x", fingerprint),
-	//}
-	//res, err := RequestWithPem("https://18.141.210.154:8088/signature/sign", postData)
-	////res, err := RequestWithPem("https://47.129.133.232:8088/signature/sign", postData)
-	//if err != nil {
-	//	return err
-	//}
-	//var machineResp MachineResp
-	//err = json.Unmarshal(res, &machineResp)
-	//if err != nil {
-	//	return err
-	//}
-	//if machineResp.Code != 200 {
-	//	return errors.New("signature machine error")
-	//}
-	//signature := hexutils.HexToBytes(machineResp.Data)
-	//fmt.Println("签名机签名长度", len(signature))
-	//fmt.Println("签名机签名 ", machineResp.Data)
+	fromAddress = "TTgY73yj5vzGM2HGHhVt7AR7avMW4jUx6n"
+	data := hexutils.BytesToHex(hash[:])
+	taskID := RandInt(100, 1000)
+	chianId := 728126428
+	apiSecret := "ttbridge_9d8f7b6a5c4e3d2f1a0b9c8d7e6f5a4b3c2d1e0f"
+	sigStr := fmt.Sprintf("%d%s%d%s%s",
+		chianId,
+		strings.ToLower(fromAddress),
+		taskID,
+		data,
+		apiSecret,
+	)
+
+	fingerprint := sha256.Sum256([]byte(sigStr))
+	fingerprint = sha256.Sum256(fingerprint[:])
+	postData := SigDataPost{
+		FromAddress: fromAddress,
+		TxData:      data,
+		TaskID:      taskID,
+		ChainID:     chianId,
+		Fingerprint: fmt.Sprintf("%x", fingerprint),
+	}
+	res, err := RequestWithPem("https://18.141.210.154:8088/signature/sign", postData)
+	//res, err := RequestWithPem("https://47.129.133.232:8088/signature/sign", postData)
+	if err != nil {
+		return err
+	}
+	var machineResp MachineResp
+	err = json.Unmarshal(res, &machineResp)
+	if err != nil {
+		return err
+	}
+	if machineResp.Code != 200 {
+		return errors.New("signature machine error")
+	}
+	signature2 := hexutils.HexToBytes(machineResp.Data)
+	fmt.Println("签名机签名长度", len(signature2))
+	fmt.Println("签名机签名 ", machineResp.Data)
+	fmt.Println("签名机签名 ", signature2)
 	// 发送交易
-	tx.Transaction.Signature = append(tx.Transaction.Signature, signature)
+	tx.Transaction.Signature = append(tx.Transaction.Signature, signature2)
 	//tx.Transaction.Signature =  hexutils.HexToBytes(machineResp.Data)
 	result, err := cli.Broadcast(tx.Transaction)
 	if err != nil || !result.Result {
