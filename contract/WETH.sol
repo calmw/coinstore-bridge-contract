@@ -18,7 +18,7 @@ contract WETH {
         deposit();
     }
     function deposit() public payable {
-        balanceOf[msg.sender] += msg.value;
+        balanceOf[msg.sender] += msg.value*1e12;
         Deposit(msg.sender, msg.value);
     }
     function withdraw(uint wad) public {

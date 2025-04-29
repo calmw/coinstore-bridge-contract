@@ -11,6 +11,5 @@ FROM golang
 WORKDIR /app
 COPY --from=builder /tt_bridge ./
 RUN chmod +x ./tt_bridge
-RUN mkdir -p "/src/tron_keystore/keystore"
 
 ENTRYPOINT ["./tt_bridge"]
