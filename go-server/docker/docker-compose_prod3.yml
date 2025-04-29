@@ -1,0 +1,35 @@
+# Copyright 2025 calm.wang@hotmail.com
+# SPDX-License-Identifier: LGPL-3.0-only
+version: '3.9'
+
+networks:
+  tt_bridge:
+
+services:
+  tt_bridge_three:
+    image: calmw/tt_bridge:0.0.27
+    container_name: tt_bridge_three
+    restart: always
+    environment:
+      - SIG_ACCOUNT_EVM=0x2eb24f919c0428af3e564d94c4340044d8fd5376
+      - SIG_ACCOUNT_TRON=TTgY73yj5vzGM2HGHhVt7AR7avMW4jUx6n
+      - FAILED_JOB_INTERVAL=300
+      - MYSQL_DATABASE=bridge
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=let_me_in_0x4f7d21e8ed
+      - MYSQL_HOST=tt_bridge_mysql
+      - MYSQL_PORT=3306
+    volumes:
+      - ./:/app
+    networks:
+      - tt_bridge
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "1"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
