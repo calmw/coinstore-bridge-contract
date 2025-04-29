@@ -103,7 +103,7 @@ func TronTest() error {
 	finalSig = append(finalSig, v)
 
 	signature := finalSig
-	fmt.Println("本地签名 0 ", sigCompact[0])
+	//fmt.Println("本地签名 0 ", sigCompact[0])
 	fmt.Println("本地签名长度", len(signature))
 	fmt.Println("本地签名", signature)
 	fmt.Println("本地签名 ", fmt.Sprintf("%x", signature))
@@ -147,6 +147,11 @@ func TronTest() error {
 	fmt.Println("签名机签名长度", len(signature2))
 	fmt.Println("签名机签名 ", machineResp.Data)
 	fmt.Println("签名机签名 ", signature2)
+	signature2[64] = signature2[64] + 4
+	fmt.Println("签名机签名最后一位+4:")
+	fmt.Println("加4后签名机签名长度", len(signature2))
+	fmt.Println("加4后签名机签名 ", fmt.Sprintf("%x", signature2))
+	fmt.Println("加4后签名机签名 ", signature2)
 	// 发送交易
 	tx.Transaction.Signature = append(tx.Transaction.Signature, signature2)
 	//tx.Transaction.Signature =  hexutils.HexToBytes(machineResp.Data)
