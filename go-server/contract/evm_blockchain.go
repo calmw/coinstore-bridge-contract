@@ -1,8 +1,8 @@
 package contract
 
 import (
-	"coinstore/utils"
 	"context"
+	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -126,7 +126,10 @@ func GetAuthWithValue(cli *ethclient.Client, value *big.Int) (error, *bind.Trans
 }
 
 func InitTantinEnv() {
-	privateKeyStr := os.Getenv("TT_BRIDGE_SIGN")
+	privateKeyStr := os.Getenv("TB_KEY")
+	if len(privateKeyStr) <= 0 {
+		privateKeyStr = os.Getenv("TT_BRIDGE_SIGN")
+	}
 	ChainConfig = ChainConfigs{
 		BridgeId:    1,
 		ChainId:     12302,
@@ -145,6 +148,10 @@ func InitTantinEnv() {
 }
 
 func InitTantinEnvProd() {
+	privateKeyStr := os.Getenv("TB_KEY")
+	if len(privateKeyStr) <= 0 {
+		privateKeyStr = os.Getenv("TT_BRIDGE_SIGN")
+	}
 	ChainConfig = ChainConfigs{
 		BridgeId:              1,
 		ChainId:               12301,
@@ -162,7 +169,10 @@ func InitTantinEnvProd() {
 }
 
 func InitBscEnv() {
-	privateKeyStr := os.Getenv("TT_BRIDGE_SIGN")
+	privateKeyStr := os.Getenv("TB_KEY")
+	if len(privateKeyStr) <= 0 {
+		privateKeyStr = os.Getenv("TT_BRIDGE_SIGN")
+	}
 	ChainConfig = ChainConfigs{
 		BridgeId:              2,
 		ChainId:               97,
@@ -180,6 +190,10 @@ func InitBscEnv() {
 }
 
 func InitBscProdEnv() {
+	privateKeyStr := os.Getenv("TB_KEY")
+	if len(privateKeyStr) <= 0 {
+		privateKeyStr = os.Getenv("TT_BRIDGE_SIGN")
+	}
 	ChainConfig = ChainConfigs{
 		BridgeId:              2,
 		ChainId:               56,
@@ -192,18 +206,21 @@ func InitBscProdEnv() {
 		UsdcAddress:           "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
 		EthAddress:            "0x0000000000000000000000000000000000000000",
 		WEthAddress:           "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
-		//PrivateKey:            privateKeyStr,
+		PrivateKey:            privateKeyStr,
 	}
 }
 
 func InitEthEnv() {
-	//coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE")
-	coinStoreBridge := os.Getenv("TT_BRIDGE_MAINNET_TEST_DEPLOYER")
-	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
+	privateKeyStr := os.Getenv("TB_KEY")
+	if len(privateKeyStr) <= 0 {
+		privateKeyStr = os.Getenv("TT_BRIDGE_SIGN")
+	}
+	fmt.Println(privateKeyStr)
 	ChainConfig = ChainConfigs{
-		BridgeId:              4,
-		ChainId:               11155111,
-		ChainTypeId:           1,
+		BridgeId:    4,
+		ChainId:     11155111,
+		ChainTypeId: 1,
+		//RPC:                   "https://ethereum-sepolia-rpc.publicnode.com",
 		RPC:                   "https://ethereum-sepolia-rpc.publicnode.com",
 		BridgeContractAddress: "0xEf495bdab97F796091346Db4A46Ca0E82bFeA31f",
 		VoteContractAddress:   "0x6DdF0AB701Dff9f40bB3D09Ba67D43C1d3890d1E",
@@ -217,6 +234,10 @@ func InitEthEnv() {
 }
 
 func InitEthEnvProd() {
+	privateKeyStr := os.Getenv("TB_KEY")
+	if len(privateKeyStr) <= 0 {
+		privateKeyStr = os.Getenv("TT_BRIDGE_SIGN")
+	}
 	ChainConfig = ChainConfigs{
 		BridgeId:              4,
 		ChainId:               1,
@@ -229,6 +250,6 @@ func InitEthEnvProd() {
 		UsdcAddress:           "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USD Coin
 		EthAddress:            "0x0000000000000000000000000000000000000000",
 		WEthAddress:           "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-		//PrivateKey:            privateKeyStr,
+		PrivateKey:            privateKeyStr,
 	}
 }
