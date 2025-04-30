@@ -1,5 +1,6 @@
 require('@openzeppelin/hardhat-upgrades')
 require("@nomiclabs/hardhat-waffle");
+// require("@nomicfoundation/hardhat-verify");
 // const PRIVATE_KEY = process.env.TT_BRIDGE_SIGN
 const PRIVATE_KEY = process.env.TB_PROD
 module.exports = {
@@ -36,7 +37,7 @@ module.exports = {
         tantin: {
             url: "https://rpc.tantin.com",
             accounts: [`${PRIVATE_KEY}`],
-            gasPrice: 100000000000000000
+            gasPrice: 142861904761900
         },
         open_bnb: {
             url: "https://opbnb-testnet-rpc.bnbchain.org",
