@@ -66,7 +66,7 @@ func TronTest() error {
 	//privateKey := os.Getenv("COINSTORE_BRIDGE_TRON_LOCAL")
 	//fromAddress := "TFBymbm7LrbRreGtByMPRD2HUyneKabsqb"
 	//fromAddress := "TTgY73yj5vzGM2HGHhVt7AR7avMW4jUx6n"
-	fromAddress := "TQW9ewAvS8iN93QGSgzMcgPhxMp1hPLa3W"
+	fromAddress := "TVQxkU9PjTVuYuEDiZBAJb8a9jaL3nLeVM"
 	//privateKey := "4d69dca2ebc32e9d448a1c6d6fa3da61fc537077279c3ab6c6702adfe70dd8a2"
 	//fromAddress := "TYMHM8fjbMJDDeyEXnmAntq5t4afzv4T8M"
 	toAddress := "TEwX7WKNQqsRpxd6KyHHQPMMigLg9c258y"
@@ -131,8 +131,8 @@ func TronTest() error {
 		ChainID:     chianId,
 		Fingerprint: fmt.Sprintf("%x", fingerprint),
 	}
-	//res, err := RequestWithPem("https://18.141.210.154:8088/signature/sign", postData)
-	res, err := RequestWithPem("https://47.129.133.232:8088/signature/sign", postData)
+	res, err := RequestWithPem("https://18.141.210.154:8088/signature/sign", postData)
+	//res, err := RequestWithPem("https://47.129.133.232:8088/signature/sign", postData)
 	if err != nil {
 		return err
 	}
