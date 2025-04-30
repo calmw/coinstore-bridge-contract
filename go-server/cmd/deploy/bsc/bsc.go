@@ -14,8 +14,8 @@ func InitTt(prvKey, adminAddress, feeAddress, serverAddress, realyerOneAddress, 
 		fmt.Println(err)
 		return
 	}
-	contract.InitBscEnv()
-	//contract.InitBscProdEnv()
+	//contract.InitBscEnv()
+	contract.InitBscProdEnv()
 	bridge, err := contract.NewBridge()
 	if err != nil {
 		fmt.Println(err)

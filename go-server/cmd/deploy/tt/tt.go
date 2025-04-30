@@ -14,8 +14,8 @@ func InitTt(prvKey, adminAddress, feeAddress, serverAddress, realyerOneAddress, 
 		fmt.Println(err)
 		return
 	}
-	contract.InitTantinEnv()
-	//contract.InitTantinEnvProd()
+	//contract.InitTantinEnv()
+	contract.InitTantinEnvProd()
 	bridge, err := contract.NewBridge()
 	if err != nil {
 		fmt.Println(err)

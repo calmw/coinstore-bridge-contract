@@ -32,16 +32,18 @@ func InitTronEnv() {
 }
 
 func InitTronEnvProd() {
-	coinStoreBridge := os.Getenv("COIN_STORE_BRIDGE_TRON")
-	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
+	privateKeyStr := os.Getenv("TB_KEY")
+	if len(privateKeyStr) <= 0 {
+		privateKeyStr = os.Getenv("TT_BRIDGE_SIGN")
+	}
 	ChainConfig = ChainConfigs{
 		BridgeId:              3,
-		ChainId:               3448148188,
+		ChainId:               728126428,
 		ChainTypeId:           2,
 		RPC:                   "grpc.trongrid.io:50051",
-		BridgeContractAddress: "TPSkYD6TVNUhCxc3GHTNGiDBjGiwjCNCav",
-		VoteContractAddress:   "TXuEGQmfFQkn9yjjV5bqXnTZKXSoYXixU5",
-		TantinContractAddress: "THrFvBAYd6kkrvDjCHJWsv4KSGWMtKUcxz",
+		BridgeContractAddress: "TRmfFyhGBraRywY3HEwSekHQGEJt3rsLme",
+		VoteContractAddress:   "TJ4jUQUrZjuJneMtd2BzYTNLoJy6bK7buA",
+		TantinContractAddress: "TPmL2An1enZEYLZCj8NLEWMC5Btpx17grC",
 		UsdtAddress:           "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
 		UsdcAddress:           "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",
 		EthAddress:            "0x0000000000000000000000000000000000000000",
