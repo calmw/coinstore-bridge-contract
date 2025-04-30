@@ -205,9 +205,9 @@ func InitEthEnv() {
 		ChainId:               11155111,
 		ChainTypeId:           1,
 		RPC:                   "https://ethereum-sepolia-rpc.publicnode.com",
-		BridgeContractAddress: "0x27B56c6A1C66A78e41A20141e79F8559C33af9b5",
-		VoteContractAddress:   "0x62B166B387E0EA79Fa52Ae3A623dbF9F8Db3893b",
-		TantinContractAddress: "0x94Bbc0cc03245Ec1f9B5d7134fB3A9D579ADc3c9",
+		BridgeContractAddress: "0xEf495bdab97F796091346Db4A46Ca0E82bFeA31f",
+		VoteContractAddress:   "0x6DdF0AB701Dff9f40bB3D09Ba67D43C1d3890d1E",
+		TantinContractAddress: "0x9c06c39F095d85591fc4dd33E33C9f32D3669233",
 		UsdtAddress:           "0x94Bbc0cc03245Ec1f9B5d7134fB3A9D579ADc3c9", // Tether USD
 		UsdcAddress:           "0x43f66dB67821e38BF935924c999B94dBD24Bd35f", // USD Coin
 		EthAddress:            "0x0000000000000000000000000000000000000000",
