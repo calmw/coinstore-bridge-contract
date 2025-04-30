@@ -40,8 +40,8 @@ func (c VoteEvm) Init(adminAddress, realyerOneAddress, realyerTwoAddress, realye
 	c.GrantRole(RelayerRole, common.HexToAddress(realyerOneAddress))
 	c.GrantRole(RelayerRole, common.HexToAddress(realyerTwoAddress))
 	c.GrantRole(RelayerRole, common.HexToAddress(realyerThreeAddress))
-	c.GrantRole(RelayerRole, common.HexToAddress(adminAddress)) // TODO 线上更改
-	c.AdminSetEnv(big.NewInt(100), big.NewInt(1))
+	//c.GrantRole(RelayerRole, common.HexToAddress(adminAddress)) // TODO 线上更改
+	c.AdminSetEnv(big.NewInt(100), big.NewInt(2))
 }
 
 func (c VoteEvm) AdminSetEnv(expiry *big.Int, relayerThreshold *big.Int) {
