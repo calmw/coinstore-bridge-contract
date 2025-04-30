@@ -26,9 +26,9 @@ type BridgeTx struct {
 	Fee                     decimal.Decimal `gorm:"column:fee;type:decimal(20,0);comment:'跨链费用，万分比'" json:"fee"`
 	Caller                  string          `gorm:"column:caller;comment:'链链发起者地址'" json:"caller"`
 	Receiver                string          `gorm:"column:receiver;comment:'目标链接受者地址'" json:"receiver"`
-	SourceChainId           int64           `gorm:"column:source_chain_id;comment:'源链ID'" json:"source_chain_id"`
+	SourceChainId           ChainId         `gorm:"column:source_chain_id;comment:'源链ID'" json:"source_chain_id"`
 	SourceTokenAddress      string          `gorm:"column:source_token_address;comment:'源链token地址'" json:"source_token_address"`
-	DestinationChainId      int64           `gorm:"column:destination_chain_id;comment:'目标链ID'" json:"destination_chain_id"`
+	DestinationChainId      ChainId         `gorm:"column:destination_chain_id;comment:'目标链ID'" json:"destination_chain_id"`
 	DestinationTokenAddress string          `gorm:"column:destination_token_address;comment:'目标链token地址'" json:"destination_token_address"`
 	BridgeStatus            int             `gorm:"column:bridge_status;type:tinyint;comment:'跨链状态 1 源链deposit成功 2 目标链执行成功 3 失败';default:1" json:"bridge_status"`
 	DepositHash             string          `gorm:"column:deposit_hash;comment:'deposit tx hash'" json:"deposit_hash"`
@@ -44,13 +44,21 @@ type ChainId int64
 
 func (c ChainId) String() string {
 	switch c {
-	case 1:
+	case 112301:
 		return "Tantin"
-	case 2:
+	case 12302:
+		return "Tantin"
+	case 97:
 		return "BSC"
-	case 3:
+	case 56:
+		return "BSC"
+	case 3448148188:
 		return "TRON"
-	case 4:
+	case 728126428:
+		return "TRON"
+	case 1:
+		return "Ethereum"
+	case 11155111:
 		return "Ethereum"
 	default:
 		return ""
@@ -122,9 +130,9 @@ func SaveBridgeOrder(log log.Logger, m msg.Message, amount decimal.Decimal, reso
 			ResourceId:              ResourceId(resourceId),
 			Caller:                  caller,
 			Receiver:                receiver,
-			SourceChainId:           int64(m.Source),
+			SourceChainId:           ChainId(m.Source),
 			SourceTokenAddress:      sourceTokenAddress,
-			DestinationChainId:      int64(m.Destination),
+			DestinationChainId:      ChainId(m.Destination),
 			DestinationTokenAddress: destinationTokenAddress,
 			DepositAt:               dateTime,
 			DepositHash:             depositTxHash,

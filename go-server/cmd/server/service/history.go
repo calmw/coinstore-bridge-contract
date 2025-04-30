@@ -71,7 +71,7 @@ func BridgeTx(c *gin.Context) {
 	// 更新记录
 	var records []model.BridgeTx
 	var data []Response
-	tx := db.DB.Model(&model.BridgeTx{})
+	tx := db.DB.Model(&model.BridgeTx{}).Order("deposit_at desc")
 
 	if len(q.From) > 0 {
 		tx = tx.Where("caller=?", strings.ToLower(q.From))
@@ -121,12 +121,12 @@ func BridgeTx(c *gin.Context) {
 
 	for _, record := range records {
 		sourceToken := ""
-		info, err := model.GetTokenInfo(record.SourceChainId, record.SourceTokenAddress)
+		info, err := model.GetTokenInfo(model.ChainId(record.SourceChainId), record.SourceTokenAddress)
 		if err == nil {
 			sourceToken = info.TokenName
 		}
 		destinationToken := ""
-		info, err = model.GetTokenInfo(record.DestinationChainId, record.DestinationTokenAddress)
+		info, err = model.GetTokenInfo(model.ChainId(record.DestinationChainId), record.DestinationTokenAddress)
 		if err == nil {
 			destinationToken = info.TokenName
 		}
