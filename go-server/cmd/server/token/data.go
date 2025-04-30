@@ -80,6 +80,9 @@ func (m *PriceData) Get(tokenName string) (string, bool) {
 	if strings.Contains(tokenName, "ETH") {
 		tokenName = "ETH"
 	}
+	if strings.Contains(tokenName, "USDC") {
+		tokenName = "USDC"
+	}
 	s, ok := m.price[tokenName]
 	return s, ok
 }

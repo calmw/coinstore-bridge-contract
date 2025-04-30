@@ -2,7 +2,6 @@ package contract
 
 import (
 	"context"
-	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -164,7 +163,7 @@ func InitTantinEnvProd() {
 		UsdcAddress:           "0xF3f9629Bf5fC6e40e28444aEA4405dD00e5890AE",
 		EthAddress:            "0x0000000000000000000000000000000000000000",
 		WEthAddress:           "0x99276acEDe57b8dc5632b818DE33B3141DD6FE1d",
-		//PrivateKey:            privateKeyStr,
+		PrivateKey:            privateKeyStr,
 	}
 }
 
@@ -215,13 +214,13 @@ func InitEthEnv() {
 	if len(privateKeyStr) <= 0 {
 		privateKeyStr = os.Getenv("TT_BRIDGE_SIGN")
 	}
-	fmt.Println(privateKeyStr)
 	ChainConfig = ChainConfigs{
 		BridgeId:    4,
 		ChainId:     11155111,
 		ChainTypeId: 1,
+		RPC:         "https://sepolia.drpc.org",
+		//RPC: "https://sepolia.infura.io",
 		//RPC:                   "https://ethereum-sepolia-rpc.publicnode.com",
-		RPC:                   "https://ethereum-sepolia-rpc.publicnode.com",
 		BridgeContractAddress: "0xEf495bdab97F796091346Db4A46Ca0E82bFeA31f",
 		VoteContractAddress:   "0x6DdF0AB701Dff9f40bB3D09Ba67D43C1d3890d1E",
 		TantinContractAddress: "0x9c06c39F095d85591fc4dd33E33C9f32D3669233",

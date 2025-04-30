@@ -1,5 +1,6 @@
 {
   "sepolia_Bridge": "0xEf495bdab97F796091346Db4A46Ca0E82bFeA31f",
   "sepolia_Vote": "0x6DdF0AB701Dff9f40bB3D09Ba67D43C1d3890d1E",
-  "sepolia_TantinBridge": "0x9c06c39F095d85591fc4dd33E33C9f32D3669233"
+  "sepolia_TantinBridge": "0x9c06c39F095d85591fc4dd33E33C9f32D3669233",
+  "Openbnb_Bridge": "0xD35b6c43270970404B09FAc59f278ba754D894b7"
 }

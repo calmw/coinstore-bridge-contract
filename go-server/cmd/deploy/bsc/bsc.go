@@ -9,13 +9,13 @@ import (
 )
 
 func InitTt(prvKey, adminAddress, feeAddress, serverAddress, realyerOneAddress, realyerTwoAddress, realyerThreeAddress string, fee uint64) {
-	contract.InitBscEnv()
-	//contract.InitBscProdEnv()
 	err := os.Setenv("TB_KEY", prvKey)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	contract.InitBscEnv()
+	//contract.InitBscProdEnv()
 	bridge, err := contract.NewBridge()
 	if err != nil {
 		fmt.Println(err)
