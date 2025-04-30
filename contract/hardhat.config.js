@@ -36,7 +36,7 @@ module.exports = {
         tantin: {
             url: "https://rpc.tantin.com",
             accounts: [`${PRIVATE_KEY}`],
-            gasPrice: 100000000000000
+            gasPrice: 100000000000000000
         },
         open_bnb: {
             url: "https://opbnb-testnet-rpc.bnbchain.org",
