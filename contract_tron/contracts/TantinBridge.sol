@@ -30,7 +30,7 @@ contract TantinBridge is AccessControl, ITantinBridge {
 
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        superAdminAddress = 0x3942FdA93c573E2ce9e85B0bB00Ba98a144f27f6;
+        superAdminAddress = 0xbd2fB6d9aDB011891876E5A047F2c4613ff45cB1;
     }
 
     /**

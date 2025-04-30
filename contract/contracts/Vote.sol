@@ -36,7 +36,7 @@ contract Vote is IVote, AccessControl, Initializable {
 
     function initialize() public initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        superAdminAddress = 0xa47142f08f859aCeb2127C6Ab66eC8c8bc4FFBA9;
+        superAdminAddress = 0x0Be3957E303A37372927D0030AC5C2F6B3525836;
     }
 
     /**
