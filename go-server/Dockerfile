@@ -4,11 +4,11 @@ ADD . /app
 ENV GO111MODULE=on
 ENV GOPROXY=https://goproxy.cn
 RUN go mod tidy
-RUN go build -o /tt_bridge cmd/bridge/main.go
+RUN go build -o /bridge_api cmd/server/main.go
 
 FROM golang
 WORKDIR /app
-COPY --from=builder /tt_bridge /
-RUN chmod +x /tt_bridge
+COPY --from=builder /bridge_api ./
+RUN chmod +x ./bridge_api
 
-ENTRYPOINT ["/tt_bridge"]
+ENTRYPOINT ["./bridge_api"]
