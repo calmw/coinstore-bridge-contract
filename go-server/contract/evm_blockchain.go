@@ -202,9 +202,9 @@ func InitEthEnv() {
 	privateKeyStr := utils.ThreeDesDecrypt("gZIMfo6LJm6GYXdClPhIMfo6", coinStoreBridge)
 	ChainConfig = ChainConfigs{
 		BridgeId:              4,
-		ChainId:               5611,
+		ChainId:               11155111,
 		ChainTypeId:           1,
-		RPC:                   "https://opbnb-testnet-rpc.bnbchain.org",
+		RPC:                   "https://ethereum-sepolia-rpc.publicnode.com",
 		BridgeContractAddress: "0x27B56c6A1C66A78e41A20141e79F8559C33af9b5",
 		VoteContractAddress:   "0x62B166B387E0EA79Fa52Ae3A623dbF9F8Db3893b",
 		TantinContractAddress: "0x94Bbc0cc03245Ec1f9B5d7134fB3A9D579ADc3c9",
