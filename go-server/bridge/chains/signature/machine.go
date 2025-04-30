@@ -18,7 +18,7 @@ import (
 func SignAndSendTxEth(cli *ethclient.Client, chainId uint64, tx *types.Transaction, apiSecret string) (string, error) {
 	sigAccount := os.Getenv("SIG_ACCOUNT_EVM")
 	if len(sigAccount) <= 0 {
-		sigAccount = "0x1933ccd14cafe561d862e5f35d0de75322a55412"
+		return "", errors.New("签名机账户不存在")
 	}
 	fromAddress := common.HexToAddress(sigAccount)
 	taskID := RandInt(100, 10000)
@@ -65,7 +65,7 @@ func SignAndSendTxEth(cli *ethclient.Client, chainId uint64, tx *types.Transacti
 func SignAndSendTxTron(chainId int, UnsignedRawData []byte, apiSecret string) ([]byte, error) {
 	sigAccount := os.Getenv("SIG_ACCOUNT_TRON")
 	if len(sigAccount) <= 0 {
-		sigAccount = "TTgY73yj5vzGM2HGHhVt7AR7avMW4jUx6n"
+		return nil, errors.New("签名机账户不存在")
 	}
 	chainId = 728126428
 	taskID := RandInt(100, 10000)
