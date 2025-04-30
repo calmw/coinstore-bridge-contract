@@ -29,15 +29,14 @@ import (
 )
 
 var (
-	PrivateKey             string
-	AdminAddress           string
-	FeeAddress             string
-	ServerAddress          string
-	RelayerOne             string
-	RelayerTwo             string
-	RelayerThree           string
-	TronKeyStorePassphrase string
-	Fee                    uint64
+	PrivateKey    string
+	AdminAddress  string
+	FeeAddress    string
+	ServerAddress string
+	RelayerOne    string
+	RelayerTwo    string
+	RelayerThree  string
+	Fee           uint64
 )
 
 var rootCmd = &cobra.Command{

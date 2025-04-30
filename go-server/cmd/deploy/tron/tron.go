@@ -6,12 +6,13 @@ import (
 	"os"
 )
 
-func InitTron(prvKey, adminAddress, feeAddress, serverAddress, realyerOneAddress, realyerTwoAddress, realyerThreeAddress string, fee uint64, tronKeyStorePassphrase string) {
+func InitTron(prvKey, adminAddress, feeAddress, serverAddress, realyerOneAddress, realyerTwoAddress, realyerThreeAddress string, fee uint64) {
 	err := os.Setenv("TB_KEY", prvKey)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	tronKeyStorePassphrase := "fe561d862e5f35d0de"
 	//contract.InitTronEnv()
 	contract.InitTronEnvProd()
 	ks, ka, err := InitKeyStore(prvKey, tronKeyStorePassphrase)

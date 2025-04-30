@@ -159,10 +159,10 @@ func InitTantinEnvProd() {
 		BridgeContractAddress: "0x0AAa93530Af315d910DFb3A745D010Bf2d110b4e",
 		VoteContractAddress:   "0x579eB412D19f3Bcd628c5e38e92Ac2B9B16ACC65",
 		TantinContractAddress: "0xdbADa77D545Ca263Df8dDf9c8bf8109383f6e50a",
-		UsdtAddress:           "0x2Bf013133aE838B6934B7F96fd43A10EE3FC3e18",
-		UsdcAddress:           "0xF3f9629Bf5fC6e40e28444aEA4405dD00e5890AE",
+		UsdtAddress:           "",
+		UsdcAddress:           "",
 		EthAddress:            "0x0000000000000000000000000000000000000000",
-		WEthAddress:           "0x99276acEDe57b8dc5632b818DE33B3141DD6FE1d",
+		WEthAddress:           "",
 		PrivateKey:            privateKeyStr,
 	}
 }
@@ -245,8 +245,8 @@ func InitEthEnvProd() {
 		BridgeContractAddress: "0x221441b7EEae32BFdA24a7d2de71748E20966A49",
 		VoteContractAddress:   "0xEEBBae1445AD3c1a7d98F51AE12E8D1132553f13",
 		TantinContractAddress: "0x88bbadEFABcd8E2bEF70c85b8985b464dceD4187",
-		UsdtAddress:           "0xdac17f958d2ee523a2206206994597c13d831ec7", // Tether USD
-		UsdcAddress:           "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USD Coin
+		UsdtAddress:           "0xdac17f958d2ee523a2206206994597c13d831ec7",
+		UsdcAddress:           "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 		EthAddress:            "0x0000000000000000000000000000000000000000",
 		WEthAddress:           "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
 		PrivateKey:            privateKeyStr,
