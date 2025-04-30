@@ -172,6 +172,7 @@ func (l *Listener) getDepositEventsForBlock(latestBlock *big.Int) error {
 		tokenAddress = address.HexToAddress(tokenAddress).String()
 		fee := decimal.NewFromBigInt(tokenInfo.Fee, 0)
 
+		// TODO  获取gas有问题，需要修改 ，目测天荣获取的fee是精度字段，另外需要将跨链总金额写入数据库(此功能可以采用异步写入)
 		amount, caller, receiver, err := chains.ParseBridgeData(record.Data)
 		if err != nil {
 			return err

@@ -1,0 +1,7 @@
+./tb tron --admin_address 'TTDXsZRNQP2JajbdUBvUHV8sSqDApypAgH' --fee_address 'TBMjj1YL8xCKZEp6tFLSmiBHJZQjrUu6RM' --server_address 'TSg62NqGbU8GUhzDKzzd9uSEtEXWoDrGat' --relayer_one_address  'TLCCrEHZpdQ66wfZJgjEJAZ7C5s8rdcyyZ'   --relayer_two_address  'TXqt5ogv5rvjwdWDxKMcaJBvJBM1N2k3Qk' --relayer_three_address 'TPPVHwxNwYExt8PKnxcaNX5K9g3iEW3LBL' --fee 7 --passphrase 'xxxxx' --key 'XXXXXXX'
+
+
+./tb bsc --admin_address '0x0Be3957E303A37372927D0030AC5C2F6B3525836' --fee_address '0xa7ebdC8ceE9Cb9184368b98550D159Ba05fB91aB' --server_address '0xB73d3e1db1d422B3534fB48298Fe317aa751E097' --relayer_one_address  '0x4f1b9a16a301d7b60f1c71c124688134b34d6439'   --relayer_two_address  '0xbd34276c446d65c884a000357bd60bb2bf94ded7' --relayer_three_address '0x6f49c094beb9f9488c7ebce356d8d6aa54db3e98' --fee 3 --key 'XXXXXXX'
+
+
+./tb eth --admin_address '0x0Be3957E303A37372927D0030AC5C2F6B3525836' --fee_address '0xa7ebdC8ceE9Cb9184368b98550D159Ba05fB91aB' --server_address '0xB73d3e1db1d422B3534fB48298Fe317aa751E097' --relayer_one_address  '0x4f1b9a16a301d7b60f1c71c124688134b34d6439'   --relayer_two_address  '0xbd34276c446d65c884a000357bd60bb2bf94ded7' --relayer_three_address '0x6f49c094beb9f9488c7ebce356d8d6aa54db3e98' --fee 3 --key 'XXXXXXX'
