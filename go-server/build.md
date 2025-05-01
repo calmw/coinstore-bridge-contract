@@ -3,6 +3,9 @@
 ``` shell
 # relayer node 
 docker buildx build --platform linux/amd64 --tag calmw/tt_bridge:0.1.1 --push .
+
+
+docker buildx build --platform linux/amd64 --tag harbor.devops.tantin.com/chain/tt_bridge:0.1.0 --push .
 ```
 
 ``` shell
