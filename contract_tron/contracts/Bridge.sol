@@ -189,10 +189,12 @@ contract Bridge is IBridge, Pausable, AccessControl {
         bytes memory signature_,
         address voteAddress_
     ) private returns (bool) {
-        bytes32 messageHash = keccak256(abi.encode(sigNonce, block.chainid, voteAddress_));
-        address recoverAddress = messageHash.toEthSignedMessageHash().recoverSigner(
-            signature_
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, block.chainid, voteAddress_)
         );
+        address recoverAddress = messageHash
+            .toEthSignedMessageHash()
+            .recoverSigner(signature_);
         bool res = recoverAddress == superAdminAddress;
         if (res) {
             sigNonce++;
@@ -205,7 +207,9 @@ contract Bridge is IBridge, Pausable, AccessControl {
         bytes memory signature_,
         address voteAddress_
     ) public view returns (address) {
-        bytes32 messageHash = keccak256(abi.encode(sigNonce, block.chainid, voteAddress_));
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, block.chainid, voteAddress_)
+        );
         address recoverAddress = messageHash
             .toEthSignedMessageHash()
             .recoverSigner(signature_);

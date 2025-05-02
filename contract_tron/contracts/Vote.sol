@@ -309,6 +309,7 @@ contract Vote is IVote, AccessControl {
         uint256 originChainId;
         address caller;
         address recipient;
+        uint256 amount;
         uint256 receiveAmount;
         uint256 originNonce;
         (

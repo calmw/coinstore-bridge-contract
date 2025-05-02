@@ -192,7 +192,9 @@ contract Bridge is IBridge, Pausable, AccessControl, Initializable {
         bytes memory signature_,
         address voteAddress_
     ) private returns (bool) {
-        bytes32 messageHash = keccak256(abi.encode(sigNonce, block.chainid, voteAddress_));
+        bytes32 messageHash = keccak256(
+            abi.encode(sigNonce, block.chainid, voteAddress_)
+        );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature_
         );

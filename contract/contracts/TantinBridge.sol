@@ -217,6 +217,7 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
             depositData.chainId,
             msg.sender,
             depositData.recipient,
+            depositData.amount,
             depositData.receiveAmount,
             localNonce
         );
@@ -303,7 +304,13 @@ contract TantinBridge is AccessControl, ITantinBridge, Initializable {
         address bridgeAddress_
     ) private returns (bool) {
         bytes32 messageHash = keccak256(
-            abi.encode(sigNonce,block.chainid, feeAddress_, serverAddress_, bridgeAddress_)
+            abi.encode(
+                sigNonce,
+                block.chainid,
+                feeAddress_,
+                serverAddress_,
+                bridgeAddress_
+            )
         );
         address recoverAddress = messageHash.toEthSignedMessageHash().recover(
             signature_
